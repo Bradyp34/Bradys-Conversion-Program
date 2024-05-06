@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using static Brady_s_Conversion_Program.Form1;
 
 namespace Brady_s_Conversion_Program
 {
@@ -18,7 +20,7 @@ namespace Brady_s_Conversion_Program
             }
         }
 
-        public static string ConvertToDB() {
+        public static string ConvertToDB(string connection) {
             
             try {
                 
@@ -33,10 +35,17 @@ namespace Brady_s_Conversion_Program
                 foreach (string file in Directory.GetFiles("UploadedFiles/")) {
                     File.Delete(file);
                 }
+
                 return "Files Cleared.\n";
             } catch (Exception e) {
                 return "File Clear Failed.\n" + e + "\n";
             }
+        }
+
+        public static string OpenDialogBox() {
+            OpenFileDialog dialog = new OpenFileDialog();
+            string filePath = dialog.FileName;
+            return filePath;
         }
     }
 }

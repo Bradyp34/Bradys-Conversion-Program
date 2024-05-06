@@ -31,10 +31,11 @@
             DatabaseTextBox = new TextBox();
             tabControl1 = new TabControl();
             FromDBPage = new TabPage();
-            FromFilePage = new TabPage();
-            UploadFileButton = new Button();
             DBBeginButton = new Button();
+            FromFilePage = new TabPage();
+            UploadedFilesBox = new ListBox();
             ClearFilesButton = new Button();
+            UploadFileButton = new Button();
             tabControl1.SuspendLayout();
             FromDBPage.SuspendLayout();
             FromFilePage.SuspendLayout();
@@ -79,28 +80,6 @@
             FromDBPage.Text = "FromDBPage";
             FromDBPage.UseVisualStyleBackColor = true;
             // 
-            // FromFilePage
-            // 
-            FromFilePage.Controls.Add(ClearFilesButton);
-            FromFilePage.Controls.Add(UploadFileButton);
-            FromFilePage.Location = new Point(4, 24);
-            FromFilePage.Name = "FromFilePage";
-            FromFilePage.Padding = new Padding(3);
-            FromFilePage.Size = new Size(789, 419);
-            FromFilePage.TabIndex = 1;
-            FromFilePage.Text = "FromFilePage";
-            FromFilePage.UseVisualStyleBackColor = true;
-            // 
-            // UploadFileButton
-            // 
-            UploadFileButton.Location = new Point(6, 6);
-            UploadFileButton.Name = "UploadFileButton";
-            UploadFileButton.Size = new Size(75, 23);
-            UploadFileButton.TabIndex = 0;
-            UploadFileButton.Text = "UploadFile";
-            UploadFileButton.UseVisualStyleBackColor = true;
-            UploadFileButton.Click += UploadFileButton_Click;
-            // 
             // DBBeginButton
             // 
             DBBeginButton.Location = new Point(6, 64);
@@ -111,6 +90,28 @@
             DBBeginButton.UseVisualStyleBackColor = true;
             DBBeginButton.Click += DBBeginButton_Click;
             // 
+            // FromFilePage
+            // 
+            FromFilePage.Controls.Add(UploadedFilesBox);
+            FromFilePage.Controls.Add(ClearFilesButton);
+            FromFilePage.Controls.Add(UploadFileButton);
+            FromFilePage.Location = new Point(4, 24);
+            FromFilePage.Name = "FromFilePage";
+            FromFilePage.Padding = new Padding(3);
+            FromFilePage.Size = new Size(789, 419);
+            FromFilePage.TabIndex = 1;
+            FromFilePage.Text = "FromFilePage";
+            FromFilePage.UseVisualStyleBackColor = true;
+            // 
+            // UploadedFilesBox
+            // 
+            UploadedFilesBox.FormattingEnabled = true;
+            UploadedFilesBox.ItemHeight = 15;
+            UploadedFilesBox.Location = new Point(87, 6);
+            UploadedFilesBox.Name = "UploadedFilesBox";
+            UploadedFilesBox.Size = new Size(120, 94);
+            UploadedFilesBox.TabIndex = 2;
+            // 
             // ClearFilesButton
             // 
             ClearFilesButton.Location = new Point(6, 35);
@@ -120,6 +121,16 @@
             ClearFilesButton.Text = "Clear Files";
             ClearFilesButton.UseVisualStyleBackColor = true;
             ClearFilesButton.Click += ClearFilesButton_Click;
+            // 
+            // UploadFileButton
+            // 
+            UploadFileButton.Location = new Point(6, 6);
+            UploadFileButton.Name = "UploadFileButton";
+            UploadFileButton.Size = new Size(75, 23);
+            UploadFileButton.TabIndex = 0;
+            UploadFileButton.Text = "UploadFile";
+            UploadFileButton.UseVisualStyleBackColor = true;
+            UploadFileButton.Click += UploadFileButton_Click;
             // 
             // Form1
             // 
@@ -146,6 +157,7 @@
         public TabPage FromDBPage;
         public TabPage FromFilePage;
         public Button UploadFileButton;
-        private Button ClearFilesButton;
+        public Button ClearFilesButton;
+        public ListBox UploadedFilesBox;
     }
 }
