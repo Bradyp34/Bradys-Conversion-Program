@@ -30,8 +30,10 @@
             ServerTextBox = new TextBox();
             DatabaseTextBox = new TextBox();
             DBBeginButton = new Button();
-            OutBoundServerTextBox = new TextBox();
-            OutBoundDataBaseTextBox = new TextBox();
+            FFPMServerTextBox = new TextBox();
+            FFPMDataBaseTextBox = new TextBox();
+            EyeMDDBTextBox = new TextBox();
+            EyeMDServerNameTextBox = new TextBox();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -54,36 +56,54 @@
             // 
             DBBeginButton.Location = new Point(12, 70);
             DBBeginButton.Name = "DBBeginButton";
-            DBBeginButton.Size = new Size(270, 23);
+            DBBeginButton.Size = new Size(408, 23);
             DBBeginButton.TabIndex = 2;
             DBBeginButton.Text = "Begin";
             DBBeginButton.UseVisualStyleBackColor = true;
             DBBeginButton.Click += DBBeginButton_Click;
             // 
-            // OutBoundServerTextBox
+            // FFPMServerTextBox
             // 
-            OutBoundServerTextBox.Location = new Point(150, 12);
-            OutBoundServerTextBox.Name = "OutBoundServerTextBox";
-            OutBoundServerTextBox.PlaceholderText = "Outbound Server Name";
-            OutBoundServerTextBox.Size = new Size(132, 23);
-            OutBoundServerTextBox.TabIndex = 3;
+            FFPMServerTextBox.Location = new Point(150, 12);
+            FFPMServerTextBox.Name = "FFPMServerTextBox";
+            FFPMServerTextBox.PlaceholderText = "FFPM Server Name";
+            FFPMServerTextBox.Size = new Size(132, 23);
+            FFPMServerTextBox.TabIndex = 3;
             // 
-            // OutBoundDataBaseTextBox
+            // FFPMDataBaseTextBox
             // 
-            OutBoundDataBaseTextBox.Location = new Point(150, 41);
-            OutBoundDataBaseTextBox.Name = "OutBoundDataBaseTextBox";
-            OutBoundDataBaseTextBox.PlaceholderText = "Outbound Database";
-            OutBoundDataBaseTextBox.Size = new Size(132, 23);
-            OutBoundDataBaseTextBox.TabIndex = 4;
+            FFPMDataBaseTextBox.Location = new Point(150, 41);
+            FFPMDataBaseTextBox.Name = "FFPMDataBaseTextBox";
+            FFPMDataBaseTextBox.PlaceholderText = "FFPM Database";
+            FFPMDataBaseTextBox.Size = new Size(132, 23);
+            FFPMDataBaseTextBox.TabIndex = 4;
+            // 
+            // EyeMDDBTextBox
+            // 
+            EyeMDDBTextBox.Location = new Point(288, 41);
+            EyeMDDBTextBox.Name = "EyeMDDBTextBox";
+            EyeMDDBTextBox.PlaceholderText = "EyeMD Database";
+            EyeMDDBTextBox.Size = new Size(132, 23);
+            EyeMDDBTextBox.TabIndex = 6;
+            // 
+            // EyeMDServerNameTextBox
+            // 
+            EyeMDServerNameTextBox.Location = new Point(288, 12);
+            EyeMDServerNameTextBox.Name = "EyeMDServerNameTextBox";
+            EyeMDServerNameTextBox.PlaceholderText = "EyeMD Server Name";
+            EyeMDServerNameTextBox.Size = new Size(132, 23);
+            EyeMDServerNameTextBox.TabIndex = 5;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(295, 100);
-            Controls.Add(OutBoundDataBaseTextBox);
-            Controls.Add(OutBoundServerTextBox);
+            ClientSize = new Size(432, 100);
+            Controls.Add(EyeMDDBTextBox);
+            Controls.Add(EyeMDServerNameTextBox);
+            Controls.Add(FFPMDataBaseTextBox);
+            Controls.Add(FFPMServerTextBox);
             Controls.Add(DBBeginButton);
             Controls.Add(ServerTextBox);
             Controls.Add(DatabaseTextBox);
@@ -98,7 +118,9 @@
         public Button DBBeginButton;
         public TextBox ServerTextBox;
         public TextBox DatabaseTextBox;
-        public TextBox OutBoundServerTextBox;
-        public TextBox OutBoundDataBaseTextBox;
+        public TextBox FFPMServerTextBox;
+        public TextBox FFPMDataBaseTextBox;
+        public TextBox EyeMDDBTextBox;
+        public TextBox EyeMDServerNameTextBox;
     }
 }

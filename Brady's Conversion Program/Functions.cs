@@ -23,18 +23,24 @@ namespace Brady_s_Conversion_Program
             }
         }
 
-        public static string ConvertToDB(string connection, string outboundConnection) {
+        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection) {
             try {
                 using (SqlConnection sqlConnection = new SqlConnection(connection)) {
-                    using (SqlConnection convDatabase = new SqlConnection("Server=FoxDevSQL19;Database=Foxfire_conv;Integrated Security=True")) {
-                        // Open the connection
-                        sqlConnection.Open();
+                    using (SqlConnection convDatabase = new SqlConnection(FFPMConnection)) {
+                        using (SqlConnection EyeMD = new SqlConnection(EyeMDConnection)) {
+                            // Open the connection
+                            sqlConnection.Open();
+                            convDatabase.Open();
+                            EyeMD.Open();
 
-                        // Perform your SQL operations here
-                        // For example, you can execute a SQL command using SqlCommand
+                            // Perform your SQL operations here
+                            // For example, you can execute a SQL command using SqlCommand
 
-                        // Close the connection
-                        sqlConnection.Close();
+                            // Close the connection
+                            sqlConnection.Close();
+                            convDatabase.Close();
+                            EyeMD.Close();
+                        }   
                     }
                 }
             }
