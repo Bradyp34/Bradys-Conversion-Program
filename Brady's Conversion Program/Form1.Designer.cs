@@ -34,6 +34,7 @@
             FromFilePage = new TabPage();
             UploadFileButton = new Button();
             DBBeginButton = new Button();
+            ClearFilesButton = new Button();
             tabControl1.SuspendLayout();
             FromDBPage.SuspendLayout();
             FromFilePage.SuspendLayout();
@@ -80,6 +81,7 @@
             // 
             // FromFilePage
             // 
+            FromFilePage.Controls.Add(ClearFilesButton);
             FromFilePage.Controls.Add(UploadFileButton);
             FromFilePage.Location = new Point(4, 24);
             FromFilePage.Name = "FromFilePage";
@@ -109,6 +111,16 @@
             DBBeginButton.UseVisualStyleBackColor = true;
             DBBeginButton.Click += DBBeginButton_Click;
             // 
+            // ClearFilesButton
+            // 
+            ClearFilesButton.Location = new Point(6, 35);
+            ClearFilesButton.Name = "ClearFilesButton";
+            ClearFilesButton.Size = new Size(75, 23);
+            ClearFilesButton.TabIndex = 1;
+            ClearFilesButton.Text = "Clear Files";
+            ClearFilesButton.UseVisualStyleBackColor = true;
+            ClearFilesButton.Click += ClearFilesButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -127,12 +139,13 @@
 
         #endregion
 
-        private TextBox ServerTextBox;
-        private TextBox DatabaseTextBox;
-        private TabControl tabControl1;
-        private TabPage FromDBPage;
-        private TabPage FromFilePage;
-        private Button UploadFileButton;
-        private Button DBBeginButton;
+        public Button DBBeginButton;
+        public TextBox ServerTextBox;
+        public TextBox DatabaseTextBox;
+        public TabControl tabControl1;
+        public TabPage FromDBPage;
+        public TabPage FromFilePage;
+        public Button UploadFileButton;
+        private Button ClearFilesButton;
     }
 }

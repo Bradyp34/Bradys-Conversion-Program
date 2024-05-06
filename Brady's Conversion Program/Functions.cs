@@ -14,7 +14,28 @@ namespace Brady_s_Conversion_Program
                 File.Copy(path, newPath);
                 return newPath;
             } catch (Exception e) {
-                return "File Copy Failed.";
+                return "File Copy Failed.\n" + e + "\n";
+            }
+        }
+
+        public static string ConvertToDB() {
+            
+            try {
+                
+            } catch (Exception e) {
+                return "Database Upload Failed.\n" + e + "\n";
+            }
+            return "";
+        }
+
+        public static string ClearFiles() {
+            try {
+                foreach (string file in Directory.GetFiles("UploadedFiles/")) {
+                    File.Delete(file);
+                }
+                return "Files Cleared.\n";
+            } catch (Exception e) {
+                return "File Clear Failed.\n" + e + "\n";
             }
         }
     }
