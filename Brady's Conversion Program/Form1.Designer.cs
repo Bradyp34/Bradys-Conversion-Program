@@ -29,145 +29,68 @@
         private void InitializeComponent() {
             ServerTextBox = new TextBox();
             DatabaseTextBox = new TextBox();
-            tabControl1 = new TabControl();
-            FromDBPage = new TabPage();
             DBBeginButton = new Button();
-            FromFilePage = new TabPage();
-            ResultsBox = new RichTextBox();
-            UploadedFilesBox = new ListBox();
-            ClearFilesButton = new Button();
-            UploadFileButton = new Button();
-            UploadSubmitButton = new Button();
-            tabControl1.SuspendLayout();
-            FromDBPage.SuspendLayout();
-            FromFilePage.SuspendLayout();
+            OutBoundServerTextBox = new TextBox();
+            OutBoundDataBaseTextBox = new TextBox();
             SuspendLayout();
             // 
             // ServerTextBox
             // 
-            ServerTextBox.Location = new Point(6, 6);
+            ServerTextBox.Location = new Point(12, 12);
             ServerTextBox.Name = "ServerTextBox";
-            ServerTextBox.PlaceholderText = "Server Name";
+            ServerTextBox.PlaceholderText = "Inbound Server Name";
             ServerTextBox.Size = new Size(132, 23);
             ServerTextBox.TabIndex = 0;
             // 
             // DatabaseTextBox
             // 
-            DatabaseTextBox.Location = new Point(6, 35);
+            DatabaseTextBox.Location = new Point(12, 41);
             DatabaseTextBox.Name = "DatabaseTextBox";
-            DatabaseTextBox.PlaceholderText = "Database";
+            DatabaseTextBox.PlaceholderText = "Inbound Database";
             DatabaseTextBox.Size = new Size(132, 23);
             DatabaseTextBox.TabIndex = 1;
             // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(FromDBPage);
-            tabControl1.Controls.Add(FromFilePage);
-            tabControl1.Location = new Point(2, 1);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(797, 447);
-            tabControl1.TabIndex = 2;
-            // 
-            // FromDBPage
-            // 
-            FromDBPage.Controls.Add(DBBeginButton);
-            FromDBPage.Controls.Add(ServerTextBox);
-            FromDBPage.Controls.Add(DatabaseTextBox);
-            FromDBPage.Location = new Point(4, 24);
-            FromDBPage.Name = "FromDBPage";
-            FromDBPage.Padding = new Padding(3);
-            FromDBPage.Size = new Size(789, 419);
-            FromDBPage.TabIndex = 0;
-            FromDBPage.Text = "FromDBPage";
-            FromDBPage.UseVisualStyleBackColor = true;
-            // 
             // DBBeginButton
             // 
-            DBBeginButton.Location = new Point(6, 64);
+            DBBeginButton.Location = new Point(12, 70);
             DBBeginButton.Name = "DBBeginButton";
-            DBBeginButton.Size = new Size(132, 23);
+            DBBeginButton.Size = new Size(270, 23);
             DBBeginButton.TabIndex = 2;
             DBBeginButton.Text = "Begin";
             DBBeginButton.UseVisualStyleBackColor = true;
             DBBeginButton.Click += DBBeginButton_Click;
             // 
-            // FromFilePage
+            // OutBoundServerTextBox
             // 
-            FromFilePage.Controls.Add(UploadSubmitButton);
-            FromFilePage.Controls.Add(ResultsBox);
-            FromFilePage.Controls.Add(UploadedFilesBox);
-            FromFilePage.Controls.Add(ClearFilesButton);
-            FromFilePage.Controls.Add(UploadFileButton);
-            FromFilePage.Location = new Point(4, 24);
-            FromFilePage.Name = "FromFilePage";
-            FromFilePage.Padding = new Padding(3);
-            FromFilePage.Size = new Size(789, 419);
-            FromFilePage.TabIndex = 1;
-            FromFilePage.Text = "FromFilePage";
-            FromFilePage.UseVisualStyleBackColor = true;
+            OutBoundServerTextBox.Location = new Point(150, 12);
+            OutBoundServerTextBox.Name = "OutBoundServerTextBox";
+            OutBoundServerTextBox.PlaceholderText = "Outbound Server Name";
+            OutBoundServerTextBox.Size = new Size(132, 23);
+            OutBoundServerTextBox.TabIndex = 3;
             // 
-            // ResultsBox
+            // OutBoundDataBaseTextBox
             // 
-            ResultsBox.Location = new Point(3, 91);
-            ResultsBox.Name = "ResultsBox";
-            ResultsBox.Size = new Size(204, 132);
-            ResultsBox.TabIndex = 3;
-            ResultsBox.Text = "";
-            // 
-            // UploadedFilesBox
-            // 
-            UploadedFilesBox.FormattingEnabled = true;
-            UploadedFilesBox.ItemHeight = 15;
-            UploadedFilesBox.Location = new Point(87, 6);
-            UploadedFilesBox.Name = "UploadedFilesBox";
-            UploadedFilesBox.Size = new Size(120, 79);
-            UploadedFilesBox.TabIndex = 2;
-            // 
-            // ClearFilesButton
-            // 
-            ClearFilesButton.Location = new Point(6, 35);
-            ClearFilesButton.Name = "ClearFilesButton";
-            ClearFilesButton.Size = new Size(75, 23);
-            ClearFilesButton.TabIndex = 1;
-            ClearFilesButton.Text = "Clear Files";
-            ClearFilesButton.UseVisualStyleBackColor = true;
-            ClearFilesButton.Click += ClearFilesButton_Click;
-            // 
-            // UploadFileButton
-            // 
-            UploadFileButton.Location = new Point(6, 6);
-            UploadFileButton.Name = "UploadFileButton";
-            UploadFileButton.Size = new Size(75, 23);
-            UploadFileButton.TabIndex = 0;
-            UploadFileButton.Text = "UploadFile";
-            UploadFileButton.UseVisualStyleBackColor = true;
-            UploadFileButton.Click += UploadFileButton_Click;
-            // 
-            // UploadSubmitButton
-            // 
-            UploadSubmitButton.Location = new Point(6, 64);
-            UploadSubmitButton.Name = "UploadSubmitButton";
-            UploadSubmitButton.Size = new Size(75, 23);
-            UploadSubmitButton.TabIndex = 4;
-            UploadSubmitButton.Text = "Submit";
-            UploadSubmitButton.UseVisualStyleBackColor = true;
-            UploadSubmitButton.Click += UploadSubmitButton_Click;
+            OutBoundDataBaseTextBox.Location = new Point(150, 41);
+            OutBoundDataBaseTextBox.Name = "OutBoundDataBaseTextBox";
+            OutBoundDataBaseTextBox.PlaceholderText = "Outbound Database";
+            OutBoundDataBaseTextBox.Size = new Size(132, 23);
+            OutBoundDataBaseTextBox.TabIndex = 4;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(800, 450);
-            Controls.Add(tabControl1);
+            ClientSize = new Size(295, 100);
+            Controls.Add(OutBoundDataBaseTextBox);
+            Controls.Add(OutBoundServerTextBox);
+            Controls.Add(DBBeginButton);
+            Controls.Add(ServerTextBox);
+            Controls.Add(DatabaseTextBox);
             Name = "Form1";
             Text = "Form1";
-            tabControl1.ResumeLayout(false);
-            FromDBPage.ResumeLayout(false);
-            FromDBPage.PerformLayout();
-            FromFilePage.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -175,13 +98,7 @@
         public Button DBBeginButton;
         public TextBox ServerTextBox;
         public TextBox DatabaseTextBox;
-        public TabControl tabControl1;
-        public TabPage FromDBPage;
-        public TabPage FromFilePage;
-        public Button UploadFileButton;
-        public Button ClearFilesButton;
-        public ListBox UploadedFilesBox;
-        public RichTextBox ResultsBox;
-        public Button UploadSubmitButton;
+        public TextBox OutBoundServerTextBox;
+        public TextBox OutBoundDataBaseTextBox;
     }
 }

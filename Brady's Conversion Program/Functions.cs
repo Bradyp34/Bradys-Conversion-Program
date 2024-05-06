@@ -64,7 +64,7 @@ namespace Brady_s_Conversion_Program
                 return filePath;
             }
             else {
-                return null; // Return null if the user cancels the dialog
+                return "File Copy Failed.";
             }
         }
 
