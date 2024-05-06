@@ -11,11 +11,13 @@ namespace Brady_s_Conversion_Program
     public class Functions
     {
         public static string UploadFile(string path) {
-            string newPath = "UploadedFiles/" + path.LastIndexOf("\\") + path.Length;
+            string fileName = Path.GetFileName(path);
+            string newPath = "UploadedFiles/" + fileName;
             try {
                 File.Copy(path, newPath);
                 return newPath;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 return "File Copy Failed.\n" + e + "\n";
             }
         }
