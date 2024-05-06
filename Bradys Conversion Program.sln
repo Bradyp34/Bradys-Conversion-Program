@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brady's Conversion Program", "Brady's Conversion Program\Brady's Conversion Program.csproj", "{F630698D-9572-4883-B879-E1C335F77C27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bradys Conversion Program", "Brady's Conversion Program\Bradys Conversion Program.csproj", "{F630698D-9572-4883-B879-E1C335F77C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brady's Conversion ProgramTests", "Brady's Conversion ProgramTests\Brady's Conversion ProgramTests.csproj", "{9EDB0FE7-2B13-4335-B324-9D28A17DA1FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bradys Conversion ProgramTests", "Brady's Conversion ProgramTests\Bradys Conversion ProgramTests.csproj", "{9EDB0FE7-2B13-4335-B324-9D28A17DA1FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
