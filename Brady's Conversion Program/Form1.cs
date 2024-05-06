@@ -9,7 +9,8 @@ namespace Brady_s_Conversion_Program
 
         private void DBBeginButton_Click(object sender, EventArgs e) {
             string connectionString = "Server=" + ServerTextBox.Text + ";Database=" + DatabaseTextBox.Text + ";Integrated Security=True";
-            Functions.ConvertToDB(connectionString);
+            string outBoundConnectionString = "Server=" + OutBoundServerTextBox.Text + ";Database=" + OutBoundDataBaseTextBox.Text + ";Integrated Security=True";
+            Functions.ConvertToDB(connectionString, outBoundConnectionString);
         }
     }
 }

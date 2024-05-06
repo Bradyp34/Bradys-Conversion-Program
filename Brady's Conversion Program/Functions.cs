@@ -23,7 +23,7 @@ namespace Brady_s_Conversion_Program
             }
         }
 
-        public static string ConvertToDB(string connection) {
+        public static string ConvertToDB(string connection, string outboundConnection) {
             try {
                 using (SqlConnection sqlConnection = new SqlConnection(connection)) {
                     using (SqlConnection convDatabase = new SqlConnection("Server=FoxDevSQL19;Database=Foxfire_conv;Integrated Security=True")) {
