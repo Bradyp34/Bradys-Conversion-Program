@@ -14,7 +14,7 @@ namespace Brady_s_Conversion_Program
             string fileName = Path.GetFileName(path);
             string newPath = "UploadedFiles/" + fileName;
             try {
-                File.Copy(path, newPath);
+                File.Copy(path, "../../../../" + newPath);
                 return newPath;
             }
             catch (Exception e) {
@@ -34,7 +34,7 @@ namespace Brady_s_Conversion_Program
 
         public static string ClearFiles() {
             try {
-                foreach (string file in Directory.GetFiles("UploadedFiles/")) {
+                foreach (string file in Directory.GetFiles("../../../../UploadedFiles/")) {
                     File.Delete(file);
                 }
 
@@ -46,8 +46,14 @@ namespace Brady_s_Conversion_Program
 
         public static string OpenDialogBox() {
             OpenFileDialog dialog = new OpenFileDialog();
-            string filePath = dialog.FileName;
-            return filePath;
+            if (dialog.ShowDialog() == DialogResult.OK) {
+                string filePath = dialog.FileName;
+                return filePath;
+            }
+            else {
+                return null; // Return null if the user cancels the dialog
+            }
         }
+
     }
 }

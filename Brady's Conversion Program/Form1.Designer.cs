@@ -36,6 +36,7 @@
             UploadedFilesBox = new ListBox();
             ClearFilesButton = new Button();
             UploadFileButton = new Button();
+            ResultsBox = new RichTextBox();
             tabControl1.SuspendLayout();
             FromDBPage.SuspendLayout();
             FromFilePage.SuspendLayout();
@@ -92,6 +93,7 @@
             // 
             // FromFilePage
             // 
+            FromFilePage.Controls.Add(ResultsBox);
             FromFilePage.Controls.Add(UploadedFilesBox);
             FromFilePage.Controls.Add(ClearFilesButton);
             FromFilePage.Controls.Add(UploadFileButton);
@@ -132,6 +134,14 @@
             UploadFileButton.UseVisualStyleBackColor = true;
             UploadFileButton.Click += UploadFileButton_Click;
             // 
+            // ResultsBox
+            // 
+            ResultsBox.Location = new Point(3, 106);
+            ResultsBox.Name = "ResultsBox";
+            ResultsBox.Size = new Size(204, 132);
+            ResultsBox.TabIndex = 3;
+            ResultsBox.Text = "";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -159,5 +169,6 @@
         public Button UploadFileButton;
         public Button ClearFilesButton;
         public ListBox UploadedFilesBox;
+        public RichTextBox ResultsBox;
     }
 }
