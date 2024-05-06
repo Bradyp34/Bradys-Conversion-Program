@@ -30,10 +30,13 @@
             ServerTextBox = new TextBox();
             DatabaseTextBox = new TextBox();
             tabControl1 = new TabControl();
-            tabPage1 = new TabPage();
-            tabPage2 = new TabPage();
+            FromDBPage = new TabPage();
+            FromFilePage = new TabPage();
+            UploadFileButton = new Button();
+            DBBeginButton = new Button();
             tabControl1.SuspendLayout();
-            tabPage1.SuspendLayout();
+            FromDBPage.SuspendLayout();
+            FromFilePage.SuspendLayout();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -54,35 +57,57 @@
             // 
             // tabControl1
             // 
-            tabControl1.Controls.Add(tabPage1);
-            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Controls.Add(FromDBPage);
+            tabControl1.Controls.Add(FromFilePage);
             tabControl1.Location = new Point(2, 1);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new Size(797, 447);
             tabControl1.TabIndex = 2;
             // 
-            // tabPage1
+            // FromDBPage
             // 
-            tabPage1.Controls.Add(ServerTextBox);
-            tabPage1.Controls.Add(DatabaseTextBox);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(789, 419);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "tabPage1";
-            tabPage1.UseVisualStyleBackColor = true;
+            FromDBPage.Controls.Add(DBBeginButton);
+            FromDBPage.Controls.Add(ServerTextBox);
+            FromDBPage.Controls.Add(DatabaseTextBox);
+            FromDBPage.Location = new Point(4, 24);
+            FromDBPage.Name = "FromDBPage";
+            FromDBPage.Padding = new Padding(3);
+            FromDBPage.Size = new Size(789, 419);
+            FromDBPage.TabIndex = 0;
+            FromDBPage.Text = "FromDBPage";
+            FromDBPage.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // FromFilePage
             // 
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(192, 72);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
-            tabPage2.UseVisualStyleBackColor = true;
+            FromFilePage.Controls.Add(UploadFileButton);
+            FromFilePage.Location = new Point(4, 24);
+            FromFilePage.Name = "FromFilePage";
+            FromFilePage.Padding = new Padding(3);
+            FromFilePage.Size = new Size(789, 419);
+            FromFilePage.TabIndex = 1;
+            FromFilePage.Text = "FromFilePage";
+            FromFilePage.UseVisualStyleBackColor = true;
+            // 
+            // UploadFileButton
+            // 
+            UploadFileButton.Location = new Point(6, 6);
+            UploadFileButton.Name = "UploadFileButton";
+            UploadFileButton.Size = new Size(75, 23);
+            UploadFileButton.TabIndex = 0;
+            UploadFileButton.Text = "UploadFile";
+            UploadFileButton.UseVisualStyleBackColor = true;
+            UploadFileButton.Click += UploadFileButton_Click;
+            // 
+            // DBBeginButton
+            // 
+            DBBeginButton.Location = new Point(6, 64);
+            DBBeginButton.Name = "DBBeginButton";
+            DBBeginButton.Size = new Size(132, 23);
+            DBBeginButton.TabIndex = 2;
+            DBBeginButton.Text = "Begin";
+            DBBeginButton.UseVisualStyleBackColor = true;
+            DBBeginButton.Click += DBBeginButton_Click;
             // 
             // Form1
             // 
@@ -94,8 +119,9 @@
             Name = "Form1";
             Text = "Form1";
             tabControl1.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
-            tabPage1.PerformLayout();
+            FromDBPage.ResumeLayout(false);
+            FromDBPage.PerformLayout();
+            FromFilePage.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -104,7 +130,9 @@
         private TextBox ServerTextBox;
         private TextBox DatabaseTextBox;
         private TabControl tabControl1;
-        private TabPage tabPage1;
-        private TabPage tabPage2;
+        private TabPage FromDBPage;
+        private TabPage FromFilePage;
+        private Button UploadFileButton;
+        private Button DBBeginButton;
     }
 }
