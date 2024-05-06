@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Brady_s_Conversion_Program
 {
-    internal class Functions
+    public class Functions
     {
-        public static void testSetupFunction()
+        public static void TestSetupFunction()
         {
             return;
         }
