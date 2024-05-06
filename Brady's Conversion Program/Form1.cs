@@ -14,7 +14,8 @@ namespace Brady_s_Conversion_Program
             if (fileName.Contains("File Copy Failed.")) {
                 ResultsBox.Text = fileName;
                 return;
-            } else {
+            }
+            else {
                 ResultsBox.Text = "File Uploaded.";
             }
             UploadedFilesBox.Items.Add(fileName);
@@ -29,6 +30,10 @@ namespace Brady_s_Conversion_Program
             Functions.ClearFiles();
             UploadedFilesBox.Items.Clear();
             ResultsBox.Text = "Files Cleared.";
+        }
+
+        private void UploadSubmitButton_Click(object sender, EventArgs e) {
+
         }
     }
 }

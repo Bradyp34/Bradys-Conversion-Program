@@ -33,10 +33,11 @@
             FromDBPage = new TabPage();
             DBBeginButton = new Button();
             FromFilePage = new TabPage();
+            ResultsBox = new RichTextBox();
             UploadedFilesBox = new ListBox();
             ClearFilesButton = new Button();
             UploadFileButton = new Button();
-            ResultsBox = new RichTextBox();
+            UploadSubmitButton = new Button();
             tabControl1.SuspendLayout();
             FromDBPage.SuspendLayout();
             FromFilePage.SuspendLayout();
@@ -93,6 +94,7 @@
             // 
             // FromFilePage
             // 
+            FromFilePage.Controls.Add(UploadSubmitButton);
             FromFilePage.Controls.Add(ResultsBox);
             FromFilePage.Controls.Add(UploadedFilesBox);
             FromFilePage.Controls.Add(ClearFilesButton);
@@ -105,13 +107,21 @@
             FromFilePage.Text = "FromFilePage";
             FromFilePage.UseVisualStyleBackColor = true;
             // 
+            // ResultsBox
+            // 
+            ResultsBox.Location = new Point(3, 91);
+            ResultsBox.Name = "ResultsBox";
+            ResultsBox.Size = new Size(204, 132);
+            ResultsBox.TabIndex = 3;
+            ResultsBox.Text = "";
+            // 
             // UploadedFilesBox
             // 
             UploadedFilesBox.FormattingEnabled = true;
             UploadedFilesBox.ItemHeight = 15;
             UploadedFilesBox.Location = new Point(87, 6);
             UploadedFilesBox.Name = "UploadedFilesBox";
-            UploadedFilesBox.Size = new Size(120, 94);
+            UploadedFilesBox.Size = new Size(120, 79);
             UploadedFilesBox.TabIndex = 2;
             // 
             // ClearFilesButton
@@ -134,13 +144,15 @@
             UploadFileButton.UseVisualStyleBackColor = true;
             UploadFileButton.Click += UploadFileButton_Click;
             // 
-            // ResultsBox
+            // UploadSubmitButton
             // 
-            ResultsBox.Location = new Point(3, 106);
-            ResultsBox.Name = "ResultsBox";
-            ResultsBox.Size = new Size(204, 132);
-            ResultsBox.TabIndex = 3;
-            ResultsBox.Text = "";
+            UploadSubmitButton.Location = new Point(6, 64);
+            UploadSubmitButton.Name = "UploadSubmitButton";
+            UploadSubmitButton.Size = new Size(75, 23);
+            UploadSubmitButton.TabIndex = 4;
+            UploadSubmitButton.Text = "Submit";
+            UploadSubmitButton.UseVisualStyleBackColor = true;
+            UploadSubmitButton.Click += UploadSubmitButton_Click;
             // 
             // Form1
             // 
@@ -170,5 +182,6 @@
         public Button ClearFilesButton;
         public ListBox UploadedFilesBox;
         public RichTextBox ResultsBox;
+        public Button UploadSubmitButton;
     }
 }
