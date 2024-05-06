@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using static Brady_s_Conversion_Program.Form1;
+using System.Data.SqlClient;
 
 namespace Brady_s_Conversion_Program
 {
@@ -23,14 +24,26 @@ namespace Brady_s_Conversion_Program
         }
 
         public static string ConvertToDB(string connection) {
-            
             try {
-                
-            } catch (Exception e) {
+                using (SqlConnection sqlConnection = new SqlConnection(connection)) {
+                    using (SqlConnection convDatabase = new SqlConnection("Server=FoxDevSQL19;Database=Foxfire_conv;Integrated Security=True")) {
+                        // Open the connection
+                        sqlConnection.Open();
+
+                        // Perform your SQL operations here
+                        // For example, you can execute a SQL command using SqlCommand
+
+                        // Close the connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception e) {
                 return "Database Upload Failed.\n" + e + "\n";
             }
             return "";
         }
+
 
         public static string ClearFiles() {
             try {
