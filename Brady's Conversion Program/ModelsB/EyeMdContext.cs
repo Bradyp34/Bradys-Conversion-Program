@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brady_s_Conversion_Program.ModelsB;
 
-public partial class EyeMdEq10Context : DbContext
+public partial class EyeMdContext : DbContext
 {
     private readonly string _connectionString;
-    public EyeMdEq10Context(string connectionString) {
+    public EyeMdContext(string connectionString) {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
-    public EyeMdEq10Context(DbContextOptions<EyeMdEq10Context> options)
+    public EyeMdContext(DbContextOptions<EyeMdContext> options)
         : base(options)
     {
     }

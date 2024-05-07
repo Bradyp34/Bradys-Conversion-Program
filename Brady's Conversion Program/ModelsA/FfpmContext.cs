@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brady_s_Conversion_Program.ModelsA;
 
-public partial class FfpmEq10Context : DbContext
+public partial class FfpmContext : DbContext
 {
     private readonly string _connectionString;
-    public FfpmEq10Context(string connectionString) {
+    public FfpmContext(string connectionString) {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
-    public FfpmEq10Context(DbContextOptions<FfpmEq10Context> options)
+    public FfpmContext(DbContextOptions<FfpmContext> options)
         : base(options)
     {
     }
