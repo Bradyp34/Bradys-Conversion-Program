@@ -36,6 +36,9 @@
             EyeMDServerNameTextBox = new TextBox();
             ResultsBox = new RichTextBox();
             progressBar1 = new ProgressBar();
+            FFPMCheckBox = new CheckBox();
+            EyeMDCheckBox = new CheckBox();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -95,6 +98,7 @@
             EyeMDServerNameTextBox.PlaceholderText = "EyeMD Server Name";
             EyeMDServerNameTextBox.Size = new Size(132, 23);
             EyeMDServerNameTextBox.TabIndex = 5;
+            EyeMDServerNameTextBox.Text = "EyeMD";
             // 
             // ResultsBox
             // 
@@ -111,12 +115,40 @@
             progressBar1.Size = new Size(408, 23);
             progressBar1.TabIndex = 8;
             // 
+            // FFPMCheckBox
+            // 
+            FFPMCheckBox.AutoSize = true;
+            FFPMCheckBox.Location = new Point(105, 99);
+            FFPMCheckBox.Name = "FFPMCheckBox";
+            FFPMCheckBox.Size = new Size(56, 19);
+            FFPMCheckBox.TabIndex = 9;
+            FFPMCheckBox.Text = "FFPM";
+            FFPMCheckBox.UseVisualStyleBackColor = true;
+            FFPMCheckBox.CheckedChanged += FFPMCheckBox_CheckedChanged;
+            // 
+            // EyeMDCheckBox
+            // 
+            EyeMDCheckBox.AutoSize = true;
+            EyeMDCheckBox.Location = new Point(252, 99);
+            EyeMDCheckBox.Name = "EyeMDCheckBox";
+            EyeMDCheckBox.Size = new Size(63, 19);
+            EyeMDCheckBox.TabIndex = 10;
+            EyeMDCheckBox.Text = "EyeMD";
+            EyeMDCheckBox.UseVisualStyleBackColor = true;
+            EyeMDCheckBox.CheckedChanged += EyeMDCheckBox_CheckedChanged;
+            // 
+            // backgroundWorker1
+            // 
+            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 254);
+            Controls.Add(EyeMDCheckBox);
+            Controls.Add(FFPMCheckBox);
             Controls.Add(progressBar1);
             Controls.Add(ResultsBox);
             Controls.Add(EyeMDDBTextBox);
@@ -128,6 +160,7 @@
             Controls.Add(DatabaseTextBox);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -144,5 +177,8 @@
         public RichTextBox ResultsBox;
         private RichTextBox richTextBox1;
         public ProgressBar progressBar1;
+        private CheckBox FFPMCheckBox;
+        private CheckBox EyeMDCheckBox;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
