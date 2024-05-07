@@ -255,6 +255,12 @@ namespace Brady_s_Conversion_Program
                     patientIsActive = isActive;
                 }
             }
+            bool? deceased = null;
+            if (patient.DeceasedFlag != null) {
+                if (bool.TryParse(patient.DeceasedFlag, out bool isDeceased)) {
+                    deceased = isDeceased;
+                }
+            }
             bool? consent = null;
             if (patient.Consent != null) {
                 if (bool.TryParse(patient.Consent, out bool hippaConsent)) {
@@ -283,8 +289,8 @@ namespace Brady_s_Conversion_Program
                 MaritialStatusId = maritalStatusInt,
                 TitleId = titleInt,
                 // this is apparently a bit, but i used bool and it's working. not sure how this works
-                IsActive = patientIsActive
-
+                IsActive = patientIsActive,
+                IsDeceased = deceased
             };
             ffpmDbContext.DmgPatients.Add(newPatient);
 
