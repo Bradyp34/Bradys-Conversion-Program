@@ -223,6 +223,52 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Patient ethnicity is null for patient with ID: " + patient.Id);
                 return;
             }
+            short? licenseShort = null;
+            if (patient.DriversLicenseState != null) {
+                if (short.TryParse(patient.DriversLicenseState, out short license)) {
+                    licenseShort = license;
+                }
+            }
+            short? race = null;
+            if (patient.PatientRace != null) {
+                if (short.TryParse(patient.PatientRace, out short raceInt)) {
+                    race = raceInt;
+                }
+            }
+            short? ethnicity = null;
+            string ethnicityString = "";
+            if (patient.PatientEthnicity != null) {
+                if (short.TryParse(patient.PatientEthnicity, out short ethnicityInt)) {
+                    ethnicity = ethnicityInt;
+                    ethnicityString = patient.PatientEthnicity;
+                }
+            }
+            short? medicareSecondary = null;
+            if (patient.MedicareSecondaryCode != null) {
+                if (short.TryParse(patient.MedicareSecondaryCode, out short medicareSecondaryInt)) {
+                    medicareSecondary = medicareSecondaryInt;
+                }
+            }
+            bool? patientIsActive = null;
+            if (patient.Active != null) {
+                if (bool.TryParse(patient.Active, out bool isActive)) {
+                    patientIsActive = isActive;
+                }
+            }
+            bool? consent = null;
+            if (patient.Consent != null) {
+                if (bool.TryParse(patient.Consent, out bool hippaConsent)) {
+                    consent = hippaConsent;
+                }
+            }
+            DateTime? consentDate = null;
+            if (patient.ConsentDate != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(dobString, dateFormats,
+                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    consentDate = tempDateTime;
+                }
+            }
 
             var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                 AccountNumber = patient.PatientAccountNumber,
@@ -236,6 +282,8 @@ namespace Brady_s_Conversion_Program
                 DateOfBirth = dob,
                 MaritialStatusId = maritalStatusInt,
                 TitleId = titleInt,
+                // this is apparently a bit, but i used bool and it's working. not sure how this works
+                IsActive = patientIsActive
 
             };
             ffpmDbContext.DmgPatients.Add(newPatient);
@@ -246,9 +294,36 @@ namespace Brady_s_Conversion_Program
             ffpmDbContext.MntRaces.Add(newRace);
 
             var newEthnicity = new Brady_s_Conversion_Program.ModelsA.MntEthnicity {
-                Ethnicity = patient.PatientEthnicity
+                Ethnicity = ethnicityString
             };
             ffpmDbContext.MntEthnicities.Add(newEthnicity);
+
+            var newContactInfo = new Brady_s_Conversion_Program.ModelsA.ContactInfo {
+                Email = patient.PatientEmail,
+            };
+            ffpmDbContext.ContactInfos.Add(newContactInfo);
+
+            var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
+                MedicareSecondarryCode = patient.MedicareSecondaryCode,
+                MedicareSecondaryDescription = patient.MedicareSecondaryNotes
+            };
+            ffpmDbContext.MntMedicareSecondaries.Add(newMedicareSecondary);
+
+            ffpmDbContext.SaveChanges();
+
+            var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                DriversLicenseNumber = patient.DriversLicense,
+                DriversLicenseStateId = licenseShort,
+                RaceId = race,
+                EthnicityId = ethnicity,
+                MedicareSecondaryId = newMedicareSecondary.MedicareSecondaryId,
+                MedicareSecondaryNotes = patient.MedicareSecondaryNotes,
+                HippaConsent = consent,
+                HippaConsentDate = consentDate
+            };
+            ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
+
+            
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FfpmContext ffpmDbContext, ILogger logger) {
