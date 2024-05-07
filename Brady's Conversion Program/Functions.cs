@@ -15,29 +15,32 @@ namespace Brady_s_Conversion_Program
 {
     public class Functions
     {
-        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection) {
+        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd) {
             try {
                 // Using block to ensure disposal of DbContexts
-                using (var sqlDbContext = new FoxfireConvContext(connection))
-                using (var convDbContext = new FfpmContext(FFPMConnection))
+                using (var convDbContext = new FoxfireConvContext(connection))
+                using (var ffpmDbContext = new FfpmContext(FFPMConnection))
                 using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                     // Start with FFPM only, do EyeMD later
 
-                    sqlDbContext.Database.OpenConnection();
+                    // Testing Connections
                     convDbContext.Database.OpenConnection();
-                    eyeMDDbContext.Database.OpenConnection();
+                    if (ffpm == true)
+                        ffpmDbContext.Database.OpenConnection();
+                    if (eyemd == true)
+                        eyeMDDbContext.Database.OpenConnection();
 
                     // Optionally perform a simple operation like a 'CanConnect' check
-                    if (!sqlDbContext.Database.CanConnect() ||
-                        !convDbContext.Database.CanConnect() ||
+                    if (!convDbContext.Database.CanConnect() ||
+                        !ffpmDbContext.Database.CanConnect() ||
                         !eyeMDDbContext.Database.CanConnect()) {
                         throw new InvalidOperationException("One or more database connections cannot be established.");
                     }
 
 
                     // Save changes if any modifications were made
-                    sqlDbContext.SaveChanges();
                     convDbContext.SaveChanges();
+                    ffpmDbContext.SaveChanges();
                     eyeMDDbContext.SaveChanges();
 
                     // EF Core automatically handles connection closing when DbContext is disposed
