@@ -6,8 +6,10 @@ namespace Brady_s_Conversion_Program.Models;
 
 public partial class FoxfireConvContext : DbContext
 {
-    public FoxfireConvContext()
+    private readonly string _connectionString;
+    public FoxfireConvContext(string connectionString)
     {
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     public FoxfireConvContext(DbContextOptions<FoxfireConvContext> options)
@@ -54,8 +56,7 @@ public partial class FoxfireConvContext : DbContext
     public virtual DbSet<SchedCode> SchedCodes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=FoxDevSql19;Database=Foxfire_Conv;Integrated Security=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

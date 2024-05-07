@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using static Brady_s_Conversion_Program.Form1;
 using System.Data.SqlClient;
+using Brady_s_Conversion_Program.Models;
 
 namespace Brady_s_Conversion_Program
 {
@@ -25,6 +26,7 @@ namespace Brady_s_Conversion_Program
 
         public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection) {
             try {
+
                 using (SqlConnection sqlConnection = new SqlConnection(connection)) {
                     using (SqlConnection convDatabase = new SqlConnection(FFPMConnection)) {
                         using (SqlConnection EyeMD = new SqlConnection(EyeMDConnection)) {
