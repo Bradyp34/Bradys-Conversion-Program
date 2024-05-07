@@ -7,6 +7,8 @@ using System.IO;
 using static Brady_s_Conversion_Program.Form1;
 using System.Data.SqlClient;
 using Brady_s_Conversion_Program.Models;
+using Brady_s_Conversion_Program.ModelsA;
+using Brady_s_Conversion_Program.ModelsB;
 
 namespace Brady_s_Conversion_Program
 {
@@ -26,31 +28,29 @@ namespace Brady_s_Conversion_Program
 
         public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection) {
             try {
+                // Using block to ensure disposal of DbContexts
+                using (var sqlDbContext = new FoxfireConvContext(connection))
+                using (var convDbContext = new FfpmContext(FFPMConnection))
+                using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                    // Perform your data operations here using EF Core
+                    // Example: querying, updating, inserting via the DbContexts
+                    // You might perform operations like:
+                    // var data = sqlDbContext.YourDbSet.Where(x => x.Condition).ToList();
 
-                using (SqlConnection sqlConnection = new SqlConnection(connection)) {
-                    using (SqlConnection convDatabase = new SqlConnection(FFPMConnection)) {
-                        using (SqlConnection EyeMD = new SqlConnection(EyeMDConnection)) {
-                            // Open the connection
-                            sqlConnection.Open();
-                            convDatabase.Open();
-                            EyeMD.Open();
+                    // Save changes if any modifications were made
+                    sqlDbContext.SaveChanges();
+                    convDbContext.SaveChanges();
+                    eyeMDDbContext.SaveChanges();
 
-                            // Perform your SQL operations here
-                            // For example, you can execute a SQL command using SqlCommand
-
-                            // Close the connection
-                            sqlConnection.Close();
-                            convDatabase.Close();
-                            EyeMD.Close();
-                        }   
-                    }
+                    // EF Core automatically handles connection closing when DbContext is disposed
                 }
             }
             catch (Exception e) {
                 return "Database Upload Failed.\n" + e + "\n";
             }
-            return "";
+            return "Operation Successful";
         }
+
 
 
         public static string ClearFiles() {
