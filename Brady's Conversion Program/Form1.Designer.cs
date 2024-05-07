@@ -34,6 +34,8 @@
             FFPMDataBaseTextBox = new TextBox();
             EyeMDDBTextBox = new TextBox();
             EyeMDServerNameTextBox = new TextBox();
+            ResultsBox = new RichTextBox();
+            progressBar1 = new ProgressBar();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -94,12 +96,29 @@
             EyeMDServerNameTextBox.Size = new Size(132, 23);
             EyeMDServerNameTextBox.TabIndex = 5;
             // 
+            // ResultsBox
+            // 
+            ResultsBox.Location = new Point(12, 128);
+            ResultsBox.Name = "ResultsBox";
+            ResultsBox.Size = new Size(408, 114);
+            ResultsBox.TabIndex = 7;
+            ResultsBox.Text = "";
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(12, 99);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(408, 23);
+            progressBar1.TabIndex = 8;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 100);
+            ClientSize = new Size(432, 254);
+            Controls.Add(progressBar1);
+            Controls.Add(ResultsBox);
             Controls.Add(EyeMDDBTextBox);
             Controls.Add(EyeMDServerNameTextBox);
             Controls.Add(FFPMDataBaseTextBox);
@@ -122,5 +141,8 @@
         public TextBox FFPMDataBaseTextBox;
         public TextBox EyeMDDBTextBox;
         public TextBox EyeMDServerNameTextBox;
+        public RichTextBox ResultsBox;
+        private RichTextBox richTextBox1;
+        public ProgressBar progressBar1;
     }
 }

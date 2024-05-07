@@ -9,33 +9,31 @@ using System.Data.SqlClient;
 using Brady_s_Conversion_Program.Models;
 using Brady_s_Conversion_Program.ModelsA;
 using Brady_s_Conversion_Program.ModelsB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Brady_s_Conversion_Program
 {
     public class Functions
     {
-        public static string UploadFile(string path) {
-            string fileName = Path.GetFileName(path);
-            string newPath = "UploadedFiles/" + fileName;
-            try {
-                File.Copy(path, "../../../../" + newPath);
-                return newPath;
-            }
-            catch (Exception e) {
-                return "File Copy Failed.\n" + e + "\n";
-            }
-        }
-
         public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection) {
             try {
                 // Using block to ensure disposal of DbContexts
                 using (var sqlDbContext = new FoxfireConvContext(connection))
                 using (var convDbContext = new FfpmContext(FFPMConnection))
                 using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                    // Perform your data operations here using EF Core
-                    // Example: querying, updating, inserting via the DbContexts
-                    // You might perform operations like:
-                    // var data = sqlDbContext.YourDbSet.Where(x => x.Condition).ToList();
+                    // Start with FFPM only, do EyeMD later
+
+                    sqlDbContext.Database.OpenConnection();
+                    convDbContext.Database.OpenConnection();
+                    eyeMDDbContext.Database.OpenConnection();
+
+                    // Optionally perform a simple operation like a 'CanConnect' check
+                    if (!sqlDbContext.Database.CanConnect() ||
+                        !convDbContext.Database.CanConnect() ||
+                        !eyeMDDbContext.Database.CanConnect()) {
+                        throw new InvalidOperationException("One or more database connections cannot be established.");
+                    }
+
 
                     // Save changes if any modifications were made
                     sqlDbContext.SaveChanges();
@@ -50,31 +48,5 @@ namespace Brady_s_Conversion_Program
             }
             return "Operation Successful";
         }
-
-
-
-        public static string ClearFiles() {
-            try {
-                foreach (string file in Directory.GetFiles("../../../../UploadedFiles/")) {
-                    File.Delete(file);
-                }
-
-                return "Files Cleared.\n";
-            } catch (Exception e) {
-                return "File Clear Failed.\n" + e + "\n";
-            }
-        }
-
-        public static string OpenDialogBox() {
-            OpenFileDialog dialog = new OpenFileDialog();
-            if (dialog.ShowDialog() == DialogResult.OK) {
-                string filePath = dialog.FileName;
-                return filePath;
-            }
-            else {
-                return "File Copy Failed.";
-            }
-        }
-
     }
 }
