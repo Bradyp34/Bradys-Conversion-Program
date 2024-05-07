@@ -196,6 +196,33 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Patient DOB is invalid or not in an expected format for patient with ID: " + patient.Id);
                 return;
             }
+            short? maritalStatusInt = null;
+            if (patient.PatientMaritalStatus != null) {
+                if (short.TryParse(patient.PatientMaritalStatus, out short maritalStatus)) {
+                    maritalStatusInt = maritalStatus;
+                }
+            }
+            short? titleInt = null;
+            if (patient.Title != null) {
+                if (short.TryParse(patient.Title, out short title)) {
+                    titleInt = title;
+                }
+            }
+            short? suffixInt = null;
+            if (patient.Suffix != null) {
+                if (short.TryParse(patient.Suffix, out short suffix)) {
+                    suffixInt = suffix;
+                }
+            }
+            short? genderInt = null;
+            if (patient.PatientSex != null) {
+                if (short.TryParse(patient.PatientSex, out short gender)) {
+                    genderInt = gender;
+                }
+            } else if (patient.PatientEthnicity == null) {
+                logger.Log("Patient ethnicity is null for patient with ID: " + patient.Id);
+                return;
+            }
 
             var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                 AccountNumber = patient.PatientAccountNumber,
@@ -207,9 +234,21 @@ namespace Brady_s_Conversion_Program
                 // ssn in what format? int only? no dash?
                 Ssn = patient.PatientSsn,
                 DateOfBirth = dob,
+                MaritialStatusId = maritalStatusInt,
+                TitleId = titleInt,
 
             };
             ffpmDbContext.DmgPatients.Add(newPatient);
+
+            var newRace = new Brady_s_Conversion_Program.ModelsA.MntRace {
+                Race = patient.PatientRace
+            };
+            ffpmDbContext.MntRaces.Add(newRace);
+
+            var newEthnicity = new Brady_s_Conversion_Program.ModelsA.MntEthnicity {
+                Ethnicity = patient.PatientEthnicity
+            };
+            ffpmDbContext.MntEthnicities.Add(newEthnicity);
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FfpmContext ffpmDbContext, ILogger logger) {
