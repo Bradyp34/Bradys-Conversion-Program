@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Brady_s_Conversion_Program
 {
@@ -275,6 +276,47 @@ namespace Brady_s_Conversion_Program
                     consentDate = tempDateTime;
                 }
             }
+            DateOnly? deceasedDate = null;
+            if (patient.DateOfDeath != null) {
+                DateOnly tempDateTime;
+                if (!DateOnly.TryParseExact(dobString, dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    deceasedDate = tempDateTime;
+                }
+            }
+            DateTime? lastExamDate = null;
+            if (patient.LastExamDate != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(dobString, dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    lastExamDate = tempDateTime;
+                }
+            }
+            if (patient.PatientEmail != null && patient.PatientEmail != "") {
+                string email = patient.PatientEmail;
+            }
+            bool isEmailValid = new EmailAddressAttribute().IsValid(patient.PatientEmail);
+            bool dontSendStatements = false;
+            bool emailStatements = false;
+            short? prefContact1 = null;
+            if (patient.PatientPreferredContact1 != null) {
+                if (short.TryParse(patient.PatientPreferredContact1, out short prefContact1Int)) {
+                    prefContact1 = prefContact1Int;
+                }
+            }
+            short? prefContact2 = null;
+            if (patient.PatientPreferredContact2 != null) {
+                if (short.TryParse(patient.PatientPreferredContact2, out short prefContact2Int)) {
+                    prefContact2 = prefContact2Int;
+                }
+            }
+            short? prefContact3 = null;
+            if (patient.PatientPreferredContact3 != null) {
+                if (short.TryParse(patient.PatientPreferredContact3, out short prefContact3Int)) {
+                    prefContact3 = prefContact3Int;
+                }
+            }
+            string preferredContactsNotes = patient.PatientPreferredContact1 + "; " + patient.PatientPreferredContact2 + "; " + patient.PatientPreferredContact3;
 
             var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                 AccountNumber = patient.PatientAccountNumber,
@@ -290,24 +332,46 @@ namespace Brady_s_Conversion_Program
                 TitleId = titleInt,
                 // this is apparently a bit, but i used bool and it's working. not sure how this works
                 IsActive = patientIsActive,
-                IsDeceased = deceased
+                IsDeceased = deceased,
+                DeceasedDate = deceasedDate, // everything below here is filler to allow the creation of the dmg patient
+                LastExamDate = lastExamDate,
+                PatientBalance = 0,
+                InsuranceBalance = 0,
+                OtherBalance = 0,
+                GenderId = genderInt,
+                SuffixId = suffixInt,
+                BalanceLastUpdatedDateTime = DateTime.Now, // This probably needs to be changed
+                EmailNotApplicable = isEmailValid,
+                DoNotSendStatements = dontSendStatements,
+                EmailStatements = emailStatements,
+                OpenEdgeCustomerId = "",
+                TextStatements = false
             };
             ffpmDbContext.DmgPatients.Add(newPatient);
+
+            ffpmDbContext.SaveChanges();
 
             var newRace = new Brady_s_Conversion_Program.ModelsA.MntRace {
                 Race = patient.PatientRace
             };
             ffpmDbContext.MntRaces.Add(newRace);
 
+            ffpmDbContext.SaveChanges();
+
             var newEthnicity = new Brady_s_Conversion_Program.ModelsA.MntEthnicity {
                 Ethnicity = ethnicityString
             };
             ffpmDbContext.MntEthnicities.Add(newEthnicity);
 
+            ffpmDbContext.SaveChanges();
+
             var newContactInfo = new Brady_s_Conversion_Program.ModelsA.ContactInfo {
                 Email = patient.PatientEmail,
+                LocationId = 0 // This is a placeholder value, no clue what locationID should be
             };
             ffpmDbContext.ContactInfos.Add(newContactInfo);
+
+            ffpmDbContext.SaveChanges();
 
             var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
                 MedicareSecondarryCode = patient.MedicareSecondaryCode,
@@ -318,6 +382,7 @@ namespace Brady_s_Conversion_Program
             ffpmDbContext.SaveChanges();
 
             var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                PatientId = newPatient.PatientId,
                 DriversLicenseNumber = patient.DriversLicense,
                 DriversLicenseStateId = licenseShort,
                 RaceId = race,
@@ -325,11 +390,15 @@ namespace Brady_s_Conversion_Program
                 MedicareSecondaryId = newMedicareSecondary.MedicareSecondaryId,
                 MedicareSecondaryNotes = patient.MedicareSecondaryNotes,
                 HippaConsent = consent,
-                HippaConsentDate = consentDate
+                HippaConsentDate = consentDate,
+                PreferredContactFirstId = prefContact1,
+                PreferredContactSecondId = prefContact2,
+                PreferredContactThirdId = prefContact3,
+                PreferredContactNotes = preferredContactsNotes
             };
             ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
 
-            
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FfpmContext ffpmDbContext, ILogger logger) {
