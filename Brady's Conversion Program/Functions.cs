@@ -75,88 +75,70 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Convert Patients
-            BatchProcessEntities(convDbContext.Patients.ToList(), PatientConvert, ffpmDbContext, logger);
+            // Assuming PatientConvert now returns a patientNum
+            foreach (var patient in convDbContext.Patients.ToList()) {
+                PatientConvert(patient, ffpmDbContext, logger);
+            }
 
-            // Convert AccountXrefs
-            BatchProcessEntities(convDbContext.AccountXrefs.ToList(), ConvertAccountXref, ffpmDbContext, logger);
+            // Directly call each conversion function with patientNum where applicable
+            foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
+                ConvertAccountXref(accountXref, ffpmDbContext, logger);
+            }
+            foreach (var address in convDbContext.Addresses.ToList()) {
+                ConvertAddress(address, ffpmDbContext, logger);
+            }
+            foreach (var appointment in convDbContext.Appointments.ToList()) {
+                ConvertAppointment(appointment, ffpmDbContext, logger);
+            }
+            foreach (var appointmentType in convDbContext.AppointmentTypes.ToList()) {
+                ConvertAppointmentType(appointmentType, ffpmDbContext, logger);
+            }
+            foreach (var employer in convDbContext.Employers.ToList()) {
+                ConvertEmployer(employer, ffpmDbContext, logger);
+            }
+            foreach (var insurance in convDbContext.Insurances.ToList()) {
+                ConvertInsurance(insurance, ffpmDbContext, logger);
+            }
+            foreach (var location in convDbContext.Locations.ToList()) {
+                ConvertLocation(location, ffpmDbContext, logger);
+            }
+            foreach (var name in convDbContext.Names.ToList()) {
+                ConvertName(name, ffpmDbContext, logger);
+            }
+            foreach (var patientAlert in convDbContext.PatientAlerts.ToList()) {
+                ConvertPatientAlert(patientAlert, ffpmDbContext, logger);
+            }
 
-            // Convert Addresses
-            BatchProcessEntities(convDbContext.Addresses.ToList(), ConvertAddress, ffpmDbContext, logger);
-
-            // Convert Appointments
-            BatchProcessEntities(convDbContext.Appointments.ToList(), ConvertAppointment, ffpmDbContext, logger);
-
-            // Convert AppointmentTypes
-            BatchProcessEntities(convDbContext.AppointmentTypes.ToList(), ConvertAppointmentType, ffpmDbContext, logger);
-
-            // Convert Employers
-            BatchProcessEntities(convDbContext.Employers.ToList(), ConvertEmployer, ffpmDbContext, logger);
-
-            // Convert Insurances
-            BatchProcessEntities(convDbContext.Insurances.ToList(), ConvertInsurance, ffpmDbContext, logger);
-
-            // Convert Locations
-            BatchProcessEntities(convDbContext.Locations.ToList(), ConvertLocation, ffpmDbContext, logger);
-
-            // Convert Names
-            BatchProcessEntities(convDbContext.Names.ToList(), ConvertName, ffpmDbContext, logger);
-
-            // Convert PatientAlerts
-            BatchProcessEntities(convDbContext.PatientAlerts.ToList(), ConvertPatientAlert, ffpmDbContext, logger);
-
-            // Convert PatientDocuments
-            BatchProcessEntities(convDbContext.PatientDocuments.ToList(), ConvertPatientDocument, ffpmDbContext, logger);
-
-            // Convert PatientInsurances
-            BatchProcessEntities(convDbContext.PatientInsurances.ToList(), ConvertPatientInsurance, ffpmDbContext, logger);
-
-            // Convert PatientNotes
-            BatchProcessEntities(convDbContext.PatientNotes.ToList(), ConvertPatientNote, ffpmDbContext, logger);
-
-            // Convert Phones
-            BatchProcessEntities(convDbContext.Phones.ToList(), ConvertPhone, ffpmDbContext, logger);
-
-            // Convert Providers
-            BatchProcessEntities(convDbContext.Providers.ToList(), ConvertProvider, ffpmDbContext, logger);
-
-            // Convert Recalls
-            BatchProcessEntities(convDbContext.Recalls.ToList(), ConvertRecall, ffpmDbContext, logger);
-
-            // Convert RecallTypes
-            BatchProcessEntities(convDbContext.RecallTypes.ToList(), ConvertRecallType, ffpmDbContext, logger);
-
-            // Convert Referrals
-            BatchProcessEntities(convDbContext.Referrals.ToList(), ConvertReferral, ffpmDbContext, logger);
-
-            // Convert SchedCodes
-            BatchProcessEntities(convDbContext.SchedCodes.ToList(), ConvertSchedCode, ffpmDbContext, logger);
-        }
-
-        public static void BatchProcessEntities<T>(IEnumerable<T> entities, Action<T, FfpmContext, ILogger> convertFunction, FfpmContext ffpmDbContext, ILogger logger) {
-            int batchSize = 100; // Define an appropriate batch size
-            int numberOfRecords = entities.Count();
-            int numberOfBatches = (numberOfRecords / batchSize) + (numberOfRecords % batchSize > 0 ? 1 : 0);
-
-            for (int batchNumber = 0; batchNumber < numberOfBatches; batchNumber++) {
-                var batch = entities.Skip(batchNumber * batchSize).Take(batchSize).ToList();
-
-                using (var transaction = ffpmDbContext.Database.BeginTransaction()) {
-                    try {
-                        foreach (var entity in batch) {
-                            convertFunction(entity, ffpmDbContext, logger);
-                        }
-
-                        ffpmDbContext.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception e) {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
+            // Additional entity conversions
+            foreach (var patientDocument in convDbContext.PatientDocuments.ToList()) {
+                ConvertPatientDocument(patientDocument, ffpmDbContext, logger);
+            }
+            foreach (var patientInsurance in convDbContext.PatientInsurances.ToList()) {
+                ConvertPatientInsurance(patientInsurance, ffpmDbContext, logger);
+            }
+            foreach (var patientNote in convDbContext.PatientNotes.ToList()) {
+                ConvertPatientNote(patientNote, ffpmDbContext, logger);
+            }
+            foreach (var phone in convDbContext.Phones.ToList()) {
+                ConvertPhone(phone, ffpmDbContext, logger);
+            }
+            foreach (var provider in convDbContext.Providers.ToList()) {
+                ConvertProvider(provider, ffpmDbContext, logger);
+            }
+            foreach (var recall in convDbContext.Recalls.ToList()) {
+                ConvertRecall(recall, ffpmDbContext, logger);
+            }
+            foreach (var recallType in convDbContext.RecallTypes.ToList()) {
+                ConvertRecallType(recallType, ffpmDbContext, logger);
+            }
+            foreach (var referral in convDbContext.Referrals.ToList()) {
+                ConvertReferral(referral, ffpmDbContext, logger);
+            }
+            foreach (var schedCode in convDbContext.SchedCodes.ToList()) {
+                ConvertSchedCode(schedCode, ffpmDbContext, logger);
             }
         }
+
 
         public static void PatientConvert(Models.Patient patient, FfpmContext ffpmDbContext, ILogger logger) {
             // Regular expression
@@ -351,6 +333,13 @@ namespace Brady_s_Conversion_Program
 
             ffpmDbContext.SaveChanges();
 
+            var newPatientAlerts = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
+                PatientId = newPatient.PatientId
+            };
+            ffpmDbContext.DmgPatientAlerts.Add(newPatientAlerts);
+
+            ffpmDbContext.SaveChanges();
+
             var newRace = new Brady_s_Conversion_Program.ModelsA.MntRace {
                 Race = patient.PatientRace
             };
@@ -367,7 +356,7 @@ namespace Brady_s_Conversion_Program
 
             var newContactInfo = new Brady_s_Conversion_Program.ModelsA.ContactInfo {
                 Email = patient.PatientEmail,
-                LocationId = 0 // This is a placeholder value, no clue what locationID should be
+                LocationId = 0 // This is a placeholder value, no clue what locationID should be, but this is how it connects
             };
             ffpmDbContext.ContactInfos.Add(newContactInfo);
 
@@ -385,8 +374,8 @@ namespace Brady_s_Conversion_Program
                 PatientId = newPatient.PatientId,
                 DriversLicenseNumber = patient.DriversLicense,
                 DriversLicenseStateId = licenseShort,
-                RaceId = race,
-                EthnicityId = ethnicity,
+                RaceId = newRace.RaceId,
+                EthnicityId = newEthnicity.EthnicityId,
                 MedicareSecondaryId = newMedicareSecondary.MedicareSecondaryId,
                 MedicareSecondaryNotes = patient.MedicareSecondaryNotes,
                 HippaConsent = consent,
@@ -399,6 +388,8 @@ namespace Brady_s_Conversion_Program
             ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
 
             ffpmDbContext.SaveChanges();
+
+            return;
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FfpmContext ffpmDbContext, ILogger logger) {
@@ -410,15 +401,14 @@ namespace Brady_s_Conversion_Program
 
         public static void ConvertAddress(Models.Address address, FfpmContext ffpmDbContext, ILogger logger) {
             // Existing logic for creating and adding a new Address
-            var newAddress = new Brady_s_Conversion_Program.ModelsA.Address {
-                // Map properties
+            var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
+                
             };
-            ffpmDbContext.Addresses.Add(newAddress);
+            ffpmDbContext.DmgPatientAddresses.Add(newAddress);
         }
 
         public static void ConvertAppointment(Models.Appointment appointment, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle appointment-related actions
-            logger.Log("Processing appointment: " + appointment.AppointmentId);
+            
             // No new entity creation, just process existing logic
         }
 
