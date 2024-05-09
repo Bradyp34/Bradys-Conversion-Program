@@ -399,9 +399,17 @@ namespace Brady_s_Conversion_Program
 
         public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // Existing logic for creating and adding a new Address
-            var patient = convDbContext.Patients.Find(address.Id);
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(address.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + address.Id);
+                return;
+            }
+            var ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+
             var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
-                // need to connect via patient id, but no way to do this with this setup, as we dont know anything
+                PatientId = ffpmPatient.PatientId, // a little complicated, but this should track
+
             };
             ffpmDbContext.DmgPatientAddresses.Add(newAddress);
         }
