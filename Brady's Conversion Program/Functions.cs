@@ -386,10 +386,7 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            var newAccountXref = new Brady_s_Conversion_Program.ModelsA.AccountXref {
-                // Map properties
-            };
-            ffpmDbContext.AccountXrefs.Add(newAccountXref);
+            // currently not implementing renumbering
         }
 
         public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -535,8 +532,29 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertPhone(Models.Phone phone, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle phone-related actions
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(phone.Id);
+            var ffpmAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for phone with ID: " + phone.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for phone with ID: " + phone.Id);
+                return;
+            }
+            DmgPatientAddress address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
             
+            address.CellPhone = phone.PhoneNumber;
+            address.Extension = phone.Extension;
+            /* is this all? there is also:
+             * primary_id
+             * primary file
+             * type of phone
+             * note
+             * in dbo.Phone that is not used
+             */
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
