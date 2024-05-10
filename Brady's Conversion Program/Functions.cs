@@ -79,8 +79,6 @@ namespace Brady_s_Conversion_Program
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext , ffpmDbContext, logger);
             }
-
-            // Directly call each conversion function with patientNum where applicable
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext , ffpmDbContext, logger);
             }
@@ -297,6 +295,7 @@ namespace Brady_s_Conversion_Program
                 }
             }
             string preferredContactsNotes = patient.PatientPreferredContact1 + "; " + patient.PatientPreferredContact2 + "; " + patient.PatientPreferredContact3;
+            DateTime minDate = DateTime.Parse("1/1/1900");
 
             var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                 AccountNumber = patient.PatientAccountNumber,
@@ -305,7 +304,6 @@ namespace Brady_s_Conversion_Program
                 MiddleName = patient.PatientMiddle,
                 FirstName = patient.PatientFirst,
                 PreferredName = patient.PatientPreferredName,
-                // ssn in what format? int only? no dash?
                 Ssn = patient.PatientSsn,
                 DateOfBirth = dob,
                 MaritialStatusId = maritalStatusInt,
@@ -320,7 +318,7 @@ namespace Brady_s_Conversion_Program
                 OtherBalance = 0,
                 GenderId = genderInt,
                 SuffixId = suffixInt,
-                BalanceLastUpdatedDateTime = DateTime.Now, // This probably needs to be changed
+                BalanceLastUpdatedDateTime = minDate, // This probably needs to be changed
                 EmailNotApplicable = isEmailValid,
                 DoNotSendStatements = dontSendStatements,
                 EmailStatements = emailStatements,
@@ -329,8 +327,6 @@ namespace Brady_s_Conversion_Program
                 LocationId = 0
             }; // connected
             ffpmDbContext.DmgPatients.Add(newPatient);
-
-            newPatient.LocationId = (int)newPatient.PatientId; // this is placeholder until I do dbo.locations
 
             ffpmDbContext.SaveChanges();
 
@@ -355,13 +351,8 @@ namespace Brady_s_Conversion_Program
 
             ffpmDbContext.SaveChanges();
 
-            var newContactInfo = new Brady_s_Conversion_Program.ModelsA.ContactInfo {
-                Email = patient.PatientEmail,
-                LocationId = newPatient.LocationId
-            }; // not connected
-            ffpmDbContext.ContactInfos.Add(newContactInfo);
+            // new address here
 
-            ffpmDbContext.SaveChanges();
 
             var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
                 MedicareSecondarryCode = patient.MedicareSecondaryCode,
@@ -409,7 +400,7 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Patient not found for address with ID: " + address.Id);
                 return;
             }
-            var ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
             if (ffpmPatient == null) {
                 logger.Log("Patient not found for address with ID: " + address.Id);
                 return;
@@ -434,22 +425,29 @@ namespace Brady_s_Conversion_Program
             } else {
                 zipCode = address.Zip;
             }
+            string? baseZipCode = null;
+            string? zipExtension = null;
+
             if (zipCode != null) {
                 Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
                 Match match = zipRegex.Match(zipCode);
                 if (match.Success) {
-                    // Check if there is a 9-digit format capture
-                    if (!string.IsNullOrEmpty(match.Groups[2].Value)) {
-                        // If there is a 4-digit extension, return the full 9-digit format
-                        zipCode = match.Groups[1].Value + "-" + match.Groups[2].Value;
-                    }
-                    else {
-                        // Otherwise, return just the 5-digit base
-                        zipCode = match.Groups[1].Value;
-                    }
+                    // Always assign the 5-digit base zip code
+                    baseZipCode = match.Groups[1].Value;
+
+                    // Assign the 4-digit extension if present, otherwise leave it as null
+                    zipExtension = !string.IsNullOrEmpty(match.Groups[2].Value) ? match.Groups[2].Value : null;
                 }
             }
 
+            // You can now use baseZipCode and zipExtension as needed, for example:
+            Console.WriteLine($"Base Zip Code: {baseZipCode}");
+            if (zipExtension != null) {
+                Console.WriteLine($"Zip Extension: {zipExtension}");
+            }
+            else {
+                Console.WriteLine("No Zip Extension provided.");
+            }
 
             var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
                 PatientId = ffpmPatient.PatientId, // a little complicated, but this should track
@@ -458,9 +456,26 @@ namespace Brady_s_Conversion_Program
                 City = address.City,
                 StateId = ffpmPatientAdditional.DriversLicenseStateId,
                 Zip = zipCode,
-
+                ZipExt = zipExtension,
+                IsActive = true,
+                IsPrimary = true,
+                // Need to connect Email via location ID to the contactinfo table
+                Email = ConvPatient.PatientEmail,
+                Notes = address.Note
             };
-            ffpmDbContext.DmgPatientAddresses.Add(newAddress);
+            ffpmDbContext.DmgPatientAddresses.Add(newAddress); // I think I will change this behavior to create the address first
+                                                               // when creating the dmg patient, then add details down here later.
+                                                               // This means I will have to change this to update instead of new
+            /* Not using:
+             * primary_id
+             * primary file
+             * type of address
+             * from conv address. from patient address:
+             * is preferred
+             * is emergency contact address
+             * is alternate address
+             */
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {

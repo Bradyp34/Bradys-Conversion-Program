@@ -98,7 +98,6 @@
             EyeMDServerNameTextBox.PlaceholderText = "EyeMD Server Name";
             EyeMDServerNameTextBox.Size = new Size(132, 23);
             EyeMDServerNameTextBox.TabIndex = 5;
-            EyeMDServerNameTextBox.Text = "EyeMD";
             // 
             // ResultsBox
             // 
