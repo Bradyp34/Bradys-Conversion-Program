@@ -618,7 +618,6 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-
             var newPatientAlert = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
                 PatientId = ffpmPatient.PatientId,
                 AlertMessage = patientAlert.AlertMessage,
@@ -635,11 +634,61 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Existing logic for creating and adding a new PatientDocument
-            var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
-                // Map properties
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(patientDocument.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientDocument.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientDocument.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            short? imageType = null;
+            if (patientDocument.DocumentImageType != null) {
+                if (short.TryParse(patientDocument.DocumentImageType, out short type)) {
+                    imageType = type;
+                }
+            }
+            string[] dateFormats = new string[] {
+                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+                "ddMMMyyyy", "MMMddyyyy",
+                "dd MMM, yyyy", "MMM dd, yyyy"
             };
+            DateTime? dateDocument = null;
+            if (patientDocument.Date != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(patientDocument.Date, dateFormats,
+                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    dateDocument = tempDateTime;
+                }
+            }
+
+            var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
+                PatientId = ffpmPatient.PatientId,
+                DocumentType = imageType,
+                DocumentRemarks = patientDocument.DocumentNotes,
+                AddedDate = dateDocument,
+                DocumentName = patientDocument.DocumentDescription,
+                DocumentLocation = patientDocument.FilePathName
+            };
+            // not using some from patient document:
+            // insurance company
             ffpmDbContext.ImgPatientDocuments.Add(newPatientDocument);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
