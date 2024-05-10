@@ -331,13 +331,6 @@ namespace Brady_s_Conversion_Program
 
             ffpmDbContext.SaveChanges();
 
-            var newPatientAlerts = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
-                PatientId = newPatient.PatientId
-            }; // connected
-            ffpmDbContext.DmgPatientAlerts.Add(newPatientAlerts);
-
-            ffpmDbContext.SaveChanges();
-
             var newRace = new Brady_s_Conversion_Program.ModelsA.MntRace {
                 Race = patient.PatientRace
             };// connected
