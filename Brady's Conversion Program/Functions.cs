@@ -508,25 +508,137 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(insurance.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + insurance.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + insurance.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            int? companyCode = null;
+            if (insurance.InsCompanyCode != null) {
+                if (int.TryParse(insurance.InsCompanyCode, out int code)) {
+                    companyCode = code;
+                }
+            }
+
+            var newPatientInsurance = new DmgPatientInsurance {
+                PatientId = ffpmPatient.PatientId,
+                PlanId = 0, // definitely incorrect, will need to change later
+                IsMedicalInsurance = false, // just not null
+                IsVisionInsurance = false, // also just not null
+                IsAdditionalInsurance = false, // also just not null
+                InsuranceCompanyId = companyCode
+
+            };
+            // insurance policy type is bool? what does that even mean
+            // many fields are not used in the insurance table
+            ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Existing logic for creating and adding a new Location
-            var newLocation = new Brady_s_Conversion_Program.ModelsA.Location {
-                // Map properties
-            };
-            ffpmDbContext.Locations.Add(newLocation);
+            // Seemingly not part of patient demographics, will have to return later
         }
 
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle name-related actions
-            
+            // I can only assume that this is a blueprint for people, such as emergency contact
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle patient alert actions
-            
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(patientAlert.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientAlert.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientAlert.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            short? priorityID = null;
+            if (patientAlert.PriorityId != null) {
+                if (short.TryParse(patientAlert.PriorityId, out short priority)) {
+                    priorityID = priority;
+                }
+            }
+            string[] dateFormats = new string[] {
+                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+                "ddMMMyyyy", "MMMddyyyy",
+                "dd MMM, yyyy", "MMM dd, yyyy"
+            };
+            DateTime? alertDate = null;
+            if (patientAlert.AlertCreatedDate != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    alertDate = tempDateTime;
+                }
+            }
+            DateTime? alertEndDate = null;
+            if (patientAlert.AlertExpiryDate != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
+                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    alertEndDate = tempDateTime;
+                }
+            }
+            long? alertCreatedBy = null;
+            if (patientAlert.AlertCreatedBy != null) {
+                if (long.TryParse(patientAlert.AlertCreatedBy, out long createdBy)) {
+                    alertCreatedBy = createdBy;
+                }
+            }
+            bool? isActive = null;
+            if (patientAlert.IsActive != null) {
+                if (bool.TryParse(patientAlert.IsActive, out bool active)) {
+                    isActive = active;
+                }
+            }
+            bool? alertFlash = null;
+            if (patientAlert.AlertFlash != null) {
+                if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
+                    alertFlash = flash;
+                }
+            }
+
+
+            var newPatientAlert = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
+                PatientId = ffpmPatient.PatientId,
+                AlertMessage = patientAlert.AlertMessage,
+                PriorityId = priorityID,
+                AlertCreatedDate = alertDate,
+                AlertCreatedBy = alertCreatedBy,
+                AlertExpiryDate = alertEndDate,
+                IsActive = isActive,
+                AlertFlash = alertFlash
+            };
+            ffpmDbContext.DmgPatientAlerts.Add(newPatientAlert);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
