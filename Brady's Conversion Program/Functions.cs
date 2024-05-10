@@ -325,9 +325,12 @@ namespace Brady_s_Conversion_Program
                 DoNotSendStatements = dontSendStatements,
                 EmailStatements = emailStatements,
                 OpenEdgeCustomerId = "",
-                TextStatements = false
+                TextStatements = false,
+                LocationId = 0
             }; // connected
             ffpmDbContext.DmgPatients.Add(newPatient);
+
+            newPatient.LocationId = (int)newPatient.PatientId; // this is placeholder until I do dbo.locations
 
             ffpmDbContext.SaveChanges();
 
@@ -354,7 +357,7 @@ namespace Brady_s_Conversion_Program
 
             var newContactInfo = new Brady_s_Conversion_Program.ModelsA.ContactInfo {
                 Email = patient.PatientEmail,
-                LocationId = 0 // This is a placeholder value, no clue what locationID should be, but this is how it connects
+                LocationId = newPatient.LocationId
             }; // not connected
             ffpmDbContext.ContactInfos.Add(newContactInfo);
 
@@ -381,7 +384,8 @@ namespace Brady_s_Conversion_Program
                 PreferredContactFirstId = prefContact1,
                 PreferredContactSecondId = prefContact2,
                 PreferredContactThirdId = prefContact3,
-                PreferredContactNotes = preferredContactsNotes
+                PreferredContactNotes = preferredContactsNotes,
+                DefaultLocationId = newPatient.LocationId
             };
             ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
 
@@ -406,9 +410,54 @@ namespace Brady_s_Conversion_Program
                 return;
             }
             var ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + address.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            if (ffpmPatientAdditional == null) {
+                logger.Log("Patient not found for address with ID: " + address.Id);
+                return;
+            }
+            string? zipCode = null;
+            if (address.Zip == null) {
+                if (address.Zip4 == null) {
+                    zipCode = null;
+                } else {
+                    zipCode = address.Zip4;
+                }
+            } else {
+                zipCode = address.Zip;
+            }
+            if (zipCode != null) {
+                Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
+                Match match = zipRegex.Match(zipCode);
+                if (match.Success) {
+                    // Check if there is a 9-digit format capture
+                    if (!string.IsNullOrEmpty(match.Groups[2].Value)) {
+                        // If there is a 4-digit extension, return the full 9-digit format
+                        zipCode = match.Groups[1].Value + "-" + match.Groups[2].Value;
+                    }
+                    else {
+                        // Otherwise, return just the 5-digit base
+                        zipCode = match.Groups[1].Value;
+                    }
+                }
+            }
+
 
             var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
                 PatientId = ffpmPatient.PatientId, // a little complicated, but this should track
+                Address1 = address.Address1,
+                Address2 = address.Address2,
+                City = address.City,
+                StateId = ffpmPatientAdditional.DriversLicenseStateId,
+                Zip = zipCode,
 
             };
             ffpmDbContext.DmgPatientAddresses.Add(newAddress);
