@@ -14,6 +14,7 @@ using Microsoft.Identity.Client;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace Brady_s_Conversion_Program
 {
@@ -476,22 +477,37 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            
-            // No new entity creation, just process existing logic
+            // Where is this supposed to go?
         }
 
         public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle appointment type actions
-            
+            // Same as above
         }
 
         public static void ConvertEmployer(Models.Employer employer, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle employer-related actions
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(employer.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + employer.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + employer.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            ffpmPatientAdditional.EmployerName = employer.EmployerName;
             
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle insurance-related actions
             
         }
 
@@ -555,6 +571,8 @@ namespace Brady_s_Conversion_Program
              * note
              * in dbo.Phone that is not used
              */
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
