@@ -699,7 +699,25 @@ namespace Brady_s_Conversion_Program
 
         public static void ConvertPatientNote(Models.PatientNote patientNote, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // Log or handle patient note actions
-            
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(patientNote.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientNote.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientNote.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+
+            // Where should this even go? No tables seem to have a field for it
         }
 
         public static void ConvertPhone(Models.Phone phone, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
