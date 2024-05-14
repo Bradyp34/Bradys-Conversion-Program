@@ -547,6 +547,7 @@ namespace Brady_s_Conversion_Program
 
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // I can only assume that this is a blueprint for people, such as emergency contact
+            // Everything here can be found in the patient table, so I am not sure what to do with this
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -709,6 +710,14 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Patient not found for phone with ID: " + phone.Id);
                 return;
             }
+            if (ffpmPatients == null) {
+                logger.Log("Patient not found for phone with ID: " + phone.Id);
+                return;
+            }
+            if (ffpmAddresses == null) {
+                logger.Log("Patient not found for phone with ID: " + phone.Id);
+                return;
+            }
             DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
             if (ffpmPatient == null) {
                 logger.Log("Patient not found for phone with ID: " + phone.Id);
@@ -730,14 +739,12 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle provider-related actions
-            logger.Log("Processing provider: " + provider.ProviderId);
+            
             // No new entity creation, just process existing logic
         }
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle recall-related actions
-            logger.Log("Processing recall: " + recall.RecallId);
+            
             // No new entity creation, just process existing logic
         }
 
@@ -747,8 +754,7 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertReferral(Models.Referral referral, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle referral-related actions
-            logger.Log("Processing referral: " + referral.ReferralId);
+            
             // No new entity creation, just process existing logic
         }
 
@@ -758,8 +764,7 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertEyeMD(FoxfireConvContext convDbContext, EyeMdContext eyeMDDbContext, ILogger logger) {
-            // Log or handle EyeMD conversion
-            logger.Log("Starting EyeMD conversion");
+            
             // EyeMD conversion logic here
         }
 
