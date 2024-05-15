@@ -37,7 +37,7 @@ namespace Brady_s_Conversion_Program
             }
         }
 
-        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd) {
+        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd, bool newFfpm, bool newEyemd) {
             try {
                 // have log file ready to record failings and issues
                 using (StreamWriter sw = new StreamWriter("../../../../LogFiles/log.txt")) {
@@ -47,9 +47,11 @@ namespace Brady_s_Conversion_Program
                     using (var convDbContext = new FoxfireConvContext(connection)) {
                         // Start with FFPM only, do EyeMD later
 
-                        // Testing Connections
                         convDbContext.Database.OpenConnection();
                         if (ffpm == true) {
+                            if (newFfpm) {
+                                new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                            }
                             using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                                 ffpmDbContext.Database.OpenConnection();
                                 ConvertFFPM(convDbContext, ffpmDbContext, logger);
@@ -57,6 +59,9 @@ namespace Brady_s_Conversion_Program
                             }
                         }
                         if (eyemd == true) {
+                            if (newEyemd) {
+                                new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                            }
                             using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                                 eyeMDDbContext.Database.OpenConnection();
                                 ConvertEyeMD(convDbContext, eyeMDDbContext, logger);

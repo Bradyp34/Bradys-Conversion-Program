@@ -39,6 +39,8 @@
             FFPMCheckBox = new CheckBox();
             EyeMDCheckBox = new CheckBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            FFPMNewDBCheckBox = new CheckBox();
+            EyeMDNewDBCheckBox = new CheckBox();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -140,12 +142,34 @@
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
+            // FFPMNewDBCheckBox
+            // 
+            FFPMNewDBCheckBox.AutoSize = true;
+            FFPMNewDBCheckBox.Location = new Point(167, 99);
+            FFPMNewDBCheckBox.Name = "FFPMNewDBCheckBox";
+            FFPMNewDBCheckBox.Size = new Size(65, 19);
+            FFPMNewDBCheckBox.TabIndex = 11;
+            FFPMNewDBCheckBox.Text = "NewDB";
+            FFPMNewDBCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // EyeMDNewDBCheckBox
+            // 
+            EyeMDNewDBCheckBox.AutoSize = true;
+            EyeMDNewDBCheckBox.Location = new Point(321, 99);
+            EyeMDNewDBCheckBox.Name = "EyeMDNewDBCheckBox";
+            EyeMDNewDBCheckBox.Size = new Size(65, 19);
+            EyeMDNewDBCheckBox.TabIndex = 12;
+            EyeMDNewDBCheckBox.Text = "NewDB";
+            EyeMDNewDBCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 254);
+            Controls.Add(EyeMDNewDBCheckBox);
+            Controls.Add(FFPMNewDBCheckBox);
             Controls.Add(EyeMDCheckBox);
             Controls.Add(FFPMCheckBox);
             Controls.Add(progressBar1);
@@ -179,5 +203,7 @@
         private CheckBox FFPMCheckBox;
         private CheckBox EyeMDCheckBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private CheckBox FFPMNewDBCheckBox;
+        private CheckBox EyeMDNewDBCheckBox;
     }
 }

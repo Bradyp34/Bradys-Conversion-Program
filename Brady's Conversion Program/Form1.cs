@@ -43,17 +43,19 @@ namespace Brady_s_Conversion_Program
             string connectionString = "Server=" + ServerTextBox.Text + ";Database=" + DatabaseTextBox.Text + ";Integrated Security=True";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True";
-            ResultsBox.Text = Functions.ConvertToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMCheckBox.Checked, EyeMDCheckBox.Checked);
+            ResultsBox.Text = Functions.ConvertToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMCheckBox.Checked, EyeMDCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked);
         }
 
         private void FFPMCheckBox_CheckedChanged(object sender, EventArgs e) {
             if (FFPMCheckBox.Checked) {
                 FFPMServerTextBox.Show();
                 FFPMDataBaseTextBox.Show();
+                FFPMNewDBCheckBox.Show();
             }
             else {
                 FFPMServerTextBox.Hide();
                 FFPMDataBaseTextBox.Hide();
+                FFPMNewDBCheckBox.Hide();
             }
         }
 
@@ -61,10 +63,12 @@ namespace Brady_s_Conversion_Program
             if (EyeMDCheckBox.Checked) {
                 EyeMDServerNameTextBox.Show();
                 EyeMDDBTextBox.Show();
+                EyeMDNewDBCheckBox.Show();
             }
             else {
                 EyeMDServerNameTextBox.Hide();
                 EyeMDDBTextBox.Hide();
+                EyeMDNewDBCheckBox.Hide();
             }
         }
     }
