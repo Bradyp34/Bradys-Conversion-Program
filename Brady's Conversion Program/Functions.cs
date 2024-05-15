@@ -44,26 +44,28 @@ namespace Brady_s_Conversion_Program
                     ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
                     // Using block to ensure disposal of DbContexts
-                    using (var convDbContext = new FoxfireConvContext(connection))
-                    using (var ffpmDbContext = new FfpmContext(FFPMConnection))
-                    using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                    using (var convDbContext = new FoxfireConvContext(connection)) {
                         // Start with FFPM only, do EyeMD later
 
                         // Testing Connections
                         convDbContext.Database.OpenConnection();
-                        if (ffpm == true)
-                            ffpmDbContext.Database.OpenConnection();
-                        if (eyemd == true)
-                            eyeMDDbContext.Database.OpenConnection();
-
                         if (ffpm == true) {
-                            ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                            using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                                ffpmDbContext.Database.OpenConnection();
+                                ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                                ffpmDbContext.SaveChanges();
+                            }
+                        }
+                        if (eyemd == true) {
+                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                                eyeMDDbContext.Database.OpenConnection();
+                                ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
+                                eyeMDDbContext.SaveChanges();
+                            }
                         }
 
                         // Save changes if any modifications were made
                         convDbContext.SaveChanges();
-                        ffpmDbContext.SaveChanges();
-                        eyeMDDbContext.SaveChanges();
 
                         // EF Core automatically handles connection closing when DbContext is disposed
                     }
@@ -757,13 +759,47 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            
-            // No new entity creation, just process existing logic
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(provider.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + provider.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + provider.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+
+            // Again, not sure where to go with this
         }
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            
-            // No new entity creation, just process existing logic
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(recall.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + recall.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + recall.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+
+            // This seems to be for scheduling
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
