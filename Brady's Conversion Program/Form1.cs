@@ -25,6 +25,8 @@ namespace Brady_s_Conversion_Program
             }
             FFPMCheckBox.Hide();
             EyeMDCheckBox.Hide();
+            FFPMNewDBCheckBox.Hide();
+            EyeMDNewDBCheckBox.Hide();
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
         }
@@ -35,15 +37,20 @@ namespace Brady_s_Conversion_Program
             FFPMDataBaseTextBox.Hide();
             EyeMDServerNameTextBox.Hide();
             EyeMDDBTextBox.Hide();
+            FFPMNewDBCheckBox.Hide();
+            EyeMDNewDBCheckBox.Hide();
             FFPMCheckBox.Show();
             EyeMDCheckBox.Show();
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) {
-            string connectionString = "Server=" + ServerTextBox.Text + ";Database=" + DatabaseTextBox.Text + ";Integrated Security=True";
-            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True";
-            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True";
-            ResultsBox.Text = Functions.ConvertToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMCheckBox.Checked, EyeMDCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked);
+            string connectionString = "Server=" + ServerTextBox.Text + ";Database=" + DatabaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
+            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
+            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
+            string result = Functions.ConvertToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMCheckBox.Checked, EyeMDCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked);
+            ResultsBox.Invoke((MethodInvoker)delegate {
+                ResultsBox.Text = result;
+            });
         }
 
         private void FFPMCheckBox_CheckedChanged(object sender, EventArgs e) {
