@@ -185,43 +185,97 @@ namespace Brady_s_Conversion_Program
             }
             short? maritalStatusInt = null;
             if (patient.PatientMaritalStatus != null) {
-                if (short.TryParse(patient.PatientMaritalStatus, out short maritalStatus)) {
-                    maritalStatusInt = maritalStatus;
+                switch (patient.PatientMaritalStatus.ToLower()) {
+                    case "married":
+                        maritalStatusInt = 1;
+                        break;
+                    case "single":
+                        maritalStatusInt = 2;
+                        break;
+                    case "divorced":
+                        maritalStatusInt = 3;
+                        break;
+                    case "widowed":
+                        maritalStatusInt = 4;
+                        break;
                 }
             }
+
             short? titleInt = null;
             if (patient.Title != null) {
-                if (short.TryParse(patient.Title, out short title)) {
-                    titleInt = title;
+                switch (patient.Title.ToLower()) {
+                    case "mr":
+                    case "mr.":
+                        titleInt = 1;
+                        break;
+                    case "mrs":
+                    case "mrs.":
+                        titleInt = 2;
+                        break;
+                    case "ms":
+                    case "ms.":
+                        titleInt = 3;
+                        break;
+                    case "miss":
+                        titleInt = 4;
+                        break;
                 }
             }
+
             short? suffixInt = null;
             if (patient.Suffix != null) {
-                if (short.TryParse(patient.Suffix, out short suffix)) {
-                    suffixInt = suffix;
+                switch (patient.Suffix.ToLower()) {
+                    case "jr":
+                    case "jr.":
+                        suffixInt = 1;
+                        break;
+                    case "sr":
+                    case "sr.":
+                        suffixInt = 2;
+                        break;
+                    case "ii":
+                        suffixInt = 3;
+                        break;
+                    case "iii":
+                        suffixInt = 4;
+                        break;
+                    case "iv":
+                        suffixInt = 5;
+                        break;
+                    case "v":
+                        suffixInt = 6;
+                        break;
                 }
             }
+
             short? genderInt = null;
             if (patient.PatientSex != null) {
-                if (short.TryParse(patient.PatientSex, out short gender)) {
-                    genderInt = gender;
-                }
-            } else if (patient.PatientEthnicity == null) {
-                logger.Log("Patient ethnicity is null for patient with ID: " + patient.Id);
-                return;
+                genderInt = patient.PatientSex.ToLower() == "m" ? (short)1 : (short)2;
             }
+
             short? licenseShort = null;
             if (patient.DriversLicenseState != null) {
-                if (short.TryParse(patient.DriversLicenseState, out short license)) {
-                    licenseShort = license;
+                switch (patient.DriversLicenseState.ToUpper()) {
+                    case "NY":
+                        licenseShort = 1;
+                        break;
+                    case "CA":
+                        licenseShort = 2;
+                        break;
+                    case "TX":
+                        licenseShort = 3;
+                        break;
+                        // Add more states as needed
                 }
             }
+
             short? race = null;
             if (patient.PatientRace != null) {
                 if (short.TryParse(patient.PatientRace, out short raceInt)) {
                     race = raceInt;
                 }
             }
+
             short? ethnicity = null;
             string ethnicityString = "";
             if (patient.PatientEthnicity != null) {
@@ -230,30 +284,35 @@ namespace Brady_s_Conversion_Program
                     ethnicityString = patient.PatientEthnicity;
                 }
             }
+
             short? medicareSecondary = null;
             if (patient.MedicareSecondaryCode != null) {
-                if (short.TryParse(patient.MedicareSecondaryCode, out short medicareSecondaryInt)) {
-                    medicareSecondary = medicareSecondaryInt;
+                switch (patient.MedicareSecondaryCode.ToUpper()) {
+                    case "DISABILITY":
+                        medicareSecondary = 1;
+                        break;
+                    case "AGED":
+                        medicareSecondary = 2;
+                        break;
+                        // Add more secondary codes as needed
                 }
             }
+
             bool? patientIsActive = null;
             if (patient.Active != null) {
-                if (bool.TryParse(patient.Active, out bool isActive)) {
-                    patientIsActive = isActive;
-                }
+                patientIsActive = patient.Active.ToUpper() == "YES" ? true : false;
             }
+
             bool? deceased = null;
             if (patient.DeceasedFlag != null) {
-                if (bool.TryParse(patient.DeceasedFlag, out bool isDeceased)) {
-                    deceased = isDeceased;
-                }
+                deceased = patient.DeceasedFlag.ToUpper() == "YES" ? true : false;
             }
+
             bool? consent = null;
             if (patient.Consent != null) {
-                if (bool.TryParse(patient.Consent, out bool hippaConsent)) {
-                    consent = hippaConsent;
-                }
+                consent = patient.Consent.ToUpper() == "YES" ? true : false;
             }
+
             DateTime? consentDate = null;
             if (patient.ConsentDate != null) {
                 DateTime tempDateTime;
@@ -446,6 +505,22 @@ namespace Brady_s_Conversion_Program
             else {
                 Console.WriteLine("No Zip Extension provided.");
             }
+            bool isPrimary = false;
+            bool isAlternate = false;
+            bool isActive = false;
+            bool isEmergency = false;
+            bool isPreferred = false;
+            if (address.TypeOfAddress == "primary" || address.TypeOfAddress == "Primary") {
+                isPrimary = true;
+                isActive = true;
+                isPreferred = true;
+            } else if (address.TypeOfAddress == "alternate" || address.TypeOfAddress == "Alternate") {
+                isAlternate = true;
+                isActive = true;
+            } else if (address.TypeOfAddress == "emergency" || address.TypeOfAddress == "Emergency") {
+                isEmergency = true;
+                isActive = true;
+            }
 
             var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
                 PatientId = ffpmPatient.PatientId, // a little complicated, but this should track
@@ -455,11 +530,14 @@ namespace Brady_s_Conversion_Program
                 StateId = ffpmPatientAdditional.DriversLicenseStateId,
                 Zip = zipCode,
                 ZipExt = zipExtension,
-                IsActive = true,
-                IsPrimary = true,
                 // Need to connect Email via location ID to the contactinfo table
                 Email = ConvPatient.PatientEmail,
-                Notes = address.Note
+                Notes = address.Note,
+                IsPrimary = isPrimary,
+                IsActive = isActive,
+                IsPreferred = isPreferred,
+                IsEmergencyContactAddress = isEmergency,
+                IsAlternateAddress = isAlternate
             };
             ffpmDbContext.DmgPatientAddresses.Add(newAddress); // I think I will change this behavior to create the address first
                                                                // when creating the dmg patient, then add details down here later.
@@ -468,7 +546,8 @@ namespace Brady_s_Conversion_Program
              * primary_id
              * primary file
              * type of address
-             * from conv address. from patient address:
+             * from conv address. 
+             * from patient address:
              * is preferred
              * is emergency contact address
              * is alternate address
@@ -553,8 +632,25 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // I can only assume that this is a blueprint for people, such as emergency contact
-            // Everything here can be found in the patient table, so I am not sure what to do with this
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(name.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + name.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + name.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+
+            // use the relationship varchar to determine where to update
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
