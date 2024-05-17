@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Brady_s_Conversion_Program
 {
@@ -285,17 +286,9 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-            short? medicareSecondary = null;
+            string? medicareSecondary = null;
             if (patient.MedicareSecondaryCode != null) {
-                switch (patient.MedicareSecondaryCode.ToUpper()) {
-                    case "DISABILITY":
-                        medicareSecondary = 1;
-                        break;
-                    case "AGED":
-                        medicareSecondary = 2;
-                        break;
-                        // Add more secondary codes as needed
-                }
+                medicareSecondary = patient.MedicareSecondaryCode;
             }
 
             bool? patientIsActive = null;
@@ -415,7 +408,7 @@ namespace Brady_s_Conversion_Program
 
 
             var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
-                MedicareSecondarryCode = patient.MedicareSecondaryCode,
+                MedicareSecondarryCode = medicareSecondary,
                 MedicareSecondaryDescription = patient.MedicareSecondaryNotes
             }; // connected
             ffpmDbContext.MntMedicareSecondaries.Add(newMedicareSecondary);
@@ -649,8 +642,85 @@ namespace Brady_s_Conversion_Program
                     ffpmPatientAdditional = details;
                 }
             }
+            if (ffpmPatientAdditional == null) {
+                logger.Log("Patient not found for address with ID: " + name.Id);
+                return;
+            }
+            long? accNum = null;
+            long? addId = null;
+            if (name.AccountNumber != null) {
+                DmgPatient tempPatient = ffpmPatients.Find(p => p.AccountNumber == name.AccountNumber);
+                DmgPatientAdditionalDetail tempAdditionalDetail = null;
+                foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                    if (details.PatientId == tempPatient.PatientId) {
+                        tempAdditionalDetail = details;
+                    }
+                }
+                accNum = tempPatient.PatientId;
+                addId = tempPatient.AddressId;
+            }
+            string ssnPattern = @"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$";
+            string? ssn = null;
+            if (name.Ssn != null && !Regex.IsMatch(name.Ssn, ssnPattern)) {
+                ssn = name.Ssn;
+            }
+            string[] dateFormats = new string[] {
+                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+                "ddMMMyyyy", "MMMddyyyy",
+                "dd MMM, yyyy", "MMM dd, yyyy"
+            };
+            DateTime? dob = null;
+            if (name.Dob != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(name.Dob, dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    dob = tempDateTime;
+                }
+            }
+            short? genderInt = null;
+            if (name.Sex != null) {
+                if (name.Sex.ToUpper() == "M") {
+                    genderInt = 1;
+                }
+                else if (name.Sex.ToUpper() == "F") {
+                    genderInt = 2;
+                }
+            }
+            if (name.Relationship == "emergency contact") {
+                ffpmPatientAdditional.EmergencyLast = name.LastName;
+                ffpmPatientAdditional.EmergencyFirst = name.FirstName;
+                ffpmPatientAdditional.EmergencyPatientId = accNum;
+                // have not set system for emergency contact relation id; wouldnt be too hard, will add later if needed
+                ffpmPatientAdditional.EmergencyAddressId = addId;
+            } else if (name.Relationship == "guarantor") {
+                bool isExistingPatient = false;
+                if (accNum != null) {
+                    isExistingPatient = true;
+                }
+                var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
+                    PatientId = ffpmPatient.PatientId,
+                    AddressId = addId,
+                    IsGuarantorExistingPatient = isExistingPatient,
+                    FirstName = name.FirstName,
+                    LastName = name.LastName,
+                    // no system for relation id still. this will need to match the one in emergency patient.
+                    MiddleName = name.MiddleName,
+                    Ssn = ssn,
+                    Dob = dob,
+                    GenderId = genderInt
+                };
+                ffpmDbContext.DmgGuarantors.Add(newGuarantor);
 
-            // use the relationship varchar to determine where to update
+                ffpmDbContext.SaveChanges();
+            } else if (name.Relationship == "employer") {
+                // will pick this up on monday
+            }
+
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -820,7 +890,13 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-            // Where should this even go? No tables seem to have a field for it
+            var newPatientRemarks = new Brady_s_Conversion_Program.ModelsA.DmgPatientRemark {
+                PatientId = ffpmPatient.PatientId,
+                Remarks = patientNote.Note
+            };
+            ffpmDbContext.DmgPatientRemarks.Add(newPatientRemarks);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertPhone(Models.Phone phone, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -845,13 +921,34 @@ namespace Brady_s_Conversion_Program
                 return;
             }
             DmgPatientAddress address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
-            
-            address.CellPhone = phone.PhoneNumber;
+            if (address == null) {
+                logger.Log("Patient not found for phone with ID: " + phone.Id);
+                return;
+            }
+  
+            switch (phone.TypeOfPhone) {
+                case "home":
+                    address.HomePhone = phone.PhoneNumber;
+                    break;
+                case "work":
+                    address.WorkPhone = phone.PhoneNumber;
+                    break;
+                case "cell":
+                    address.CellPhone = phone.PhoneNumber;
+                    break;
+                case "fax":
+                    address.Fax = phone.PhoneNumber;
+                    break;
+                default:
+                    address.CellPhone = phone.PhoneNumber;
+                    break;
+            }
             address.Extension = phone.Extension;
+            
+
             /* is this all? there is also:
              * primary_id
              * primary file
-             * type of phone
              * note
              * in dbo.Phone that is not used
              */
