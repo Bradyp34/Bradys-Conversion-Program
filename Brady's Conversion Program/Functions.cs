@@ -390,7 +390,7 @@ namespace Brady_s_Conversion_Program
                 DoNotSendStatements = dontSendStatements,
                 EmailStatements = emailStatements,
                 OpenEdgeCustomerId = "",
-                TextStatements = false,
+                TextStatements = true,
                 LocationId = 0
             }; // connected
             ffpmDbContext.DmgPatients.Add(newPatient);
