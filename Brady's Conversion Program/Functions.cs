@@ -1050,7 +1050,9 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-            // Again, not sure where to go with this
+            var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
+                // will need to consult with dave to understand this table
+            };
         }
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
