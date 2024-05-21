@@ -718,7 +718,12 @@ namespace Brady_s_Conversion_Program
 
                 ffpmDbContext.SaveChanges();
             } else if (name.Relationship == "employer") {
-                // will pick this up on monday
+                ffpmPatientAdditional.EmployerName = name.LastName;
+                ffpmPatientAdditional.EmployerWebsite = name.FirstName;
+                ffpmPatientAdditional.EmployerAddressId = addId; // im not positive how to handle this, there are no places of input for employer address
+            } else {
+                logger.Log("Invalid relationship for name with ID: " + name.Id);
+                return;
             }
 
         }
