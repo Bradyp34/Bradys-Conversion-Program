@@ -725,7 +725,7 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Invalid relationship for name with ID: " + name.Id);
                 return;
             }
-
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -872,7 +872,77 @@ namespace Brady_s_Conversion_Program
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // Log or handle patient insurance actions
-            
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(patientInsurance.Id);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientInsurance.Id);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + patientInsurance.Id);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            string[] dateFormats = new string[] {
+                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+                "ddMMMyyyy", "MMMddyyyy",
+                "dd MMM, yyyy", "MMM dd, yyyy"
+            };
+            DateTime? startDate = null;
+            if (patientInsurance.StartDate != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(patientInsurance.StartDate, dateFormats,
+                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    startDate = tempDateTime;
+                }
+            }
+            DateOnly? EndDate = null;
+            if (patientInsurance.EndDate != null) {
+                DateOnly tempDateTime;
+                if (!DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats,
+                                                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    EndDate = tempDateTime;
+                }
+            }
+            decimal? copay = null;
+            if (patientInsurance.Copay != null) {
+                if (decimal.TryParse(patientInsurance.Copay, out decimal copayDec)) {
+                    copay = copayDec;
+                }
+            }
+            decimal? deductible = null;
+            if (patientInsurance.Deductible != null) {
+                if (decimal.TryParse(patientInsurance.Deductible, out decimal deductibleDec)) {
+                    deductible = deductibleDec;
+                }
+            }
+
+            var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
+                PatientId = ffpmPatient.PatientId,
+                StartDate = startDate,
+                EndDate = EndDate,
+                Copay = copay,
+                Deductible = deductible,
+                PlanId = 0, // need to make a plan id system
+                IsMedicalInsurance = false, 
+                IsVisionInsurance = false,
+                IsAdditionalInsurance = false,
+                InsuranceCompanyId = 0
+            }; // tons of questions here. what is cert? what is code? medical vision, rank, plan?
+            ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertPatientNote(Models.PatientNote patientNote, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
