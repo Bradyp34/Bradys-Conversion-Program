@@ -70,7 +70,6 @@ namespace Brady_s_Conversion_Program
                             }
                         }
 
-                        // Save changes if any modifications were made
                         convDbContext.SaveChanges();
 
                         // EF Core automatically handles connection closing when DbContext is disposed
