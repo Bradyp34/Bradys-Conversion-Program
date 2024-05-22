@@ -67,7 +67,7 @@ namespace Brady_s_Conversion_Program
                                 eyeMDDbContext.Database.OpenConnection();
                                 ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
                                 eyeMDDbContext.SaveChanges();
-                            }
+                            } // Test comment for jira
                         }
 
                         // Save changes if any modifications were made
