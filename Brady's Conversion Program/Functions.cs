@@ -580,44 +580,7 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-            var ConvPatient = convDbContext.Patients.Find(insurance.Id);
-            if (ConvPatient == null) {
-                logger.Log("Patient not found for address with ID: " + insurance.Id);
-                return;
-            }
-            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-            if (ffpmPatient == null) {
-                logger.Log("Patient not found for address with ID: " + insurance.Id);
-                return;
-            }
-            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
-            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
-                if (details.PatientId == ffpmPatient.PatientId) {
-                    ffpmPatientAdditional = details;
-                }
-            }
-            int? companyCode = null;
-            if (insurance.InsCompanyCode != null) {
-                if (int.TryParse(insurance.InsCompanyCode, out int code)) {
-                    companyCode = code;
-                }
-            }
-
-            var newPatientInsurance = new DmgPatientInsurance {
-                PatientId = ffpmPatient.PatientId,
-                PlanId = 0, // definitely incorrect, will need to change later
-                IsMedicalInsurance = false, // just not null
-                IsVisionInsurance = false, // also just not null
-                IsAdditionalInsurance = false, // also just not null
-                InsuranceCompanyId = companyCode
-
-            };
-            // insurance policy type is bool? what does that even mean
-            // many fields are not used in the insurance table
-            ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
-
-            ffpmDbContext.SaveChanges();
+            // insurance companies
         }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -889,6 +852,16 @@ namespace Brady_s_Conversion_Program
                     ffpmPatientAdditional = details;
                 }
             }
+            Models.Insurance patientInsuranceCompany = null;
+            foreach (var insurance in convDbContext.Insurances.ToList()) {
+                if (insurance.InsCompanyCode == patientInsurance.Code) {
+                    patientInsuranceCompany = insurance;
+                }
+            }
+            if (patientInsuranceCompany == null) {
+                logger.Log("Insurance company not found for address with ID: " + patientInsurance.Id);
+                return;
+            }
             string[] dateFormats = new string[] {
                 "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
                 "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
@@ -911,7 +884,7 @@ namespace Brady_s_Conversion_Program
             if (patientInsurance.EndDate != null) {
                 DateOnly tempDateTime;
                 if (!DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats,
-                                                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                     EndDate = tempDateTime;
                 }
             }
@@ -950,6 +923,7 @@ namespace Brady_s_Conversion_Program
             } else {
                 medical = true;
             }
+            int plan_id = 0; // this always is 0, so I will leave this here
 
             var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
                 PatientId = ffpmPatient.PatientId,
@@ -958,12 +932,12 @@ namespace Brady_s_Conversion_Program
                 Copay = copay,
                 Deductible = deductible,
                 Rank = rank,
-                PlanId = 0, // need to make a plan id system
+                PlanId = plan_id,
                 IsMedicalInsurance = medical, 
                 IsVisionInsurance = vision,
                 IsAdditionalInsurance = isAdditional,
                 InsuranceCompanyId = 0
-            }; // tons of questions here. what is cert? what is code? medical vision, rank, plan?
+            }; 
             ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
 
             ffpmDbContext.SaveChanges();
