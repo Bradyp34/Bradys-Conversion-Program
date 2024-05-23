@@ -555,6 +555,7 @@ namespace Brady_s_Conversion_Program
             // Same as above
         }
 
+        // we may get rid of this if we usre the name table instead. recommended for deletion
         public static void ConvertEmployer(Models.Employer employer, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var ConvPatient = convDbContext.Patients.Find(employer.Id);
@@ -574,7 +575,7 @@ namespace Brady_s_Conversion_Program
                 }
             }
             ffpmPatientAdditional.EmployerName = employer.EmployerName;
-            
+
             ffpmDbContext.SaveChanges();
         }
 
@@ -1073,7 +1074,7 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-            // This seems to be for scheduling
+            // do stuff
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
