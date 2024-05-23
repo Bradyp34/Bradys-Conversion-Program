@@ -555,7 +555,7 @@ namespace Brady_s_Conversion_Program
             // Same as above
         }
 
-        // we may get rid of this if we usre the name table instead. recommended for deletion
+        // we may get rid of this if we use the name table instead. recommended for deletion
         public static void ConvertEmployer(Models.Employer employer, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var ConvPatient = convDbContext.Patients.Find(employer.Id);
@@ -927,6 +927,29 @@ namespace Brady_s_Conversion_Program
                     deductible = deductibleDec;
                 }
             }
+            short? rank = null;
+            if (patientInsurance.Rank == "primary") {
+                rank = 1;
+            } else if (patientInsurance.Rank == "secondary") {
+                rank = 2;
+            } else if (patientInsurance.Rank == "tertiary") {
+                rank = 3;
+            } else {
+                rank = 1;
+            }
+            bool isAdditional = false;
+            if (rank == 2 || rank == 3) {
+                isAdditional = true;
+            }
+            bool medical = false;
+            bool vision = false;
+            if (patientInsurance.MedicalVision == "medical") {
+                medical = true;
+            } else if (patientInsurance.MedicalVision == "vision") {
+                vision = true;
+            } else {
+                medical = true;
+            }
 
             var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
                 PatientId = ffpmPatient.PatientId,
@@ -934,10 +957,11 @@ namespace Brady_s_Conversion_Program
                 EndDate = EndDate,
                 Copay = copay,
                 Deductible = deductible,
+                Rank = rank,
                 PlanId = 0, // need to make a plan id system
-                IsMedicalInsurance = false, 
-                IsVisionInsurance = false,
-                IsAdditionalInsurance = false,
+                IsMedicalInsurance = medical, 
+                IsVisionInsurance = vision,
+                IsAdditionalInsurance = isAdditional,
                 InsuranceCompanyId = 0
             }; // tons of questions here. what is cert? what is code? medical vision, rank, plan?
             ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
