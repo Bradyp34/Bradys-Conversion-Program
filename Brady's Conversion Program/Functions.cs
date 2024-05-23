@@ -924,6 +924,11 @@ namespace Brady_s_Conversion_Program
                 medical = true;
             }
             int plan_id = 0; // this always is 0, so I will leave this here
+            int? insCompId = null;
+            int tempinscompid = 0;
+            if (int.TryParse(patientInsuranceCompany.InsCompanyId, out tempinscompid)) {
+                insCompId = tempinscompid;
+            }
 
             var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
                 PatientId = ffpmPatient.PatientId,
@@ -936,7 +941,7 @@ namespace Brady_s_Conversion_Program
                 IsMedicalInsurance = medical, 
                 IsVisionInsurance = vision,
                 IsAdditionalInsurance = isAdditional,
-                InsuranceCompanyId = 0
+                InsuranceCompanyId = insCompId
             }; 
             ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
 
