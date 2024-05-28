@@ -16,6 +16,7 @@ using System.Globalization;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Reflection.Emit;
 
 namespace Brady_s_Conversion_Program
 {
@@ -555,33 +556,102 @@ namespace Brady_s_Conversion_Program
             // Same as above
         }
 
-        // we may get rid of this if we use the name table instead. recommended for deletion
-        public static void ConvertEmployer(Models.Employer employer, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-            var ConvPatient = convDbContext.Patients.Find(employer.Id);
-            if (ConvPatient == null) {
-                logger.Log("Patient not found for address with ID: " + employer.Id);
-                return;
-            }
-            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-            if (ffpmPatient == null) {
-                logger.Log("Patient not found for address with ID: " + employer.Id);
-                return;
-            }
-            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
-            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
-                if (details.PatientId == ffpmPatient.PatientId) {
-                    ffpmPatientAdditional = details;
+        public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
+            var stateDictionary = new Dictionary<string, int> {
+                {"Alabama", 1}, {"Alaska", 2}, {"Arizona", 3}, {"Arkansas", 4}, {"California", 5},
+                {"Colorado", 6}, {"Connecticut", 7}, {"Delaware", 8}, {"Florida", 9}, {"Georgia", 10},
+                {"Hawaii", 11}, {"Idaho", 12}, {"Illinois", 13}, {"Indiana", 14}, {"Iowa", 15},
+                {"Kansas", 16}, {"Kentucky", 17}, {"Louisiana", 18}, {"Maine", 19}, {"Maryland", 20},
+                {"Massachusetts", 21}, {"Michigan", 22}, {"Minnesota", 23}, {"Mississippi", 24}, {"Missouri", 25},
+                {"Montana", 26}, {"Nebraska", 27}, {"Nevada", 28}, {"New Hampshire", 29}, {"New Jersey", 30},
+                {"New Mexico", 31}, {"New York", 32}, {"North Carolina", 33}, {"North Dakota", 34}, {"Ohio", 35},
+                {"Oklahoma", 36}, {"Oregon", 37}, {"Pennsylvania", 38}, {"Rhode Island", 39}, {"South Carolina", 40},
+                {"South Dakota", 41}, {"Tennessee", 42}, {"Texas", 43}, {"Utah", 44}, {"Vermont", 45},
+                {"Virginia", 46}, {"Washington", 47}, {"West Virginia", 48}, {"Wisconsin", 49}, {"Wyoming", 50}
+            };
+
+            int stateId = 0; // Default value for not found or null
+
+            string insZip = "";
+            if (insurance.InsCompanyZip != null) {
+                Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
+                Match match = zipRegex.Match(insurance.InsCompanyZip);
+                if (match.Success) {
+                    insZip = match.Groups[1].Value;
                 }
             }
-            ffpmPatientAdditional.EmployerName = employer.EmployerName;
+
+            // Look up the state ID from the dictionary
+            if (!string.IsNullOrEmpty(insurance.InsCompanyState) && stateDictionary.ContainsKey(insurance.InsCompanyState)) {
+                stateId = stateDictionary[insurance.InsCompanyState];
+            }
+
+            string insEmail = "";
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            if (insurance.InsCompanyEmail != null) {
+                if (regex.IsMatch(insurance.InsCompanyEmail)) {
+                    insEmail = insurance.InsCompanyEmail;
+                }
+            }
+
+            string insFax = "";
+            Regex regex1 = new Regex(@"^(\d{3}-\d{3}-\d{4})$");
+            if (insurance.InsCompanyFax != null) {
+                if (regex1.IsMatch(insurance.InsCompanyFax)) {
+                    insFax = insurance.InsCompanyFax;
+                }
+            }
+
+            string insPhone = "";
+            Regex regex2 = new Regex(@"^(\d{3}-\d{3}-\d{4})$");
+            if (insurance.InsCompanyPhone != null) {
+                if (regex2.IsMatch(insurance.InsCompanyPhone)) {
+                    insPhone = insurance.InsCompanyPhone;
+                }
+            }
+
+            string payerId = "";
+            if (insurance.InsCompanyCode != null) {
+                payerId = insurance.InsCompanyCode;
+            }
+
+            bool active = false;
+            if (insurance.IsActive.ToLower() == "yes") {
+                active = true;
+            }
+
+            bool collections = false;
+            if (insurance.IsCollections.ToLower() == "yes") {
+                collections = true;
+            }
+
+            bool dmerc = false;
+            if (insurance.IsDmerc.ToLower() == "yes") {
+                dmerc = true;
+            }
+
+            var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
+                InsCompanyName = insurance.InsCompanyName,
+                InsCompanyAddress1 = insurance.InsCompanyAddress1,
+                InsCompanyAddress2 = insurance.InsCompanyAddress2,
+                InsCompanyCity = insurance.InsCompanyCity,
+                InsCompanyStateId = stateId,
+                InsCompanyZip = insZip,
+                InsCompanyPhone = insPhone,
+                InsCompanyFax = insFax,
+                InsCompanyCode = insurance.InsCompanyCode,
+                InsCompanyEmail = insEmail,
+                InsCompanyPayerId = payerId,
+                IsActive = active,
+                IsCollectionsInsurance = collections,
+                IsDmercPlaceOfService = dmerc,
+                
+            };
+            ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
 
             ffpmDbContext.SaveChanges();
         }
 
-        public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // insurance companies
-        }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // Seemingly not part of patient demographics, will have to return later
@@ -924,11 +994,18 @@ namespace Brady_s_Conversion_Program
                 medical = true;
             }
             int plan_id = 0; // this always is 0, so I will leave this here
-            int? insCompId = null;
-            int tempinscompid = 0;
-            if (int.TryParse(patientInsuranceCompany.InsCompanyId, out tempinscompid)) {
-                insCompId = tempinscompid;
+            int insCompId = 0;
+            InsInsuranceCompany insuranceCompany = null;
+            foreach (var insComp in ffpmDbContext.InsInsuranceCompanies.ToList()) {
+                if (insComp.InsCompanyCode == patientInsurance.Code) {
+                    insuranceCompany = insComp;
+                }
             }
+            if (insuranceCompany == null) {
+                logger.Log("Insurance company not found for insurance with ID: " + patientInsurance.Id);
+                return;
+            }
+            insCompId = insuranceCompany.InsCompanyId;
 
             var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
                 PatientId = ffpmPatient.PatientId,
@@ -942,7 +1019,7 @@ namespace Brady_s_Conversion_Program
                 IsVisionInsurance = vision,
                 IsAdditionalInsurance = isAdditional,
                 InsuranceCompanyId = insCompId
-            }; 
+            };
             ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
 
             ffpmDbContext.SaveChanges();
