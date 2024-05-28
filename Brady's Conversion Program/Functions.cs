@@ -100,9 +100,6 @@ namespace Brady_s_Conversion_Program
             foreach (var appointmentType in convDbContext.AppointmentTypes.ToList()) {
                 ConvertAppointmentType(appointmentType, convDbContext , ffpmDbContext, logger);
             }
-            foreach (var employer in convDbContext.Employers.ToList()) {
-                ConvertEmployer(employer, convDbContext , ffpmDbContext, logger);
-            }
             foreach (var insurance in convDbContext.Insurances.ToList()) {
                 ConvertInsurance(insurance, convDbContext , ffpmDbContext, logger);
             }
@@ -644,9 +641,8 @@ namespace Brady_s_Conversion_Program
                 InsCompanyPayerId = payerId,
                 IsActive = active,
                 IsCollectionsInsurance = collections,
-                IsDmercPlaceOfService = dmerc,
-                
-            };
+                IsDmercPlaceOfService = dmerc
+            }; // there are several more fields that need to be added to this table
             ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
 
             ffpmDbContext.SaveChanges();
