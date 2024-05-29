@@ -252,18 +252,22 @@ namespace Brady_s_Conversion_Program
             }
 
             short? licenseShort = null;
+            var stateDictionary = new Dictionary<string, short> {
+                {"Alabama", 1}, {"Alaska", 2}, {"Arizona", 3}, {"Arkansas", 4}, {"California", 5},
+                {"Colorado", 6}, {"Connecticut", 7}, {"Delaware", 8}, {"Florida", 9}, {"Georgia", 10},
+                {"Hawaii", 11}, {"Idaho", 12}, {"Illinois", 13}, {"Indiana", 14}, {"Iowa", 15},
+                {"Kansas", 16}, {"Kentucky", 17}, {"Louisiana", 18}, {"Maine", 19}, {"Maryland", 20},
+                {"Massachusetts", 21}, {"Michigan", 22}, {"Minnesota", 23}, {"Mississippi", 24}, {"Missouri", 25},
+                {"Montana", 26}, {"Nebraska", 27}, {"Nevada", 28}, {"New Hampshire", 29}, {"New Jersey", 30},
+                {"New Mexico", 31}, {"New York", 32}, {"North Carolina", 33}, {"North Dakota", 34}, {"Ohio", 35},
+                {"Oklahoma", 36}, {"Oregon", 37}, {"Pennsylvania", 38}, {"Rhode Island", 39}, {"South Carolina", 40},
+                {"South Dakota", 41}, {"Tennessee", 42}, {"Texas", 43}, {"Utah", 44}, {"Vermont", 45},
+                {"Virginia", 46}, {"Washington", 47}, {"West Virginia", 48}, {"Wisconsin", 49}, {"Wyoming", 50}
+            };
+
             if (patient.DriversLicenseState != null) {
-                switch (patient.DriversLicenseState.ToUpper()) {
-                    case "NY":
-                        licenseShort = 1;
-                        break;
-                    case "CA":
-                        licenseShort = 2;
-                        break;
-                    case "TX":
-                        licenseShort = 3;
-                        break;
-                        // Add more states as needed
+                if (stateDictionary.ContainsKey(patient.DriversLicenseState)) {
+                    licenseShort = stateDictionary[patient.DriversLicenseState];
                 }
             }
 
@@ -569,6 +573,10 @@ namespace Brady_s_Conversion_Program
 
             int stateId = 0; // Default value for not found or null
 
+            if (insurance.InsCompanyState != null) {
+                stateId = stateDictionary[insurance.InsCompanyState];
+            }
+
             string insZip = "";
             if (insurance.InsCompanyZip != null) {
                 Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
@@ -647,7 +655,6 @@ namespace Brady_s_Conversion_Program
 
             ffpmDbContext.SaveChanges();
         }
-
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             // Seemingly not part of patient demographics, will have to return later
@@ -890,7 +897,8 @@ namespace Brady_s_Conversion_Program
                 DocumentRemarks = patientDocument.DocumentNotes,
                 AddedDate = dateDocument,
                 DocumentName = patientDocument.DocumentDescription,
-                DocumentLocation = patientDocument.FilePathName
+                DocumentLocation = patientDocument.FilePathName,
+                
             };
             // not using some from patient document:
             // insurance company
@@ -900,7 +908,6 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle patient insurance actions
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var ConvPatient = convDbContext.Patients.Find(patientInsurance.Id);
             if (ConvPatient == null) {
@@ -1111,12 +1118,12 @@ namespace Brady_s_Conversion_Program
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var ConvPatient = convDbContext.Patients.Find(provider.Id);
             if (ConvPatient == null) {
-                logger.Log("Patient not found for address with ID: " + provider.Id);
+                logger.Log("Patient not found for provider with ID: " + provider.Id);
                 return;
             }
             DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
             if (ffpmPatient == null) {
-                logger.Log("Patient not found for address with ID: " + provider.Id);
+                logger.Log("Patient not found for provider with ID: " + provider.Id);
                 return;
             }
             DmgPatientAdditionalDetail ffpmPatientAdditional = null;
@@ -1126,8 +1133,42 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
+            short? suffixInt = null;
+            if (provider.Suffix != null) {
+                switch (provider.Suffix.ToLower()) {
+                    case "jr":
+                    case "jr.":
+                        suffixInt = 1;
+                        break;
+                    case "sr":
+                    case "sr.":
+                        suffixInt = 2;
+                        break;
+                    case "ii":
+                        suffixInt = 3;
+                        break;
+                    case "iii":
+                        suffixInt = 4;
+                        break;
+                    case "iv":
+                        suffixInt = 5;
+                        break;
+                    case "v":
+                        suffixInt = 6;
+                        break;
+                }
+            }
+
+            short? titleInt = null;
+
+
             var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
-                // will need to consult with dave to understand this table
+                FirstName = provider.FirstName,
+                MiddleName = provider.MiddleName,
+                LastName = provider.LastName,
+                ProviderCode = provider.ProviderCode,
+                SuffixId = suffixInt,
+
             };
         }
 
