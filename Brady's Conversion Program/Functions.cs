@@ -369,7 +369,6 @@ namespace Brady_s_Conversion_Program
                 DateOfBirth = dob,
                 MaritialStatusId = maritalStatusInt,
                 TitleId = titleInt,
-                // this is apparently a bit, but i used bool and it's working. not sure how this works
                 IsActive = patientIsActive,
                 IsDeceased = deceased,
                 DeceasedDate = deceasedDate, // everything below here is filler to allow the creation of the dmg patient
@@ -379,7 +378,7 @@ namespace Brady_s_Conversion_Program
                 OtherBalance = 0,
                 GenderId = genderInt,
                 SuffixId = suffixInt,
-                BalanceLastUpdatedDateTime = minDate, // This probably needs to be changed
+                BalanceLastUpdatedDateTime = minDate,
                 EmailNotApplicable = isEmailValid,
                 DoNotSendStatements = dontSendStatements,
                 EmailStatements = emailStatements,
@@ -404,9 +403,6 @@ namespace Brady_s_Conversion_Program
             ffpmDbContext.MntEthnicities.Add(newEthnicity);
 
             ffpmDbContext.SaveChanges();
-
-            // new address here
-
 
             var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
                 MedicareSecondarryCode = medicareSecondary,
@@ -435,8 +431,6 @@ namespace Brady_s_Conversion_Program
             ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
 
             ffpmDbContext.SaveChanges();
-
-            return;
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -657,7 +651,16 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Seemingly not part of patient demographics, will have to return later
+            string name = "";
+            if (location.LocationName != null) {
+                name = location.LocationName;
+            }
+            
+
+            var newLocation = new Brady_s_Conversion_Program.ModelsA.Location {
+                LocationName = name,
+                
+            };
         }
 
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
@@ -1356,7 +1359,7 @@ namespace Brady_s_Conversion_Program
                 AlternateTaxonomy20Id = tax20Id,
                 // completed taxonomy ids
                 
-
+                
             };
         }
 
