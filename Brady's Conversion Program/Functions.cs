@@ -1160,7 +1160,65 @@ namespace Brady_s_Conversion_Program
             }
 
             short? titleInt = null;
+            if (provider.Title != null) {
+                switch (provider.Title.ToLower()) {
+                    case "mr":
+                    case "mr.":
+                        titleInt = 1;
+                        break;
+                    case "mrs":
+                    case "mrs.":
+                        titleInt = 2;
+                        break;
+                    case "ms":
+                    case "ms.":
+                        titleInt = 3;
+                        break;
+                    case "miss":
+                        titleInt = 4;
+                        break;
+                }
+            }
 
+            Regex ssn = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
+            string? ssnString = null;
+            if (provider.ProviderSsn != null) {
+                if (ssn.IsMatch(provider.ProviderSsn)) {
+                    ssnString = provider.ProviderSsn;
+                }
+            }
+
+            Regex dob = new Regex(@"^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/((19|20)\d\d)$");
+            DateTime? dobDate = null;
+            if (provider.ProviderDob != null) {
+                if (dob.IsMatch(provider.ProviderDob)) {
+                    dobDate = DateTime.Parse(provider.ProviderDob);
+                }
+            }
+
+            Regex ein = new Regex(@"^\d{2}-\d{7}$");
+            string? einString = null;
+            if (provider.ProviderEin != null) {
+                if (ein.IsMatch(provider.ProviderEin)) {
+                    einString = provider.ProviderEin;
+                }
+            }
+
+            Regex upin = new Regex(@"^[A-Z0-9]{6}$");
+            string? upinString = null;
+            if (provider.ProviderUpin != null) {
+                if (upin.IsMatch(provider.ProviderUpin)) {
+                    upinString = provider.ProviderUpin;
+                }
+            }
+
+            Regex npi = new Regex(@"^\d{10}$");
+            string? npiString = null;
+            if (provider.ProviderNpi != null) {
+                if (npi.IsMatch(provider.ProviderNpi)) {
+                    npiString = provider.ProviderNpi;
+                }
+            }
 
             var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
                 FirstName = provider.FirstName,
@@ -1168,7 +1226,12 @@ namespace Brady_s_Conversion_Program
                 LastName = provider.LastName,
                 ProviderCode = provider.ProviderCode,
                 SuffixId = suffixInt,
-
+                TitleId = titleInt,
+                ProviderSsn = ssnString,
+                ProviderEin = einString,
+                ProviderUpin = upinString,
+                ProviderDob = dobDate,
+                ProviderNpi = npiString
             };
         }
 
