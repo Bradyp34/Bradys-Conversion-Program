@@ -1220,6 +1220,104 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
+            bool? isActive = null;
+            if (provider.IsActive != null && provider.IsActive.ToLower() == "yes") {
+                isActive = true;
+            }
+
+            #region taxonomys
+            int primaryTaxId = 0;
+            if (provider.PrimaryTaxonomyId != null) {
+                primaryTaxId = int.Parse(provider.PrimaryTaxonomyId);
+            } else {
+                logger.Log("Primary taxonomy ID not found for provider with ID: " + provider.Id);
+            }
+
+            int tax1Id = primaryTaxId;
+            if (provider.AlternateTaxonomy1Id != null) {
+                tax1Id = int.Parse(provider.AlternateTaxonomy1Id);
+            }
+            int tax2Id = primaryTaxId;
+            if (provider.AlternateTaxonomy2Id != null) {
+                tax2Id = int.Parse(provider.AlternateTaxonomy2Id);
+            }
+            int tax3Id = primaryTaxId;
+            if (provider.AlternateTaxonomy3Id != null) {
+                tax3Id = int.Parse(provider.AlternateTaxonomy3Id);
+            }
+            int tax4Id = primaryTaxId;
+            if (provider.AlternateTaxonomy4Id != null) {
+                tax4Id = int.Parse(provider.AlternateTaxonomy4Id);
+            }
+            int tax5Id = primaryTaxId;
+            if (provider.AlternateTaxonomy5Id != null) {
+                tax5Id = int.Parse(provider.AlternateTaxonomy5Id);
+            }
+            int tax6Id = primaryTaxId;
+            if (provider.AlternateTaxonomy6Id != null) {
+                tax6Id = int.Parse(provider.AlternateTaxonomy6Id);
+            }
+            int tax7Id = primaryTaxId;
+            if (provider.AlternateTaxonomy7Id != null) {
+                tax7Id = int.Parse(provider.AlternateTaxonomy7Id);
+            }
+            int tax8Id = primaryTaxId;
+            if (provider.AlternateTaxonomy8Id != null) {
+                tax8Id = int.Parse(provider.AlternateTaxonomy8Id);
+            }
+            int tax9Id = primaryTaxId;
+            if (provider.AlternateTaxonomy9Id != null) {
+                tax9Id = int.Parse(provider.AlternateTaxonomy9Id);
+            }
+            int tax10Id = primaryTaxId;
+            if (provider.AlternateTaxonomy10Id != null) {
+                tax10Id = int.Parse(provider.AlternateTaxonomy10Id);
+            }
+            int tax11Id = primaryTaxId;
+            if (provider.AlternateTaxonomy11Id != null) {
+                tax11Id = int.Parse(provider.AlternateTaxonomy11Id);
+            }
+            int tax12Id = primaryTaxId;
+            if (provider.AlternateTaxonomy12Id != null) {
+                tax12Id = int.Parse(provider.AlternateTaxonomy12Id);
+            }
+            int tax13Id = primaryTaxId;
+            if (provider.AlternateTaxonomy13Id != null) {
+                tax13Id = int.Parse(provider.AlternateTaxonomy13Id);
+            }
+            int tax14Id = primaryTaxId;
+            if (provider.AlternateTaxonomy14Id != null) {
+                tax14Id = int.Parse(provider.AlternateTaxonomy14Id);
+            }
+            int tax15Id = primaryTaxId;
+            if (provider.AlternateTaxonomy15Id != null) {
+                tax15Id = int.Parse(provider.AlternateTaxonomy15Id);
+            }
+            int tax16Id = primaryTaxId;
+            if (provider.AlternateTaxonomy16Id != null) {
+                tax16Id = int.Parse(provider.AlternateTaxonomy16Id);
+            }
+            int tax17Id = primaryTaxId;
+            if (provider.AlternateTaxonomy17Id != null) {
+                tax17Id = int.Parse(provider.AlternateTaxonomy17Id);
+            }
+            int tax18Id = primaryTaxId;
+            if (provider.AlternateTaxonomy18Id != null) {
+                tax18Id = int.Parse(provider.AlternateTaxonomy18Id);
+            }
+            int tax19Id = primaryTaxId;
+            if (provider.AlternateTaxonomy19Id != null) {
+                tax19Id = int.Parse(provider.AlternateTaxonomy19Id);
+            }
+            int tax20Id = primaryTaxId;
+            if (provider.AlternateTaxonomy20Id != null) {
+                tax20Id = int.Parse(provider.AlternateTaxonomy20Id);
+            }
+            #endregion taxonomys
+
+            
+            
+
             var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
                 FirstName = provider.FirstName,
                 MiddleName = provider.MiddleName,
@@ -1231,7 +1329,34 @@ namespace Brady_s_Conversion_Program
                 ProviderEin = einString,
                 ProviderUpin = upinString,
                 ProviderDob = dobDate,
-                ProviderNpi = npiString
+                ProviderNpi = npiString,
+                IsActive = isActive,
+
+                // Taxonomy IDs
+                PrimaryTaxonomyId = primaryTaxId,
+                AlternateTaxonomy1Id = tax1Id,
+                AlternateTaxonomy2Id = tax2Id,
+                AlternateTaxonomy3Id = tax3Id,
+                AlternateTaxonomy4Id = tax4Id,
+                AlternateTaxonomy5Id = tax5Id,
+                AlternateTaxonomy6Id = tax6Id,
+                AlternateTaxonomy7Id = tax7Id,
+                AlternateTaxonomy8Id = tax8Id,
+                AlternateTaxonomy9Id = tax9Id,
+                AlternateTaxonomy10Id = tax10Id,
+                AlternateTaxonomy11Id = tax11Id,
+                AlternateTaxonomy12Id = tax12Id,
+                AlternateTaxonomy13Id = tax13Id,
+                AlternateTaxonomy14Id = tax14Id,
+                AlternateTaxonomy15Id = tax15Id,
+                AlternateTaxonomy16Id = tax16Id,
+                AlternateTaxonomy17Id = tax17Id,
+                AlternateTaxonomy18Id = tax18Id,
+                AlternateTaxonomy19Id = tax19Id,
+                AlternateTaxonomy20Id = tax20Id,
+                // completed taxonomy ids
+                
+
             };
         }
 
