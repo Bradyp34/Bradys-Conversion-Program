@@ -552,6 +552,14 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
+            // check if company already exists by name
+            var insuranceCompanies = ffpmDbContext.InsInsuranceCompanies.ToList();
+            foreach (var company in insuranceCompanies) {
+                if (company.InsCompanyName == insurance.InsCompanyName) {
+                    return;
+                }
+            }
+
             var stateDictionary = new Dictionary<string, int> {
                 {"Alabama", 1}, {"Alaska", 2}, {"Arizona", 3}, {"Arkansas", 4}, {"California", 5},
                 {"Colorado", 6}, {"Connecticut", 7}, {"Delaware", 8}, {"Florida", 9}, {"Georgia", 10},
@@ -643,8 +651,19 @@ namespace Brady_s_Conversion_Program
                 InsCompanyPayerId = payerId,
                 IsActive = active,
                 IsCollectionsInsurance = collections,
-                IsDmercPlaceOfService = dmerc
-            }; // there are several more fields that need to be added to this table
+                IsDmercPlaceOfService = dmerc,
+                CategoryId = 0,
+                ResponsibilityId = 0,
+                PaymentTransaction = "",
+                AdjustmentTransaction = "",
+                AcceptAssignment = true,
+                PrintAsOtherInsurance = true,
+                AllowEligibilityChecks = true,
+                ElectornicEnabled = true,
+                ApplyShiftLogic = true,
+                PaperClaimsOnly = false,
+                IsCompanyInsurance = false
+            };
             ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
 
             ffpmDbContext.SaveChanges();
@@ -1113,7 +1132,7 @@ namespace Brady_s_Conversion_Program
             } else {
                 medical = true;
             }
-            int plan_id = 0; // this always is 0, so I will leave this here
+            int plan_id = 0;
             int insCompId = 0;
             InsInsuranceCompany insuranceCompany = null;
             foreach (var insComp in ffpmDbContext.InsInsuranceCompanies.ToList()) {
@@ -1138,7 +1157,9 @@ namespace Brady_s_Conversion_Program
                 IsMedicalInsurance = medical, 
                 IsVisionInsurance = vision,
                 IsAdditionalInsurance = isAdditional,
-                InsuranceCompanyId = insCompId
+                InsuranceCompanyId = insCompId,
+                PolicyNumber = patientInsurance.Cert,
+                GroupId = patientInsurance.Group
             };
             ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
 
