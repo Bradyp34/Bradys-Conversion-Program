@@ -1452,8 +1452,6 @@ namespace Brady_s_Conversion_Program
                 tax20Id = int.Parse(provider.AlternateTaxonomy20Id);
             }
             #endregion taxonomys
-
-            
             
 
             var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
@@ -1469,6 +1467,13 @@ namespace Brady_s_Conversion_Program
                 ProviderDob = dobDate,
                 ProviderNpi = npiString,
                 IsActive = isActive,
+                IsReferringProvider = false,
+                SignatureUrl = "",
+                GroupId = 0,
+                SpectacleExpiration = 0,
+                ClExpiration = 0,
+                SpectacleExpirationTypeId = 0,
+                ClExpirationTypeId = 0,
 
                 // Taxonomy IDs
                 PrimaryTaxonomyId = primaryTaxId,
