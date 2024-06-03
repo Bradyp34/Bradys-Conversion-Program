@@ -726,7 +726,42 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Same as above
+            int? duration = null;
+            if (appointmentType.DefaultDuration != null) {
+                if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
+                    duration = durationInt;
+                }
+            }
+            bool isActive = false;
+            if (appointmentType.Active.ToLower() == "yes") {
+                isActive = true;
+            }
+            bool schedule = false;
+            if (appointmentType.CanSchedule.ToLower() == "yes") {
+                schedule = true;
+            }
+            bool required = false;
+            if (appointmentType.PatientRequired.ToLower() == "yes") {
+                required = true;
+            }
+            bool examType = false;
+            if (appointmentType.IsExamType.ToLower() == "yes") {
+                examType = true;
+            }
+
+            var newAppointmentType = new SchedulingAppointmentType {
+                Code = appointmentType.Code,
+                Description = appointmentType.Description,
+                LocationId = 0,
+                PatientRequired = required,
+                Notes = appointmentType.Notes,
+                IsExamType = examType,
+                IsAppointmentType = true,
+                IsRecallType = false,
+                DefaultDuration = duration,
+                Active = isActive,
+                CanSchedule = schedule
+            };
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
