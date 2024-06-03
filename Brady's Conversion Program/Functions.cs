@@ -572,15 +572,24 @@ namespace Brady_s_Conversion_Program
             }
 
             string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
+                "dd/MM/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
+                "d/M/yyyy HH:mm:ss", "M/d/yyyy HH:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/d/M HH:mm:ss",
+                "dd-MM-yyyy HH:mm:ss", "MM-dd-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
+                "d-M-yyyy HH:mm:ss", "M-d-yyyy HH:mm:ss", "yyyy-M-d HH:mm:ss", "yyyy-d-M HH:mm:ss",
+                "dd MM yyyy HH:mm:ss", "MM dd yyyy HH:mm:ss", "yyyy MM dd HH:mm:ss", "yyyy dd MM HH:mm:ss",
+                "d M yyyy HH:mm:ss", "M d yyyy HH:mm:ss", "yyyy M d HH:mm:ss", "yyyy d M HH:mm:ss",
+                "ddMMMyyyy HH:mm:ss", "MMMddyyyy HH:mm:ss",
+                "dd MMM, yyyy HH:mm:ss", "MMM dd, yyyy HH:mm:ss",
+                "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
+                "d/M/yyyy hh:mm:ss tt", "M/d/yyyy hh:mm:ss tt", "yyyy/M/d hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
+                "dd-MM-yyyy hh:mm:ss tt", "MM-dd-yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
+                "d-M-yyyy hh:mm:ss tt", "M-d-yyyy hh:mm:ss tt", "yyyy-M-d hh:mm:ss tt", "yyyy-d-M hh:mm:ss tt",
+                "dd MM yyyy hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "yyyy MM dd hh:mm:ss tt", "yyyy dd MM hh:mm:ss tt",
+                "d M yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "yyyy M d hh:mm:ss tt", "yyyy d M hh:mm:ss tt",
+                "ddMMMyyyy hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt",
+                "dd MMM, yyyy hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt"
             };
+
             DateTime start = DateTime.Parse("1/1/1900");
             if (!DateTime.TryParseExact(appointment.StartDate, dateFormats,
                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
@@ -679,6 +688,12 @@ namespace Brady_s_Conversion_Program
             if (appointment.WaitingListId != null) {
                 waitlistId = long.Parse(appointment.WaitingListId);
             }
+            int type = 0;
+            if (appointment.AppointmentTypeId != null) {
+                if (int.TryParse(appointment.AppointmentTypeId, out int typeInt)) {
+                    type = typeInt;
+                }
+            }
 
 
             var newAppointment = new SchedulingAppointment {
@@ -703,7 +718,7 @@ namespace Brady_s_Conversion_Program
                 LinkedAppointmentId = linked,
                 SchedulingCodeId = schedulingCode,
                 SchedulingCodeNotes = appointment.SchedulingCodeNotes,
-                AppointmentTypeId = 0
+                AppointmentTypeId = type
             };
             ffpmDbContext.SchedulingAppointments.Add(newAppointment);
 
