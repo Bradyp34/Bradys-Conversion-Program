@@ -769,6 +769,21 @@ namespace Brady_s_Conversion_Program
             }
             #endregion taxonomys
 
+            bool isBilling = false;
+            if (location.IsBilling != null && location.IsBilling.ToLower() == "yes") {
+                isBilling = true;
+            }
+            bool isSchedule = false;
+            if (location.IsScheduling != null && location.IsScheduling.ToLower() == "yes") {
+                isSchedule = true;
+            }
+
+            int treatmentPlaceId = 0;
+            if (int.TryParse(location.PlaceOfTreatment, out int temp)) {
+                treatmentPlaceId = temp;
+            }
+            
+
             var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
                 PrimaryTaxonomyId = primaryTaxId,
                 AlternateTaxonomy1Id = tax1Id,
@@ -791,8 +806,18 @@ namespace Brady_s_Conversion_Program
                 AlternateTaxonomy18Id = tax18Id,
                 AlternateTaxonomy19Id = tax19Id,
                 AlternateTaxonomy20Id = tax20Id,
-                Name = name
-
+                Name = name,
+                IsBillingLocation = isBilling,
+                CliaIdNo = location.Clia,
+                Npi = location.Npi,
+                FederalIdNo = location.FederalEin,
+                IsSchedulingLocation = isSchedule,
+                PlaceOfTreatmentId = treatmentPlaceId,
+                LocationId = 0,
+                IsActive = true,
+                CaculateTaxOnEstimatedPatientBalance = false,
+                IsDefaultLocation = true,
+                CaculateTaxOnTotalFee = false
             };
         }
 
