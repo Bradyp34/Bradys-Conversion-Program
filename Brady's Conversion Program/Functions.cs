@@ -544,7 +544,170 @@ namespace Brady_s_Conversion_Program
         }
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Where is this supposed to go?
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ConvPatient = convDbContext.Patients.Find(appointment.PatientId);
+            if (ConvPatient == null) {
+                logger.Log("Patient not found for address with ID: " + appointment.PatientId);
+                return;
+            }
+            DmgPatient ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+            if (ffpmPatient == null) {
+                logger.Log("Patient not found for address with ID: " + appointment.PatientId);
+                return;
+            }
+            DmgPatientAdditionalDetail ffpmPatientAdditional = null;
+            foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                if (details.PatientId == ffpmPatient.PatientId) {
+                    ffpmPatientAdditional = details;
+                }
+            }
+            if (ffpmPatientAdditional == null) {
+                logger.Log("Patient not found for address with ID: " + appointment.PatientId);
+                return;
+            }
+
+            long resource = 0;
+            if (appointment.ResourceId != null) {
+                resource = long.Parse(appointment.ResourceId);
+            }
+
+            string[] dateFormats = new string[] {
+                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+                "ddMMMyyyy", "MMMddyyyy",
+                "dd MMM, yyyy", "MMM dd, yyyy"
+            };
+            DateTime start = DateTime.Parse("1/1/1900");
+            if (!DateTime.TryParseExact(appointment.StartDate, dateFormats,
+                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
+                logger.Log("Appointment start time is invalid or not in an expected format for appointment with ID: " + appointment.Id);
+                return;
+            }
+            DateTime end = DateTime.Parse("1/1/1900");
+            if (!DateTime.TryParseExact(appointment.EndDate, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
+                logger.Log("Appointment end time is invalid or not in an expected format for appointment with ID: " + appointment.Id);
+                return;
+            }
+            int duration = 0;
+            if (appointment.Duration != null) {
+                if (int.TryParse(appointment.Duration, out int durationInt)) {
+                    duration = durationInt;
+                }
+            }
+            DateTime created = DateTime.Parse("1/1/1900");
+            if (!DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
+                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
+                logger.Log("Appointment created time is invalid or not in an expected format for appointment with ID: " + appointment.Id);
+                return;
+            }
+            int billingLocId = 0;
+            if (appointment.BillingLocationId != null) {
+                if (int.TryParse(appointment.BillingLocationId, out int billingLocIdInt)) {
+                    billingLocId = billingLocIdInt;
+                }
+            }
+            bool confirmed = false;
+            if (appointment.Confirmed.ToLower() == "yes") {
+                confirmed = true;
+            }
+            int sequence = 0;
+            if (appointment.Sequence != null) {
+                if (int.TryParse(appointment.Sequence, out int sequenceInt)) {
+                    sequence = sequenceInt;
+                }
+            }
+            int requestId = 0;
+            if (appointment.RequestId != null) {
+                if (int.TryParse(appointment.RequestId, out int requestIdInt)) {
+                    requestId = requestIdInt;
+                }
+            }
+            int status = 0;
+            if (appointment.Status != null) {
+                if (int.TryParse(appointment.Status, out int statusInt)) {
+                    status = statusInt;
+                }
+            }
+            DateTime? checkIn = null;
+            if (appointment.CheckInDateTime != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(appointment.CheckInDateTime, dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    checkIn = tempDateTime;
+                }
+            }
+            DateTime? takeback = null;
+            if (appointment.TakeBackDateTime != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(appointment.TakeBackDateTime, dateFormats,
+                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    takeback = tempDateTime;
+                }
+            }
+            DateTime? checkOut = null;
+            if (appointment.CheckOutDateTime != null) {
+                DateTime tempDateTime;
+                if (!DateTime.TryParseExact(appointment.CheckOutDateTime, dateFormats,
+                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    checkOut = tempDateTime;
+                }
+            }
+            long? prior = null;
+            if (appointment.PriorAppointmentId != null) {
+                prior = long.Parse(appointment.PriorAppointmentId);
+            }
+            long? linked = null;
+            if (appointment.LinkedAppointmentId != null) {
+                linked = long.Parse(appointment.LinkedAppointmentId);
+            }
+            int schedulingCode = 0;
+            if (appointment.SchedulingCodeId != null) {
+                if (int.TryParse(appointment.SchedulingCodeId, out int schedulingCodeInt)) {
+                    schedulingCode = schedulingCodeInt;
+                }
+            }
+            long? recallId = null;
+            if (appointment.RecallId != null) {
+                recallId = long.Parse(appointment.RecallId);
+            }
+            long? waitlistId = null;
+            if (appointment.WaitingListId != null) {
+                waitlistId = long.Parse(appointment.WaitingListId);
+            }
+
+
+            var newAppointment = new SchedulingAppointment {
+                PatientId = ffpmPatient.PatientId,
+                ResourceId = resource,
+                BillingLocationId = billingLocId,
+                StartDate = start,
+                EndDate = end,
+                Notes = appointment.Notes,
+                Duration = duration,
+                DateTimeCreated = created,
+                LocationId = ffpmPatient.LocationId,
+                Confirmed = confirmed,
+                Sequence = sequence,
+                RequestId = requestId,
+                Status = status,
+                CheckInDateTime = checkIn,
+                TakeBackDateTime = takeback,
+                CheckOutDateTime = checkOut,
+                Description = appointment.Description,
+                PriorAppointmentId = prior,
+                LinkedAppointmentId = linked,
+                SchedulingCodeId = schedulingCode,
+                SchedulingCodeNotes = appointment.SchedulingCodeNotes,
+                AppointmentTypeId = 0
+            };
+            ffpmDbContext.SchedulingAppointments.Add(newAppointment);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
