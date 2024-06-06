@@ -1724,11 +1724,50 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
+            int appointmentType = 0;
+            if (int.TryParse(recall.RecallTypeId, out int temp)) {
+                appointmentType = temp;
+            }
+            int resource = 0;
+            if (int.TryParse(recall.ResourceId, out temp)) {
+                resource = temp;
+            }
+            int billingLocation = 0;
+            if (int.TryParse(recall.BillingLocationId, out temp)) {
+                billingLocation = temp;
+            }
+            DateOnly recallDate = new DateOnly();
+            if (recall.RecallDate != null) {
+                DateOnly tempDate;
+                if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
+                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
+                    recallDate = tempDate;
+                }
+            }
+            bool isActive = false;
+            if (recall.Active != null && recall.Active.ToLower() == "yes") {
+                isActive = true;
+            }
+            int location = 0;
+
+            int number = 0;
+
+
 
             var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
                 PatientId = ffpmPatient.PatientId,
-
+                AppointmentTypeId = appointmentType,
+                Notes = recall.Notes,
+                ResourceId = resource,
+                BillingLocationId = billingLocation,
+                RecallListDate = recallDate,
+                Active = isActive,
+                LocationId = location,
+                NumberOfRecallSent = number
             };
+            ffpmDbContext.SchedulingPatientRecallLists.Add(newRecallList);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
