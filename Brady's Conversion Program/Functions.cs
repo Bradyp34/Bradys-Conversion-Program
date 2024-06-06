@@ -21,6 +21,36 @@ using System.Reflection.Emit;
 namespace Brady_s_Conversion_Program
 {
     public class Functions {
+        public static readonly string[] dateFormats = new string[] {
+            // Date-only formats
+            "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
+            "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
+            "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
+            "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
+            "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
+            "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
+            "ddMMMyyyy", "MMMddyyyy",
+            "dd MMM, yyyy", "MMM dd, yyyy",
+            // Date with 24-hour time formats
+            "dd/MM/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
+            "d/M/yyyy HH:mm:ss", "M/d/yyyy HH:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/d/M HH:mm:ss",
+            "dd-MM-yyyy HH:mm:ss", "MM-dd-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
+            "d-M-yyyy HH:mm:ss", "M-d-yyyy HH:mm:ss", "yyyy-M-d HH:mm:ss", "yyyy-d-M HH:mm:ss",
+            "dd MM yyyy HH:mm:ss", "MM dd yyyy HH:mm:ss", "yyyy MM dd HH:mm:ss", "yyyy dd MM HH:mm:ss",
+            "d M yyyy HH:mm:ss", "M d yyyy HH:mm:ss", "yyyy M d HH:mm:ss", "yyyy d M HH:mm:ss",
+            "ddMMMyyyy HH:mm:ss", "MMMddyyyy HH:mm:ss",
+            "dd MMM, yyyy HH:mm:ss", "MMM dd, yyyy HH:mm:ss",
+            // Date with 12-hour time formats (AM/PM)
+            "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
+            "d/M/yyyy hh:mm:ss tt", "M/d/yyyy hh:mm:ss tt", "yyyy/M/d hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
+            "dd-MM-yyyy hh:mm:ss tt", "MM-dd-yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
+            "d-M-yyyy hh:mm:ss tt", "M-d-yyyy hh:mm:ss tt", "yyyy-M-d hh:mm:ss tt", "yyyy-d-M hh:mm:ss tt",
+            "dd MM yyyy hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "yyyy MM dd hh:mm:ss tt", "yyyy dd MM hh:mm:ss tt",
+            "d M yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "yyyy M d hh:mm:ss tt", "yyyy d M hh:mm:ss tt",
+            "ddMMMyyyy hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt",
+            "dd MMM, yyyy hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt"
+        };
+
         public interface ILogger {
             void Log(string message);
         }
@@ -161,17 +191,6 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Patient DOB is null for patient with ID: " + patient.Id);
                 return;
             }
-            // Checking between all date formats I have seen so far
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
-            };
 
             DateTime dob;
             string dobString = patient.PatientDob.Trim(); // Remove any leading/trailing whitespaces
@@ -570,25 +589,6 @@ namespace Brady_s_Conversion_Program
             if (appointment.ResourceId != null) {
                 resource = long.Parse(appointment.ResourceId);
             }
-
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
-                "d/M/yyyy HH:mm:ss", "M/d/yyyy HH:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/d/M HH:mm:ss",
-                "dd-MM-yyyy HH:mm:ss", "MM-dd-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
-                "d-M-yyyy HH:mm:ss", "M-d-yyyy HH:mm:ss", "yyyy-M-d HH:mm:ss", "yyyy-d-M HH:mm:ss",
-                "dd MM yyyy HH:mm:ss", "MM dd yyyy HH:mm:ss", "yyyy MM dd HH:mm:ss", "yyyy dd MM HH:mm:ss",
-                "d M yyyy HH:mm:ss", "M d yyyy HH:mm:ss", "yyyy M d HH:mm:ss", "yyyy d M HH:mm:ss",
-                "ddMMMyyyy HH:mm:ss", "MMMddyyyy HH:mm:ss",
-                "dd MMM, yyyy HH:mm:ss", "MMM dd, yyyy HH:mm:ss",
-                "dd/MM/yyyy hh:mm:ss tt", "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
-                "d/M/yyyy hh:mm:ss tt", "M/d/yyyy hh:mm:ss tt", "yyyy/M/d hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
-                "dd-MM-yyyy hh:mm:ss tt", "MM-dd-yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
-                "d-M-yyyy hh:mm:ss tt", "M-d-yyyy hh:mm:ss tt", "yyyy-M-d hh:mm:ss tt", "yyyy-d-M hh:mm:ss tt",
-                "dd MM yyyy hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "yyyy MM dd hh:mm:ss tt", "yyyy dd MM hh:mm:ss tt",
-                "d M yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "yyyy M d hh:mm:ss tt", "yyyy d M hh:mm:ss tt",
-                "ddMMMyyyy hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt",
-                "dd MMM, yyyy hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt"
-            };
 
             DateTime start = DateTime.Parse("1/1/1900");
             if (!DateTime.TryParseExact(appointment.StartDate, dateFormats,
@@ -1074,16 +1074,7 @@ namespace Brady_s_Conversion_Program
             if (name.Ssn != null && !Regex.IsMatch(name.Ssn, ssnPattern)) {
                 ssn = name.Ssn;
             }
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
-            };
+
             DateTime? dob = null;
             if (name.Dob != null) {
                 DateTime tempDateTime;
@@ -1162,16 +1153,7 @@ namespace Brady_s_Conversion_Program
                     priorityID = priority;
                 }
             }
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
-            };
+
             DateTime? alertDate = null;
             if (patientAlert.AlertCreatedDate != null) {
                 DateTime tempDateTime;
@@ -1246,16 +1228,7 @@ namespace Brady_s_Conversion_Program
                     imageType = type;
                 }
             }
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
-            };
+
             DateTime? dateDocument = null;
             if (patientDocument.Date != null) {
                 DateTime tempDateTime;
@@ -1309,16 +1282,7 @@ namespace Brady_s_Conversion_Program
                 logger.Log("Insurance company not found for address with ID: " + patientInsurance.Id);
                 return;
             }
-            string[] dateFormats = new string[] {
-                "dd/MM/yyyy", "MM/dd/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-                "d/M/yyyy", "M/d/yyyy", "yyyy/M/d", "yyyy/d/M",
-                "dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-                "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M",
-                "dd MM yyyy", "MM dd yyyy", "yyyy MM dd", "yyyy dd MM",
-                "d M yyyy", "M d yyyy", "yyyy M d", "yyyy d M",
-                "ddMMMyyyy", "MMMddyyyy",
-                "dd MMM, yyyy", "MMM dd, yyyy"
-            };
+
             DateTime? startDate = null;
             if (patientInsurance.StartDate != null) {
                 DateTime tempDateTime;
@@ -1760,7 +1724,11 @@ namespace Brady_s_Conversion_Program
                 }
             }
 
-            // do stuff
+
+            var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
+                PatientId = ffpmPatient.PatientId,
+
+            };
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
