@@ -518,6 +518,11 @@ namespace Brady_s_Conversion_Program {
                 bool isActive = false;
                 bool isEmergency = false;
                 bool isPreferred = false;
+                if (address.TypeOfAddress == null) {
+                    logger.Log($"Address type is null for address with ID: {address.Id}");
+                    return;
+                }
+
                 if (address.TypeOfAddress == "primary" || address.TypeOfAddress == "Primary") {
                     isPrimary = true;
                     isActive = true;
@@ -758,7 +763,7 @@ namespace Brady_s_Conversion_Program {
                     Notes = notes,
                     IsExamType = examType,
                     IsAppointmentType = true,
-                    IsRecallType = false,
+                    IsRecallType = false, // Will set this to true for recall types
                     DefaultDuration = duration,
                     Active = isActive,
                     CanSchedule = schedule
@@ -1693,7 +1698,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(recall.Id);
+                var ConvPatient = convDbContext.Patients.Find(recall.PatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Patient not found for recall with ID: {recall.Id}");
                     return;
@@ -1756,13 +1761,53 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle recall type actions
+            try {
+                // Log or handle recall type actions
+                string code = "";
+                if (recallType.Code != null) {
+                    code = recallType.Code;
+                }
+                string description = "";
+                if (recallType.Description != null) {
+                    description = recallType.Description;
+                }
+                int defaultDuration = 0;
+                if (int.TryParse(recallType.DefaultDuration, out int temp)) {
+                    defaultDuration = temp;
+                }
+                bool isActive = false;
+                if (recallType.Active != null && recallType.Active.ToLower() == "yes") {
+                    isActive = true;
+                }
+                string note = "";
+                if (recallType.Notes != null) {
+                    note = recallType.Notes;
+                }
 
+                var newRecallType = new Brady_s_Conversion_Program.ModelsA.SchedulingAppointmentType {
+                    IsRecallType = true,
+                    IsAppointmentType = false,
+                    IsExamType = false,
+                    Code = code,
+                    Description = description,
+                    DefaultDuration = defaultDuration,
+                    Active = isActive,
+                    Notes = note,
+                    LocationId = 0,
+                    PatientRequired = false,
+
+                };
+                ffpmDbContext.SchedulingAppointmentTypes.Add(newRecallType);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception ex) {
+                logger.Log($"An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
+            }
         }
 
         public static void ConvertReferral(Models.Referral referral, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-
             // No new entity creation, just process existing logic
+
         }
 
         public static void ConvertSchedCode(Models.SchedCode schedCode, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
