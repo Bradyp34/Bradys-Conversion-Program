@@ -1810,9 +1810,43 @@ namespace Brady_s_Conversion_Program {
 
         }
 
-        public static void ConvertSchedCode(Models.SchedCode schedCode, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle sched code-related actions
+        public static void ConvertSchedCode(Models.SchedCode schedtype, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
+            // Log or handle sched type-related actions
+            int type = 0;
+            if (schedtype.TypeId != null) {
+                type = int.Parse(schedtype.TypeId);
+            }
+            string code = "";
+            if (schedtype.Code != null) {
+                code = schedtype.Code;
+            }
+            string description = "";
+            if (schedtype.Description != null) {
+                description = schedtype.Description;
+            }
+            bool isActive = false;
+            if (schedtype.Active != null && schedtype.Active.ToLower() == "yes") {
+                isActive = true;
+            }
+            int location = 0;
+            bool isDefault = false;
+            bool noShow = false;
+            if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes") {
+                noShow = true;
+            }
 
+            var newSchdulingCode = new Brady_s_Conversion_Program.ModelsA.SchedulingCode {
+                TypeId = type,
+                Code = code,
+                Description = description,
+                Active = isActive,
+                LocationId = location,
+                IsDefaultCode = isDefault,
+                IsNoShow = noShow
+            };
+            ffpmDbContext.SchedulingCodes.Add(newSchdulingCode);
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
