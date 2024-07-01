@@ -554,6 +554,11 @@ namespace Brady_s_Conversion_Program {
                     IsAlternateAddress = isAlternate
                 };
                 ffpmDbContext.DmgPatientAddresses.Add(newAddress);
+
+                ffpmDbContext.SaveChanges();
+
+                ffpmPatient.AddressId = newAddress.PatientAddressId;
+
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
@@ -1811,7 +1816,6 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertSchedCode(Models.SchedCode schedtype, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
-            // Log or handle sched type-related actions
             int type = 0;
             if (schedtype.TypeId != null) {
                 type = int.Parse(schedtype.TypeId);
