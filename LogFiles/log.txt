@@ -1,0 +1,3 @@
+An error occurred while converting the appointment with ID: 1. Error: The key value at position 0 of the call to 'DbSet<Patient>.Find' was of type 'string', which does not match the property type of 'int'.
+An error occurred while converting the appointment with ID: 2. Error: The key value at position 0 of the call to 'DbSet<Patient>.Find' was of type 'string', which does not match the property type of 'int'.
+An error occurred while converting the appointment with ID: 3. Error: The key value at position 0 of the call to 'DbSet<Patient>.Find' was of type 'string', which does not match the property type of 'int'.

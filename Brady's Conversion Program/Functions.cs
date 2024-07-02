@@ -100,40 +100,37 @@ namespace Brady_s_Conversion_Program {
 
         public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd, bool newFfpm, bool newEyemd) {
             try {
-                // have log file ready to record failings and issues
-                using (StreamWriter sw = new StreamWriter("../../../../LogFiles/log.txt")) {
-                    ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
+                ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
-                    // Using block to ensure disposal of DbContexts
-                    using (var convDbContext = new FoxfireConvContext(connection)) {
-                        // Start with FFPM only, do EyeMD later
+                // Using block to ensure disposal of DbContexts
+                using (var convDbContext = new FoxfireConvContext(connection)) {
+                    // Start with FFPM only, do EyeMD later
 
-                        convDbContext.Database.OpenConnection();
-                        if (ffpm == true) {
-                            if (newFfpm) {
-                                new FfpmContext(FFPMConnection).Database.EnsureCreated();
-                            }
-                            using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                                ffpmDbContext.Database.OpenConnection();
-                                ConvertFFPM(convDbContext, ffpmDbContext, logger);
-                                ffpmDbContext.SaveChanges();
-                            }
+                    convDbContext.Database.OpenConnection();
+                    if (ffpm == true) {
+                        if (newFfpm) {
+                            new FfpmContext(FFPMConnection).Database.EnsureCreated();
                         }
-                        if (eyemd == true) {
-                            if (newEyemd) {
-                                new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
-                            }
-                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                                eyeMDDbContext.Database.OpenConnection();
-                                ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
-                                eyeMDDbContext.SaveChanges();
-                            } // Test comment for jira
+                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                            ffpmDbContext.Database.OpenConnection();
+                            ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                            ffpmDbContext.SaveChanges();
                         }
-
-                        convDbContext.SaveChanges();
-
-                        // EF Core automatically handles connection closing when DbContext is disposed
                     }
+                    if (eyemd == true) {
+                        if (newEyemd) {
+                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                        }
+                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            eyeMDDbContext.Database.OpenConnection();
+                            ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
+                            eyeMDDbContext.SaveChanges();
+                        } // Test comment for jira
+                    }
+
+                    convDbContext.SaveChanges();
+
+                    // EF Core automatically handles connection closing when DbContext is disposed
                 }
             }
             catch (Exception e) {
