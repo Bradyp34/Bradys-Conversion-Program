@@ -576,7 +576,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Patient not found for appointment with ID: {appointment.PatientId}");
                     return;
                 }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
                     logger.Log($"Patient not found for appointment with ID: {appointment.PatientId}");
                     return;
@@ -605,7 +605,7 @@ namespace Brady_s_Conversion_Program {
                         duration = durationInt;
                     }
                 }
-                DateTime created = DateTime.Parse("1/1/1900");
+                DateTime created = DateTime.Parse("1/1/1900 12:00 AM");
                 if (!DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                     logger.Log($"Appointment created time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
@@ -690,6 +690,15 @@ namespace Brady_s_Conversion_Program {
                         type = typeInt;
                     }
                 }
+                DateTime? updated = null;
+                if (appointment.DateTimeUpdated != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(appointment.DateTimeUpdated, dateFormats,
+                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        updated = tempDateTime;
+                    }
+                }
+                DateTime acceptableMinDateTime = DateTime.Parse("1/1/1900 12:00:00 AM");
 
                 var newAppointment = new SchedulingAppointment {
                     PatientId = ffpmPatient.PatientId,
@@ -699,13 +708,13 @@ namespace Brady_s_Conversion_Program {
                     EndDate = end,
                     Notes = appointment.Notes,
                     Duration = duration,
-                    DateTimeCreated = created,
+                    DateTimeCreated = acceptableMinDateTime,
                     LocationId = ffpmPatient.LocationId,
                     Confirmed = confirmed,
                     Sequence = sequence,
                     RequestId = requestId,
                     Status = status,
-                    CheckInDateTime = checkIn,
+                    CheckInDateTime = acceptableMinDateTime,
                     TakeBackDateTime = takeback,
                     CheckOutDateTime = checkOut,
                     Description = appointment.Description,
@@ -713,7 +722,8 @@ namespace Brady_s_Conversion_Program {
                     LinkedAppointmentId = linked,
                     SchedulingCodeId = schedulingCode,
                     SchedulingCodeNotes = appointment.SchedulingCodeNotes,
-                    AppointmentTypeId = type
+                    AppointmentTypeId = type,
+                    DateTimeUpdated = acceptableMinDateTime
                 };
                 ffpmDbContext.SchedulingAppointments.Add(newAppointment);
                 ffpmDbContext.SaveChanges();
