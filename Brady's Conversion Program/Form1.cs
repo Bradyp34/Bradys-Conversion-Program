@@ -34,7 +34,7 @@ namespace Brady_s_Conversion_Program
             string connectionString = "Server=" + ServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
-            string result = Functions.ConvertToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked);
+            string result = Functions.ConvertConvToDB(connectionString, FFPMConnectionString, EyeMDConnectionString, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked);
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text = result;
             });

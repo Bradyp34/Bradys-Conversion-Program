@@ -98,7 +98,7 @@ namespace Brady_s_Conversion_Program {
 
         
 
-        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool newFfpm, bool newEyemd) {
+        public static string ConvertConvToDB(string connection, string FFPMConnection, string EyeMDConnection, bool newFfpm, bool newEyemd) {
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
