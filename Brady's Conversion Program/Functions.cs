@@ -98,7 +98,7 @@ namespace Brady_s_Conversion_Program {
 
         
 
-        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd, bool newFfpm, bool newEyemd) {
+        public static string ConvertToDB(string connection, string FFPMConnection, string EyeMDConnection, bool newFfpm, bool newEyemd) {
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
@@ -107,26 +107,22 @@ namespace Brady_s_Conversion_Program {
                     // Start with FFPM only, do EyeMD later
 
                     convDbContext.Database.OpenConnection();
-                    if (ffpm == true) {
-                        if (newFfpm) {
-                            new FfpmContext(FFPMConnection).Database.EnsureCreated();
-                        }
-                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            ffpmDbContext.Database.OpenConnection();
-                            ConvertFFPM(convDbContext, ffpmDbContext, logger);
-                            ffpmDbContext.SaveChanges();
-                        }
+                    if (newFfpm) {
+                        new FfpmContext(FFPMConnection).Database.EnsureCreated();
                     }
-                    if (eyemd == true) {
-                        if (newEyemd) {
-                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
-                        }
-                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                            eyeMDDbContext.Database.OpenConnection();
-                            ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
-                            eyeMDDbContext.SaveChanges();
-                        } // Test comment for jira
+                    using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                        ffpmDbContext.Database.OpenConnection();
+                        ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                        ffpmDbContext.SaveChanges();
                     }
+                    if (newEyemd) {
+                        new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                    }
+                    using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                        eyeMDDbContext.Database.OpenConnection();
+                        ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
+                        eyeMDDbContext.SaveChanges();
+                    } // Test comment for jira
 
                     convDbContext.SaveChanges();
 

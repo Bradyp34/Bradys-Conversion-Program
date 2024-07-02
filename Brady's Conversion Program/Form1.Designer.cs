@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent() {
             ServerTextBox = new TextBox();
-            DatabaseTextBox = new TextBox();
+            ConvTextBox = new TextBox();
             DBBeginButton = new Button();
             FFPMServerTextBox = new TextBox();
             FFPMDataBaseTextBox = new TextBox();
@@ -36,11 +36,11 @@
             EyeMDServerNameTextBox = new TextBox();
             ResultsBox = new RichTextBox();
             progressBar1 = new ProgressBar();
-            FFPMCheckBox = new CheckBox();
-            EyeMDCheckBox = new CheckBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             FFPMNewDBCheckBox = new CheckBox();
             EyeMDNewDBCheckBox = new CheckBox();
+            EHRTextBox = new TextBox();
+            InvTextBox = new TextBox();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -51,19 +51,19 @@
             ServerTextBox.Size = new Size(132, 23);
             ServerTextBox.TabIndex = 0;
             // 
-            // DatabaseTextBox
+            // ConvTextBox
             // 
-            DatabaseTextBox.Location = new Point(12, 41);
-            DatabaseTextBox.Name = "DatabaseTextBox";
-            DatabaseTextBox.PlaceholderText = "Inbound Database";
-            DatabaseTextBox.Size = new Size(132, 23);
-            DatabaseTextBox.TabIndex = 1;
+            ConvTextBox.Location = new Point(12, 41);
+            ConvTextBox.Name = "ConvTextBox";
+            ConvTextBox.PlaceholderText = "Conv Database";
+            ConvTextBox.Size = new Size(132, 23);
+            ConvTextBox.TabIndex = 1;
             // 
             // DBBeginButton
             // 
-            DBBeginButton.Location = new Point(12, 70);
+            DBBeginButton.Location = new Point(288, 70);
             DBBeginButton.Name = "DBBeginButton";
-            DBBeginButton.Size = new Size(408, 23);
+            DBBeginButton.Size = new Size(132, 23);
             DBBeginButton.TabIndex = 2;
             DBBeginButton.Text = "Begin";
             DBBeginButton.UseVisualStyleBackColor = true;
@@ -116,28 +116,6 @@
             progressBar1.Size = new Size(408, 23);
             progressBar1.TabIndex = 8;
             // 
-            // FFPMCheckBox
-            // 
-            FFPMCheckBox.AutoSize = true;
-            FFPMCheckBox.Location = new Point(105, 99);
-            FFPMCheckBox.Name = "FFPMCheckBox";
-            FFPMCheckBox.Size = new Size(56, 19);
-            FFPMCheckBox.TabIndex = 9;
-            FFPMCheckBox.Text = "FFPM";
-            FFPMCheckBox.UseVisualStyleBackColor = true;
-            FFPMCheckBox.CheckedChanged += FFPMCheckBox_CheckedChanged;
-            // 
-            // EyeMDCheckBox
-            // 
-            EyeMDCheckBox.AutoSize = true;
-            EyeMDCheckBox.Location = new Point(252, 99);
-            EyeMDCheckBox.Name = "EyeMDCheckBox";
-            EyeMDCheckBox.Size = new Size(63, 19);
-            EyeMDCheckBox.TabIndex = 10;
-            EyeMDCheckBox.Text = "EyeMD";
-            EyeMDCheckBox.UseVisualStyleBackColor = true;
-            EyeMDCheckBox.CheckedChanged += EyeMDCheckBox_CheckedChanged;
-            // 
             // backgroundWorker1
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
@@ -145,22 +123,38 @@
             // FFPMNewDBCheckBox
             // 
             FFPMNewDBCheckBox.AutoSize = true;
-            FFPMNewDBCheckBox.Location = new Point(167, 99);
+            FFPMNewDBCheckBox.Location = new Point(150, 99);
             FFPMNewDBCheckBox.Name = "FFPMNewDBCheckBox";
-            FFPMNewDBCheckBox.Size = new Size(65, 19);
+            FFPMNewDBCheckBox.Size = new Size(101, 19);
             FFPMNewDBCheckBox.TabIndex = 11;
-            FFPMNewDBCheckBox.Text = "NewDB";
+            FFPMNewDBCheckBox.Text = "New FFPM DB";
             FFPMNewDBCheckBox.UseVisualStyleBackColor = true;
             // 
             // EyeMDNewDBCheckBox
             // 
             EyeMDNewDBCheckBox.AutoSize = true;
-            EyeMDNewDBCheckBox.Location = new Point(321, 99);
+            EyeMDNewDBCheckBox.Location = new Point(288, 99);
             EyeMDNewDBCheckBox.Name = "EyeMDNewDBCheckBox";
-            EyeMDNewDBCheckBox.Size = new Size(65, 19);
+            EyeMDNewDBCheckBox.Size = new Size(108, 19);
             EyeMDNewDBCheckBox.TabIndex = 12;
-            EyeMDNewDBCheckBox.Text = "NewDB";
+            EyeMDNewDBCheckBox.Text = "New EyeMD DB";
             EyeMDNewDBCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // EHRTextBox
+            // 
+            EHRTextBox.Location = new Point(12, 70);
+            EHRTextBox.Name = "EHRTextBox";
+            EHRTextBox.PlaceholderText = "EHR Database";
+            EHRTextBox.Size = new Size(132, 23);
+            EHRTextBox.TabIndex = 13;
+            // 
+            // InvTextBox
+            // 
+            InvTextBox.Location = new Point(150, 70);
+            InvTextBox.Name = "InvTextBox";
+            InvTextBox.PlaceholderText = "Inv Database";
+            InvTextBox.Size = new Size(132, 23);
+            InvTextBox.TabIndex = 14;
             // 
             // Form1
             // 
@@ -168,10 +162,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 254);
+            Controls.Add(InvTextBox);
+            Controls.Add(EHRTextBox);
             Controls.Add(EyeMDNewDBCheckBox);
             Controls.Add(FFPMNewDBCheckBox);
-            Controls.Add(EyeMDCheckBox);
-            Controls.Add(FFPMCheckBox);
             Controls.Add(progressBar1);
             Controls.Add(ResultsBox);
             Controls.Add(EyeMDDBTextBox);
@@ -180,7 +174,7 @@
             Controls.Add(FFPMServerTextBox);
             Controls.Add(DBBeginButton);
             Controls.Add(ServerTextBox);
-            Controls.Add(DatabaseTextBox);
+            Controls.Add(ConvTextBox);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
@@ -192,7 +186,7 @@
 
         public Button DBBeginButton;
         public TextBox ServerTextBox;
-        public TextBox DatabaseTextBox;
+        public TextBox ConvTextBox;
         public TextBox FFPMServerTextBox;
         public TextBox FFPMDataBaseTextBox;
         public TextBox EyeMDDBTextBox;
@@ -200,10 +194,10 @@
         public RichTextBox ResultsBox;
         private RichTextBox richTextBox1;
         public ProgressBar progressBar1;
-        private CheckBox FFPMCheckBox;
-        private CheckBox EyeMDCheckBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private CheckBox FFPMNewDBCheckBox;
         private CheckBox EyeMDNewDBCheckBox;
+        public TextBox EHRTextBox;
+        public TextBox InvTextBox;
     }
 }
