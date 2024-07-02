@@ -484,7 +484,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ffpmPatientAdditional == null) {
-                    logger.Log($"Patient not found for address with ID: {address.Id}");
+                    logger.Log($"Patient additional not found for address with ID: {address.Id}");
                     return;
                 }
                 string? zipCode = null;
@@ -517,7 +517,6 @@ namespace Brady_s_Conversion_Program {
                 bool isPreferred = false;
                 if (address.TypeOfAddress == null) {
                     logger.Log($"Address type is null for address with ID: {address.Id}");
-                    return;
                 }
 
                 if (address.TypeOfAddress == "primary" || address.TypeOfAddress == "Primary") {
@@ -565,8 +564,14 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             try {
+                int patientId = 0;
+                if (int.TryParse(appointment.PatientId, out int patientIdInt)) {
+                    patientId = patientIdInt;
+                } else {
+                    logger.Log($"Patient ID is invalid for appointment with ID: {appointment.Id}");
+                }
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(appointment.PatientId);
+                var ConvPatient = convDbContext.Patients.Find(patientId);
                 if (ConvPatient == null) {
                     logger.Log($"Patient not found for appointment with ID: {appointment.PatientId}");
                     return;
@@ -604,7 +609,6 @@ namespace Brady_s_Conversion_Program {
                 if (!DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                     logger.Log($"Appointment created time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
-                    return;
                 }
                 int billingLocId = 0;
                 if (appointment.BillingLocationId != null) {
