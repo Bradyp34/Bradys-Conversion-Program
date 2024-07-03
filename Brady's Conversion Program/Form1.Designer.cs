@@ -216,7 +216,6 @@
         public TextBox EyeMDDBTextBox;
         public TextBox EyeMDServerNameTextBox;
         public RichTextBox ResultsBox;
-        private RichTextBox richTextBox1;
         public ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private CheckBox FFPMNewDBCheckBox;
