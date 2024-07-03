@@ -96,33 +96,43 @@ namespace Brady_s_Conversion_Program {
         private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
         private static Regex phoneRegex = new Regex(@"^(\d{3}-\d{3}-\d{4})$");
 
-        
+        public static string FFPMString = "";
+        public static string EyeMDString = "";
 
-        public static string ConvertConvToDB(string connection, string FFPMConnection, string EyeMDConnection, bool newFfpm, bool newEyemd) {
+        public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection, bool ffpm, bool eyemd, bool newFfpm, bool newEyemd) {
+            FFPMString = FFPMConnection;
+            EyeMDString = EyeMDConnection;
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
                 // Using block to ensure disposal of DbContexts
-                using (var convDbContext = new FoxfireConvContext(connection)) {
-                    // Start with FFPM only, do EyeMD later
+                using (var convDbContext = new FoxfireConvContext(convConnection)) {
 
                     convDbContext.Database.OpenConnection();
-                    if (newFfpm) {
-                        new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                    if (ffpm == true) {
+                        if (newFfpm) {
+                            new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                        }
+                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                                ffpmDbContext.Database.OpenConnection();
+                                eyeMDDbContext.Database.OpenConnection();
+                                ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                                ffpmDbContext.SaveChanges();
+                            }
+                        }
                     }
-                    using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                        ffpmDbContext.Database.OpenConnection();
-                        ConvertFFPM(convDbContext, ffpmDbContext, logger);
-                        ffpmDbContext.SaveChanges();
+                    if (eyemd == true) { // not positive what this will entail yet
+                        if (newEyemd) {
+                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                        }
+                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            eyeMDDbContext.Database.OpenConnection();
+                            ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
+                            eyeMDDbContext.SaveChanges();
+                        } // Test comment for jira
                     }
-                    if (newEyemd) {
-                        new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
-                    }
-                    using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                        eyeMDDbContext.Database.OpenConnection();
-                        ConvertEyeMD(convDbContext, eyeMDDbContext, logger);
-                        eyeMDDbContext.SaveChanges();
-                    } // Test comment for jira
 
                     convDbContext.SaveChanges();
 

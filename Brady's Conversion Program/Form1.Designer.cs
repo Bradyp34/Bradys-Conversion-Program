@@ -41,6 +41,8 @@
             EyeMDNewDBCheckBox = new CheckBox();
             EHRTextBox = new TextBox();
             InvTextBox = new TextBox();
+            FFPMCheckBox = new CheckBox();
+            EyeMDCheckBox = new CheckBox();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -123,7 +125,7 @@
             // FFPMNewDBCheckBox
             // 
             FFPMNewDBCheckBox.AutoSize = true;
-            FFPMNewDBCheckBox.Location = new Point(150, 99);
+            FFPMNewDBCheckBox.Location = new Point(165, 99);
             FFPMNewDBCheckBox.Name = "FFPMNewDBCheckBox";
             FFPMNewDBCheckBox.Size = new Size(101, 19);
             FFPMNewDBCheckBox.TabIndex = 11;
@@ -133,7 +135,7 @@
             // EyeMDNewDBCheckBox
             // 
             EyeMDNewDBCheckBox.AutoSize = true;
-            EyeMDNewDBCheckBox.Location = new Point(288, 99);
+            EyeMDNewDBCheckBox.Location = new Point(297, 99);
             EyeMDNewDBCheckBox.Name = "EyeMDNewDBCheckBox";
             EyeMDNewDBCheckBox.Size = new Size(108, 19);
             EyeMDNewDBCheckBox.TabIndex = 12;
@@ -156,12 +158,34 @@
             InvTextBox.Size = new Size(132, 23);
             InvTextBox.TabIndex = 14;
             // 
+            // FFPMCheckBox
+            // 
+            FFPMCheckBox.AutoSize = true;
+            FFPMCheckBox.Location = new Point(12, 99);
+            FFPMCheckBox.Name = "FFPMCheckBox";
+            FFPMCheckBox.Size = new Size(56, 19);
+            FFPMCheckBox.TabIndex = 15;
+            FFPMCheckBox.Text = "FFPM";
+            FFPMCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // EyeMDCheckBox
+            // 
+            EyeMDCheckBox.AutoSize = true;
+            EyeMDCheckBox.Location = new Point(81, 99);
+            EyeMDCheckBox.Name = "EyeMDCheckBox";
+            EyeMDCheckBox.Size = new Size(63, 19);
+            EyeMDCheckBox.TabIndex = 16;
+            EyeMDCheckBox.Text = "EyeMD";
+            EyeMDCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 254);
+            Controls.Add(EyeMDCheckBox);
+            Controls.Add(FFPMCheckBox);
             Controls.Add(InvTextBox);
             Controls.Add(EHRTextBox);
             Controls.Add(EyeMDNewDBCheckBox);
@@ -199,5 +223,7 @@
         private CheckBox EyeMDNewDBCheckBox;
         public TextBox EHRTextBox;
         public TextBox InvTextBox;
+        private CheckBox FFPMCheckBox;
+        private CheckBox EyeMDCheckBox;
     }
 }
