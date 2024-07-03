@@ -66,7 +66,26 @@ namespace Brady_s_Conversion_Program {
             "dd MM yyyy hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "yyyy MM dd hh:mm:ss tt", "yyyy dd MM hh:mm:ss tt",
             "d M yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "yyyy M d hh:mm:ss tt", "yyyy d M hh:mm:ss tt",
             "ddMMMyyyy hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt",
-            "dd MMM, yyyy hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt"
+            "dd MMM, yyyy hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt",
+            // Date with 24-hour time formats (without seconds)
+            "dd/MM/yyyy HH:mm", "MM/dd/yyyy HH:mm", "yyyy/MM/dd HH:mm", "yyyy/dd/MM HH:mm",
+            "d/M/yyyy HH:mm", "M/d/yyyy HH:mm", "yyyy/M/d HH:mm", "yyyy/d/M HH:mm",
+            "dd-MM-yyyy HH:mm", "MM-dd-yyyy HH:mm", "yyyy-MM-dd HH:mm", "yyyy-dd-MM HH:mm",
+            "d-M-yyyy HH:mm", "M-d-yyyy HH:mm", "yyyy-M-d HH:mm", "yyyy-d-M HH:mm",
+            "dd MM yyyy HH:mm", "MM dd yyyy HH:mm", "yyyy MM dd HH:mm", "yyyy dd MM HH:mm",
+            "d M yyyy HH:mm", "M d yyyy HH:mm", "yyyy M d HH:mm", "yyyy d M HH:mm",
+            "ddMMMyyyy HH:mm", "MMMddyyyy HH:mm",
+            "dd MMM, yyyy HH:mm", "MMM dd, yyyy HH:mm",
+
+            // Date with 12-hour time formats (AM/PM) without seconds
+            "dd/MM/yyyy hh:mm tt", "MM/dd/yyyy hh:mm tt", "yyyy/MM/dd hh:mm tt", "yyyy/dd/MM hh:mm tt",
+            "d/M/yyyy hh:mm tt", "M/d/yyyy hh:mm tt", "yyyy/M/d hh:mm tt", "yyyy/d/M hh:mm tt",
+            "dd-MM-yyyy hh:mm tt", "MM-dd-yyyy hh:mm tt", "yyyy-MM-dd hh:mm tt", "yyyy-dd-MM hh:mm tt",
+            "d-M-yyyy hh:mm tt", "M-d-yyyy hh:mm tt", "yyyy-M-d hh:mm tt", "yyyy-d-M hh:mm tt",
+            "dd MM yyyy hh:mm tt", "MM dd yyyy hh:mm tt", "yyyy MM dd hh:mm tt", "yyyy dd MM hh:mm tt",
+            "d M yyyy hh:mm tt", "M d yyyy hh:mm tt", "yyyy M d hh:mm tt", "yyyy d M hh:mm tt",
+            "ddMMMyyyy hh:mm tt", "MMMddyyyy hh:mm tt",
+            "dd MMM, yyyy hh:mm tt", "MMM dd, yyyy hh:mm tt"
         };
 
         private static Dictionary<string, short> stateDictionary = new Dictionary<string, short> {
@@ -118,7 +137,7 @@ namespace Brady_s_Conversion_Program {
                             using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                                 ffpmDbContext.Database.OpenConnection();
                                 eyeMDDbContext.Database.OpenConnection();
-                                ConvertFFPM(convDbContext, ffpmDbContext, logger);
+                                ConvertFFPM(convDbContext, ffpmDbContext, eyeMDDbContext, logger);
                                 ffpmDbContext.SaveChanges();
                             }
                         }
@@ -145,10 +164,10 @@ namespace Brady_s_Conversion_Program {
             return "Operation Successful";
         }
 
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger) {
             // Assuming PatientConvert now returns a patientNum
             foreach (var patient in convDbContext.Patients.ToList()) {
-                PatientConvert(patient, convDbContext, ffpmDbContext, logger);
+                PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger);
             }
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger);
@@ -203,7 +222,7 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
+        public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, ILogger logger) {
             try {
                 if (patient.PatientAccountNumber == null) {
                     logger.Log($"Patient Account Number is null for patient with ID: {patient.Id}");
@@ -463,6 +482,16 @@ namespace Brady_s_Conversion_Program {
                 };
                 ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
                 ffpmDbContext.SaveChanges();
+
+                var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                    ClientSoftwarePtId = newPatient.AccountNumber,
+                    PatientNameFirst = newPatient.FirstName,
+                    PatientNameLast = newPatient.LastName,
+                    PatientNameMiddle = newPatient.MiddleName
+                };
+                eyeMdDbContext.Emrpatients.Add(newEMRPatient);
+
+                eyeMdDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
@@ -714,7 +743,7 @@ namespace Brady_s_Conversion_Program {
                     EndDate = end,
                     Notes = appointment.Notes,
                     Duration = duration,
-                    DateTimeCreated = acceptableMinDateTime,
+                    DateTimeCreated = created,
                     LocationId = ffpmPatient.LocationId,
                     Confirmed = confirmed,
                     Sequence = sequence,

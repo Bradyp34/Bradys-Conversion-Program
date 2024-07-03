@@ -22,6 +22,8 @@ namespace Brady_s_Conversion_Program
             }
             FFPMNewDBCheckBox.Hide();
             EyeMDNewDBCheckBox.Hide();
+            FFPMCheckBox.Hide();
+            EyeMDCheckBox.Hide();
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
         }
