@@ -8,9 +8,12 @@ namespace Brady_s_Conversion_Program
         }
 
         private void DBBeginButton_Click(object sender, EventArgs e) {
-            if (ServerTextBox.Text == "" || ConvTextBox.Text == "") {
-                MessageBox.Show("Please enter a source server and database name.");
-                return;
+            if (ServerTextBox.Text == "") {
+                MessageBox.Show("Please enter a server name.");
+            }
+            else if (FFPMCheckBox.Checked && ConvTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion."); 
+                // I dont know what tables will be used in the end in ffpm vs eyemd, but this is good for now
             }
             else if (FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") {
                 MessageBox.Show("Please enter a server and database name for FFPM.");
