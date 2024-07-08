@@ -13,6 +13,9 @@ namespace Brady_s_Conversion_Program
             }
             else if (FFPMCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion."); 
+            }
+            else if (EyeMDCheckBox.Checked && EHRTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for EHR Database on EyeMD Conversion.");
                 // I dont know what tables will be used in the end in ffpm vs eyemd, but this is good for now
             }
             else if (FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") {
