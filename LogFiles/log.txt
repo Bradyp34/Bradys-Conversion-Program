@@ -1,0 +1,4 @@
+Patient not found for name with ID: 1
+Patient not found for name with ID: 2
+Patient not found for name with ID: 3
+Insurance company not found for patient insurance with ID: 3

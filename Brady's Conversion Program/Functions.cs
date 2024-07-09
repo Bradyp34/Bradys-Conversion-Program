@@ -741,7 +741,6 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var newAppointment = new SchedulingAppointment {
-                    AppointmentId = appId,
                     PatientId = ffpmPatient.PatientId,
                     ResourceId = resource,
                     BillingLocationId = billingLocId,
@@ -904,6 +903,34 @@ namespace Brady_s_Conversion_Program {
                 if (insurance.InsCompanyCode != null) {
                     code = insurance.InsCompanyCode;
                 }
+                int companyId = 0;
+                if (insurance.InsCompanyId != null) {
+                    if (int.TryParse(insurance.InsCompanyId, out int companyIdInt)) {
+                        companyId = companyIdInt;
+                    }
+                }
+                int claimTypeId = 0;
+                if (insurance.InsCompanyClaimType != null) {
+                    if (insurance.InsCompanyClaimType.ToLower() == "medical") {
+                        claimTypeId = 1;
+                    } else if (insurance.InsCompanyClaimType.ToLower() == "vision") {
+                        claimTypeId = 2;
+                    }
+                }
+                int policyTypeId = 0;
+                if (insurance.InsCompanyPolicyType != null) {
+                    if (insurance.InsCompanyPolicyType.ToLower() == "medical") {
+                        policyTypeId = 1;
+                    } else if (insurance.InsCompanyPolicyType.ToLower() == "vision") {
+                        policyTypeId = 2;
+                    }
+                }
+                int? carrierTypeId = 0;
+                if (insurance.InsCompanyCarrierType == "medical") {
+                    carrierTypeId = 1;
+                } else if (insurance.InsCompanyCarrierType == "vision") {
+                    carrierTypeId = 2;
+                }
 
                 var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
                     InsCompanyName = companyName,
@@ -930,7 +957,10 @@ namespace Brady_s_Conversion_Program {
                     ElectornicEnabled = true,
                     ApplyShiftLogic = true,
                     PaperClaimsOnly = false,
-                    IsCompanyInsurance = false
+                    IsCompanyInsurance = false,
+                    InsCompanyClaimTypeId = claimTypeId,
+                    InsCompanyPolicyTypeId = policyTypeId,
+                    InsCompanyCarrierTypeId = carrierTypeId
                 };
                 ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
                 ffpmDbContext.SaveChanges();
@@ -1101,7 +1131,8 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger) {
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(name.Id);
+                var ConvPatients = convDbContext.Patients.ToList();
+                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == name.AccountNumber);
                 if (ConvPatient == null) {
                     logger.Log($"Patient not found for name with ID: {name.Id}");
                     return;
@@ -1153,20 +1184,22 @@ namespace Brady_s_Conversion_Program {
                 }
                 short? genderInt = null;
                 if (name.Sex != null) {
-                    if (name.Sex.ToUpper() == "M") {
+                    if (name.Sex.ToUpper() == "M" || name.Sex.ToLower() == "male") {
                         genderInt = 1;
                     }
-                    else if (name.Sex.ToUpper() == "F") {
+                    else if (name.Sex.ToUpper() == "F" || name.Sex.ToLower() == "female") {
                         genderInt = 2;
+                    } else {
+                        genderInt = 0;
                     }
                 }
-                if (name.Relationship == "emergency contact") {
+                if (name.Relationship.ToLower() == "emergency contact") {
                     ffpmPatientAdditional.EmergencyLast = name.LastName;
                     ffpmPatientAdditional.EmergencyFirst = name.FirstName;
                     ffpmPatientAdditional.EmergencyPatientId = accNum;
                     ffpmPatientAdditional.EmergencyAddressId = addId;
                 }
-                else if (name.Relationship == "guarantor") {
+                else if (name.Relationship.ToLower() == "guarantor") {
                     bool isExistingPatient = false;
                     if (accNum != null) {
                         isExistingPatient = true;
@@ -1185,7 +1218,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.DmgGuarantors.Add(newGuarantor);
                     ffpmDbContext.SaveChanges();
                 }
-                else if (name.Relationship == "employer") {
+                else if (name.Relationship.ToLower() == "employer") {
                     ffpmPatientAdditional.EmployerName = name.LastName;
                     ffpmPatientAdditional.EmployerWebsite = name.FirstName;
                     ffpmPatientAdditional.EmployerAddressId = addId;
@@ -1427,6 +1460,7 @@ namespace Brady_s_Conversion_Program {
                     InsuranceCompanyId = insCompId,
                     PolicyNumber = patientInsurance.Cert,
                     GroupId = patientInsurance.Group
+                    
                 };
                 ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
                 ffpmDbContext.SaveChanges();

@@ -43,6 +43,8 @@
             InvTextBox = new TextBox();
             FFPMCheckBox = new CheckBox();
             EyeMDCheckBox = new CheckBox();
+            ClearTextButton = new Button();
+            ClearInputButton = new Button();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -167,6 +169,7 @@
             FFPMCheckBox.TabIndex = 15;
             FFPMCheckBox.Text = "FFPM";
             FFPMCheckBox.UseVisualStyleBackColor = true;
+            FFPMCheckBox.CheckedChanged += FFPMCheckBox_CheckedChanged;
             // 
             // EyeMDCheckBox
             // 
@@ -177,13 +180,36 @@
             EyeMDCheckBox.TabIndex = 16;
             EyeMDCheckBox.Text = "EyeMD";
             EyeMDCheckBox.UseVisualStyleBackColor = true;
+            EyeMDCheckBox.CheckedChanged += EyeMDCheckBox_CheckedChanged;
+            // 
+            // ClearTextButton
+            // 
+            ClearTextButton.Location = new Point(12, 248);
+            ClearTextButton.Name = "ClearTextButton";
+            ClearTextButton.Size = new Size(75, 23);
+            ClearTextButton.TabIndex = 17;
+            ClearTextButton.Text = "Clear Text";
+            ClearTextButton.UseVisualStyleBackColor = true;
+            ClearTextButton.Click += ClearTextButton_Click;
+            // 
+            // ClearInputButton
+            // 
+            ClearInputButton.Location = new Point(345, 248);
+            ClearInputButton.Name = "ClearInputButton";
+            ClearInputButton.Size = new Size(75, 23);
+            ClearInputButton.TabIndex = 18;
+            ClearInputButton.Text = "Clear Input";
+            ClearInputButton.UseVisualStyleBackColor = true;
+            ClearInputButton.Click += ClearInputButton_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 254);
+            ClientSize = new Size(432, 273);
+            Controls.Add(ClearInputButton);
+            Controls.Add(ClearTextButton);
             Controls.Add(EyeMDCheckBox);
             Controls.Add(FFPMCheckBox);
             Controls.Add(InvTextBox);
@@ -224,5 +250,7 @@
         public TextBox InvTextBox;
         private CheckBox FFPMCheckBox;
         private CheckBox EyeMDCheckBox;
+        private Button ClearTextButton;
+        private Button ClearInputButton;
     }
 }
