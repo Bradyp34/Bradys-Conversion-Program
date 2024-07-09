@@ -6,8 +6,10 @@ namespace Brady_s_Conversion_Program.ModelsC;
 
 public partial class EHRDbContext : DbContext
 {
-    public EHRDbContext()
-    {
+    private readonly string _connectionString;
+
+    public EHRDbContext(string connectionString) {
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     public EHRDbContext(DbContextOptions<EHRDbContext> options)
@@ -66,7 +68,7 @@ public partial class EHRDbContext : DbContext
     public virtual DbSet<VisitOrder> VisitOrders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=FoxDevSql19;Database=Foxfire_EHR_Conv;Integrated Security=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -6,8 +6,10 @@ namespace Brady_s_Conversion_Program.ModelsD;
 
 public partial class InvDbContext : DbContext
 {
-    public InvDbContext()
-    {
+    private readonly string _connectionString;
+
+    public InvDbContext(string connectionString) {
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     public InvDbContext(DbContextOptions<InvDbContext> options)
@@ -54,7 +56,7 @@ public partial class InvDbContext : DbContext
     public virtual DbSet<FrameTemple> FrameTemples { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=FoxDevSql19;Database=Foxfire_Inv_Conv;Integrated Security=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -20,6 +20,8 @@ using System.Reflection.Emit;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System.Data.SqlTypes;
+using Brady_s_Conversion_Program.ModelsC;
+using Brady_s_Conversion_Program.ModelsD;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -157,11 +159,11 @@ namespace Brady_s_Conversion_Program {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
                 // Using block for convDbContext conversion
-                using (var convDbContext = new FoxfireConvContext(convConnection)) {
-                    int totalEntries = 0;
+                int totalEntries = 0;
 
-                    convDbContext.Database.OpenConnection();
-                    if (ffpm == true) {
+                if (ffpm == true) { // Essentially, this appears to just be the foxfire_conv database
+                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                        convDbContext.Database.OpenConnection();
                         if (newFfpm) {
                             new FfpmContext(FFPMConnection).Database.EnsureCreated();
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
@@ -173,23 +175,24 @@ namespace Brady_s_Conversion_Program {
 
                                 // Calculate total number of entries for progress tracking
                                 totalEntries = convDbContext.Patients.Count() +
-                                               convDbContext.AccountXrefs.Count() +
-                                               convDbContext.Addresses.Count() +
-                                               convDbContext.Appointments.Count() +
-                                               convDbContext.AppointmentTypes.Count() +
-                                               convDbContext.Insurances.Count() +
-                                               convDbContext.Locations.Count() +
-                                               convDbContext.Names.Count() +
-                                               convDbContext.PatientAlerts.Count() +
-                                               convDbContext.PatientDocuments.Count() +
-                                               convDbContext.PatientInsurances.Count() +
-                                               convDbContext.PatientNotes.Count() +
-                                               convDbContext.Phones.Count() +
-                                               convDbContext.Providers.Count() +
-                                               convDbContext.Recalls.Count() +
-                                               convDbContext.RecallTypes.Count() +
-                                               convDbContext.Referrals.Count() +
-                                               convDbContext.SchedCodes.Count();
+                                                convDbContext.AccountXrefs.Count() +
+                                                convDbContext.Addresses.Count() +
+                                                convDbContext.Appointments.Count() +
+                                                convDbContext.AppointmentTypes.Count() +
+                                                convDbContext.Insurances.Count() +
+                                                convDbContext.Locations.Count() +
+                                                convDbContext.Names.Count() +
+                                                convDbContext.PatientAlerts.Count() +
+                                                convDbContext.PatientDocuments.Count() +
+                                                convDbContext.PatientInsurances.Count() +
+                                                convDbContext.PatientNotes.Count() +
+                                                convDbContext.Phones.Count() +
+                                                convDbContext.Providers.Count() +
+                                                convDbContext.Recalls.Count() +
+                                                convDbContext.RecallTypes.Count() +
+                                                convDbContext.Referrals.Count() +
+                                                convDbContext.SchedCodes.Count();
+
 
                                 // Set progress bar properties on UI thread
                                 progress.Invoke((MethodInvoker)delegate {
@@ -202,24 +205,25 @@ namespace Brady_s_Conversion_Program {
 
                                 // Save changes to databases
                                 ffpmDbContext.SaveChanges();
+                                convDbContext.SaveChanges();
                             }
                         }
                     }
-                    if (eyemd == true) { // not positive what this will entail yet
+                }
+                if (eyemd == true) { // not positive what this will entail yet
+                    using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         if (newEyemd) {
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                             eyeMDDbContext.Database.OpenConnection();
-                            ConvertEyeMD(convDbContext, eyeMDDbContext, logger, progress);
+                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress);
                             eyeMDDbContext.SaveChanges();
                         }
                     }
-
-                    convDbContext.SaveChanges();
-
-                    // EF Core automatically handles connection closing when DbContext is disposed
                 }
+
+                // EF Core automatically handles connection closing when DbContext is disposed
             }
             catch (Exception e) {
                 return "Database Upload Failed.\n" + e + "\n";
@@ -227,6 +231,7 @@ namespace Brady_s_Conversion_Program {
             return "Operation Successful";
         }
 
+        #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress) {
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
@@ -299,7 +304,6 @@ namespace Brady_s_Conversion_Program {
             foreach (var schedCode in convDbContext.SchedCodes.ToList()) {
                 ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress);
             }
-
         }
 
         public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
@@ -309,23 +313,23 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 if (patient.PatientAccountNumber == null) {
-                    logger.Log($"Patient Account Number is null for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient Account Number is null for patient with ID: {patient.Id}");
                     return;
                 }
                 else if (patient.PatientLast == null) {
-                    logger.Log($"Patient Last Name is null for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient Last Name is null for patient with ID: {patient.Id}");
                     return;
                 }
                 else if (patient.PatientFirst == null) {
-                    logger.Log($"Patient First Name is null for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient First Name is null for patient with ID: {patient.Id}");
                     return;
                 }
                 else if (patient.PatientSsn == null || !ssnRegex.IsMatch(patient.PatientSsn)) {
-                    logger.Log($"Patient SSN is null or invalid for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient SSN is null or invalid for patient with ID: {patient.Id}");
                     return;
                 }
                 else if (patient.PatientDob == null) {
-                    logger.Log($"Patient DOB is null for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient DOB is null for patient with ID: {patient.Id}");
                     return;
                 }
 
@@ -334,7 +338,7 @@ namespace Brady_s_Conversion_Program {
                                                               // Try parsing the date using the specified formats
                 if (!DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                    logger.Log($"Patient DOB is invalid or not in an expected format for patient with ID: {patient.Id}");
+                    logger.Log($"FFPM: FFPM Patient DOB is invalid or not in an expected format for patient with ID: {patient.Id}");
                     return;
                 }
                 short? maritalStatusInt = null;
@@ -579,7 +583,7 @@ namespace Brady_s_Conversion_Program {
                 eyeMdDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
             }
         }
 
@@ -591,12 +595,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(address.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for address with ID: {address.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for address with ID: {address.Id}");
                     return;
                 }
                 var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for address with ID: {address.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for address with ID: {address.Id}");
                     return;
                 }
 
@@ -607,7 +611,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ffpmPatientAdditional == null) {
-                    logger.Log($"Patient additional not found for address with ID: {address.Id}");
+                    logger.Log($"FFPM: FFPM Patient additional not found for address with ID: {address.Id}");
                     return;
                 }
                 string? zipCode = null;
@@ -639,7 +643,7 @@ namespace Brady_s_Conversion_Program {
                 bool isEmergency = false;
                 bool isPreferred = false;
                 if (address.TypeOfAddress == null) {
-                    logger.Log($"Address type is null for address with ID: {address.Id}");
+                    logger.Log($"FFPM: FFPM Address type is null for address with ID: {address.Id}");
                 }
 
                 if (address.TypeOfAddress == "primary" || address.TypeOfAddress == "Primary") {
@@ -681,7 +685,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
             }
         }
 
@@ -691,21 +695,22 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                int patientId = 0;
-                if (int.TryParse(appointment.PatientId, out int patientIdInt)) {
+                long patientId = 0;
+                if (long.TryParse(appointment.PatientId, out long patientIdInt)) {
                     patientId = patientIdInt;
                 } else {
-                    logger.Log($"Patient ID is invalid for appointment with ID: {appointment.Id}");
+                    logger.Log($"FFPM: FFPM Patient ID is invalid for appointment with ID: {appointment.Id}");
+                    return;
                 }
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientId);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for appointment with ID: {appointment.PatientId}");
+                    logger.Log($"FFPM: FFPM Patient not found for appointment with ID: {appointment.Id}");
                     return;
                 }
                 DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for appointment with ID: {appointment.PatientId}");
+                    logger.Log($"FFPM: FFPM Patient not found for appointment with ID: {appointment.Id}");
                     return;
                 }
 
@@ -717,13 +722,13 @@ namespace Brady_s_Conversion_Program {
                 DateTime start = DateTime.Parse("1/1/1900");
                 if (!DateTime.TryParseExact(appointment.StartDate, dateFormats,
                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
-                    logger.Log($"Appointment start time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
+                    logger.Log($"FFPM: FFPM Appointment start time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
                     return;
                 }
                 DateTime end = DateTime.Parse("1/1/1900");
                 if (!DateTime.TryParseExact(appointment.EndDate, dateFormats,
                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
-                    logger.Log($"Appointment end time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
+                    logger.Log($"FFPM: FFPM Appointment end time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
                     return;
                 }
                 int duration = 0;
@@ -735,7 +740,7 @@ namespace Brady_s_Conversion_Program {
                 DateTime created = DateTime.Parse("1/1/1900 12:00 AM");
                 if (!DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
-                    logger.Log($"Appointment created time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
+                    logger.Log($"FFPM: FFPM Appointment created time is invalid or not in an expected format for appointment with ID: {appointment.Id}");
                 }
                 int billingLocId = 0;
                 if (appointment.BillingLocationId != null) {
@@ -860,7 +865,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
             }
         }
 
@@ -923,7 +928,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1064,7 +1069,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the insurance with ID: {insurance.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the insurance with ID: {insurance.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1087,7 +1092,7 @@ namespace Brady_s_Conversion_Program {
                     primaryTaxId = int.Parse(location.PrimaryTaxonomyId);
                 }
                 else {
-                    logger.Log($"Primary taxonomy ID not found for location with ID: {location.Id}");
+                    logger.Log($"FFPM: FFPM Primary taxonomy ID not found for location with ID: {location.Id}");
                 }
 
                 int tax1Id = 0;
@@ -1225,7 +1230,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1238,12 +1243,12 @@ namespace Brady_s_Conversion_Program {
                 var ConvPatients = convDbContext.Patients.ToList();
                 var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == name.AccountNumber);
                 if (ConvPatient == null) {
-                    logger.Log($"Conv patient not found for name with ID: {name.Id}");
+                    logger.Log($"FFPM: FFPM Conv patient not found for name with ID: {name.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"FFPM patient not found for name with ID: {name.Id}");
+                    logger.Log($"FFPM: FFPM FFPM patient not found for name with ID: {name.Id}");
                     return;
                 }
                 DmgPatientAdditionalDetail? ffpmPatientAdditional = null;
@@ -1253,7 +1258,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ffpmPatientAdditional == null) {
-                    logger.Log($"FFPM patient additional details not found for name with ID: {name.Id}");
+                    logger.Log($"FFPM: FFPM FFPM patient additional details not found for name with ID: {name.Id}");
                     return;
                 }
                 long? accNum = null;
@@ -1262,7 +1267,7 @@ namespace Brady_s_Conversion_Program {
                     DmgPatient?tempPatient = ffpmPatients.Find(p => p.AccountNumber == name.AccountNumber);
                     DmgPatientAdditionalDetail? tempAdditionalDetail = null;
                     if (tempPatient == null) {
-                        logger.Log($"FFPM patient w/ account number not found for name with ID: {name.Id}");
+                        logger.Log($"FFPM: FFPM FFPM patient w/ account number not found for name with ID: {name.Id}");
                         return;
                     }
                     foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
@@ -1298,7 +1303,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (name.Relationship == null) {
-                    logger.Log($"Relationship is null for name with ID: {name.Id}");
+                    logger.Log($"FFPM: FFPM Relationship is null for name with ID: {name.Id}");
                     return;
                 }
                 if (name.Relationship.ToLower() == "emergency contact") {
@@ -1332,13 +1337,13 @@ namespace Brady_s_Conversion_Program {
                     ffpmPatientAdditional.EmployerAddressId = addId;
                 }
                 else {
-                    logger.Log($"Invalid relationship for name with ID: {name.Id}");
+                    logger.Log($"FFPM: FFPM Invalid relationship for name with ID: {name.Id}");
                     return;
                 }
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the name with ID: {name.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the name with ID: {name.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1351,12 +1356,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientAlert.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for patient alert with ID: {patientAlert.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for patient alert with ID: {patientAlert.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                     return;
                 }
                 short? priorityID = null;
@@ -1415,7 +1420,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the patient alert with ID: {patientAlert.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the patient alert with ID: {patientAlert.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1428,12 +1433,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientDocument.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for patient document with ID: {patientDocument.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient document with ID: {patientDocument.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for patient document with ID: {patientDocument.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient document with ID: {patientDocument.Id}");
                     return;
                 }
                 short? imageType = null;
@@ -1464,7 +1469,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1477,12 +1482,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientInsurance.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for patient insurance with ID: {patientInsurance.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for patient insurance with ID: {patientInsurance.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
                 Models.Insurance? patientInsuranceCompany = null;
@@ -1492,7 +1497,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (patientInsuranceCompany == null) {
-                    logger.Log($"Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
+                    logger.Log($"FFPM: FFPM Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
 
@@ -1561,7 +1566,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (insuranceCompany == null) {
-                    logger.Log($"Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
+                    logger.Log($"FFPM: FFPM Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
                 insCompId = insuranceCompany.InsCompanyId;
@@ -1586,7 +1591,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the patient insurance with ID: {patientInsurance.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the patient insurance with ID: {patientInsurance.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1599,12 +1604,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == patientNote.PatientId);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for patient note with ID: {patientNote.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for patient note with ID: {patientNote.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
 
@@ -1616,7 +1621,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1629,25 +1634,25 @@ namespace Brady_s_Conversion_Program {
                 var ConvPatient = convDbContext.Patients.Find(phone.Id);
                 var ffpmAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 if (ffpmPatients == null) {
-                    logger.Log($"Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 if (ffpmAddresses == null) {
-                    logger.Log($"Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 DmgPatientAddress? address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
                 if (address == null) {
-                    logger.Log($"Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
 
@@ -1681,7 +1686,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the phone with ID: {phone.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the phone with ID: {phone.Id}. Error: {ex.Message}");
             }
         }
 
@@ -1815,7 +1820,7 @@ namespace Brady_s_Conversion_Program {
                     primaryTaxId = int.Parse(provider.PrimaryTaxonomyId);
                 }
                 else {
-                    logger.Log($"Primary taxonomy ID not found for provider with ID: {provider.Id}");
+                    logger.Log($"FFPM: FFPM Primary taxonomy ID not found for provider with ID: {provider.Id}");
                 }
 
                 int tax1Id = 0;
@@ -2002,7 +2007,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
             }
         }
 
@@ -2014,12 +2019,12 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == recall.PatientId);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for recall with ID: {recall.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for recall with ID: {recall.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for recall with ID: {recall.Id}");
+                    logger.Log($"FFPM: FFPM Patient not found for recall with ID: {recall.Id}");
                     return;
                 }
 
@@ -2070,7 +2075,7 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
-                logger.Log($"An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
             }
         }
 
@@ -2118,7 +2123,7 @@ namespace Brady_s_Conversion_Program {
 
                 ffpmDbContext.SaveChanges();
             } catch (Exception ex) {
-                logger.Log($"An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
             }
         }
 
@@ -2134,7 +2139,7 @@ namespace Brady_s_Conversion_Program {
                     providerID = long.Parse(referral.ReferralId);
                 }
                 else {
-                    logger.Log($"Provider ID not found for referral with ID: {referral.Id}");
+                    logger.Log($"FFPM: FFPM Provider ID not found for referral with ID: {referral.Id}");
                 }
 
                 short? suffixInt = null;
@@ -2228,7 +2233,7 @@ namespace Brady_s_Conversion_Program {
                     primaryTaxId = int.Parse(referral.PrimaryTaxonomyId);
                 }
                 else {
-                    logger.Log($"Primary taxonomy ID not found for referral with ID: {referral.Id}");
+                    logger.Log($"FFPM: FFPM Primary taxonomy ID not found for referral with ID: {referral.Id}");
                 }
 
                 int tax1Id = 0;
@@ -2408,7 +2413,7 @@ namespace Brady_s_Conversion_Program {
 
                 ffpmDbContext.SaveChanges();
             } catch (Exception e) {
-                logger.Log($"An error occurred while converting the referral with ID: {referral.Id}. Error: {e.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the referral with ID: {referral.Id}. Error: {e.Message}");
             }
         }
 
@@ -2453,17 +2458,55 @@ namespace Brady_s_Conversion_Program {
 
                 ffpmDbContext.SaveChanges();
             } catch (Exception ex) {
-                logger.Log($"An error occurred while converting the scheduling code with ID: {schedtype.Id}. Error: {ex.Message}");
+                logger.Log($"FFPM: FFPM An error occurred while converting the scheduling code with ID: {schedtype.Id}. Error: {ex.Message}");
             }
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             // currently not implementing renumbering
         }
+#endregion FFPMConversion
 
-        public static void ConvertEyeMD(FoxfireConvContext convDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            foreach (var patient in eHRDbContext.Patients.ToList()) {
+                PatientsConvert(patient, eyeMDDbContext, logger, progress);
+            }
 
-            // EyeMD conversion logic here
+            foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
+                AllergiesConvert(allergy, eyeMDDbContext, logger, progress);
+            }
+        }
+
+        public static void PatientsConvert(ModelsC.Patient patient, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                    // data here
+                };
+                eyeMDDbContext.Emrpatients.Add(newPatient);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the patient with ID: {patient.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void AllergiesConvert(ModelsC.Allergy allergy, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newAllergyList = new Brady_s_Conversion_Program.ModelsB.EmrallergyList {
+                    // data here
+                };
+                eyeMDDbContext.EmrallergyLists.Add(newAllergyList);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
+            }
         }
     }
 }
