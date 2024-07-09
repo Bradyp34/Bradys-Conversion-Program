@@ -1597,7 +1597,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(patientNote.Id);
+                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == patientNote.PatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Patient not found for patient note with ID: {patientNote.Id}");
                     return;
