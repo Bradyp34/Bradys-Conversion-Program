@@ -90,7 +90,6 @@ namespace Brady_s_Conversion_Program
             FFPMDataBaseTextBox.Text = "";
             EyeMDServerNameTextBox.Text = "";
             EyeMDDBTextBox.Text = "";
-            
         }
     }
 }
