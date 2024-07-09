@@ -7,6 +7,12 @@ namespace Brady_s_Conversion_Program
             InitializeComponent();
         }
 
+        private void Form1_Load(object sender, EventArgs e) {
+            progressBar1.Hide();
+            EyeMDNewDBCheckBox.Hide();
+            FFPMNewDBCheckBox.Hide();
+        }
+
         private void DBBeginButton_Click(object sender, EventArgs e) {
             if (ServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name.");
@@ -34,23 +40,38 @@ namespace Brady_s_Conversion_Program
             backgroundWorker1.RunWorkerAsync();
         }
 
-        private void Form1_Load(object sender, EventArgs e) {
-            progressBar1.Hide();
-            EyeMDNewDBCheckBox.Hide();
-            FFPMNewDBCheckBox.Hide();
-        }
-
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) {
             string convConnectionString = "Server=" + ServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string ehrConnectionString = "Server=" + EHRTextBox.Text + ";Database=" + EHRTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string invConnectionString = "Server=" + InvTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
+            
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 FFPMCheckBox.Checked, EyeMDCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1);
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text = result;
             });
+            progressBar1.Invoke((MethodInvoker)delegate {
+                progressBar1.Hide();
+                progressBar1.Value = 0;
+            });
+            FFPMCheckBox.Invoke((MethodInvoker)delegate {
+                FFPMCheckBox.Show();
+            });
+            EyeMDCheckBox.Invoke((MethodInvoker)delegate {
+                EyeMDCheckBox.Show();
+            });
+            if (FFPMNewDBCheckBox.Checked) {
+                FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
+                    FFPMNewDBCheckBox.Show();
+                });
+            }
+            if (EyeMDNewDBCheckBox.Checked) {
+                EyeMDNewDBCheckBox.Invoke((MethodInvoker)delegate {
+                    EyeMDNewDBCheckBox.Show();
+                });
+            }
         }
 
         private void FFPMCheckBox_CheckedChanged(object sender, EventArgs e) {
@@ -90,6 +111,10 @@ namespace Brady_s_Conversion_Program
             FFPMDataBaseTextBox.Text = "";
             EyeMDServerNameTextBox.Text = "";
             EyeMDDBTextBox.Text = "";
+            FFPMCheckBox.Checked = false;
+            EyeMDCheckBox.Checked = false;
+            FFPMNewDBCheckBox.Checked = false;
+            EyeMDNewDBCheckBox.Checked = false;
         }
     }
 }

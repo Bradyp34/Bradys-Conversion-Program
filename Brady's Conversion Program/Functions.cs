@@ -42,52 +42,82 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static readonly string[] dateFormats = new string[] {
-            // Date-only formats
+            // Date-only formats with numeric and abbreviated months
             "MM/dd/yyyy", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
             "M/d/yyyy", "d/M/yyyy", "yyyy/M/d", "yyyy/d/M",
             "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
             "M-d-yyyy", "d-M-yyyy", "yyyy-M-d", "yyyy-d-M",
             "MM dd yyyy", "dd MM yyyy", "yyyy MM dd", "yyyy dd MM",
             "M d yyyy", "d M yyyy", "yyyy M d", "yyyy d M",
-            "MMMddyyyy", "ddMMMyyyy",
             "MMM dd, yyyy", "dd MMM, yyyy",
-            // Date with 24-hour time formats
+
+            // Date-only formats with full month names
+            "MMMM dd, yyyy", "dd MMMM, yyyy",
+            "MMMM-d-yyyy", "d-MMMM-yyyy",
+            "MMMM/dd/yyyy", "dd/MMMM/yyyy",
+            "MMMM dd yyyy", "dd MMMM yyyy",
+            "MMMM d, yyyy", "d MMMM, yyyy",
+
+            // Date-only formats with concatenated month and day names
+            "MMMddyyyy", "ddMMMyyyy",
+
+            // Date with 24-hour time formats with numeric and abbreviated months
             "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
             "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/d/M HH:mm:ss",
             "MM-dd-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
-            "M-d-yyyy HH:mm:ss", "d-M-yyyy HH:mm:ss", "yyyy-M-d HH:mm:ss", "yyyy-d-M HH:mm:ss",
-            "MM dd yyyy HH:mm:ss", "dd MM yyyy HH:mm:ss", "yyyy MM dd HH:mm:ss", "yyyy dd MM HH:mm:ss",
-            "M d yyyy HH:mm:ss", "d M yyyy HH:mm:ss", "yyyy M d HH:mm:ss", "yyyy d M HH:mm:ss",
+            "MM dd yyyy HH:mm:ss", "dd MM yyyy HH:mm:ss", "M d yyyy HH:mm:ss", "d M yyyy HH:mm:ss",
             "MMMddyyyy HH:mm:ss", "ddMMMyyyy HH:mm:ss",
             "MMM dd, yyyy HH:mm:ss", "dd MMM, yyyy HH:mm:ss",
-            // Date with 12-hour time formats (AM/PM)
+
+            // Date with 24-hour time formats with full month names
+            "MMMM/dd/yyyy HH:mm:ss", "dd/MMMM/yyyy HH:mm:ss",
+            "MMMM-dd-yyyy HH:mm:ss", "dd-MMMM-yyyy HH:mm:ss",
+            "MMMM dd, yyyy HH:mm:ss", "dd MMMM, yyyy HH:mm:ss",
+            "MMMM d, yyyy HH:mm:ss", "d MMMM, yyyy HH:mm:ss",
+
+            // Date with 12-hour time formats (AM/PM) with numeric and abbreviated months
             "MM/dd/yyyy hh:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
             "M/d/yyyy hh:mm:ss tt", "d/M/yyyy hh:mm:ss tt", "yyyy/M/d hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
             "MM-dd-yyyy hh:mm:ss tt", "dd-MM-yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
-            "M-d-yyyy hh:mm:ss tt", "d-M-yyyy hh:mm:ss tt", "yyyy-M-d hh:mm:ss tt", "yyyy-d-M hh:mm:ss tt",
-            "MM dd yyyy hh:mm:ss tt", "dd MM yyyy hh:mm:ss tt", "yyyy MM dd hh:mm:ss tt", "yyyy dd MM hh:mm:ss tt",
-            "M d yyyy hh:mm:ss tt", "d M yyyy hh:mm:ss tt", "yyyy M d hh:mm:ss tt", "yyyy d M hh:mm:ss tt",
+            "MM dd yyyy hh:mm:ss tt", "dd MM yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "d M yyyy hh:mm:ss tt",
             "MMMddyyyy hh:mm:ss tt", "ddMMMyyyy hh:mm:ss tt",
             "MMM dd, yyyy hh:mm:ss tt", "dd MMM, yyyy hh:mm:ss tt",
-            // Date with 24-hour time formats (without seconds)
+
+            // Date with 12-hour time formats (AM/PM) with full month names
+            "MMMM/dd/yyyy hh:mm:ss tt", "dd/MMMM/yyyy hh:mm:ss tt",
+            "MMMM-dd-yyyy hh:mm:ss tt", "dd-MMMM-yyyy hh:mm:ss tt",
+            "MMMM dd, yyyy hh:mm:ss tt", "dd MMMM, yyyy hh:mm:ss tt",
+            "MMMM d, yyyy hh:mm:ss tt", "d MMMM, yyyy hh:mm:ss tt",
+
+            // Date with 24-hour time formats (without seconds) with numeric and abbreviated months
             "MM/dd/yyyy HH:mm", "dd/MM/yyyy HH:mm", "yyyy/MM/dd HH:mm", "yyyy/dd/MM HH:mm",
             "M/d/yyyy HH:mm", "d/M/yyyy HH:mm", "yyyy/M/d HH:mm", "yyyy/d/M HH:mm",
             "MM-dd-yyyy HH:mm", "dd-MM-yyyy HH:mm", "yyyy-MM-dd HH:mm", "yyyy-dd-MM HH:mm",
-            "M-d-yyyy HH:mm", "d-M-yyyy HH:mm", "yyyy-M-d HH:mm", "yyyy-d-M HH:mm",
-            "MM dd yyyy HH:mm", "dd MM yyyy HH:mm", "yyyy MM dd HH:mm", "yyyy dd MM HH:mm",
-            "M d yyyy HH:mm", "d M yyyy HH:mm", "yyyy M d HH:mm", "yyyy d M HH:mm",
+            "MM dd yyyy HH:mm", "dd MM yyyy HH:mm", "M d yyyy HH:mm", "d M yyyy HH:mm",
             "MMMddyyyy HH:mm", "ddMMMyyyy HH:mm",
             "MMM dd, yyyy HH:mm", "dd MMM, yyyy HH:mm",
-            // Date with 12-hour time formats (AM/PM) without seconds
+
+            // Date with 24-hour time formats (without seconds) with full month names
+            "MMMM/dd/yyyy HH:mm", "dd/MMMM/yyyy HH:mm",
+            "MMMM-dd-yyyy HH:mm", "dd-MMMM-yyyy HH:mm",
+            "MMMM dd, yyyy HH:mm", "dd MMMM, yyyy HH:mm",
+            "MMMM d, yyyy HH:mm", "d MMMM, yyyy HH:mm",
+
+            // Date with 12-hour time formats (AM/PM) without seconds with numeric and abbreviated months
             "MM/dd/yyyy hh:mm tt", "dd/MM/yyyy hh:mm tt", "yyyy/MM/dd hh:mm tt", "yyyy/dd/MM hh:mm tt",
             "M/d/yyyy hh:mm tt", "d/M/yyyy hh:mm tt", "yyyy/M/d hh:mm tt", "yyyy/d/M hh:mm tt",
             "MM-dd-yyyy hh:mm tt", "dd-MM-yyyy hh:mm tt", "yyyy-MM-dd hh:mm tt", "yyyy-dd-MM hh:mm tt",
-            "M-d-yyyy hh:mm tt", "d-M-yyyy hh:mm tt", "yyyy-M-d hh:mm tt", "yyyy-d-M hh:mm tt",
-            "MM dd yyyy hh:mm tt", "dd MM yyyy hh:mm tt", "yyyy MM dd hh:mm tt", "yyyy dd MM hh:mm tt",
-            "M d yyyy hh:mm tt", "d M yyyy hh:mm tt", "yyyy M d hh:mm tt", "yyyy d M hh:mm tt",
+            "MM dd yyyy hh:mm tt", "dd MM yyyy hh:mm tt", "M d yyyy hh:mm tt", "d M yyyy hh:mm tt",
             "MMMddyyyy hh:mm tt", "ddMMMyyyy hh:mm tt",
-            "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt"
+            "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt",
+
+            // Date with 12-hour time formats (AM/PM) without seconds with full month names
+            "MMMM/dd/yyyy hh:mm tt", "dd/MMMM/yyyy hh:mm tt",
+            "MMMM-dd-yyyy hh:mm tt", "dd-MMMM-yyyy hh:mm tt",
+            "MMMM dd, yyyy hh:mm tt", "dd MMMM, yyyy hh:mm tt",
+            "MMMM d, yyyy hh:mm tt", "d MMMM, yyyy hh:mm tt"
         };
+
 
         private static Dictionary<string, short> stateDictionary = new Dictionary<string, short> {
             {"Alabama", 1}, {"Alaska", 2}, {"Arizona", 3}, {"Arkansas", 4}, {"California", 5},
@@ -119,7 +149,7 @@ namespace Brady_s_Conversion_Program {
         public static string FFPMString = "";
         public static string EyeMDString = "";
 
-        public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection, 
+        public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
             bool ffpm, bool eyemd, bool newFfpm, bool newEyemd, ProgressBar progress) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
@@ -140,62 +170,37 @@ namespace Brady_s_Conversion_Program {
                             using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                                 ffpmDbContext.Database.OpenConnection();
                                 eyeMDDbContext.Database.OpenConnection();
-                                foreach (var address in convDbContext.Addresses.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var appointmentType in convDbContext.AppointmentTypes.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var appointment in convDbContext.Appointments.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var insurance in convDbContext.Insurances.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var location in convDbContext.Locations.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var name in convDbContext.Names.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var patientAlert in convDbContext.PatientAlerts.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var patientDocument in convDbContext.PatientDocuments.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var patientInsurance in convDbContext.PatientInsurances.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var patientNote in convDbContext.PatientNotes.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var patient in convDbContext.Patients.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var phone in convDbContext.Phones.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var provider in convDbContext.Providers.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var recall in convDbContext.Recalls.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var recallType in convDbContext.RecallTypes.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var referral in convDbContext.Referrals.ToList()) {
-                                    totalEntries++;
-                                }
-                                foreach (var schedCode in convDbContext.SchedCodes.ToList()) {
-                                    totalEntries++;
-                                }
 
-                                progress.Maximum = totalEntries;
-                                progress.Step = 1;
+                                // Calculate total number of entries for progress tracking
+                                totalEntries = convDbContext.Patients.Count() +
+                                               convDbContext.AccountXrefs.Count() +
+                                               convDbContext.Addresses.Count() +
+                                               convDbContext.Appointments.Count() +
+                                               convDbContext.AppointmentTypes.Count() +
+                                               convDbContext.Insurances.Count() +
+                                               convDbContext.Locations.Count() +
+                                               convDbContext.Names.Count() +
+                                               convDbContext.PatientAlerts.Count() +
+                                               convDbContext.PatientDocuments.Count() +
+                                               convDbContext.PatientInsurances.Count() +
+                                               convDbContext.PatientNotes.Count() +
+                                               convDbContext.Phones.Count() +
+                                               convDbContext.Providers.Count() +
+                                               convDbContext.Recalls.Count() +
+                                               convDbContext.RecallTypes.Count() +
+                                               convDbContext.Referrals.Count() +
+                                               convDbContext.SchedCodes.Count();
 
+                                // Set progress bar properties on UI thread
+                                progress.Invoke((MethodInvoker)delegate {
+                                    progress.Maximum = totalEntries;
+                                    progress.Step = 1;
+                                });
+
+                                // Perform conversion for each table
                                 ConvertFFPM(convDbContext, ffpmDbContext, eyeMDDbContext, logger, progress);
+
+                                // Save changes to databases
                                 ffpmDbContext.SaveChanges();
                             }
                         }
@@ -299,7 +304,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 if (patient.PatientAccountNumber == null) {
                     logger.Log($"Patient Account Number is null for patient with ID: {patient.Id}");
@@ -491,6 +498,7 @@ namespace Brady_s_Conversion_Program {
                 DateTime minDate = DateTime.Parse("1/1/1900");
 
                 var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
+                    DateCreated = DateTime.Now,
                     AccountNumber = patient.PatientAccountNumber,
                     AltAccountNumber = patient.PatientAltAccountNumber,
                     LastName = patient.PatientLast,
@@ -576,7 +584,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(address.Id);
@@ -677,7 +687,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 int patientId = 0;
                 if (int.TryParse(appointment.PatientId, out int patientIdInt)) {
@@ -854,7 +866,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 int? duration = null;
                 if (appointmentType.DefaultDuration != null) {
@@ -914,7 +928,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var insuranceCompanies = ffpmDbContext.InsInsuranceCompanies.ToList();
                 foreach (var company in insuranceCompanies) {
@@ -1053,7 +1069,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 string? name = null;
                 if (location.LocationName != null) {
@@ -1212,18 +1230,20 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatients = convDbContext.Patients.ToList();
                 var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == name.AccountNumber);
                 if (ConvPatient == null) {
-                    logger.Log($"Patient not found for name with ID: {name.Id}");
+                    logger.Log($"Conv patient not found for name with ID: {name.Id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for name with ID: {name.Id}");
+                    logger.Log($"FFPM patient not found for name with ID: {name.Id}");
                     return;
                 }
                 DmgPatientAdditionalDetail? ffpmPatientAdditional = null;
@@ -1233,7 +1253,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ffpmPatientAdditional == null) {
-                    logger.Log($"Patient not found for name with ID: {name.Id}");
+                    logger.Log($"FFPM patient additional details not found for name with ID: {name.Id}");
                     return;
                 }
                 long? accNum = null;
@@ -1242,7 +1262,7 @@ namespace Brady_s_Conversion_Program {
                     DmgPatient?tempPatient = ffpmPatients.Find(p => p.AccountNumber == name.AccountNumber);
                     DmgPatientAdditionalDetail? tempAdditionalDetail = null;
                     if (tempPatient == null) {
-                        logger.Log($"Patient not found for name with ID: {name.Id}");
+                        logger.Log($"FFPM patient w/ account number not found for name with ID: {name.Id}");
                         return;
                     }
                     foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
@@ -1324,7 +1344,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientAlert.Id);
@@ -1399,7 +1421,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientDocument.Id);
@@ -1446,7 +1470,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientInsurance.Id);
@@ -1566,7 +1592,9 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientNote(Models.PatientNote patientNote, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientNote.Id);
@@ -1593,7 +1621,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPhone(Models.Phone phone, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(phone.Id);
@@ -1621,24 +1651,33 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-                switch (phone.TypeOfPhone) {
-                    case "home":
-                        address.HomePhone = phone.PhoneNumber;
-                        break;
-                    case "work":
-                        address.WorkPhone = phone.PhoneNumber;
-                        break;
-                    case "cell":
-                        address.CellPhone = phone.PhoneNumber;
-                        break;
-                    case "fax":
-                        address.Fax = phone.PhoneNumber;
-                        break;
-                    default:
-                        address.CellPhone = phone.PhoneNumber;
-                        break;
+                if (phone.TypeOfPhone != null) {
+                    switch (phone.TypeOfPhone.ToLower()) {
+                        case "home":
+                            address.HomePhone = phone.PhoneNumber;
+                            break;
+                        case "work":
+                            address.WorkPhone = phone.PhoneNumber;
+                            break;
+                        case "cell":
+                            address.CellPhone = phone.PhoneNumber;
+                            break;
+                        case "mobile":
+                            address.CellPhone = phone.PhoneNumber;
+                            break;
+                        case "fax":
+                            address.Fax = phone.PhoneNumber;
+                            break;
+                        default:
+                            address.CellPhone = phone.PhoneNumber;
+                            break;
+                    }
+                    address.Extension = phone.Extension;
+                } else {
+                    address.CellPhone = phone.PhoneNumber;
+                    address.Extension = phone.Extension;
                 }
-                address.Extension = phone.Extension;
+
                 ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
@@ -1647,7 +1686,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(provider.Id);
@@ -1741,6 +1782,43 @@ namespace Brady_s_Conversion_Program {
                 bool? isActive = null;
                 if (provider.IsActive != null && provider.IsActive.ToLower() == "yes") {
                     isActive = true;
+                }
+
+                int clExpId = 0;
+                if (provider.ClExpiration != null) {
+                    if (int.TryParse(provider.ClExpiration, out int clExpIdInt)) {
+                        clExpId = clExpIdInt;
+                    }
+                }
+                int clExpTypeId = 0;
+
+                int specExpId = 0;
+                if (provider.SpectacleExpiration != null) {
+                    if (int.TryParse(provider.SpectacleExpiration, out int specExpIdInt)) {
+                        specExpId = specExpIdInt;
+                    }
+                }
+                int specExpTypeId = 0;
+
+                int? stateId = 0;
+                if (provider.LicenseIssuingStateId != null) {
+                    if (int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt)) {
+                        stateId = stateIdInt;
+                    }
+                }
+
+                int? countryId = 0;
+                if (provider.LicenseIssuingCountryId != null) {
+                    if (int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt)) {
+                        countryId = countryIdInt;
+                    }
+                }
+
+                int? specialtyId = null;
+                if (provider.ProviderSpecialityId != null) {
+                    if (int.TryParse(provider.ProviderSpecialityId, out int specialtyIdInt)) {
+                        specialtyId = specialtyIdInt;
+                    }
                 }
 
                 #region taxonomys
@@ -1854,7 +1932,15 @@ namespace Brady_s_Conversion_Program {
                     ffpmProvider.ProviderDob = dobDate;
                     ffpmProvider.ProviderNpi = npiString;
                     ffpmProvider.IsActive = isActive;
+                    ffpmProvider.ClExpiration = clExpId;
+                    ffpmProvider.ClExpirationTypeId = clExpTypeId;
+                    ffpmProvider.SpectacleExpiration = specExpId;
+                    ffpmProvider.SpectacleExpirationTypeId = specExpTypeId;
+                    ffpmProvider.LicenseIssuingStateId = stateId;
+                    ffpmProvider.ProviderLicenseNo = provider.ProviderLicenseNo;
                     ffpmProvider.PrimaryTaxonomyId = primaryTaxId;
+                    ffpmProvider.ProviderDeaNumber = provider.ProviderDeaNumber;
+                    ffpmProvider.ProviderSpecialityId = specialtyId;
                     ffpmProvider.AlternateTaxonomy1Id = tax1Id;
                     ffpmProvider.AlternateTaxonomy2Id = tax2Id;
                     ffpmProvider.AlternateTaxonomy3Id = tax3Id;
@@ -1895,10 +1981,13 @@ namespace Brady_s_Conversion_Program {
                     IsReferringProvider = false,
                     SignatureUrl = "",
                     GroupId = 0,
-                    SpectacleExpiration = 0,
-                    ClExpiration = 0,
-                    SpectacleExpirationTypeId = 0,
-                    ClExpirationTypeId = 0,
+                    SpectacleExpiration = specExpId,
+                    SpectacleExpirationTypeId = specExpTypeId,
+                    ClExpirationTypeId = clExpId,
+                    ClExpiration = clExpTypeId,
+                    LicenseIssuingStateId = stateId,
+                    LicenseIssuingCountryId = countryId,
+                    ProviderDeaNumber = provider.ProviderDeaNumber,
                     PrimaryTaxonomyId = primaryTaxId,
                     AlternateTaxonomy1Id = tax1Id,
                     AlternateTaxonomy2Id = tax2Id,
@@ -1930,7 +2019,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(recall.PatientId);
@@ -1996,7 +2087,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 // Log or handle recall type actions
                 string code = "";
@@ -2042,7 +2135,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertReferral(Models.Referral referral, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 var providersList = ffpmDbContext.DmgProviders.ToList();
 
@@ -2330,7 +2425,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertSchedCode(Models.SchedCode schedtype, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Step = 1;
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
             try {
                 int type = 0;
                 if (schedtype.TypeId != null) {
