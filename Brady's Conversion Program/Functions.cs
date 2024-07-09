@@ -1690,18 +1690,6 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(provider.Id);
-                if (ConvPatient == null) {
-                    logger.Log($"Patient not found for provider with ID: {provider.Id}");
-                    return;
-                }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-                if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for provider with ID: {provider.Id}");
-                    return;
-                }
-
                 short? suffixInt = null;
                 if (provider.Suffix != null) {
                     switch (provider.Suffix.ToLower()) {
@@ -2023,18 +2011,6 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(recall.PatientId);
-                if (ConvPatient == null) {
-                    logger.Log($"Patient not found for recall with ID: {recall.Id}");
-                    return;
-                }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-                if (ffpmPatient == null) {
-                    logger.Log($"Patient not found for recall with ID: {recall.Id}");
-                    return;
-                }
-
                 int appointmentType = 0;
                 if (int.TryParse(recall.RecallTypeId, out int temp)) {
                     appointmentType = temp;
