@@ -2012,7 +2012,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(recall.PatientId);
+                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == recall.PatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Patient not found for recall with ID: {recall.Id}");
                     return;
