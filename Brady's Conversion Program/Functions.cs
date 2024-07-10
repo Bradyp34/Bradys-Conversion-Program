@@ -2465,15 +2465,105 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             // currently not implementing renumbering
         }
-#endregion FFPMConversion
+        #endregion FFPMConversion
+
+        #region EyeMDConversion
 
         public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
             foreach (var patient in eHRDbContext.Patients.ToList()) {
                 PatientsConvert(patient, eyeMDDbContext, logger, progress);
             }
 
+            foreach (var medicalHistory in eHRDbContext.MedicalHistories.ToList()) {
+                MedicalHistoriesConvert(medicalHistory, eyeMDDbContext, logger, progress);
+            }
+
             foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
                 AllergiesConvert(allergy, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var visit in eHRDbContext.Visits.ToList()) {
+                VisitsConvert(visit, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var visitOrders in eHRDbContext.VisitOrders.ToList()) {
+                VisitOrdersConvert(visitOrders, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var visitDoctor in eHRDbContext.VisitDoctors.ToList()) {
+                VisitDoctorsConvert(visitDoctor, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var appointments in eHRDbContext.Appointments.ToList()) {
+                AppointmentsConvert(appointments, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var contactLens in eHRDbContext.ContactLens.ToList()) {
+                ContactLensesConvert(contactLens, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var diagCodePool in eHRDbContext.DiagCodePools.ToList()) {
+                DiagCodePoolsConvert(diagCodePool, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var diagTest in eHRDbContext.DiagTests.ToList()) {
+                DiagTestsConvert(diagTest, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var examCondition in eHRDbContext.ExamConditions.ToList()) {
+                ExamConditionsConvert(examCondition, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var familyHistory in eHRDbContext.FamilyHistories.ToList()) {
+                FamilyHistoriesConvert(familyHistory, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var iop in eHRDbContext.Iops.ToList()) {
+                IopsConvert(iop, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var patientDocument in eHRDbContext.PatientDocuments.ToList()) {
+                PatientDocumentsConvert(patientDocument, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var patientNote in eHRDbContext.PatientNotes.ToList()) {
+                PatientNotesConvert(patientNote, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var planNarrative in eHRDbContext.PlanNarratives.ToList()) {
+                PlanNarrativesConvert(planNarrative, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var procDiagPool in eHRDbContext.ProcDiagPools.ToList()) {
+                ProcDiagPoolsConvert(procDiagPool, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var procPool in eHRDbContext.ProcPools.ToList()) {
+                ProcPoolsConvert(procPool, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var refraction in eHRDbContext.Refractions.ToList()) {
+                RefractionsConvert(refraction, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var ros in eHRDbContext.Ros.ToList()) {
+                RosConvert(ros, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var rx in eHRDbContext.RxMedications.ToList()) {
+                RxConvert(rx, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var surgHistory in eHRDbContext.SurgHistories.ToList()) {
+                SurgHistoriesConvert(surgHistory, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var tech in eHRDbContext.Teches.ToList()) {
+                TechsConvert(tech, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (var tech2 in eHRDbContext.Tech2s.ToList()) {
+                Tech2sConvert(tech2, eyeMDDbContext, logger, progress);
             }
         }
 
@@ -2493,6 +2583,22 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
+        public static void MedicalHistoriesConvert(ModelsC.MedicalHistory medicalHistory, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newMedicalHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitMedicalHistory {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitMedicalHistories.Add(newMedicalHistory);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the medical history with ID: {medicalHistory.Id}. Error: {e.Message}");
+            }
+        }
+
         public static void AllergiesConvert(ModelsC.Allergy allergy, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
@@ -2508,5 +2614,343 @@ namespace Brady_s_Conversion_Program {
                 logger.Log($"EyeMD: EyeMD An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
             }
         }
+
+        public static void VisitsConvert(ModelsC.Visit visit, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
+                    // data here
+                };
+                eyeMDDbContext.Emrvisits.Add(newVisit);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitOrders.Add(newVisitOrder);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void VisitDoctorsConvert(ModelsC.VisitDoctor visitDoctor, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newVisitDoctor = new Brady_s_Conversion_Program.ModelsB.EmrvisitDoctor {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitDoctors.Add(newVisitDoctor);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the visit doctor with ID: {visitDoctor.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void AppointmentsConvert(ModelsC.Appointment appointment, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newAppointment = new Brady_s_Conversion_Program.ModelsB.Emrappt {
+                    // data here
+                };
+                eyeMDDbContext.Emrappts.Add(newAppointment);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the appointment with ID: {appointment.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitContactLenses.Add(newContactLens);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the diag code pool with ID: {diagCodePool.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void ExamConditionsConvert(ModelsC.ExamCondition examCondition, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitExamConditions.Add(newExamCondition);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FamilyHistoriesConvert(ModelsC.FamilyHistory familyHistory, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitFamilyHistories.Add(newFamilyHistory);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void IopsConvert(ModelsC.Iop iop, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitIops.Add(newIop);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void PatientDocumentsConvert(ModelsC.PatientDocument patientDocument, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                // var newPatientDocument = new Brady_s_Conversion_Program.ModelsB. {
+                // data here
+                //};
+                // eyeMDDbContext.EmrpatientDocuments.Add(newPatientDocument);
+                // cant find a document table in modelsB (EyeMD)
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void PatientNotesConvert(ModelsC.PatientNote patientNote, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
+                    // data here
+                };
+                eyeMDDbContext.EmrptNotes.Add(newPatientNote);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void PlanNarrativesConvert(ModelsC.PlanNarrative planNarrative, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitPlanNarratives.Add(newPlanNarrative);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void ProcDiagPoolsConvert(ModelsC.ProcDiagPool procDiagPool, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitProcCodePoolDiags.Add(newProcDiagPool);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void ProcPoolsConvert(ModelsC.ProcPool procPool, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitProcCodePools.Add(newProcPool);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void RefractionsConvert(ModelsC.Refraction refraction, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitRefractions.Add(newRefraction);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void RosConvert(ModelsC.Ro ros, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
+                    // data here
+                };
+                eyeMDDbContext.Emrrosdefaults.Add(newRos);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void RxConvert(ModelsC.RxMedication rx, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitRxMedications.Add(newRx);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitSurgicalHistories.Add(newSurgHistory);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void TechsConvert(ModelsC.Tech tech, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitTeches.Add(newTech);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void Tech2sConvert(ModelsC.Tech2 tech2, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
+                    // data here
+                };
+                eyeMDDbContext.EmrvisitTech2s.Add(newTech2);
+
+                eyeMDDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"EyeMD: EyeMD An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
+            }
+        }
+#endregion EyeMDConversion
     }
 }
