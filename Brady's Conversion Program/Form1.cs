@@ -17,10 +17,10 @@ namespace Brady_s_Conversion_Program
             if (ServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name.");
             }
-            else if (FFPMCheckBox.Checked && ConvTextBox.Text == "") {
+            else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
             }
-            else if (EyeMDCheckBox.Checked && EHRTextBox.Text == "") {
+            else if (EHRCheckBox.Checked && EHRTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for EHR Database on EyeMD Conversion.");
                 // I dont know what tables will be used in the end in ffpm vs eyemd, but this is good for now
             }
@@ -34,8 +34,8 @@ namespace Brady_s_Conversion_Program
             }
             FFPMNewDBCheckBox.Hide();
             EyeMDNewDBCheckBox.Hide();
-            FFPMCheckBox.Hide();
-            EyeMDCheckBox.Hide();
+            ConvCheckBox.Hide();
+            EHRCheckBox.Hide();
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
         }
@@ -48,7 +48,7 @@ namespace Brady_s_Conversion_Program
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
-                FFPMCheckBox.Checked, EyeMDCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1);
+                ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1);
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text = result;
             });
@@ -56,11 +56,11 @@ namespace Brady_s_Conversion_Program
                 progressBar1.Hide();
                 progressBar1.Value = 0;
             });
-            FFPMCheckBox.Invoke((MethodInvoker)delegate {
-                FFPMCheckBox.Show();
+            ConvCheckBox.Invoke((MethodInvoker)delegate {
+                ConvCheckBox.Show();
             });
-            EyeMDCheckBox.Invoke((MethodInvoker)delegate {
-                EyeMDCheckBox.Show();
+            EHRCheckBox.Invoke((MethodInvoker)delegate {
+                EHRCheckBox.Show();
             });
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
@@ -78,7 +78,7 @@ namespace Brady_s_Conversion_Program
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Checked = false;
             }
-            if (FFPMCheckBox.Checked) {
+            if (ConvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Show();
             }
             else {
@@ -90,7 +90,7 @@ namespace Brady_s_Conversion_Program
             if (EyeMDNewDBCheckBox.Checked) {
                 EyeMDNewDBCheckBox.Checked = false;
             }
-            if (EyeMDCheckBox.Checked) {
+            if (EHRCheckBox.Checked) {
                 EyeMDNewDBCheckBox.Show();
             }
             else {
@@ -111,8 +111,8 @@ namespace Brady_s_Conversion_Program
             FFPMDataBaseTextBox.Text = "";
             EyeMDServerNameTextBox.Text = "";
             EyeMDDBTextBox.Text = "";
-            FFPMCheckBox.Checked = false;
-            EyeMDCheckBox.Checked = false;
+            ConvCheckBox.Checked = false;
+            EHRCheckBox.Checked = false;
             FFPMNewDBCheckBox.Checked = false;
             EyeMDNewDBCheckBox.Checked = false;
         }

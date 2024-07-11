@@ -152,7 +152,7 @@ namespace Brady_s_Conversion_Program {
         public static string EyeMDString = "";
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
-            bool ffpm, bool eyemd, bool newFfpm, bool newEyemd, ProgressBar progress) {
+            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             try {
@@ -161,7 +161,7 @@ namespace Brady_s_Conversion_Program {
                 // Using block for convDbContext conversion
                 int totalEntries = 0;
 
-                if (ffpm == true) { // Essentially, this appears to just be the foxfire_conv database
+                if (conv == true) { // Essentially, this appears to just be the foxfire_conv database
                     using (var convDbContext = new FoxfireConvContext(convConnection)) {
                         convDbContext.Database.OpenConnection();
                         if (newFfpm) {
@@ -210,7 +210,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                 }
-                if (eyemd == true) { // not positive what this will entail yet
+                if (ehr == true) { // not positive what this will entail yet
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         if (newEyemd) {
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
