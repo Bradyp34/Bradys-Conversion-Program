@@ -14,21 +14,31 @@ namespace Brady_s_Conversion_Program
         }
 
         private void DBBeginButton_Click(object sender, EventArgs e) {
-            if (ServerTextBox.Text == "") {
+            if (!(ConvCheckBox.Checked || EHRCheckBox.Checked || InvCheckBox.Checked)) {
+                MessageBox.Show("Please select at least one database to convert.");
+                return;
+            }
+            else if (ServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name.");
+                return;
             }
             else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
+                return;
             }
             else if (EHRCheckBox.Checked && EHRTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for EHR Database on EyeMD Conversion.");
-                // I dont know what tables will be used in the end in ffpm vs eyemd, but this is good for now
+                return;
             }
-            else if (FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") {
+            else if (InvCheckBox.Checked && InvTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for Inv Database on Conversion.");
+                return;
+            }
+            else if ((FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") && ConvCheckBox.Checked) {
                 MessageBox.Show("Please enter a server and database name for FFPM.");
                 return;
             }
-            else if (EyeMDServerNameTextBox.Text == "" || EyeMDDBTextBox.Text == "") {
+            else if ((EyeMDServerNameTextBox.Text == "" || EyeMDDBTextBox.Text == "") && EHRCheckBox.Checked) {
                 MessageBox.Show("Please enter a server and database name for EyeMD.");
                 return;
             }
@@ -36,6 +46,7 @@ namespace Brady_s_Conversion_Program
             EyeMDNewDBCheckBox.Hide();
             ConvCheckBox.Hide();
             EHRCheckBox.Hide();
+            InvCheckBox.Hide();
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
         }
@@ -61,6 +72,9 @@ namespace Brady_s_Conversion_Program
             });
             EHRCheckBox.Invoke((MethodInvoker)delegate {
                 EHRCheckBox.Show();
+            });
+            InvCheckBox.Invoke((MethodInvoker)delegate {
+                InvCheckBox.Show();
             });
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {

@@ -155,6 +155,7 @@ namespace Brady_s_Conversion_Program {
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
+            string completeConnection = "";
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
@@ -209,6 +210,7 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
+                    completeConnection += "FFPM Conversion Successful\n";
                 }
                 if (ehr == true) { // not positive what this will entail yet
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
@@ -221,9 +223,12 @@ namespace Brady_s_Conversion_Program {
                             eyeMDDbContext.SaveChanges();
                         }
                     }
+                    completeConnection += "EyeMD Conversion Successful\n";
                 }
 
-                // EF Core automatically handles connection closing when DbContext is disposed
+                if (inv == true) {
+                    return completeConnection + "\nInv not yet implemented";
+                }
             }
             catch (Exception e) {
                 return "Database Upload Failed.\n" + e + "\n";
