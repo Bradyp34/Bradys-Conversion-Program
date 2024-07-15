@@ -708,7 +708,7 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(patientId);
+                var ConvPatient = convDbContext.Patients.Find((int)patientId);
                 if (ConvPatient == null) {
                     logger.Log($"FFPM: FFPM Patient not found for appointment with ID: {appointment.Id}");
                     return;
@@ -1606,8 +1606,13 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                if (patientNote.PatientId == null) {
+                    logger.Log($"FFPM: FFPM Patient ID is null for patient note with ID: {patientNote.Id}");
+                    return;
+                }
+                int? patientId = int.Parse(patientNote.PatientId);
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == patientNote.PatientId);
+                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == patientId);
                 if (ConvPatient == null) {
                     logger.Log($"FFPM: FFPM Patient not found for patient note with ID: {patientNote.Id}");
                     return;
@@ -2579,6 +2584,7 @@ namespace Brady_s_Conversion_Program {
             try {
                 var newPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
                     // data here
+                    // I will actually wait to do this until I know all of the data that is moved on the ffpm interface
                 };
                 eyeMDDbContext.Emrpatients.Add(newPatient);
 
