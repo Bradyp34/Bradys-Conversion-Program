@@ -2728,6 +2728,89 @@ namespace Brady_s_Conversion_Program {
                         resolvedVisitID1 = locum;
                     }
                 }
+                int ?resolvedReqProcID1 = null;
+                if (medicalHistory.ResolvedRequestedProcedureId1 != null) {
+                    if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId1, out int locum)) {
+                        resolvedReqProcID1 = locum;
+                    }
+                }
+                DateTime? resolvedDate1 = null;
+                if (medicalHistory.ResolvedDate1 != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(medicalHistory.ResolvedDate1, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        resolvedDate1 = tempDateTime;
+                    }
+                }
+                string resolveType1 = "";
+                if (medicalHistory.ResolveType1 != null) {
+                    resolveType1 = medicalHistory.ResolveType1;
+                }
+                short isResolved2 = 0;
+                if (short.TryParse(medicalHistory.IsResolved2, out temp)) {
+                    isResolved2 = temp;
+                }
+                int? resolvedVisitID2 = null;
+                if (medicalHistory.ResolvedVisitId2 != null) {
+                    if (int.TryParse(medicalHistory.ResolvedVisitId2, out int locum)) {
+                        resolvedVisitID2 = locum;
+                    }
+                }
+                int? resolvedReqProcID2 = null;
+                if (medicalHistory.ResolvedRequestedProcedureId2 != null) {
+                    if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId2, out int locum)) {
+                        resolvedReqProcID2 = locum;
+                    }
+                }
+                DateTime? resolvedDate2 = null;
+                if (medicalHistory.ResolvedDate2 != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(medicalHistory.ResolvedDate2, dateFormats,
+                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        resolvedDate2 = tempDateTime;
+                    }
+                }
+                string resolveType2 = "";
+                if (medicalHistory.ResolveType2 != null) {
+                    resolveType2 = medicalHistory.ResolveType2;
+                }
+                string notes = "";
+                if (medicalHistory.Notes != null) {
+                    notes = medicalHistory.Notes;
+                }
+                string insertGUID = "";
+                bool doNotReconcile = false;
+                if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes") {
+                    doNotReconcile = true;
+                }
+                DateTime? lastModified = null;
+                if (medicalHistory.LastModified != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(medicalHistory.LastModified, dateFormats,
+                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        lastModified = tempDateTime;
+                    }
+                }
+                DateTime? created = null;
+                if (medicalHistory.Created != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(medicalHistory.Created, dateFormats,
+                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        created = tempDateTime;
+                    }
+                }
+                int? createdEmpId = null;
+                if (medicalHistory.CreatedEmpId != null) {
+                    if (int.TryParse(medicalHistory.CreatedEmpId, out int locum)) {
+                        createdEmpId = locum;
+                    }
+                }
+                int? lastModifiedEmpId = null;
+                if (medicalHistory.LastModifiedEmpId != null) {
+                    if (int.TryParse(medicalHistory.LastModifiedEmpId, out int locum)) {
+                        lastModifiedEmpId = locum;
+                    }
+                }
 
 
                 var newMedicalHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitMedicalHistory {
@@ -2753,8 +2836,24 @@ namespace Brady_s_Conversion_Program {
                     Severity2 = severity2,
                     OnsetMonth2 = onsetMonth2,
                     OnsetDay2 = onsetDay2,
-                    OnsetYear2 = onsetYear2
-
+                    OnsetYear2 = onsetYear2,
+                    IsResolved1 = isResolved1,
+                    ResolvedVisitId1 = resolvedVisitID1,
+                    ResolvedRequestedProcedureId1 = resolvedReqProcID1,
+                    ResolvedDate1 = resolvedDate1,
+                    ResolveType1 = resolveType1,
+                    IsResolved2 = isResolved2,
+                    ResolvedVisitId2 = resolvedVisitID2,
+                    ResolvedRequestedProcedureId2 = resolvedReqProcID2,
+                    ResolvedDate2 = resolvedDate2,
+                    ResolveType2 = resolveType2,
+                    Notes = notes,
+                    InsertGuid = insertGUID,
+                    DoNotReconcile = doNotReconcile,
+                    LastModified = lastModified,
+                    Created = created,
+                    CreatedEmpId = createdEmpId,
+                    LastModifiedEmpId = lastModifiedEmpId
                 };
                 eyeMDDbContext.EmrvisitMedicalHistories.Add(newMedicalHistory);
 
