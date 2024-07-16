@@ -2884,6 +2884,39 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(visit.PtId);
+
+                short tabPOHPMH = -1;
+                // no tabPOHPMH
+                short tabROS = -1;
+                // no tabROS
+                short tabCCHPI = -1;
+                // no tabCCHPI
+                short Workup = -1;
+                // no Workup
+                short tabWorkup2 = -1;
+                // no tabWorkup2
+                short tabMBalance = -1;
+                // no tabMBalance
+                short tabGonio = -1;
+                // no tabGonio
+                short tabSLE = -1;
+                // no tabSLE
+                short tabDFE = -1;
+                // no tabDFE
+                short tabLensRx = -1;
+                // no tabLensRx
+                short tabDiag = -1;
+                // no tabDiag
+                short tabPlan = -1;
+                // no tabPlan
+                short tabCoding = -1;
+                // no tabCoding
+                short MDSignedOff = -1;
+                if (short.TryParse(visit.MdsignedOff, out short temp)) {
+                    MDSignedOff = temp;
+                }
+
                 int? ptid = null;
                 if (visit.PtId != null) {
                     if (int.TryParse(visit.PtId, out int locum)) {
@@ -2896,12 +2929,254 @@ namespace Brady_s_Conversion_Program {
                         ClientSoftwareApptId = locum;
                     }
                 }
+                int? clientSoftwarePtId = null;
+                if (eyeMDPatient != null && eyeMDPatient.ClientSoftwarePtId != null) {
+                    if (int.TryParse(eyeMDPatient.ClientSoftwarePtId, out int locum)) {
+                        clientSoftwarePtId = locum;
+                    }
+                }
+                int? locationId = null;
+                // no location id
+                int? providerEmpId = null;
+                if (visit.InitialSignedOffEmpId != null) {
+                    if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
+                        providerEmpId = locum;
+                    }
+                }
+                int? examTypeId = null;
+                // no exam type id
+                DateTime? dosDate = null;
+                if (visit.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visit.Dosdate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                int? visitTech = null;
+                if (visit.VisitTech != null) {
+                    if (int.TryParse(visit.VisitTech, out int locum)) {
+                        visitTech = locum;
+                    }
+                }
+                int? visitDoctor = null;
+                if (visit.VisitDoctor != null) {
+                    if (int.TryParse(visit.VisitDoctor, out int locum)) {
+                        visitDoctor = locum;
+                    }
+                }
+                int? visitRefProviderId = null;
+                if (visit.VisitRefProviderId != null) {
+                    if (int.TryParse(visit.VisitRefProviderId, out int locum)) {
+                        visitRefProviderId = locum;
+                    }
+                }
+                int? visitPriCareProviderId = null;
+                if (visit.VisitPriCareProviderId != null) {
+                    if (int.TryParse(visit.VisitPriCareProviderId, out int locum)) {
+                        visitPriCareProviderId = locum;
+                    }
+                }
+                string visitType = "";
+                if (visit.VisitType != null) {
+                    visitType = visit.VisitType;
+                }
+                int? visitTypeId = null;
+                if (visit.VisitTypeId != null) {
+                    if (int.TryParse(visit.VisitTypeId, out int locum)) {
+                        visitTypeId = locum;
+                    }
+                }
+                int? visitClassId = null;
+                if (visit.VisitClassId != null) {
+                    if (int.TryParse(visit.VisitClassId, out int locum)) {
+                        visitClassId = locum;
+                    }
+                }
+                int? linkedProcVisitId = null;
+                if (visit.LinkedProcedureVisitId != null) {
+                    if (int.TryParse(visit.LinkedProcedureVisitId, out int locum)) {
+                        linkedProcVisitId = locum;
+                    }
+                }
+                string locationSpecific = "";
+                // not in incoming table
+                DateTime? mdSignedOffDate = null;
+                if (visit.MdsignedOffDate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visit.MdsignedOffDate, dateFormats,
+                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        mdSignedOffDate = tempDateTime;
+                    }
+                }
+                int? mdSignedOffEmpId = null;
+                if (visit.MdsignedOffEmpId != null) {
+                    if (int.TryParse(visit.MdsignedOffEmpId, out int locum)) {
+                        mdSignedOffEmpId = locum;
+                    }
+                }
+                int? codeId = null;
+                // no codeId
+                int? procVisitTypeId = null;
+                // no procVisitTypeId
+                short? tabVitals = null;
+                // no tabVitals
+                int? visitEyeCareProvId = null;
+                if (visit.VisitEyeCareProviderId != null) {
+                    if (int.TryParse(visit.VisitEyeCareProviderId, out int locum)) {
+                        visitEyeCareProvId = locum;
+                    }
+                }
+                short? techIsDirty = null;
+                // no techIsDirty
+                string techDirtyInfo = "";
+                // no techDirtyInfo
+                short? techWU2IsDirty = null;
+                // no techWU2IsDirty
+                string techWU2DirtyInfo = "";
+                // no techWU2DirtyInfo
+                short? techROSIsDirty = null;
+                // no techROSIsDirty
+                string techROSDirtyInfo = "";
+                // no techROSDirtyInfo
+                short? diagTestIsDirty = null;
+                // no diagTestIsDirty
+                string diagTestDirtyInfo = "";
+                // no diagTestDirtyInfo
+                short? doctorIsDirty = null;
+                // no doctorIsDirty
+                string doctorDirtyInfo = "";
+                // no doctorDirtyInfo
+                short? providedPtEducation = null;
+                if (visit.ProvidedPtEducation != null) {
+                    if (short.TryParse(visit.ProvidedPtEducation, out short locum)) {
+                        providedPtEducation = locum;
+                    }
+                }
+                short? tabImmunizations = null;
+                // no tabImmunizations
+                string insertGUID = "";
+                // no insertGUID
+                short? procIsDirty = null;
+                // no procIsDirty
+                string procDirtyInfo = "";
+                // no procDirtyInfo
+                short? excludedVisit = null;
+                if (visit.ExcludeVisit != null) {
+                    if (short.TryParse(visit.ExcludeVisit, out short locum)) {
+                        excludedVisit = locum;
+                    }
+                }
+                string clrefNoteRemember = "";
+                if (visit.ClrefNoteRemember != null) {
+                    clrefNoteRemember = visit.ClrefNoteRemember;
+                }
+                int? serviceType = null;
+                if (visit.ServiceType != null) {
+                    if (int.TryParse(visit.ServiceType, out int locum)) {
+                        serviceType = locum;
+                    }
+                }
+                string initialSignedOffRole = "";
+                if (visit.InitialSignedOffRole != null) {
+                    initialSignedOffRole = visit.InitialSignedOffRole;
+                }
+                short? initialSignedOff = null;
+                if (visit.InitialSignedOff != null) {
+                    if (short.TryParse(visit.InitialSignedOff, out short locum)) {
+                        initialSignedOff = locum;
+                    }
+                }
+                DateTime? initialSignedOffDate = null;
+                if (visit.InitialSignedOffDate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visit.InitialSignedOffDate, dateFormats,
+                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        initialSignedOffDate = tempDateTime;
+                    }
+                }
+                int? initialSignedOffEmpId = null;
+                if (visit.InitialSignedOffEmpId != null) {
+                    if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
+                        initialSignedOffEmpId = locum;
+                    }
+                }
+                short? tabExam = null;
+                // no tabExam
+                short? tabDrawing = null;
+                // no tabDrawing
+                bool reconciledCCDA = false;
+                if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes") {
+                    reconciledCCDA = true;
+                }
 
 
                 var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
+                    // non nullable fields
+                    TabPohpmh = tabPOHPMH,
+                    TabRos = tabROS,
+                    TabCchpi = tabCCHPI,
+                    TabWorkup = Workup,
+                    TabWorkUp2 = tabWorkup2,
+                    TabMbalance = tabMBalance,
+                    TabGonio = tabGonio,
+                    TabSle = tabSLE,
+                    TabDfe = tabDFE,
+                    TabLensRx = tabLensRx,
+                    TabDiag = tabDiag,
+                    TabPlan = tabPlan,
+                    TabCoding = tabCoding,
+                    MdsignedOff = MDSignedOff,
+
+
+                    // nullable fields
                     PtId = ptid,
                     ClientSoftwareApptId = ClientSoftwareApptId,
-
+                    ClientSoftwarePtId = clientSoftwarePtId,
+                    LocationId = locationId,
+                    ProviderEmpId = providerEmpId,
+                    ExamType = examTypeId,
+                    Dosdate = dosDate,
+                    VisitTech = visitTech,
+                    VisitDoctor = visitDoctor,
+                    VisitRefProviderId = visitRefProviderId,
+                    VisitPriCareProviderId = visitPriCareProviderId,
+                    VisitType = visitType,
+                    VisitTypeId = visitTypeId,
+                    VisitClassId = visitClassId,
+                    LinkedProcedureVisitId = linkedProcVisitId,
+                    LocationSpecific = locationSpecific,
+                    MdsignedOffDate = mdSignedOffDate,
+                    MdsignedOffEmpId = mdSignedOffEmpId,
+                    CodeId = codeId,
+                    ProcVisitTypeId = procVisitTypeId,
+                    TabVitals = tabVitals,
+                    VisitEyeCareProviderId = visitEyeCareProvId,
+                    TechIsDirty = techIsDirty,
+                    TechDirtyInfo = techDirtyInfo,
+                    TechWu2isDirty = techWU2IsDirty,
+                    TechWu2dirtyInfo = techWU2DirtyInfo,
+                    TechRosisDirty = techROSIsDirty,
+                    TechRosdirtyInfo = techROSDirtyInfo,
+                    DiagTestIsDirty = diagTestIsDirty,
+                    DiagTestDirtyInfo = diagTestDirtyInfo,
+                    DoctorIsDirty = doctorIsDirty,
+                    DoctorDirtyInfo = doctorDirtyInfo,
+                    ReconciledCcda = reconciledCCDA,
+                    ProvidedPtEducation = providedPtEducation,
+                    TabImmunizations = tabImmunizations,
+                    InsertGuid = insertGUID,
+                    ProcIsDirty = procIsDirty,
+                    ProcDirtyInfo = procDirtyInfo,
+                    ExcludeVisit = excludedVisit,
+                    ClrefNoteRemember = clrefNoteRemember,
+                    ServiceType = serviceType,
+                    InitialSignedOffRole = initialSignedOffRole,
+                    InitialSignedOff = initialSignedOff,
+                    InitialSignedOffDate = initialSignedOffDate,
+                    InitialSignedOffEmpId = initialSignedOffEmpId,
+                    TabExam = tabExam,
+                    TabDrawing = tabDrawing
                 };
                 eyeMDDbContext.Emrvisits.Add(newVisit);
 
@@ -2916,8 +3191,36 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? visitId = null;
+                if (visitOrder.VisitId != null) {
+                    if (int.TryParse(visitOrder.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int? ptId = null;
+                if (visitOrder.PtId != null) {
+                    if (int.TryParse(visitOrder.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == null && visitId == null) {
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {visitOrder.Id}");
+                } else if (ptId == null) {
+                    var eydMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eydMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
+                    }
+                } else if (visitId == null) {
+                    var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitOrder.Id}");
+                    }
+                }
+
+
                 var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
-                    // data here
+                    VisitId = visitId,
+
                 };
                 eyeMDDbContext.EmrvisitOrders.Add(newVisitOrder);
 
