@@ -3220,6 +3220,7 @@ namespace Brady_s_Conversion_Program {
 
                 var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
                     VisitId = visitId,
+                    PtId = ptId,
 
                 };
                 eyeMDDbContext.EmrvisitOrders.Add(newVisitOrder);
