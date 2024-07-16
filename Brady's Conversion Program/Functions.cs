@@ -3412,8 +3412,266 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? visitId = null;
+                if (visitDoctor.VisitId != null) {
+                    if (int.TryParse(visitDoctor.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int? ptId = null;
+                if (visitDoctor.PtId != null) {
+                    if (int.TryParse(visitDoctor.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == null && visitId == null) {
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {visitDoctor.Id}");
+                }
+                else if (ptId == null) {
+                    var eydMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eydMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitDoctor.Id}");
+                    }
+                }
+                else if (visitId == null) {
+                    var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitDoctor.Id}");
+                    }
+                }
+                DateTime? dosdate = null;
+                if (visitDoctor.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visitDoctor.Dosdate, dateFormats,
+                                                                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosdate = tempDateTime;
+                    }
+                }
+                string sleDiagOd = "";
+                if (visitDoctor.SleDiagOd != null) {
+                    sleDiagOd = visitDoctor.SleDiagOd;
+                }
+                string sleDiagOs = "";
+                if (visitDoctor.SleDiagOs != null) {
+                    sleDiagOs = visitDoctor.SleDiagOs;
+                }
+                string sleComments = "";
+                if (visitDoctor.Slecomments != null) {
+                    sleComments = visitDoctor.Slecomments;
+                }
+                string dfeCdRatioVertOd = "";
+                if (visitDoctor.DfeCdratioVertOd != null) {
+                    dfeCdRatioVertOd = visitDoctor.DfeCdratioVertOd;
+                }
+                string dfeCdRatioVertOs = "";
+                if (visitDoctor.DfeCdratioVertOs != null) {
+                    dfeCdRatioVertOs = visitDoctor.DfeCdratioVertOs;
+                }
+                string dfeCdRatioHorizOd = "";
+                if (visitDoctor.DfeCdratioHorizOd != null) {
+                    dfeCdRatioHorizOd = visitDoctor.DfeCdratioHorizOd;
+                }
+                string dfeCdRatioHorizOs = "";
+                if (visitDoctor.DfeCdratioHorizOs != null) {
+                    dfeCdRatioHorizOs = visitDoctor.DfeCdratioHorizOs;
+                }
+                string dfeDiagOd = "";
+                if (visitDoctor.DfeDiagOd != null) {
+                    dfeDiagOd = visitDoctor.DfeDiagOd;
+                }
+                string dfeDIagOs = "";
+                if (visitDoctor.DfeDiagOs != null) {
+                    dfeDIagOs = visitDoctor.DfeDiagOs;
+                }
+                string dfeComments = "";
+                if (visitDoctor.Dfecomments != null) {
+                    dfeComments = visitDoctor.Dfecomments;
+                }
+                string diagOtherDiagnoses = "";
+                if (visitDoctor.DiagOtherDiagnoses != null) {
+                    diagOtherDiagnoses = visitDoctor.DiagOtherDiagnoses;
+                }
+                string planStaffOrderComments = "";
+                if (visitDoctor.PlanStaffOrderComments != null) {
+                    planStaffOrderComments = visitDoctor.PlanStaffOrderComments;
+                }
+                string planRTOWhen = "";
+                if (visitDoctor.PlanRtowhen != null) {
+                    planRTOWhen = visitDoctor.PlanRtowhen;
+                }
+                string PlanRTOReason = "";
+                if (visitDoctor.PlanRtoreason != null) {
+                    PlanRTOReason = visitDoctor.PlanRtoreason;
+                }
+                short planDictateReferingDoc = -1;
+                if (short.TryParse(visitDoctor.PlanDictateReferingDoc, out short temp)) {
+                    planDictateReferingDoc = temp;
+                }
+                short planDictatePriCareDoc = -1;
+                if (short.TryParse(visitDoctor.PlanDictatePriCareDoc, out temp)) {
+                    planDictatePriCareDoc = temp;
+                }
+                short planDictatePatient = -1;
+                if (short.TryParse(visitDoctor.PlanDictatePatient, out temp)) {
+                    planDictatePatient = temp;
+                }
+                string planNextScheduledAppt = "";
+                if (visitDoctor.PlanNextScheduledAppt != null) {
+                    planNextScheduledAppt = visitDoctor.PlanNextScheduledAppt;
+                }
+                int? codingMDM = null;
+                if (visitDoctor.CodingMdm != null) {
+                    if (int.TryParse(visitDoctor.CodingMdm, out int locum)) {
+                        codingMDM = locum;
+                    }
+                }
+                string codingAdditionalProcs = "";
+                if (visitDoctor.CodingAdditionalProcedures != null) {
+                    codingAdditionalProcs = visitDoctor.CodingAdditionalProcedures;
+                }
+                string planRxMedRemarks = "";
+                if (visitDoctor.PlanRxMedRemarks != null) {
+                    planRxMedRemarks = visitDoctor.PlanRxMedRemarks;
+                }
+                string planRxOrdersRemarks = "";
+                if (visitDoctor.PlanRxOrdersRemarks != null) {
+                    planRxOrdersRemarks = visitDoctor.PlanRxOrdersRemarks;
+                }
+                short? codingChargesSent = null;
+                // no codingChargesSent
+                short? dfeExtOpth = null;
+                if (visitDoctor.DfeextOpth != null) {
+                    if (short.TryParse(visitDoctor.DfeextOpth, out short locum)) {
+                        dfeExtOpth = locum;
+                    }
+                }
+                string dfeLensUsed = "";
+                if (visitDoctor.DfelensUsed != null) {
+                    dfeLensUsed = visitDoctor.DfelensUsed;
+                }
+                string planTargetIOPOd = "";
+                if (visitDoctor.PlanTargetIopOd != null) {
+                    planTargetIOPOd = visitDoctor.PlanTargetIopOd;
+                }
+                string planTargetIOPOs = "";
+                if (visitDoctor.PlanTargetIopOs != null) {
+                    planTargetIOPOs = visitDoctor.PlanTargetIopOs;
+                }
+                string dfeDilatedPupilSizeOd = "";
+                if (visitDoctor.DfedilatedPupilSizeOd != null) {
+                    dfeDilatedPupilSizeOd = visitDoctor.DfedilatedPupilSizeOd;
+                }
+                string dfeDilatedPupilSizeOs = "";
+                if (visitDoctor.DfedilatedPupilSizeOs != null) {
+                    dfeDilatedPupilSizeOs = visitDoctor.DfedilatedPupilSizeOs;
+                }
+                short? planDictateEyeCareDoc = null;
+                if (visitDoctor.PlanDictateEyeCareDoc != null) {
+                    if (short.TryParse(visitDoctor.PlanDictateEyeCareDoc, out short locum)) {
+                        planDictateEyeCareDoc = locum;
+                    }
+                }
+                short? sentToWebPortal = null;
+                // no sentToWebPortal
+                int? sentToWebPortalDays = null;
+                // no sentToWebPortalDays
+                string planLensRxNotes = "";
+                if (visitDoctor.PlanLensRxNotes != null) {
+                    planLensRxNotes = visitDoctor.PlanLensRxNotes;
+                }
+                short? providedClinicalSummary = null;
+                if (visitDoctor.ProvidedClinicalSummary != null) {
+                    if (short.TryParse(visitDoctor.ProvidedClinicalSummary, out short locum)) {
+                        providedClinicalSummary = locum;
+                    }
+                }
+                int? providedClinicalSummaryDays = null;
+                if (visitDoctor.ProvidedClinicalSummaryDays != null) {
+                    if (int.TryParse(visitDoctor.ProvidedClinicalSummaryDays, out int locum)) {
+                        providedClinicalSummaryDays = locum;
+                    }
+                }
+                short? codingQRAutoCheckStatus = null;
+                // no codingQRAutoCheckStatus
+                short? sleAbutehl = null;
+                if (visitDoctor.SleAbutehl != null) {
+                    if (short.TryParse(visitDoctor.SleAbutehl, out short locum)) {
+                        sleAbutehl = locum;
+                    }
+                }
+                int? scribeEmpId = null;
+                if (visitDoctor.ScribeEmpId != null) {
+                    if (int.TryParse(visitDoctor.ScribeEmpId, out int locum)) {
+                        scribeEmpId = locum;
+                    }
+                }
+                int? codingC3EMLevel = null;
+                if (visitDoctor.CodingC3emlevel != null) {
+                    if (int.TryParse(visitDoctor.CodingC3emlevel, out int locum)) {
+                        codingC3EMLevel = locum;
+                    }
+                }
+                int? codingC3EyeCareLevel = null;
+                if (visitDoctor.CodingC3eyeCareLevel != null) {
+                    if (int.TryParse(visitDoctor.CodingC3eyeCareLevel, out int locum)) {
+                        codingC3EyeCareLevel = locum;
+                    }
+                }
+                string pdDistOu = "";
+                if (visitDoctor.PdDistOu != null) {
+                    pdDistOu = visitDoctor.PdDistOu;
+                }
+                string pdNearOu = "";
+                if (visitDoctor.PdNearOu != null) {
+                    pdNearOu = visitDoctor.PdNearOu;
+                }
+
+
+
                 var newVisitDoctor = new Brady_s_Conversion_Program.ModelsB.EmrvisitDoctor {
-                    // data here
+                    VisitId = visitId,
+                    PtId = ptId,
+                    UpsizeTs = null,
+                    Dosdate = dosdate,
+                    SleDiagOd = sleDiagOd,
+                    SleDiagOs = sleDiagOs,
+                    Slecomments = sleComments,
+                    DfeCdratioVertOd = dfeCdRatioVertOd,
+                    DfeCdratioVertOs = dfeCdRatioVertOs,
+                    DfeCdratioHorizOd = dfeCdRatioHorizOd,
+                    DfeCdratioHorizOs = dfeCdRatioHorizOs,
+                    DfeDiagOd = dfeDiagOd,
+                    DfeDiagOs = dfeDIagOs,
+                    Dfecomments = dfeComments,
+                    DiagOtherDiagnoses = diagOtherDiagnoses,
+                    PlanStaffOrderComments = planStaffOrderComments,
+                    PlanRtowhen = planRTOWhen,
+                    PlanRtoreason = PlanRTOReason,
+                    PlanDictateReferingDoc = planDictateReferingDoc,
+                    PlanDictatePriCareDoc = planDictatePriCareDoc,
+                    PlanDictatePatient = planDictatePatient,
+                    PlanNextScheduledAppt = planNextScheduledAppt,
+                    CodingMdm = codingMDM,
+                    CodingAdditionalProcedures = codingAdditionalProcs,
+                    PlanRxMedRemarks = planRxMedRemarks,
+                    PlanRxOrdersRemarks = planRxOrdersRemarks,
+                    DfeextOpth = dfeExtOpth,
+                    DfelensUsed = dfeLensUsed,
+                    PlanTargetIopOd = planTargetIOPOd,
+                    PlanTargetIopOs = planTargetIOPOs,
+                    DfedilatedPupilSizeOd = dfeDilatedPupilSizeOd,
+                    DfedilatedPupilSizeOs = dfeDilatedPupilSizeOs,
+                    PlanDictateEyeCareDoc = planDictateEyeCareDoc,
+                    SleAbutehl = sleAbutehl,
+                    ScribeEmpId = scribeEmpId,
+                    CodingC3emlevel = codingC3EMLevel,
+                    CodingC3eyeCareLevel = codingC3EyeCareLevel,
+                    PdDistOu = pdDistOu,
+                    PdNearOu = pdNearOu,
+                    CodingChargesSent = codingChargesSent,
+                    CodingQrautoCheckStatus = codingQRAutoCheckStatus,
+                    SentToWebPortal = sentToWebPortal,
+                    SentToWebPortalDays = sentToWebPortalDays
                 };
                 eyeMDDbContext.EmrvisitDoctors.Add(newVisitDoctor);
 
