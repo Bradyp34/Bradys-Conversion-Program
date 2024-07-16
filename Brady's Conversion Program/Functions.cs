@@ -2869,7 +2869,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 var newAllergyList = new Brady_s_Conversion_Program.ModelsB.EmrallergyList {
-                    // data here
+                    // Tables dont match very well
                 };
                 eyeMDDbContext.EmrallergyLists.Add(newAllergyList);
 
@@ -2884,8 +2884,24 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptid = null;
+                if (visit.PtId != null) {
+                    if (int.TryParse(visit.PtId, out int locum)) {
+                        ptid = locum;
+                    }
+                }
+                int? ClientSoftwareApptId = null;
+                if (visit.ClientSoftwareApptId != null) {
+                    if (int.TryParse(visit.ClientSoftwareApptId, out int locum)) {
+                        ClientSoftwareApptId = locum;
+                    }
+                }
+
+
                 var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
-                    // data here
+                    PtId = ptid,
+                    ClientSoftwareApptId = ClientSoftwareApptId,
+
                 };
                 eyeMDDbContext.Emrvisits.Add(newVisit);
 

@@ -46,6 +46,8 @@
             ClearTextButton = new Button();
             ClearInputButton = new Button();
             InvCheckBox = new CheckBox();
+            EHRServerTextBox = new TextBox();
+            InvServerTextBox = new TextBox();
             SuspendLayout();
             // 
             // ServerTextBox
@@ -108,7 +110,7 @@
             // 
             // ResultsBox
             // 
-            ResultsBox.Location = new Point(12, 128);
+            ResultsBox.Location = new Point(12, 163);
             ResultsBox.Name = "ResultsBox";
             ResultsBox.Size = new Size(408, 114);
             ResultsBox.TabIndex = 7;
@@ -116,7 +118,7 @@
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(12, 99);
+            progressBar1.Location = new Point(12, 134);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(408, 23);
             progressBar1.TabIndex = 8;
@@ -128,7 +130,7 @@
             // FFPMNewDBCheckBox
             // 
             FFPMNewDBCheckBox.AutoSize = true;
-            FFPMNewDBCheckBox.Location = new Point(190, 99);
+            FFPMNewDBCheckBox.Location = new Point(190, 134);
             FFPMNewDBCheckBox.Name = "FFPMNewDBCheckBox";
             FFPMNewDBCheckBox.Size = new Size(101, 19);
             FFPMNewDBCheckBox.TabIndex = 11;
@@ -138,7 +140,7 @@
             // EyeMDNewDBCheckBox
             // 
             EyeMDNewDBCheckBox.AutoSize = true;
-            EyeMDNewDBCheckBox.Location = new Point(312, 99);
+            EyeMDNewDBCheckBox.Location = new Point(312, 134);
             EyeMDNewDBCheckBox.Name = "EyeMDNewDBCheckBox";
             EyeMDNewDBCheckBox.Size = new Size(108, 19);
             EyeMDNewDBCheckBox.TabIndex = 12;
@@ -147,7 +149,7 @@
             // 
             // EHRTextBox
             // 
-            EHRTextBox.Location = new Point(12, 70);
+            EHRTextBox.Location = new Point(12, 100);
             EHRTextBox.Name = "EHRTextBox";
             EHRTextBox.PlaceholderText = "EHR Database";
             EHRTextBox.Size = new Size(132, 23);
@@ -155,7 +157,7 @@
             // 
             // InvTextBox
             // 
-            InvTextBox.Location = new Point(150, 70);
+            InvTextBox.Location = new Point(150, 100);
             InvTextBox.Name = "InvTextBox";
             InvTextBox.PlaceholderText = "Inv Database";
             InvTextBox.Size = new Size(132, 23);
@@ -164,7 +166,7 @@
             // ConvCheckBox
             // 
             ConvCheckBox.AutoSize = true;
-            ConvCheckBox.Location = new Point(12, 99);
+            ConvCheckBox.Location = new Point(12, 134);
             ConvCheckBox.Name = "ConvCheckBox";
             ConvCheckBox.Size = new Size(54, 19);
             ConvCheckBox.TabIndex = 15;
@@ -175,7 +177,7 @@
             // EHRCheckBox
             // 
             EHRCheckBox.AutoSize = true;
-            EHRCheckBox.Location = new Point(72, 99);
+            EHRCheckBox.Location = new Point(72, 134);
             EHRCheckBox.Name = "EHRCheckBox";
             EHRCheckBox.Size = new Size(48, 19);
             EHRCheckBox.TabIndex = 16;
@@ -185,9 +187,9 @@
             // 
             // ClearTextButton
             // 
-            ClearTextButton.Location = new Point(12, 248);
+            ClearTextButton.Location = new Point(12, 283);
             ClearTextButton.Name = "ClearTextButton";
-            ClearTextButton.Size = new Size(75, 23);
+            ClearTextButton.Size = new Size(68, 23);
             ClearTextButton.TabIndex = 17;
             ClearTextButton.Text = "Clear Text";
             ClearTextButton.UseVisualStyleBackColor = true;
@@ -195,9 +197,9 @@
             // 
             // ClearInputButton
             // 
-            ClearInputButton.Location = new Point(345, 248);
+            ClearInputButton.Location = new Point(343, 283);
             ClearInputButton.Name = "ClearInputButton";
-            ClearInputButton.Size = new Size(75, 23);
+            ClearInputButton.Size = new Size(77, 23);
             ClearInputButton.TabIndex = 18;
             ClearInputButton.Text = "Clear Input";
             ClearInputButton.UseVisualStyleBackColor = true;
@@ -206,19 +208,37 @@
             // InvCheckBox
             // 
             InvCheckBox.AutoSize = true;
-            InvCheckBox.Location = new Point(126, 99);
+            InvCheckBox.Location = new Point(126, 134);
             InvCheckBox.Name = "InvCheckBox";
             InvCheckBox.Size = new Size(42, 19);
             InvCheckBox.TabIndex = 19;
             InvCheckBox.Text = "Inv";
             InvCheckBox.UseVisualStyleBackColor = true;
             // 
+            // EHRServerTextBox
+            // 
+            EHRServerTextBox.Location = new Point(12, 71);
+            EHRServerTextBox.Name = "EHRServerTextBox";
+            EHRServerTextBox.PlaceholderText = "EHR Server";
+            EHRServerTextBox.Size = new Size(132, 23);
+            EHRServerTextBox.TabIndex = 20;
+            // 
+            // InvServerTextBox
+            // 
+            InvServerTextBox.Location = new Point(150, 70);
+            InvServerTextBox.Name = "InvServerTextBox";
+            InvServerTextBox.PlaceholderText = "Inv Server";
+            InvServerTextBox.Size = new Size(132, 23);
+            InvServerTextBox.TabIndex = 21;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 273);
+            ClientSize = new Size(432, 311);
+            Controls.Add(InvServerTextBox);
+            Controls.Add(EHRServerTextBox);
             Controls.Add(InvCheckBox);
             Controls.Add(ClearInputButton);
             Controls.Add(ClearTextButton);
@@ -265,5 +285,7 @@
         private Button ClearTextButton;
         private Button ClearInputButton;
         private CheckBox InvCheckBox;
+        public TextBox EHRServerTextBox;
+        public TextBox InvServerTextBox;
     }
 }
