@@ -22,6 +22,7 @@ using Microsoft.VisualBasic;
 using System.Data.SqlTypes;
 using Brady_s_Conversion_Program.ModelsC;
 using Brady_s_Conversion_Program.ModelsD;
+using System.Web;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -3216,12 +3217,187 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitOrder.Id}");
                     }
                 }
+                DateTime? dosdate = null;
+                if (visitOrder.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visitOrder.Dosdate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosdate = tempDateTime;
+                    }
+                }
+                string description = "";
+                if (visitOrder.OrderDescription != null) {
+                    description = visitOrder.OrderDescription;
+                }
+                string orderWhen = "";
+                if (visitOrder.OrderWhen != null) {
+                    orderWhen = visitOrder.OrderWhen;
+                }
+                string orderScheduledDate = "";
+                if (visitOrder.OrderScheduledDate != null) {
+                    orderScheduledDate = visitOrder.OrderScheduledDate;
+                }
+                short doNotPrintRx = -1;
+                if (short.TryParse(visitOrder.DoNotPrintRx, out short temp)) {
+                    doNotPrintRx = temp;
+                }
+                int? addedbyFastPlanId = null;
+                if (visitOrder.AddedbyFastPlanId != null) {
+                    if (int.TryParse(visitOrder.AddedbyFastPlanId, out int locum)) {
+                        addedbyFastPlanId = locum;
+                    }
+                }
+                int? orderTypeId = null;
+                if (visitOrder.OrderTypeId != null) {
+                    if (int.TryParse(visitOrder.OrderTypeId, out int locum)) {
+                        orderTypeId = locum;
+                    }
+                }
+                short? orderHasSpecimen = null;
+                if (short.TryParse(visitOrder.OrderHasSpecimen, out temp)) {
+                    orderHasSpecimen = temp;
+                }
+                string orderSpecimenType = "";
+                if (visitOrder.OrderSpecimenType != null) {
+                    orderSpecimenType = visitOrder.OrderSpecimenType;
+                }
+                string orderSpecimenId = "";
+                if (visitOrder.OrderSpecimenId != null) {
+                    orderSpecimenId = visitOrder.OrderSpecimenId;
+                }
+                DateTime? orderLabResultFulfilledDate = null;
+                if (visitOrder.OrderLabResultFulfilledDate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(visitOrder.OrderLabResultFulfilledDate, dateFormats,
+                                                                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        orderLabResultFulfilledDate = tempDateTime;
+                    }
+                }
+                int? orderLabResultId = null;
+                if (visitOrder.OrderLabResultId != null) {
+                    if (int.TryParse(visitOrder.OrderLabResultId, out int locum)) {
+                        orderLabResultId = locum;
+                    }
+                }
+                short? orderNeedsFollowUp = null;
+                if (short.TryParse(visitOrder.OrderNeedsFollowup, out temp)) {
+                    orderNeedsFollowUp = temp;
+                }
+                short? orderWasFollowedUp = null;
+                if (short.TryParse(visitOrder.OrderWasFollowedup, out temp)) {
+                    orderWasFollowedUp = temp;
+                }
+                string orderNotes = "";
+                if (visitOrder.OrderNotes != null) {
+                    orderNotes = visitOrder.OrderNotes;
+                }
+                short? summarySent = null;
+                if (short.TryParse(visitOrder.SummarySent, out temp)) {
+                    summarySent = temp;
+                }
+                string orderRemarks = "";
+                if (visitOrder.OrderRemarks != null) {
+                    orderRemarks = visitOrder.OrderRemarks;
+                }
+                string insertGUID = ""; // This looks like it is supposed to be some large string. I don't see where it is coming from
+                
+                string studyInstanceUID = "";
+                if (visitOrder.StudyInstanceUid != null) {
+                    studyInstanceUID = visitOrder.StudyInstanceUid;
+                }
+                string dicomRequestedProc = "";
+                if (visitOrder.DicomrequestedProcedureId != null) {
+                    dicomRequestedProc = visitOrder.DicomrequestedProcedureId;
+                }
+                string dicomScheduledProcStepId = "";
+                if (visitOrder.DicomscheduledProcedureStepId != null) {
+                    dicomScheduledProcStepId = visitOrder.DicomscheduledProcedureStepId;
+                }
+                int? orderModality = null;
+                if (visitOrder.OrderModalityId != null) {
+                    if (int.TryParse(visitOrder.OrderModalityId, out int locum)) {
+                        orderModality = locum;
+                    }
+                }
+                string scheduledAE = "";
+                if (visitOrder.ScheduledAe != null) {
+                    scheduledAE = visitOrder.ScheduledAe;
+                }
+                string CodeCPT = "";
+                if (visitOrder.CodeCpt != null) {
+                    CodeCPT = visitOrder.CodeCpt;
+                }
+                string CodeSNOMED = "";
+                if (visitOrder.CodeSnomed != null) {
+                    CodeSNOMED = visitOrder.CodeSnomed;
+                }
+                int? recordedEmpRole = null;
+                if (visitOrder.RecordedEmpRole != null) {
+                    if (int.TryParse(visitOrder.RecordedEmpRole, out int locum)) {
+                        recordedEmpRole = locum;
+                    }
+                }
+                short? summaryTransmitted = null;
+                if (short.TryParse(visitOrder.SummaryTransmitted, out temp)) {
+                    summaryTransmitted = temp;
+                }
+                string codeLOINC = "";
+                if (visitOrder.CodeLoinc != null) {
+                    codeLOINC = visitOrder.CodeLoinc;
+                }
+                string RefProvFirst = "";
+                if (visitOrder.RefProviderFirstName != null) {
+                    RefProvFirst = visitOrder.RefProviderFirstName;
+                }
+                string RefProvLast = "";
+                if (visitOrder.RefProviderLastName != null) {
+                    RefProvLast = visitOrder.RefProviderLastName;
+                }
+                string refProvId = "";
+                if (visitOrder.RefProviderId != null) {
+                    refProvId = visitOrder.RefProviderId;
+                }
+                string refProvOrgName = "";
+                if (visitOrder.RefProviderOrganizationName != null) {
+                    refProvOrgName = visitOrder.RefProviderOrganizationName;
+                }
 
 
                 var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
                     VisitId = visitId,
                     PtId = ptId,
-
+                    Dosdate = dosdate,
+                    OrderDescription = description,
+                    OrderWhen = orderWhen,
+                    OrderScheduledDate = orderScheduledDate,
+                    DoNotPrintRx = doNotPrintRx,
+                    AddedbyFastPlanId = addedbyFastPlanId,
+                    OrderTypeId = orderTypeId,
+                    OrderHasSpecimen = orderHasSpecimen,
+                    OrderSpecimenType = orderSpecimenType,
+                    OrderSpecimenId = orderSpecimenId,
+                    OrderLabResultFulfilledDate = orderLabResultFulfilledDate,
+                    OrderLabResultId = orderLabResultId,
+                    OrderNeedsFollowup = orderNeedsFollowUp,
+                    OrderWasFollowedup = orderWasFollowedUp,
+                    OrderNotes = orderNotes,
+                    SummarySent = summarySent,
+                    OrderRemarks = orderRemarks,
+                    InsertGuid = insertGUID,
+                    StudyInstanceUid = studyInstanceUID,
+                    DicomrequestedProcedureId = dicomRequestedProc,
+                    DicomscheduledProcedureStepId = dicomScheduledProcStepId,
+                    OrderModalityId = orderModality,
+                    ScheduledAe = scheduledAE,
+                    CodeCpt = CodeCPT,
+                    CodeSnomed = CodeSNOMED,
+                    RecordedEmpRole = recordedEmpRole,
+                    SummaryTransmitted = summaryTransmitted,
+                    CodeLoinc = codeLOINC,
+                    RefProviderFirstName = RefProvFirst,
+                    RefProviderLastName = RefProvLast,
+                    RefProviderId = refProvId,
+                    RefProviderOrganizationName = refProvOrgName
                 };
                 eyeMDDbContext.EmrvisitOrders.Add(newVisitOrder);
 
