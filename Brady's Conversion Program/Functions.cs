@@ -2869,10 +2869,84 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var newAllergyList = new Brady_s_Conversion_Program.ModelsB.EmrallergyList {
-                    // Tables dont match very well
+                int? visitId = null;
+                if (allergy.VisitId != null) {
+                    if (int.TryParse(allergy.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int? ptId = null;
+                if (allergy.PtId != null) {
+                    if (int.TryParse(allergy.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == null && visitId == null) {
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {allergy.Id}");
+                }
+                else if (ptId == null) {
+                    var eydMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eydMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {allergy.Id}");
+                    }
+                }
+                else if (visitId == null) {
+                    var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {allergy.Id}");
+                    }
+                }
+                DateTime? dosDate = null;
+                if (allergy.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(allergy.Dosdate, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                short? inactive = -1;
+                if (allergy.Inactive != null) {
+                    if (short.TryParse(allergy.Inactive, out short locum)) {
+                        inactive = locum;
+                    }
+                }
+                DateTime? created = null;
+                if (allergy.Created != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(allergy.Created, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        created = tempDateTime;
+                    }
+                }
+                int? empId = null;
+                if (allergy.CreatedEmpId != null) {
+                    if (int.TryParse(allergy.CreatedEmpId, out int locum)) {
+                        empId = locum;
+                    }
+                }
+
+
+
+                var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
+                    AllergyName = allergy.AllergyName,
+                    VisitId = visitId,
+                    PtId = ptId,
+                    Dosdate = dosDate,
+                    Severity = allergy.Severity,
+                    Reaction = allergy.Reaction,
+                    Inactive = inactive,
+                    StartDate = allergy.StartDate,
+                    Created = created,
+                    CreatedEmpId = empId,
+                    Snomedtype = null,
+                    AllergyConceptId = null,
+                    AllergyMappingId = null,
+                    InsertGuid = null,
+                    LastModified = null,
+                    Rxcui = null,
+                    Snomed = null,
+                    LastModifiedEmpId = null
                 };
-                eyeMDDbContext.EmrallergyLists.Add(newAllergyList);
+                eyeMDDbContext.EmrvisitAllergies.Add(newVisitAllergy);
 
                 eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
@@ -3425,18 +3499,18 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ptId == null && visitId == null) {
-                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {visitDoctor.Id}");
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit doctor with ID: {visitDoctor.Id}");
                 }
                 else if (ptId == null) {
                     var eydMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eydMDVisit == null) {
-                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitDoctor.Id}");
+                        logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
                     }
                 }
                 else if (visitId == null) {
                     var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
                     if (eyeMDPatient == null) {
-                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitDoctor.Id}");
+                        logger.Log($"EHR: EHR Patient not found for visit doctor with ID: {visitDoctor.Id}");
                     }
                 }
                 DateTime? dosdate = null;
@@ -4381,8 +4455,59 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? visitId = null;
+                if (diagCodePool.VisitId != null) {
+                    if (int.TryParse(diagCodePool.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int? ptId = null;
+                if (diagCodePool.PtId != null) {
+                    if (int.TryParse(diagCodePool.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == null && visitId == null) {
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {diagCodePool.Id}");
+                }
+                else if (ptId == null) {
+                    var eydMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eydMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {diagCodePool.Id}");
+                    }
+                }
+                else if (visitId == null) {
+                    var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {diagCodePool.Id}");
+                    }
+                }
+                int? controlId = null;
+                // no controlId
+                DateTime? dosDate = null;
+                if (diagCodePool.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParse(diagCodePool.Dosdate, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                string diagText = "";
+                // no diagText
+                string code = "";
+                // no code
+                string modifier = "";
+                // no modifier
+
+
+
                 var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    ControlId = controlId,
+                    DiagText = diagText,
+                    Code = code,
+                    Modifier = modifier,
+
                 };
                 eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
 
