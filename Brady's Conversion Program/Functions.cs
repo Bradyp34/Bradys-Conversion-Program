@@ -3702,8 +3702,671 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? visitId = null;
+                if (contactLens.VisitId != null) {
+                    if (int.TryParse(contactLens.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int ptId = -1;
+                if (contactLens.PtId != null) {
+                    if (int.TryParse(contactLens.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == -1) {
+                    logger.Log($"EHR: EHR Patient ID not found for contact lens with ID: {contactLens.Id}");
+                    return;
+                }
+                int? visitid = null;
+                if (contactLens.VisitId != null) {
+                    if (int.TryParse(contactLens.VisitId, out int locum)) {
+                        visitid = locum;
+                    }
+                }
+                DateTime dosdate = DateTime.Parse("1/1/1900");
+                if (contactLens.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(contactLens.Dosdate, dateFormats,
+                                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosdate = tempDateTime;
+                    }
+                }
+                int? rxId = null;
+                if (contactLens.RxId != null) {
+                    if (int.TryParse(contactLens.RxId, out int locum)) {
+                        rxId = locum;
+                    }
+                }
+                string contactClass = "";
+                if (contactLens.ContactClass != null) {
+                    contactClass = contactLens.ContactClass;
+                }
+                string lensType = "";
+                if (contactLens.LensType != null) {
+                    lensType = contactLens.LensType;
+                }
+                string powerOd = "";
+                if (contactLens.PowerOd != null) {
+                    powerOd = contactLens.PowerOd;
+                }
+                string powerOs = "";
+                if (contactLens.PowerOs != null) {
+                    powerOs = contactLens.PowerOs;
+                }
+                string cylinderOd = "";
+                if (contactLens.CylinderOd != null) {
+                    cylinderOd = contactLens.CylinderOd;
+                }
+                string cylinderOs = "";
+                if (contactLens.CylinderOs != null) {
+                    cylinderOs = contactLens.CylinderOs;
+                }
+                string axisOd = "";
+                if (contactLens.AxisOd != null) {
+                    axisOd = contactLens.AxisOd;
+                }
+                string axisOs = "";
+                if (contactLens.AxisOs != null) {
+                    axisOs = contactLens.AxisOs;
+                }
+                string bcOd = "";
+                if (contactLens.BcOd != null) {
+                    bcOd = contactLens.BcOd;
+                }
+                string bcOs = "";
+                if (contactLens.BcOs != null) {
+                    bcOs = contactLens.BcOs;
+                }
+                string addOd = "";
+                if (contactLens.AddOd != null) {
+                    addOd = contactLens.AddOd;
+                }
+                string addOs = "";
+                if (contactLens.AddOs != null) {
+                    addOs = contactLens.AddOs;
+                }
+                string colorOd = "";
+                if (contactLens.ColorOd != null) {
+                    colorOd = contactLens.ColorOd;
+                }
+                string colorOs = "";
+                if (contactLens.ColorOs != null) {
+                    colorOs = contactLens.ColorOs;
+                }
+                string pupilOd = "";
+                if (contactLens.PupilOd != null) {
+                    pupilOd = contactLens.PupilOd;
+                }
+                string pupilOs = "";
+                if (contactLens.PupilOs != null) {
+                    pupilOs = contactLens.PupilOs;
+                }
+                string vaDOd = "";
+                if (contactLens.VaDOd != null) {
+                    vaDOd = contactLens.VaDOd;
+                }
+                string vaDOs = "";
+                if (contactLens.VaDOs != null) {
+                    vaDOs = contactLens.VaDOs;
+                }
+                string vaDOu = "";
+                if (contactLens.VaDOu != null) {
+                    vaDOu = contactLens.VaDOu;
+                }
+                string VaNOd = "";
+                if (contactLens.VaNOd != null) {
+                    VaNOd = contactLens.VaNOd;
+                }
+                string VaNOs = "";
+                if (contactLens.VaNOs != null) {
+                    VaNOs = contactLens.VaNOs;
+                }
+                string VaNOu = "";
+                if (contactLens.VaNOu != null) {
+                    VaNOu = contactLens.VaNOu;
+                }
+                string vaIOd = "";
+                if (contactLens.VaIOd != null) {
+                    vaIOd = contactLens.VaIOd;
+                }
+                string vaIOs = "";
+                if (contactLens.VaIOs != null) {
+                    vaIOs = contactLens.VaIOs;
+                }
+                string vaIOu = "";
+                if (contactLens.VaIOu != null) {
+                    vaIOu = contactLens.VaIOu;
+                }
+                string comfortOd = "";
+                if (contactLens.ComfortOd != null) {
+                    comfortOd = contactLens.ComfortOd;
+                }
+                string comfortOs = "";
+                if (contactLens.ComfortOs != null) {
+                    comfortOs = contactLens.ComfortOs;
+                }
+                string centrationOd = "";
+                if (contactLens.CentrationOd != null) {
+                    centrationOd = contactLens.CentrationOd;
+                }
+                string centrationOs = "";
+                if (contactLens.CentrationOs != null) {
+                    centrationOs = contactLens.CentrationOs;
+                }
+                string coverageOd = "";
+                if (contactLens.CoverageOd != null) {
+                    coverageOd = contactLens.CoverageOd;
+                }
+                string coverageOs = "";
+                if (contactLens.CoverageOs != null) {
+                    coverageOs = contactLens.CoverageOs;
+                }
+                string movementOd = "";
+                if (contactLens.MovementOd != null) {
+                    movementOd = contactLens.MovementOd;
+                }
+                string movementOs = "";
+                if (contactLens.MovementOs != null) {
+                    movementOs = contactLens.MovementOs;
+                }
+                string diameterOd = "";
+                if (contactLens.DiameterOd != null) {
+                    diameterOd = contactLens.DiameterOd;
+                }
+                string diameterOs = "";
+                if (contactLens.DiameterOs != null) {
+                    diameterOs = contactLens.DiameterOs;
+                }
+                string rotationDegOd = "";
+                if (contactLens.RotationDegOd != null) {
+                    rotationDegOd = contactLens.RotationDegOd;
+                }
+                string rotationDegOs = "";
+                if (contactLens.RotationDegOs != null) {
+                    rotationDegOs = contactLens.RotationDegOs;
+                }
+                string kOd = "";
+                if (contactLens.KOd != null) {
+                    kOd = contactLens.KOd;
+                }
+                string kOs = "";
+                if (contactLens.KOs != null) {
+                    kOs = contactLens.KOs;
+                }
+                string edgeLiftOd = "";
+                if (contactLens.EdgeLiftOd != null) {
+                    edgeLiftOd = contactLens.EdgeLiftOd;
+                }
+                string edgeLiftOs = "";
+                if (contactLens.EdgeLiftOs != null) {
+                    edgeLiftOs = contactLens.EdgeLiftOs;
+                }
+                string distNearOd = "";
+                if (contactLens.DistNearOd != null) {
+                    distNearOd = contactLens.DistNearOd;
+                }
+                string distNearOs = "";
+                if (contactLens.DistNearOs != null) {
+                    distNearOs = contactLens.DistNearOs;
+                }
+                short? ptInsertedRemoved = null;
+                if (short.TryParse(contactLens.PtInsertedRemoved, out short temp)) {
+                    ptInsertedRemoved = temp;
+                }
+                string wAgeOd = "";
+                if (contactLens.WAgeOd != null) {
+                    wAgeOd = contactLens.WAgeOd;
+                }
+                string wAgeOs = "";
+                if (contactLens.WAgeOs != null) {
+                    wAgeOs = contactLens.WAgeOs;
+                }
+                string wTimeTodayOd = "";
+                if (contactLens.WTimeTodayOd != null) {
+                    wTimeTodayOd = contactLens.WTimeTodayOd;
+                }
+                string wTimeTodayOs = "";
+                if (contactLens.WTimeTodayOs != null) {
+                    wTimeTodayOs = contactLens.WTimeTodayOs;
+                }
+                string wAvgWearTimeOd = "";
+                if (contactLens.WAvgWearTimeOd != null) {
+                    wAvgWearTimeOd = contactLens.WAvgWearTimeOd;
+                }
+                string wAvgWearTimeOs = "";
+                if (contactLens.WAvgWearTimeOs != null) {
+                    wAvgWearTimeOs = contactLens.WAvgWearTimeOs;
+                }
+                string solution = "";
+                if (contactLens.Solution != null) {
+                    solution = contactLens.Solution;
+                }
+                string productOd = "";
+                if (contactLens.ProductOd != null) {
+                    productOd = contactLens.ProductOd;
+                }
+                string productOs = "";
+                if (contactLens.ProductOs != null) {
+                    productOs = contactLens.ProductOs;
+                }
+                string lensDesignOd = "";
+                if (contactLens.LensDesignOd != null) {
+                    lensDesignOd = contactLens.LensDesignOd;
+                }
+                string lensDesignOs = "";
+                if (contactLens.LensDesignOs != null) {
+                    lensDesignOs = contactLens.LensDesignOs;
+                }
+                string materialOd = "";
+                if (contactLens.MaterialOd != null) {
+                    materialOd = contactLens.MaterialOd;
+                }
+                string materialOs = "";
+                if (contactLens.MaterialOs != null) {
+                    materialOs = contactLens.MaterialOs;
+                }
+                string replacementSchedule = "";
+                if (contactLens.ReplacementSchedule != null) {
+                    replacementSchedule = contactLens.ReplacementSchedule;
+                }
+                string wearingInstructions = "";
+                if (contactLens.WearingInstructions != null) {
+                    wearingInstructions = contactLens.WearingInstructions;
+                }
+                string expires = "";
+                if (contactLens.Expires != null) {
+                    expires = contactLens.Expires;
+                }
+                int? rgpLayoutOd = null;
+                if (contactLens.RgpLayoutOd != null) {
+                    if (int.TryParse(contactLens.RgpLayoutOd, out int locum)) {
+                        rgpLayoutOd = locum;
+                    }
+                }
+                int? rgpLayoutOs = null;
+                if (contactLens.RgpLayoutOs != null) {
+                    if (int.TryParse(contactLens.RgpLayoutOs, out int locum)) {
+                        rgpLayoutOs = locum;
+                    }
+                }
+                string power2Od = "";
+                if (contactLens.Power2Od != null) {
+                    power2Od = contactLens.Power2Od;
+                }
+                string power2Os = "";
+                if (contactLens.Power2Os != null) {
+                    power2Os = contactLens.Power2Os;
+                }
+                string cylinder2Od = "";
+                if (contactLens.Cylinder2Od != null) {
+                    cylinder2Od = contactLens.Cylinder2Od;
+                }
+                string cylinder2Os = "";
+                if (contactLens.Cylinder2Os != null) {
+                    cylinder2Os = contactLens.Cylinder2Os;
+                }
+                string axis2Od = "";
+                if (contactLens.Axis2Od != null) {
+                    axis2Od = contactLens.Axis2Od;
+                }
+                string axis2Os = "";
+                if (contactLens.Axis2Os != null) {
+                    axis2Os = contactLens.Axis2Os;
+                }
+                string bc2Od = "";
+                if (contactLens.Bc2Od != null) {
+                    bc2Od = contactLens.Bc2Od;
+                }
+                string bc2Os = "";
+                if (contactLens.Bc2Os != null) {
+                    bc2Os = contactLens.Bc2Os;
+                }
+                string diameter2Od = "";
+                if (contactLens.Diameter2Od != null) {
+                    diameter2Od = contactLens.Diameter2Od;
+                }
+                string diameter2Os = "";
+                if (contactLens.Diameter2Os != null) {
+                    diameter2Os = contactLens.Diameter2Os;
+                }
+                string periphCurveOd = "";
+                if (contactLens.PeriphCurveOd != null) {
+                    periphCurveOd = contactLens.PeriphCurveOd;
+                }
+                string periphCurveOs = "";
+                if (contactLens.PeriphCurveOs != null) {
+                    periphCurveOs = contactLens.PeriphCurveOs;
+                }
+                string peripheralCurve2Od = "";
+                if (contactLens.PeriphCurve2Od != null) {
+                    peripheralCurve2Od = contactLens.PeriphCurve2Od;
+                }
+                string peripheralCurve2Os = "";
+                if (contactLens.PeriphCurve2Os != null) {
+                    peripheralCurve2Os = contactLens.PeriphCurve2Os;
+                }
+                string secondaryCurveOd = "";
+                if (contactLens.SecondaryCurveOd != null) {
+                    secondaryCurveOd = contactLens.SecondaryCurveOd;
+                }
+                string secondaryCurveOs = "";
+                if (contactLens.SecondaryCurveOs != null) {
+                    secondaryCurveOs = contactLens.SecondaryCurveOs;
+                }
+                string equivalentCurveOd = "";
+                if (contactLens.EquivalentCurveOd != null) {
+                    equivalentCurveOd = contactLens.EquivalentCurveOd;
+                }
+                string equivalentCurveOs = "";
+                if (contactLens.EquivalentCurveOs != null) {
+                    equivalentCurveOs = contactLens.EquivalentCurveOs;
+                }
+                string centerThicknessOd = "";
+                if (contactLens.CenterThicknessOd != null) {
+                    centerThicknessOd = contactLens.CenterThicknessOd;
+                }
+                string centerThicknessOs = "";
+                if (contactLens.CenterThicknessOs != null) {
+                    centerThicknessOs = contactLens.CenterThicknessOs;
+                }
+                string opticalZoneDiaOd = "";
+                if (contactLens.OpticalZoneDiaOd != null) {
+                    opticalZoneDiaOd = contactLens.OpticalZoneDiaOd;
+                }
+                string opticalZoneDiaOs = "";
+                if (contactLens.OpticalZoneDiaOs != null) {
+                    opticalZoneDiaOs = contactLens.OpticalZoneDiaOs;
+                }
+                string edgeOd = "";
+                if (contactLens.EdgeOd != null) {
+                    edgeOd = contactLens.EdgeOd;
+                }
+                string edgeOs = "";
+                if (contactLens.EdgeOs != null) {
+                    edgeOs = contactLens.EdgeOs;
+                }
+                string blendOd = "";
+                if (contactLens.BlendOd != null) {
+                    blendOd = contactLens.BlendOd;
+                }
+                string blendOs = "";
+                if (contactLens.BlendOs != null) {
+                    blendOs = contactLens.BlendOs;
+                }
+                string naFlPatternOd = "";
+                if (contactLens.NaFlPatternOd != null) {
+                    naFlPatternOd = contactLens.NaFlPatternOd;
+                }
+                string naFlPatternOs = "";
+                if (contactLens.NaFlPatternOs != null) {
+                    naFlPatternOs = contactLens.NaFlPatternOs;
+                }
+                string surfaceWettingOd = "";
+                if (contactLens.SurfaceWettingOd != null) {
+                    surfaceWettingOd = contactLens.SurfaceWettingOd;
+                }
+                string surfaceWettingOs = "";
+                if (contactLens.SurfaceWettingOs != null) {
+                    surfaceWettingOs = contactLens.SurfaceWettingOs;
+                }
+                string dkOd = "";
+                if (contactLens.DkOd != null) {
+                    dkOd = contactLens.DkOd;
+                }
+                string dkOs = "";
+                if (contactLens.DkOs != null) {
+                    dkOs = contactLens.DkOs;
+                }
+                string segHeightOd = "";
+                if (contactLens.SegHeightOd != null) {
+                    segHeightOd = contactLens.SegHeightOd;
+                }
+                string segHeightOs = "";
+                if (contactLens.SegHeightOs != null) {
+                    segHeightOs = contactLens.SegHeightOs;
+                }
+                string specialInstructionsOd = "";
+                if (contactLens.SpecialInstructionsOd != null) {
+                    specialInstructionsOd = contactLens.SpecialInstructionsOd;
+                }
+                string specialInstructionsOs = "";
+                if (contactLens.SpecialInstructionsOs != null) {
+                    specialInstructionsOs = contactLens.SpecialInstructionsOs;
+                }
+                string insertGUID = "";
+                // no insertGUID, where does this always come from?
+                int? treeviewTableIdOd = null;
+                // no treeviewTableIdOd
+                int? treeviewTableIdOs = null;
+                // no treeviewTableIdOs
+                string notes = "";
+                if (contactLens.Notes != null) {
+                    notes = contactLens.Notes;
+                }
+                string remarks = "";
+                if (contactLens.Remarks != null) {
+                    remarks = contactLens.Remarks;
+                }
+                bool printed = false;
+                // no printed
+                bool sentToOptical = false;
+                // no sentToOptical
+                string upcOd = "";
+                if (contactLens.UpcOd != null) {
+                    upcOd = contactLens.UpcOd;
+                }
+                string upcOs = "";
+                if (contactLens.UpcOs != null) {
+                    upcOs = contactLens.UpcOs;
+                }
+                int? catalogSource = null;
+                if (contactLens.CatalogSource != null) {
+                    if (int.TryParse(contactLens.CatalogSource, out int locum)) {
+                        catalogSource = locum;
+                    }
+                }
+                string catalogManufacturerIdOd = "";
+                if (contactLens.CatalogManufacturerIdOd != null) {
+                    catalogManufacturerIdOd = contactLens.CatalogManufacturerIdOd;
+                }
+                string catalogManufacturerIdOs = "";
+                if (contactLens.CatalogManufacturerIdOs != null) {
+                    catalogManufacturerIdOs = contactLens.CatalogManufacturerIdOs;
+                }
+                string catalogBrandIdOd = "";
+                if (contactLens.CatalogBrandIdOd != null) {
+                    catalogBrandIdOd = contactLens.CatalogBrandIdOd;
+                }
+                string catalogBrandIdOs = "";
+                if (contactLens.CatalogBrandIdOs != null) {
+                    catalogBrandIdOs = contactLens.CatalogBrandIdOs;
+                }
+                string catalogProductIdOd = "";
+                if (contactLens.CatalogProductIdOd != null) {
+                    catalogProductIdOd = contactLens.CatalogProductIdOd;
+                }
+                string catalogProductIdOs = "";
+                if (contactLens.CatalogProductIdOs != null) {
+                    catalogProductIdOs = contactLens.CatalogProductIdOs;
+                }
+                string trialNumber = "";
+                if (contactLens.TrialNumber != null) {
+                    trialNumber = contactLens.TrialNumber;
+                }
+                string orSphereOd = "";
+                if (contactLens.OrSphereOd != null) {
+                    orSphereOd = contactLens.OrSphereOd;
+                }
+                string orSphereOs = "";
+                if (contactLens.OrSphereOs != null) {
+                    orSphereOs = contactLens.OrSphereOs;
+                }
+                string orCylinderOd = "";
+                if (contactLens.OrCylinderOd != null) {
+                    orCylinderOd = contactLens.OrCylinderOd;
+                }
+                string orCylinderOs = "";
+                if (contactLens.OrCylinderOs != null) {
+                    orCylinderOs = contactLens.OrCylinderOs;
+                }
+                string orAxisOd = "";
+                if (contactLens.OrAxisOd != null) {
+                    orAxisOd = contactLens.OrAxisOd;
+                }
+                string orAxisOs = "";
+                if (contactLens.OrAxisOs != null) {
+                    orAxisOs = contactLens.OrAxisOs;
+                }
+                string orVaDOd = "";
+                if (contactLens.OrVaDOd != null) {
+                    orVaDOd = contactLens.OrVaDOd;
+                }
+                string orVaDOs = "";
+                if (contactLens.OrVaDOs != null) {
+                    orVaDOs = contactLens.OrVaDOs;
+                }
+                string orVaNOd = "";
+                if (contactLens.OrVaNOd != null) {
+                    orVaNOd = contactLens.OrVaNOd;
+                }
+                string orVaNOs = "";
+                if (contactLens.OrVaNOs != null) {
+                    orVaNOs = contactLens.OrVaNOs;
+                }
+
+
+
                 var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
-                    // data here
+                    VisitId = visitId,
+                    PtId = ptId,
+                    Dosdate = dosdate,
+                    RxId = rxId,
+                    ContactClass = contactClass,
+                    LensType = lensType,
+                    PowerOd = powerOd,
+                    PowerOs = powerOs,
+                    CylinderOd = cylinderOd,
+                    CylinderOs = cylinderOs,
+                    AxisOd = axisOd,
+                    AxisOs = axisOs,
+                    BcOd = bcOd,
+                    BcOs = bcOs,
+                    AddOd = addOd,
+                    AddOs = addOs,
+                    ColorOd = colorOd,
+                    ColorOs = colorOs,
+                    PupilOd = pupilOd,
+                    PupilOs = pupilOs,
+                    VaDOd = vaDOd,
+                    VaDOs = vaDOs,
+                    VaDOu = vaDOu,
+                    VaNOd = VaNOd,
+                    VaNOs = VaNOs,
+                    VaNOu = VaNOu,
+                    VaIOd = vaIOd,
+                    VaIOs = vaIOs,
+                    VaIOu = vaIOu,
+                    ComfortOd = comfortOd,
+                    ComfortOs = comfortOs,
+                    CentrationOd = centrationOd,
+                    CentrationOs = centrationOs,
+                    CoverageOd = coverageOd,
+                    CoverageOs = coverageOs,
+                    MovementOd = movementOd,
+                    MovementOs = movementOs,
+                    DiameterOd = diameterOd,
+                    DiameterOs = diameterOs,
+                    RotationDegOd = rotationDegOd,
+                    RotationDegOs = rotationDegOs,
+                    KOd = kOd,
+                    KOs = kOs,
+                    EdgeLiftOd = edgeLiftOd,
+                    EdgeLiftOs = edgeLiftOs,
+                    DistNearOd = distNearOd,
+                    DistNearOs = distNearOs,
+                    PtInsertedRemoved = ptInsertedRemoved,
+                    WAgeOd = wAgeOd,
+                    WAgeOs = wAgeOs,
+                    WTimeTodayOd = wTimeTodayOd,
+                    WTimeTodayOs = wTimeTodayOs,
+                    WAvgWearTimeOd = wAvgWearTimeOd,
+                    WAvgWearTimeOs = wAvgWearTimeOs,
+                    Solution = solution,
+                    ProductOd = productOd,
+                    ProductOs = productOs,
+                    LensDesignOd = lensDesignOd,
+                    LensDesignOs = lensDesignOs,
+                    MaterialOd = materialOd,
+                    MaterialOs = materialOs,
+                    ReplacementSchedule = replacementSchedule,
+                    WearingInstructions = wearingInstructions,
+                    Expires = expires,
+                    RgpLayoutOd = rgpLayoutOd,
+                    RgpLayoutOs = rgpLayoutOs,
+                    Power2Od = power2Od,
+                    Power2Os = power2Os,
+                    Cylinder2Od = cylinder2Od,
+                    Cylinder2Os = cylinder2Os,
+                    Axis2Od = axis2Od,
+                    Axis2Os = axis2Os,
+                    Bc2Od = bc2Od,
+                    Bc2Os = bc2Os,
+                    Diameter2Od = diameter2Od,
+                    Diameter2Os = diameter2Os,
+                    PeriphCurveOd = periphCurveOd,
+                    PeriphCurveOs = periphCurveOs,
+                    PeriphCurve2Od = peripheralCurve2Od,
+                    PeriphCurve2Os = peripheralCurve2Os,
+                    SecondaryCurveOd = secondaryCurveOd,
+                    SecondaryCurveOs = secondaryCurveOs,
+                    EquivalentCurveOd = equivalentCurveOd,
+                    EquivalentCurveOs = equivalentCurveOs,
+                    CenterThicknessOd = centerThicknessOd,
+                    CenterThicknessOs = centerThicknessOs,
+                    OpticalZoneDiaOd = opticalZoneDiaOd,
+                    OpticalZoneDiaOs = opticalZoneDiaOs,
+                    EdgeOd = edgeOd,
+                    EdgeOs = edgeOs,
+                    BlendOd = blendOd,
+                    BlendOs = blendOs,
+                    NaFlPatternOd = naFlPatternOd,
+                    NaFlPatternOs = naFlPatternOs,
+                    SurfaceWettingOd = surfaceWettingOd,
+                    SurfaceWettingOs = surfaceWettingOs,
+                    DkOd = dkOd,
+                    DkOs = dkOs,
+                    SegHeightOd = segHeightOd,
+                    SegHeightOs = segHeightOs,
+                    SpecialInstructionsOd = specialInstructionsOd,
+                    SpecialInstructionsOs = specialInstructionsOs,
+                    InsertGuid = insertGUID,
+                    TreeviewTableIdOd = treeviewTableIdOd,
+                    TreeviewTableIdOs = treeviewTableIdOs,
+                    Notes = notes,
+                    Remarks = remarks,
+                    Printed = printed,
+                    SentToOptical = sentToOptical,
+                    UpcOd = upcOd,
+                    UpcOs = upcOs,
+                    CatalogSource = catalogSource,
+                    CatalogManufacturerIdOd = catalogManufacturerIdOd,
+                    CatalogManufacturerIdOs = catalogManufacturerIdOs,
+                    CatalogBrandIdOd = catalogBrandIdOd,
+                    CatalogBrandIdOs = catalogBrandIdOs,
+                    CatalogProductIdOd = catalogProductIdOd,
+                    CatalogProductIdOs = catalogProductIdOs,
+                    TrialNumber = trialNumber,
+                    OrSphereOd = orSphereOd,
+                    OrSphereOs = orSphereOs,
+                    OrCylinderOd = orCylinderOd,
+                    OrCylinderOs = orCylinderOs,
+                    OrAxisOd = orAxisOd,
+                    OrAxisOs = orAxisOs,
+                    OrVaDOd = orVaDOd,
+                    OrVaDOs = orVaDOs,
+                    OrVaNOd = orVaNOd,
+                    OrVaNOs = orVaNOs
                 };
                 eyeMDDbContext.EmrvisitContactLenses.Add(newContactLens);
 
