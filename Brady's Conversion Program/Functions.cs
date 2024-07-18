@@ -5682,11 +5682,12 @@ namespace Brady_s_Conversion_Program {
                 // no locationId, but this is used
                 int? conditionId = null;
                 // conditionID is always -888 or -999, dont know what they mean, dont know where this comes from
+                // also have an unused [condition value] field in the source table
                 string condition = "";
                 if (examCondition.Condition != null) {
                     condition = examCondition.Condition;
                 }
-                string eye = "";
+                string? eye = "";
                 if (examCondition.Eye != null) {
                     if (examCondition.Eye == "R") {
                         eye = "OD";
@@ -5724,8 +5725,79 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (familyHistory.PtId != null) {
+                    if (int.TryParse(familyHistory.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (familyHistory.VisitId != null) {
+                    if (int.TryParse(familyHistory.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    }
+                }
+                DateTime? dosDate = null;
+                if (familyHistory.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(familyHistory.Dosdate, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                string description = "";
+                if (familyHistory.Description != null) {
+                    description = familyHistory.Description;
+                }
+                string relation = "";
+                if (familyHistory.Relation != null) {
+                    relation = familyHistory.Relation;
+                }
+                string comments = "";
+                if (familyHistory.Comments != null) {
+                    comments = familyHistory.Comments;
+                }
+                string age = "";
+                if (familyHistory.Age != null) {
+                    age = familyHistory.Age;
+                }
+                string status = "";
+                if (familyHistory.Status != null) {
+                    status = familyHistory.Status;
+                }
+                string code = "";
+                if (familyHistory.CodeIcd9 != null) {
+                    code = familyHistory.CodeIcd9;
+                }
+                string codeIcd10 = "";
+                if (familyHistory.CodeIcd10 != null) {
+                    codeIcd10 = familyHistory.CodeIcd10;
+                }
+                string codeSnomed = "";
+                if (familyHistory.CodeSnomed != null) {
+                    codeSnomed = familyHistory.CodeSnomed;
+                }
+
+
+
                 var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    Description = description,
+                    Relation = relation,
+                    Comments = comments,
+                    Age = age,
+                    Status = status,
+                    Code = code,
+                    CodeIcd10 = codeIcd10,
+                    CodeSnomed = codeSnomed
                 };
                 eyeMDDbContext.EmrvisitFamilyHistories.Add(newFamilyHistory);
 
