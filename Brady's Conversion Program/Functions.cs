@@ -6177,8 +6177,236 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (procPool.PtId != null) {
+                    if (int.TryParse(procPool.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (procPool.VisitId != null) {
+                    if (int.TryParse(procPool.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Proc Pool with ID: {procPool.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (procPool.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(procPool.Dosdate, dateFormats,
+                                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                int? controlId = null;
+                // no controlId in source table
+                string procText = "";
+                if (procPool.ProcText != null) {
+                    procText = procPool.ProcText;
+                }
+                string code = "";
+                if (procPool.Code != null) {
+                    code = procPool.Code;
+                }
+                string modifier = "";
+                if (procPool.Modifier != null) {
+                    modifier = procPool.Modifier;
+                }
+                string originalModifier = "";
+                if (procPool.OriginalModifier != null) {
+                    originalModifier = procPool.OriginalModifier;
+                }
+                string location = "";
+                if (procPool.Location != null) {
+                    location = procPool.Location;
+                }
+                string sourceField = "";
+                if (procPool.SourceField != null) {
+                    sourceField = procPool.SourceField;
+                }
+                short isBilled = -1;
+                if (procPool.IsBilled != null) {
+                    if (short.TryParse(procPool.IsBilled, out short locum)) {
+                        isBilled = locum;
+                    }
+                }
+                int? procLocationType = null;
+                if (procPool.ProcLocationType != null) {
+                    if (int.TryParse(procPool.ProcLocationType, out int locum)) {
+                        procLocationType = locum;
+                    }
+                }
+                short procDiagTestComponents = -1;
+                if (procPool.ProcDiagTestComponents != null) {
+                    if (short.TryParse(procPool.ProcDiagTestComponents, out short locum)) {
+                        procDiagTestComponents = locum;
+                    }
+                }
+                short? notPoRelated = null;
+                if (procPool.NotPorelated != null) {
+                    if (short.TryParse(procPool.NotPorelated, out short locum)) {
+                        notPoRelated = locum;
+                    }
+                }
+                int? procType = null;
+                if (procPool.ProcType != null) {
+                    if (int.TryParse(procPool.ProcType, out int locum)) {
+                        procType = locum;
+                    }
+                }
+                int? billMultiProcId = null;
+                if (procPool.BillMultiProcId != null) {
+                    if (int.TryParse(procPool.BillMultiProcId, out int locum)) {
+                        billMultiProcId = locum;
+                    }
+                }
+                int? billMultiProcControlId = null;
+                if (procPool.BillMultiProcControlId != null) {
+                    if (int.TryParse(procPool.BillMultiProcControlId, out int locum)) {
+                        billMultiProcControlId = locum;
+                    }
+                }
+                string additionalModifier = "";
+                if (procPool.AdditionalModifier != null) {
+                    additionalModifier = procPool.AdditionalModifier;
+                }
+                short? isQr = null;
+                if (procPool.IsQr != null) {
+                    if (short.TryParse(procPool.IsQr, out short locum)) {
+                        isQr = locum;
+                    }
+                }
+                string eyeMDQRNum = "";
+                if (procPool.EyeMdqrnum != null) {
+                    eyeMDQRNum = procPool.EyeMdqrnum;
+                }
+                string pqrsNum = "";
+                if (procPool.Pqrsnum != null) {
+                    pqrsNum = procPool.Pqrsnum;
+                }
+                string nqfNum = "";
+                if (procPool.Nqfnum != null) {
+                    nqfNum = procPool.Nqfnum;
+                }
+                int? numerator = null;
+                if (procPool.Numerator != null) {
+                    if (int.TryParse(procPool.Numerator, out int locum)) {
+                        numerator = locum;
+                    }
+                }
+                int? denominator = null;
+                if (procPool.Denominator != null) {
+                    if (int.TryParse(procPool.Denominator, out int locum)) {
+                        denominator = locum;
+                    }
+                }
+                short? isHidden = null;
+                if (procPool.IsHidden != null) {
+                    if (short.TryParse(procPool.IsHidden, out short locum)) {
+                        isHidden = locum;
+                    }
+                }
+                string qrComponent = "";
+                if (procPool.Qrcomponent != null) {
+                    qrComponent = procPool.Qrcomponent;
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+                int? units = null;
+                if (procPool.Units != null) {
+                    if (int.TryParse(procPool.Units, out int locum)) {
+                        units = locum;
+                    }
+                }
+                int? requestedProcedureId = null;
+                if (procPool.RequestedProcedureId != null) {
+                    if (int.TryParse(procPool.RequestedProcedureId, out int locum)) {
+                        requestedProcedureId = locum;
+                    }
+                }
+                short? sentInVisit = null;
+                if (procPool.SentInVisit != null) {
+                    if (short.TryParse(procPool.SentInVisit, out short locum)) {
+                        sentInVisit = locum;
+                    }
+                }
+                int? sourceRecordId = null;
+                if (procPool.SourceRecordId != null) {
+                    if (int.TryParse(procPool.SourceRecordId, out int locum)) {
+                        sourceRecordId = locum;
+                    }
+                }
+                int? initialPatientPopulation = null;
+                if (procPool.InitialPatientPopulation != null) {
+                    if (int.TryParse(procPool.InitialPatientPopulation, out int locum)) {
+                        initialPatientPopulation = locum;
+                    }
+                }
+                int? denominatorExclusion = null;
+                if (procPool.DenominatorExclusion != null) {
+                    if (int.TryParse(procPool.DenominatorExclusion, out int locum)) {
+                        denominatorExclusion = locum;
+                    }
+                }
+                int? denominatorException = null;
+                if (procPool.DenominatorException != null) {
+                    if (int.TryParse(procPool.DenominatorException, out int locum)) {
+                        denominatorException = locum;
+                    }
+                }
+                int billingOrder = -1;
+                if (procPool.BillingOrder != null) {
+                    if (int.TryParse(procPool.BillingOrder, out int locum)) {
+                        billingOrder = locum;
+                    }
+                }
+
+
+
                 var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
-                    // data here
+                    Qrcomponent = qrComponent,
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    ControlId = controlId,
+                    ProcText = procText,
+                    Code = code,
+                    Modifier = modifier,
+                    OriginalModifier = originalModifier,
+                    Location = location,
+                    SourceField = sourceField,
+                    IsBilled = isBilled,
+                    ProcLocationType = procLocationType,
+                    ProcDiagTestComponents = procDiagTestComponents,
+                    NotPorelated = notPoRelated,
+                    ProcType = procType,
+                    BillMultiProcId = billMultiProcId,
+                    BillMultiProcControlId = billMultiProcControlId,
+                    AdditionalModifier = additionalModifier,
+                    IsQr = isQr,
+                    EyeMdqrnum = eyeMDQRNum,
+                    Pqrsnum = pqrsNum,
+                    Nqfnum = nqfNum,
+                    Numerator = numerator,
+                    Denominator = denominator,
+                    IsHidden = isHidden,
+                    InsertGuid = insertGUID,
+                    Units = units,
+                    RequestedProcedureId = requestedProcedureId,
+                    SentInVisit = sentInVisit,
+                    SourceRecordId = sourceRecordId,
+                    InitialPatientPopulation = initialPatientPopulation,
+                    DenominatorExclusion = denominatorExclusion,
+                    DenominatorException = denominatorException,
+                    BillingOrder = billingOrder
                 };
                 eyeMDDbContext.EmrvisitProcCodePools.Add(newProcPool);
 
