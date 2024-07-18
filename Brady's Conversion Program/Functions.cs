@@ -6101,8 +6101,68 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (procDiagPool.PtId != null) {
+                    if (int.TryParse(procDiagPool.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (procDiagPool.VisitId != null) {
+                    if (int.TryParse(procDiagPool.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (procDiagPool.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(procDiagPool.Dosdate, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                int? controlId = null;
+                // no controlId in source table
+                int? visitProcCodePoolId = null;
+                if (procDiagPool.VisitProcCodePoolId != null) {
+                    if (int.TryParse(procDiagPool.VisitProcCodePoolId, out int locum)) {
+                        visitProcCodePoolId = locum;
+                    }
+                }
+                int? visitDiagCodePoolId = null;
+                if (procDiagPool.VisitDiagCodePoolId != null) {
+                    if (int.TryParse(procDiagPool.VisitDiagCodePoolId, out int locum)) {
+                        visitDiagCodePoolId = locum;
+                    }
+                }
+                int? requestedProcId = null;
+                if (procDiagPool.RequestedProcedureId != null) {
+                    if (int.TryParse(procDiagPool.RequestedProcedureId, out int locum)) {
+                        requestedProcId = locum;
+                    }
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+
+
                 var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    ControlId = controlId,
+                    VisitProcCodePoolId = visitProcCodePoolId,
+                    VisitDiagCodePoolId = visitDiagCodePoolId,
+                    RequestedProcedureId = requestedProcId,
+                    InsertGuid = insertGUID
                 };
                 eyeMDDbContext.EmrvisitProcCodePoolDiags.Add(newProcDiagPool);
 
