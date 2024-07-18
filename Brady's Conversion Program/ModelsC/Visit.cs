@@ -7,8 +7,6 @@ public partial class Visit
 {
     public int Id { get; set; }
 
-    public string? VisitId { get; set; }
-
     public string? PtId { get; set; }
 
     public string? Dosdate { get; set; }

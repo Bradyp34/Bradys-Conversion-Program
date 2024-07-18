@@ -7,14 +7,12 @@ namespace Brady_s_Conversion_Program.ModelsC;
 public partial class EHRDbContext : DbContext
 {
     private readonly string _connectionString;
-
-    public EHRDbContext(string connectionString) {
+    public EHRDbContext(string connectionString)
+    {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public EHRDbContext(DbContextOptions<EHRDbContext> options)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         : base(options)
     {
     }
@@ -685,505 +683,114 @@ public partial class EHRDbContext : DbContext
 
         modelBuilder.Entity<DiagCodePool>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Diag_Cod__3214EC2790D9F37A");
+            entity
+                .HasNoKey()
+                .ToTable("Diag_Code_Pool");
 
-            entity.ToTable("Diag_Code_Pool");
-
-            entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.AddOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Add_OD");
-            entity.Property(e => e.AddOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Add_OS");
-            entity.Property(e => e.Axis2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Axis2_OD");
-            entity.Property(e => e.Axis2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Axis2_OS");
-            entity.Property(e => e.AxisOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Axis_OD");
-            entity.Property(e => e.AxisOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Axis_OS");
-            entity.Property(e => e.Bc2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("BC2_OD");
-            entity.Property(e => e.Bc2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("BC2_OS");
-            entity.Property(e => e.BcOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("BC_OD");
-            entity.Property(e => e.BcOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("BC_OS");
-            entity.Property(e => e.BlendOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Blend_OD");
-            entity.Property(e => e.BlendOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Blend_OS");
-            entity.Property(e => e.CatalogBrandIdOd)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogBrandID_OD");
-            entity.Property(e => e.CatalogBrandIdOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogBrandID_OS");
-            entity.Property(e => e.CatalogManufacturerIdOd)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogManufacturerID_OD");
-            entity.Property(e => e.CatalogManufacturerIdOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogManufacturerID_OS");
-            entity.Property(e => e.CatalogProductIdOd)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogProductID_OD");
-            entity.Property(e => e.CatalogProductIdOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("CatalogProductID_OS");
-            entity.Property(e => e.CatalogSource)
+            entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CenterThicknessOd)
-                .HasMaxLength(10)
+            entity.Property(e => e.CodeIcd10)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("CenterThickness_OD");
-            entity.Property(e => e.CenterThicknessOs)
-                .HasMaxLength(10)
+                .HasColumnName("CodeICD10");
+            entity.Property(e => e.CodeSnomed)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("CenterThickness_OS");
-            entity.Property(e => e.CentrationOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Centration_OD");
-            entity.Property(e => e.CentrationOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Centration_OS");
-            entity.Property(e => e.ColorOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Color_OD");
-            entity.Property(e => e.ColorOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Color_OS");
-            entity.Property(e => e.ComfortOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Comfort_OD");
-            entity.Property(e => e.ComfortOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Comfort_OS");
-            entity.Property(e => e.ContactClass)
+                .HasColumnName("CodeSNOMED");
+            entity.Property(e => e.DiagText)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CoverageOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Coverage_OD");
-            entity.Property(e => e.CoverageOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Coverage_OS");
-            entity.Property(e => e.Cylinder2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Cylinder2_OD");
-            entity.Property(e => e.Cylinder2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Cylinder2_OS");
-            entity.Property(e => e.CylinderOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Cylinder_OD");
-            entity.Property(e => e.CylinderOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Cylinder_OS");
-            entity.Property(e => e.Diameter2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Diameter2_OD");
-            entity.Property(e => e.Diameter2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Diameter2_OS");
-            entity.Property(e => e.DiameterOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Diameter_OD");
-            entity.Property(e => e.DiameterOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Diameter_OS");
-            entity.Property(e => e.DistNearOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Dist_Near_OD");
-            entity.Property(e => e.DistNearOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Dist_Near_OS");
-            entity.Property(e => e.DkOd)
+            entity.Property(e => e.DoNotReconcile)
                 .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("Dk_OD");
-            entity.Property(e => e.DkOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("Dk_OS");
+                .IsUnicode(false);
             entity.Property(e => e.Dosdate)
-                .HasMaxLength(20)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("DOSDate");
-            entity.Property(e => e.EdgeLiftOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Edge_Lift_OD");
-            entity.Property(e => e.EdgeLiftOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Edge_Lift_OS");
-            entity.Property(e => e.EdgeOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Edge_OD");
-            entity.Property(e => e.EdgeOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Edge_OS");
-            entity.Property(e => e.EquivalentCurveOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("EquivalentCurve_OD");
-            entity.Property(e => e.EquivalentCurveOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("EquivalentCurve_OS");
-            entity.Property(e => e.Expires)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.KOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("K_OD");
-            entity.Property(e => e.KOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("K_OS");
-            entity.Property(e => e.LensDesignOd)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("LensDesign_OD");
-            entity.Property(e => e.LensDesignOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("LensDesign_OS");
-            entity.Property(e => e.LensType)
+            entity.Property(e => e.IsActive)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.MaterialOd)
+            entity.Property(e => e.IsResolved1)
                 .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("Material_OD");
-            entity.Property(e => e.MaterialOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("Material_OS");
-            entity.Property(e => e.MovementOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Movement_OD");
-            entity.Property(e => e.MovementOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Movement_OS");
-            entity.Property(e => e.NaFlPatternOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("NaFlPattern_OD");
-            entity.Property(e => e.NaFlPatternOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("NaFlPattern_OS");
-            entity.Property(e => e.Notes)
-                .HasMaxLength(500)
                 .IsUnicode(false);
-            entity.Property(e => e.OpticalZoneDiaOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OpticalZoneDia_OD");
-            entity.Property(e => e.OpticalZoneDiaOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OpticalZoneDia_OS");
-            entity.Property(e => e.OrAxisOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Axis_OD");
-            entity.Property(e => e.OrAxisOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Axis_OS");
-            entity.Property(e => e.OrCylinderOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Cylinder_OD");
-            entity.Property(e => e.OrCylinderOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Cylinder_OS");
-            entity.Property(e => e.OrSphereOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Sphere_OD");
-            entity.Property(e => e.OrSphereOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_Sphere_OS");
-            entity.Property(e => e.OrVaDOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_VaD_OD");
-            entity.Property(e => e.OrVaDOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_VaD_OS");
-            entity.Property(e => e.OrVaNOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_VaN_OD");
-            entity.Property(e => e.OrVaNOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OR_VaN_OS");
-            entity.Property(e => e.PeriphCurve2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("PeriphCurve2_OD");
-            entity.Property(e => e.PeriphCurve2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("PeriphCurve2_OS");
-            entity.Property(e => e.PeriphCurveOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("PeriphCurve_OD");
-            entity.Property(e => e.PeriphCurveOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("PeriphCurve_OS");
-            entity.Property(e => e.Power2Od)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Power2_OD");
-            entity.Property(e => e.Power2Os)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Power2_OS");
-            entity.Property(e => e.PowerOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Power_OD");
-            entity.Property(e => e.PowerOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Power_OS");
-            entity.Property(e => e.ProductOd)
+            entity.Property(e => e.IsResolved2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Location1)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Location2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Location2OnsetVisitId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("Product_OD");
-            entity.Property(e => e.ProductOs)
+                .HasColumnName("Location2OnsetVisitID");
+            entity.Property(e => e.Modifier)
                 .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("Product_OS");
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetDay1)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetDay2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetMonth1)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetMonth2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetYear1)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.OnsetYear2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.PtId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("PtID");
-            entity.Property(e => e.PtInsertedRemoved)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Pt_InsertedRemoved");
-            entity.Property(e => e.PupilOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Pupil_OD");
-            entity.Property(e => e.PupilOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Pupil_OS");
-            entity.Property(e => e.Remarks)
-                .HasMaxLength(500)
-                .IsUnicode(false);
-            entity.Property(e => e.ReplacementSchedule)
-                .HasMaxLength(500)
-                .IsUnicode(false);
-            entity.Property(e => e.RgpLayoutOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("RGP_Layout_OD");
-            entity.Property(e => e.RgpLayoutOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("RGP_Layout_OS");
-            entity.Property(e => e.RotationDegOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Rotation_Deg_OD");
-            entity.Property(e => e.RotationDegOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Rotation_Deg_OS");
-            entity.Property(e => e.RotationDirectionOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Rotation_Direction_OD");
-            entity.Property(e => e.RotationDirectionOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Rotation_Direction_OS");
-            entity.Property(e => e.RxId)
+            entity.Property(e => e.RequestedProcedureId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("RxID");
-            entity.Property(e => e.SecondaryCurveOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("SecondaryCurve_OD");
-            entity.Property(e => e.SecondaryCurveOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("SecondaryCurve_OS");
-            entity.Property(e => e.SegHeightOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Seg_Height_OD");
-            entity.Property(e => e.SegHeightOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("Seg_Height_OS");
-            entity.Property(e => e.Solution)
+                .HasColumnName("RequestedProcedureID");
+            entity.Property(e => e.ResolveType1)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.SpecialInstructionsOd)
-                .HasMaxLength(500)
-                .IsUnicode(false)
-                .HasColumnName("SpecialInstructions_OD");
-            entity.Property(e => e.SpecialInstructionsOs)
-                .HasMaxLength(500)
-                .IsUnicode(false)
-                .HasColumnName("SpecialInstructions_OS");
-            entity.Property(e => e.SurfaceWettingOd)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("SurfaceWetting_OD");
-            entity.Property(e => e.SurfaceWettingOs)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("SurfaceWetting_OS");
-            entity.Property(e => e.TrialNumber)
+            entity.Property(e => e.ResolveType2)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.UpcOd)
+            entity.Property(e => e.ResolvedDate1)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ResolvedDate2)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ResolvedRequestedProcedureId1)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("UPC_OD");
-            entity.Property(e => e.UpcOs)
+                .HasColumnName("ResolvedRequestedProcedureID1");
+            entity.Property(e => e.ResolvedRequestedProcedureId2)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("UPC_OS");
-            entity.Property(e => e.VaDOd)
-                .HasMaxLength(10)
+                .HasColumnName("ResolvedRequestedProcedureID2");
+            entity.Property(e => e.ResolvedVisitId1)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("VaD_OD");
-            entity.Property(e => e.VaDOs)
-                .HasMaxLength(10)
+                .HasColumnName("ResolvedVisitID1");
+            entity.Property(e => e.ResolvedVisitId2)
+                .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("VaD_OS");
-            entity.Property(e => e.VaDOu)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaD_OU");
-            entity.Property(e => e.VaIOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaI_OD");
-            entity.Property(e => e.VaIOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaI_OS");
-            entity.Property(e => e.VaIOu)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaI_OU");
-            entity.Property(e => e.VaNOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaN_OD");
-            entity.Property(e => e.VaNOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaN_OS");
-            entity.Property(e => e.VaNOu)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("VaN_OU");
+                .HasColumnName("ResolvedVisitID2");
+            entity.Property(e => e.SourceField)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.VisitId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("VisitID");
-            entity.Property(e => e.WAgeOd)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("W_Age_OD");
-            entity.Property(e => e.WAgeOs)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("W_Age_OS");
-            entity.Property(e => e.WAvgWearTimeOd)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("W_Avg_WearTime_OD");
-            entity.Property(e => e.WAvgWearTimeOs)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("W_Avg_WearTime_OS");
-            entity.Property(e => e.WTimeTodayOd)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("W_TimeToday_OD");
-            entity.Property(e => e.WTimeTodayOs)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("W_TimeToday_OS");
-            entity.Property(e => e.WearingInstructions)
-                .HasMaxLength(500)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<DiagTest>(entity =>
@@ -4515,10 +4122,6 @@ public partial class EHRDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("VisitEyeCareProviderID");
-            entity.Property(e => e.VisitId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("VisitID");
             entity.Property(e => e.VisitPriCareProviderId)
                 .HasMaxLength(10)
                 .IsUnicode(false)

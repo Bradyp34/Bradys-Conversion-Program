@@ -4473,7 +4473,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (ptId == null && visitId == null) {
-                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {diagCodePool.Id}");
+                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for diag code pool with visit ID: {diagCodePool.VisitId}");
                 }
                 else if (ptId == null) {
                     var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
@@ -4481,11 +4481,11 @@ namespace Brady_s_Conversion_Program {
                         ptId = eyeMDVisit.PtId;
                     }
                     else {
-                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {diagCodePool.Id}");
+                        logger.Log($"EHR: EHR Visit not found for diag code pool with ID: {diagCodePool.VisitId}");
                     }
                 }
                 else if (visitId == null) {
-                    logger.Log($"EHR: EHR VisitID not found for visit order with ID: {diagCodePool.Id}");
+                    logger.Log($"EHR: EHR VisitID not found for diag code pool with ID: {diagCodePool.VisitId}");
                 }
 
                 int? controlId = null;
@@ -4493,16 +4493,153 @@ namespace Brady_s_Conversion_Program {
                 DateTime? dosDate = null;
                 if (diagCodePool.Dosdate != null) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParse(diagCodePool.Dosdate, out tempDateTime)) {
+                    if (!DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dosDate = tempDateTime;
                     }
                 }
                 string diagText = "";
-                // no diagText
+                if (diagCodePool.DiagText != null) {
+                    diagText = diagCodePool.DiagText;
+                }
                 string code = "";
-                // no code
+                if (diagCodePool.Code != null) {
+                    code = diagCodePool.Code;
+                }
                 string modifier = "";
-                // no modifier
+                if (diagCodePool.Modifier != null) {
+                    modifier = diagCodePool.Modifier;
+                }
+                string sourceField = "";
+                if (diagCodePool.SourceField != null) {
+                    sourceField = diagCodePool.SourceField;
+                }
+                short isactive = -1;
+                if (short.TryParse(diagCodePool.IsActive, out short temp)) {
+                    isactive = temp;
+                }
+                string codeICD10 = "";
+                if (diagCodePool.CodeIcd10 != null) {
+                    codeICD10 = diagCodePool.CodeIcd10;
+                }
+                string codeSNOMED = "";
+                if (diagCodePool.CodeSnomed != null) {
+                    codeSNOMED = diagCodePool.CodeSnomed;
+                }
+                string insertGUID = "";
+                // no insertGUID
+                int? requestedProcId = null;
+                if (diagCodePool.RequestedProcedureId != null) {
+                    if (int.TryParse(diagCodePool.RequestedProcedureId, out int locum)) {
+                        requestedProcId = locum;
+                    }
+                }
+                string location1 = "";
+                if (diagCodePool.Location1 != null) {
+                    location1 = diagCodePool.Location1;
+                }
+                string onsetMonth1 = "";
+                if (diagCodePool.OnsetMonth1 != null) {
+                    onsetMonth1 = diagCodePool.OnsetMonth1;
+                }
+                string onsetDay1 = "";
+                if (diagCodePool.OnsetDay1 != null) {
+                    onsetDay1 = diagCodePool.OnsetDay1;
+                }
+                string onsetYear1 = "";
+                if (diagCodePool.OnsetYear1 != null) {
+                    onsetYear1 = diagCodePool.OnsetYear1;
+                }
+                string location2 = "";
+                if (diagCodePool.Location2 != null) {
+                    location2 = diagCodePool.Location2;
+                }
+                int? location2onsetVisitId = null;
+                if (diagCodePool.Location2OnsetVisitId != null) {
+                    if (int.TryParse(diagCodePool.Location2OnsetVisitId, out int locum)) {
+                        location2onsetVisitId = locum;
+                    }
+                }
+                string onsetMonth2 = "";
+                if (diagCodePool.OnsetMonth2 != null) {
+                    onsetMonth2 = diagCodePool.OnsetMonth2;
+                }
+                string onsetDay2 = "";
+                if (diagCodePool.OnsetDay2 != null) {
+                    onsetDay2 = diagCodePool.OnsetDay2;
+                }
+                string onsetYear2 = "";
+                if (diagCodePool.OnsetYear2 != null) {
+                    onsetYear2 = diagCodePool.OnsetYear2;
+                }
+                short isResolved1 = -1;
+                if (short.TryParse(diagCodePool.IsResolved1, out short foo)) {
+                    isResolved1 = foo;
+                }
+                int? resolvedVisitId1 = null;
+                if (diagCodePool.ResolvedVisitId1 != null) {
+                    if (int.TryParse(diagCodePool.ResolvedVisitId1, out int locum)) {
+                        resolvedVisitId1 = locum;
+                    }
+                }
+                int? resolvedRequestedProcId1 = null;
+                if (diagCodePool.ResolvedRequestedProcedureId1 != null) {
+                    if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId1, out int locum)) {
+                        resolvedRequestedProcId1 = locum;
+                    }
+                }
+                DateTime? resolvedDate1 = null; 
+                if (diagCodePool.ResolvedDate1 != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        resolvedDate1 = tempDateTime;
+                    }
+                }
+                string resolveType1 = "";
+                if (diagCodePool.ResolveType1 != null) {
+                    resolveType1 = diagCodePool.ResolveType1;
+                }
+                short isResolved2 = -1;
+                if (short.TryParse(diagCodePool.IsResolved2, out short temp2)) {
+                    isResolved2 = temp2;
+                }
+                int? resolvedVisitId2 = null;
+                if (diagCodePool.ResolvedVisitId2 != null) {
+                    if (int.TryParse(diagCodePool.ResolvedVisitId2, out int locum)) {
+                        resolvedVisitId2 = locum;
+                    }
+                }
+                int? resolvedRequestedProc2 = null;
+                if (diagCodePool.ResolvedRequestedProcedureId2 != null) {
+                    if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId2, out int locum)) {
+                        resolvedRequestedProc2 = locum;
+                    }
+                }
+                DateTime? resolvedDate2 = null;
+                if (diagCodePool.ResolvedDate2 != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        resolvedDate2 = tempDateTime;
+                    }
+                }
+                string resolveType2 = "";
+                if (diagCodePool.ResolveType2 != null) {
+                    resolveType2 = diagCodePool.ResolveType2;
+                }
+                bool doNotReconcile = false;
+                if (diagCodePool.DoNotReconcile != null && diagCodePool.DoNotReconcile.ToLower() == "yes") {
+                    doNotReconcile = true;
+                }
+                int? conditionId = null;
+                // no conditionId
+                DateTime? lastModified = null;
+                // no lastModified
+                DateTime? created = null;
+                // no created
+                int? createdEmpId = null;
+                // no createdEmpId
 
 
 
@@ -4513,13 +4650,41 @@ namespace Brady_s_Conversion_Program {
                     DiagText = diagText,
                     Code = code,
                     Modifier = modifier,
-
+                    SourceField = sourceField,
+                    IsActive = isactive,
+                    CodeIcd10 = codeICD10,
+                    CodeSnomed = codeSNOMED,
+                    InsertGuid = insertGUID,
+                    RequestedProcedureId = requestedProcId,
+                    Location1 = location1,
+                    OnsetMonth1 = onsetMonth1,
+                    OnsetDay1 = onsetDay1,
+                    OnsetYear1 = onsetYear1,
+                    Location2 = location2,
+                    Location2OnsetVisitId = location2onsetVisitId,
+                    OnsetMonth2 = onsetMonth2,
+                    OnsetDay2 = onsetDay2,
+                    IsResolved1 = isResolved1,
+                    ResolvedVisitId1 = resolvedVisitId1,
+                    ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
+                    ResolvedDate1 = resolvedDate1,
+                    ResolveType1 = resolveType1,
+                    IsResolved2 = isResolved2,
+                    ResolvedVisitId2 = resolvedVisitId2,
+                    ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
+                    ResolvedDate2 = resolvedDate2,
+                    ResolveType2 = resolveType2,
+                    DoNotReconcile = doNotReconcile,
+                    ConditionId = conditionId,
+                    LastModified = lastModified,
+                    Created = created,
+                    CreatedEmpId = createdEmpId
                 };
                 eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
 
                 eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the diag code pool with ID: {diagCodePool.Id}. Error: {e.Message}");
+                logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
             }
         }
 

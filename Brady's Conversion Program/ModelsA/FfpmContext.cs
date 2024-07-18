@@ -7,11 +7,14 @@ namespace Brady_s_Conversion_Program.ModelsA;
 public partial class FfpmContext : DbContext
 {
     private readonly string _connectionString;
+
     public FfpmContext(string connectionString) {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public FfpmContext(DbContextOptions<FfpmContext> options)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         : base(options)
     {
     }
