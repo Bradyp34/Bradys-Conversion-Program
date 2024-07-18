@@ -4720,12 +4720,887 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR VisitID not found for visit order with ID: {diagTest.Id}");
                 }
 
+                DateTime? dosDate = null;
+                if (diagTest.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(diagTest.Dosdate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+
+                #region diagTests
+                string gonioAngleDepthSuOd = "";
+                if (diagTest.GonioAngleDepthSuOd != null) {
+                    gonioAngleDepthSuOd = diagTest.GonioAngleDepthSuOd;
+                }
+                string gonioAngleDepthMedialOd = "";
+                if (diagTest.GonioAngleDepthMedialOd != null) {
+                    gonioAngleDepthMedialOd = diagTest.GonioAngleDepthMedialOd;
+                }
+                string gonioAngleDepthInOd = "";
+                if (diagTest.GonioAngleDepthInOd != null) {
+                    gonioAngleDepthInOd = diagTest.GonioAngleDepthInOd;
+                }
+                string gonioAngleDepthTemporalOd = "";
+                if (diagTest.GonioAngleDepthTemporalOd != null) {
+                    gonioAngleDepthTemporalOd = diagTest.GonioAngleDepthTemporalOd;
+                }
+                string gonioAngleStructureSuOd = "";
+                if (diagTest.GonioAngleStructureSuOd != null) {
+                    gonioAngleStructureSuOd = diagTest.GonioAngleStructureSuOd;
+                }
+                string gonioAngleStructureMedialOd = "";
+                if (diagTest.GonioAngleStructureMedialOd != null) {
+                    gonioAngleStructureMedialOd = diagTest.GonioAngleStructureMedialOd;
+                }
+                string gonioAngleStructureInOd = "";
+                if (diagTest.GonioAngleStructureInOd != null) {
+                    gonioAngleStructureInOd = diagTest.GonioAngleStructureInOd;
+                }
+                string gonioAngleStructureTemporalOd = "";
+                if (diagTest.GonioAngleStructureTemporalOd != null) {
+                    gonioAngleStructureTemporalOd = diagTest.GonioAngleStructureTemporalOd;
+                }
+                string gonioAngleDepthSuOs = "";
+                if (diagTest.GonioAngleDepthSuOs != null) {
+                    gonioAngleDepthSuOs = diagTest.GonioAngleDepthSuOs;
+                }
+                string gonioAngleDepthMedialOs = "";
+                if (diagTest.GonioAngleDepthMedialOs != null) {
+                    gonioAngleDepthMedialOs = diagTest.GonioAngleDepthMedialOs;
+                }
+                string gonioAngleDepthInOs = "";
+                if (diagTest.GonioAngleDepthInOs != null) {
+                    gonioAngleDepthInOs = diagTest.GonioAngleDepthInOs;
+                }
+                string gonioAngleDepthTemporalOs = "";
+                if (diagTest.GonioAngleDepthTemporalOs != null) {
+                    gonioAngleDepthTemporalOs = diagTest.GonioAngleDepthTemporalOs;
+                }
+                string gonioAngleStructureSuOs = "";
+                if (diagTest.GonioAngleStructureSuOs != null) {
+                    gonioAngleStructureSuOs = diagTest.GonioAngleStructureSuOs;
+                }
+                string gonioAngleStructureMedialOs = "";
+                if (diagTest.GonioAngleStructureMedialOs != null) {
+                    gonioAngleStructureMedialOs = diagTest.GonioAngleStructureMedialOs;
+                }
+                string gonioAngleStructureInOs = "";
+                if (diagTest.GonioAngleStructureInOs != null) {
+                    gonioAngleStructureInOs = diagTest.GonioAngleStructureInOs;
+                }
+                string gonioAngleStructureTemporalOs = "";
+                if (diagTest.GonioAngleStructureTemporalOs != null) {
+                    gonioAngleStructureTemporalOs = diagTest.GonioAngleStructureTemporalOs;
+                }
+                string gonioComments = "";
+                if (diagTest.GonioComments != null) {
+                    gonioComments = diagTest.GonioComments;
+                }
+                short mBalanceScOrtho = -1;
+                if (short.TryParse(diagTest.MbalanceScOrtho, out short temp)) {
+                    mBalanceScOrtho = temp;
+                }
+                string mBalanceHorizScPriGaze = "";
+                if (diagTest.MbalanceHorizScPriGaze != null) {
+                    mBalanceHorizScPriGaze = diagTest.MbalanceHorizScPriGaze;
+                }
+                string mBalanceHorizTypeScPriGaze = "";
+                if (diagTest.MbalanceHorizTypeScPriGaze != null) {
+                    mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScPriGaze;
+                }
+                string mBalanceVertScPriGaze = "";
+                if (diagTest.MbalanceVertScPriGaze != null) {
+                    mBalanceVertScPriGaze = diagTest.MbalanceVertScPriGaze;
+                }
+                string mBalanceVertTypeScPriGaze = "";
+                if (diagTest.MbalanceVertTypeScPriGaze != null) {
+                    mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScPriGaze;
+                }
+                string mBalanceHorizScUpGaze = "";
+                if (diagTest.MbalanceHorizScUpGaze != null) {
+                    mBalanceHorizScUpGaze = diagTest.MbalanceHorizScUpGaze;
+                }
+                string mBalanceHorizTypeScUpGaze = "";
+                if (diagTest.MbalanceHorizTypeScUpGaze != null) {
+                    mBalanceHorizTypeScUpGaze = diagTest.MbalanceHorizTypeScUpGaze;
+                }
+                string mBalanceVertScUpGaze = "";
+                if (diagTest.MbalanceVertScUpGaze != null) {
+                    mBalanceVertScUpGaze = diagTest.MbalanceVertScUpGaze;
+                }
+                string mBalanceVertTypeScUpGaze = "";
+                if (diagTest.MbalanceVertTypeScUpGaze != null) {
+                    mBalanceVertTypeScUpGaze = diagTest.MbalanceVertTypeScUpGaze;
+                }
+                string mBalanceHorizScDownGaze = "";
+                if (diagTest.MbalanceHorizScDownGaze != null) {
+                    mBalanceHorizScDownGaze = diagTest.MbalanceHorizScDownGaze;
+                }
+                string mBalanceHorizTypeScDownGaze = "";
+                if (diagTest.MbalanceHorizTypeScDownGaze != null) {
+                    mBalanceHorizTypeScDownGaze = diagTest.MbalanceHorizTypeScDownGaze;
+                }
+                string mBalanceVertScDownGaze = "";
+                if (diagTest.MbalanceVertScDownGaze != null) {
+                    mBalanceVertScDownGaze = diagTest.MbalanceVertScDownGaze;
+                }
+                string mBalanceVertTypeScDownGaze = "";
+                if (diagTest.MbalanceVertTypeScDownGaze != null) {
+                    mBalanceVertTypeScDownGaze = diagTest.MbalanceVertTypeScDownGaze;
+                }
+                string mBalanceHorizScRtGaze = "";
+                if (diagTest.MbalanceHorizScRtGaze != null) {
+                    mBalanceHorizScRtGaze = diagTest.MbalanceHorizScRtGaze;
+                }
+                string mBalanceHorizTypeScRtGaze = "";
+                if (diagTest.MbalanceHorizTypeScRtGaze != null) {
+                    mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScRtGaze;
+                }
+                string mBalanceVertScRtGaze = "";
+                if (diagTest.MbalanceVertScRtGaze != null) {
+                    mBalanceVertScRtGaze = diagTest.MbalanceVertScRtGaze;
+                }
+                string mBalanceVertTypeScRtGaze = "";    
+                if (diagTest.MbalanceVertTypeScRtGaze != null) {
+                    mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScRtGaze;
+                }
+                string mBalanceHorizScLtGaze = "";
+                if (diagTest.MbalanceHorizScLtGaze != null) {
+                    mBalanceHorizScLtGaze = diagTest.MbalanceHorizScLtGaze;
+                }
+                string mBalanceHorizTypeScLtGaze = "";
+                if (diagTest.MbalanceHorizTypeScLtGaze != null) {
+                    mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScLtGaze;
+                }
+                string mBalanceVertScLtGaze = "";
+                if (diagTest.MbalanceVertScLtGaze != null) {
+                    mBalanceVertScLtGaze = diagTest.MbalanceVertScLtGaze;
+                }
+                string mBalanceVertTypeScLtGaze = "";
+                if (diagTest.MbalanceVertTypeScLtGaze != null) {
+                    mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScLtGaze;
+                }
+                short mBalanceCCOrtho = -1;
+                if (short.TryParse(diagTest.MbalanceCcOrtho, out short temp3)) {
+                    mBalanceCCOrtho = temp3;
+                }
+                string mBalanceHorizCcPriGaze = "";
+                if (diagTest.MbalanceHorizCcPriGaze != null) {
+                    mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcPriGaze;
+                }
+                string mBalanceHorizTypeCcPriGaze = "";
+                if (diagTest.MbalanceHorizTypeCcPriGaze != null) {
+                    mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcPriGaze;
+                }
+                string mBalanceVertCcPriGaze = "";
+                if (diagTest.MbalanceVertCcPriGaze != null) {
+                    mBalanceVertCcPriGaze = diagTest.MbalanceVertCcPriGaze;
+                }
+                string mBalanceVertTypeCcPriGaze = "";
+                if (diagTest.MbalanceVertTypeCcPriGaze != null) {
+                    mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcPriGaze;
+                }
+                string mBalanceHorizCcUpGaze = "";
+                if (diagTest.MbalanceHorizCcUpGaze != null) {
+                    mBalanceHorizCcUpGaze = diagTest.MbalanceHorizCcUpGaze;
+                }
+                string mBalanceHorizTypeCcUpGaze = "";
+                if (diagTest.MbalanceHorizTypeCcUpGaze != null) {
+                    mBalanceHorizTypeCcUpGaze = diagTest.MbalanceHorizTypeCcUpGaze;
+                }
+                string mBalanceVertCcUpGaze = "";
+                if (diagTest.MbalanceVertCcUpGaze != null) {
+                    mBalanceVertCcUpGaze = diagTest.MbalanceVertCcUpGaze;
+                }
+                string mBalanceVertTypeCcUpGaze = "";
+                if (diagTest.MbalanceVertTypeCcUpGaze != null) {
+                    mBalanceVertTypeCcUpGaze = diagTest.MbalanceVertTypeCcUpGaze;
+                }
+                string mBalanceHorizCcDownGaze = "";
+                if (diagTest.MbalanceHorizCcDownGaze != null) {
+                    mBalanceHorizCcDownGaze = diagTest.MbalanceHorizCcDownGaze;
+                }
+                string mBalanceHorizTypeCcDownGaze = "";
+                if (diagTest.MbalanceHorizTypeCcDownGaze != null) {
+                    mBalanceHorizTypeCcDownGaze = diagTest.MbalanceHorizTypeCcDownGaze;
+                }
+                string mBalanceVertCcDownGaze = "";
+                if (diagTest.MbalanceVertCcDownGaze != null) {
+                    mBalanceVertCcDownGaze = diagTest.MbalanceVertCcDownGaze;
+                }
+                string mBalanceVertTypeCcDownGaze = "";
+                if (diagTest.MbalanceVertTypeCcDownGaze != null) {
+                    mBalanceVertTypeCcDownGaze = diagTest.MbalanceVertTypeCcDownGaze;
+                }
+                string mBalanceHorizCcRtGaze = "";
+                if (diagTest.MbalanceHorizCcRtGaze != null) {
+                    mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcRtGaze;
+                }
+                string mBalanceHorizTypeCcRtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcRtGaze != null) {
+                    mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcRtGaze;
+                }
+                string mBalanceVertCcRtGaze = "";
+                if (diagTest.MbalanceVertCcRtGaze != null) {
+                    mBalanceVertCcRtGaze = diagTest.MbalanceVertCcRtGaze;
+                }
+                string mBalanceVertTypeCcRtGaze = "";
+                if (diagTest.MbalanceVertTypeCcRtGaze != null) {
+                    mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcRtGaze;
+                }
+                string mBalanceHorizCcLtGaze = "";
+                if (diagTest.MbalanceHorizCcLtGaze != null) {
+                    mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcLtGaze;
+                }
+                string mBalanceHorizTypeCcLtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcLtGaze != null) {
+                    mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcLtGaze;
+                }
+                string mBalanceVertCcLtGaze = "";
+                if (diagTest.MbalanceVertCcLtGaze != null) {
+                    mBalanceVertCcLtGaze = diagTest.MbalanceVertCcLtGaze;
+                }
+                string mBalanceVertTypeCcLtGaze = "";
+                if (diagTest.MbalanceVertTypeCcLtGaze != null) {
+                    mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcLtGaze;
+                }
+                string mBalanceMethod = "";
+                if (diagTest.MbalanceMethod != null) {
+                    mBalanceMethod = diagTest.MbalanceMethod;
+                }
+                string gonioPigmentOd = "";
+                if (diagTest.GonioPigmentOd != null) {
+                    gonioPigmentOd = diagTest.GonioPigmentOd;
+                }
+                string gonioPigmentOs = "";
+                if (diagTest.GonioPigmentOs != null) {
+                    gonioPigmentOs = diagTest.GonioPigmentOs;
+                }
+                string mBalanceScType = "";
+                if (diagTest.MbalanceScType != null) {
+                    mBalanceScType = diagTest.MbalanceScType;
+                }
+                string mBalanceCcType = "";
+                if (diagTest.MbalanceCcType != null) {
+                    mBalanceCcType = diagTest.MbalanceCcType;
+                }
+                string mbalanceHorizScUpRtGaze = "";
+                if (diagTest.MbalanceHorizScUpRtGaze != null) {
+                    mbalanceHorizScUpRtGaze = diagTest.MbalanceHorizScUpRtGaze;
+                }
+                string mBalancehorizTypeScUpRtGaze = "";
+                if (diagTest.MbalanceHorizTypeScUpRtGaze != null) {
+                    mBalancehorizTypeScUpRtGaze = diagTest.MbalanceHorizTypeScUpRtGaze;
+                }
+                string mBalanceVertScUpRtGaze = "";
+                if (diagTest.MbalanceVertScUpRtGaze != null) {
+                    mBalanceVertScUpRtGaze = diagTest.MbalanceVertScUpRtGaze;
+                }
+                string mBalanceVertTypeScUpRtGaze = "";
+                if (diagTest.MbalanceVertTypeScUpRtGaze != null) {
+                    mBalanceVertTypeScUpRtGaze = diagTest.MbalanceVertTypeScUpRtGaze;
+                }
+                string mBalanceHorizScUpLtGaze = "";
+                if (diagTest.MbalanceHorizScUpLtGaze != null) {
+                    mBalanceHorizScUpLtGaze = diagTest.MbalanceHorizScUpLtGaze;
+                }
+                string mBalanceHorizTypeScUpLtGaze = "";
+                if (diagTest.MbalanceHorizTypeScUpLtGaze != null) {
+                    mBalanceHorizTypeScUpLtGaze = diagTest.MbalanceHorizTypeScUpLtGaze;
+                }
+                string mBalanceVertScUpLtGaze = "";
+                if (diagTest.MbalanceVertScUpLtGaze != null) {
+                    mBalanceVertScUpLtGaze = diagTest.MbalanceVertScUpLtGaze;
+                }
+                string mBalanceVertTypeScUpLtGaze = "";
+                if (diagTest.MbalanceVertTypeScUpLtGaze != null) {
+                    mBalanceVertTypeScUpLtGaze = diagTest.MbalanceVertTypeScUpLtGaze;
+                }
+                string mBalanceHorizScDownRtGaze = "";
+                if (diagTest.MbalanceHorizScDownRtGaze != null) {
+                    mBalanceHorizScDownRtGaze = diagTest.MbalanceHorizScDownRtGaze;
+                }
+                string mBalanceHorizTypeScDownRtGaze = "";
+                if (diagTest.MbalanceHorizTypeScDownRtGaze != null) {
+                    mBalanceHorizTypeScDownRtGaze = diagTest.MbalanceHorizTypeScDownRtGaze;
+                }
+                string mBalanceVertScDownRtGaze = "";
+                if (diagTest.MbalanceVertScDownRtGaze != null) {
+                    mBalanceVertScDownRtGaze = diagTest.MbalanceVertScDownRtGaze;
+                }
+                string mBalanceVertTypeScDownRtGaze = "";
+                if (diagTest.MbalanceVertTypeScDownRtGaze != null) {
+                    mBalanceVertTypeScDownRtGaze = diagTest.MbalanceVertTypeScDownRtGaze;
+                }
+                string mBalanceHorizScDownLtGaze = "";
+                if (diagTest.MbalanceHorizScDownLtGaze != null) {
+                    mBalanceHorizScDownLtGaze = diagTest.MbalanceHorizScDownLtGaze;
+                }
+                string mBalanceHorizTypeScDownLtGaze = "";
+                if (diagTest.MbalanceHorizTypeScDownLtGaze != null) {
+                    mBalanceHorizTypeScDownLtGaze = diagTest.MbalanceHorizTypeScDownLtGaze;
+                }
+                string mBalanceVertScDownLtGaze = "";
+                if (diagTest.MbalanceVertScDownLtGaze != null) {
+                    mBalanceVertScDownLtGaze = diagTest.MbalanceVertScDownLtGaze;
+                }
+                string mBalanceVertTypeScDownLtGaze = "";
+                if (diagTest.MbalanceVertTypeScDownLtGaze != null) {
+                    mBalanceVertTypeScDownLtGaze = diagTest.MbalanceVertTypeScDownLtGaze;
+                }
+                string mBalanceHorizCcUpRtGaze = "";
+                if (diagTest.MbalanceHorizCcUpRtGaze != null) {
+                    mBalanceHorizCcUpRtGaze = diagTest.MbalanceHorizCcUpRtGaze;
+                }
+                string mBalanceHorizTypeCcUpRtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcUpRtGaze != null) {
+                    mBalanceHorizTypeCcUpRtGaze = diagTest.MbalanceHorizTypeCcUpRtGaze;
+                }
+                string mBalanceVertCcUpRtGaze = "";
+                if (diagTest.MbalanceVertCcUpRtGaze != null) {
+                    mBalanceVertCcUpRtGaze = diagTest.MbalanceVertCcUpRtGaze;
+                }
+                string mBalanceVertTypeCcUpRtGaze = "";
+                if (diagTest.MbalanceVertTypeCcUpRtGaze != null) {
+                    mBalanceVertTypeCcUpRtGaze = diagTest.MbalanceVertTypeCcUpRtGaze;
+                }
+                string mBalanceHorizCcUpLtGaze = "";
+                if (diagTest.MbalanceHorizCcUpLtGaze != null) {
+                    mBalanceHorizCcUpLtGaze = diagTest.MbalanceHorizCcUpLtGaze;
+                }
+                string mBalanceHorizTypeCcUpLtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcUpLtGaze != null) {
+                    mBalanceHorizTypeCcUpLtGaze = diagTest.MbalanceHorizTypeCcUpLtGaze;
+                }
+                string mBalanceVertCcUpLtGaze = "";
+                if (diagTest.MbalanceVertCcUpLtGaze != null) {
+                    mBalanceVertCcUpLtGaze = diagTest.MbalanceVertCcUpLtGaze;
+                }
+                string mBalanceVertTypeCcUpLtGaze = "";
+                if (diagTest.MbalanceVertTypeCcUpLtGaze != null) {
+                    mBalanceVertTypeCcUpLtGaze = diagTest.MbalanceVertTypeCcUpLtGaze;
+                }
+                string mBalanceHorizCcDownRtGaze = "";
+                if (diagTest.MbalanceHorizCcDownRtGaze != null) {
+                    mBalanceHorizCcDownRtGaze = diagTest.MbalanceHorizCcDownRtGaze;
+                }
+                string mBalanceHorizTypeCcDownRtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcDownRtGaze != null) {
+                    mBalanceHorizTypeCcDownRtGaze = diagTest.MbalanceHorizTypeCcDownRtGaze;
+                }
+                string mBalanceVertCcDownRtGaze = "";
+                if (diagTest.MbalanceVertCcDownRtGaze != null) {
+                    mBalanceVertCcDownRtGaze = diagTest.MbalanceVertCcDownRtGaze;
+                }
+                string mBalanceVertTypeCcDownRtGaze = "";
+                if (diagTest.MbalanceVertTypeCcDownRtGaze != null) {
+                    mBalanceVertTypeCcDownRtGaze = diagTest.MbalanceVertTypeCcDownRtGaze;
+                }
+                string mBalanceHorizCcDownLtGaze = "";
+                if (diagTest.MbalanceHorizCcDownLtGaze != null) {
+                    mBalanceHorizCcDownLtGaze = diagTest.MbalanceHorizCcDownLtGaze;
+                }
+                string mBalanceHorizTypeCcDownLtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcDownLtGaze != null) {
+                    mBalanceHorizTypeCcDownLtGaze = diagTest.MbalanceHorizTypeCcDownLtGaze;
+                }
+                string mBalanceVertCcDownLtGaze = "";
+                if (diagTest.MbalanceVertCcDownLtGaze != null) {
+                    mBalanceVertCcDownLtGaze = diagTest.MbalanceVertCcDownLtGaze;
+                }
+                string mBalanceVertTypeCcDownLtGaze = "";
+                if (diagTest.MbalanceVertTypeCcDownLtGaze != null) {
+                    mBalanceVertTypeCcDownLtGaze = diagTest.MbalanceVertTypeCcDownLtGaze;
+                }
+                string smotorFixPrefDist = "";
+                if (diagTest.SmotorFixPrefDist != null) {
+                    smotorFixPrefDist = diagTest.SmotorFixPrefDist;
+                }
+                string smotorFixPrefNear = "";
+                if (diagTest.SmotorFixPrefNear != null) {
+                    smotorFixPrefNear = diagTest.SmotorFixPrefNear;
+                }
+                string smotorNystagmus = "";
+                if (diagTest.SmotorNystagmus != null) {
+                    smotorNystagmus = diagTest.SmotorNystagmus;
+                }
+                string smotorFrisby = "";
+                if (diagTest.SmotorFrisby != null) {
+                    smotorFrisby = diagTest.SmotorFrisby;
+                }
+                string smotorLang = "";
+                if (diagTest.SmotorLang != null) {
+                    smotorLang = diagTest.SmotorLang;
+                }
+                string smotorTitmusStereoFly = "";
+                if (diagTest.SmotorTitmusStereoFly != null) {
+                    smotorTitmusStereoFly = diagTest.SmotorTitmusStereoFly;
+                }
+                string smotorTitmusStereoCircles = "";
+                if (diagTest.SmotorTitmusStereoCircles != null) {
+                    smotorTitmusStereoCircles = diagTest.SmotorTitmusStereoCircles;
+                }
+                string smotorTitmusStereoAnimals = "";
+                if (diagTest.SmotorTitmusStereoAnimals != null) {
+                    smotorTitmusStereoAnimals = diagTest.SmotorTitmusStereoAnimals;
+                }
+                string smotorRandotCircles = "";
+                if (diagTest.SmotorRandotCircles != null) {
+                    smotorRandotCircles = diagTest.SmotorRandotCircles;
+                }
+                string smotorWorth4DotDist = "";
+                if (diagTest.SmotorWorth4DotDist != null) {
+                    smotorWorth4DotDist = diagTest.SmotorWorth4DotDist;
+                }
+                string smotorWorth4DotNear = "";
+                if (diagTest.SmotorWorth4DotNear != null) {
+                    smotorWorth4DotNear = diagTest.SmotorWorth4DotNear;
+                }
+                string smotorAvPattern = "";
+                if (diagTest.SmotorAvpattern != null) {
+                    smotorAvPattern = diagTest.SmotorAvpattern;
+                }
+                string smotorDistStereo = "";
+                if (diagTest.SmotorDistStereo != null) {
+                    smotorDistStereo = diagTest.SmotorDistStereo;
+                }
+                string smotorDistVectograph = "";
+                if (diagTest.SmotorDistVectograph != null) {
+                    smotorDistVectograph = diagTest.SmotorDistVectograph;
+                }
+                string smotorNPC = "";
+                if (diagTest.SmotorNpc != null) {
+                    smotorNPC = diagTest.SmotorNpc;
+                }
+                string smotorHorizVergBoBreak = "";
+                if (diagTest.SmotorHorizVergBoBreak != null) {
+                    smotorHorizVergBoBreak = diagTest.SmotorHorizVergBoBreak;
+                }
+                string smotorHorizVergBoRecover = "";
+                if (diagTest.SmotorHorizVergBoRecover != null) {
+                    smotorHorizVergBoRecover = diagTest.SmotorHorizVergBoRecover;
+                }
+                string smotorHorizVergBiBreak = "";
+                if (diagTest.SmotorHorizVergBiBreak != null) {
+                    smotorHorizVergBiBreak = diagTest.SmotorHorizVergBiBreak;
+                }
+                string smotorHorizVergBiRecover = "";
+                if (diagTest.SmotorHorizVergBiRecover != null) {
+                    smotorHorizVergBiRecover = diagTest.SmotorHorizVergBiRecover;
+                }
+                string smotorVertVergBuBreak = "";
+                if (diagTest.SmotorVertVergBuBreak != null) {
+                    smotorVertVergBuBreak = diagTest.SmotorVertVergBuBreak;
+                }
+                string smotorVertVergBuRecover = "";
+                if (diagTest.SmotorVertVergBuRecover != null) {
+                    smotorVertVergBuRecover = diagTest.SmotorVertVergBuRecover;
+                }
+                string smotorVertVergBdBreak = "";
+                if (diagTest.SmotorVertVergBdBreak != null) {
+                    smotorVertVergBdBreak = diagTest.SmotorVertVergBdBreak;
+                }
+                string smotorVertVergBdRecover = "";
+                if (diagTest.SmotorVertVergBdRecover != null) {
+                    smotorVertVergBdRecover = diagTest.SmotorVertVergBdRecover;
+                }
+                string smotorDMadRodOd = "";
+                if (diagTest.SmotorDmadRodOd != null) {
+                    smotorDMadRodOd = diagTest.SmotorDmadRodOd;
+                }
+                string smotorDMadRodOs = "";
+                if (diagTest.SmotorDmadRodOs != null) {
+                    smotorDMadRodOs = diagTest.SmotorDmadRodOs;
+                }
+                string smotorDMadRodTorsionOd = "";
+                if (diagTest.SmotorDmadRodTorsionOd != null) {
+                    smotorDMadRodTorsionOd = diagTest.SmotorDmadRodTorsionOd;
+                }
+                string smotorMadRodTorsionOs = "";
+                if (diagTest.SmotorDmadRodTorsionOs != null) {
+                    smotorMadRodTorsionOs = diagTest.SmotorDmadRodTorsionOs;
+                }
+                string smotorColorVisionOd = "";
+                if (diagTest.SmotorColorVisionOd != null) {
+                    smotorColorVisionOd = diagTest.SmotorColorVisionOd;
+                }
+                string smotorColorVisionOs = "";
+                if (diagTest.SmotorColorVisionOs != null) {
+                    smotorColorVisionOs = diagTest.SmotorColorVisionOs;
+                }
+                string smotorColorVisionType = "";
+                if (diagTest.SmotorColorVisionType != null) {
+                    smotorColorVisionType = diagTest.SmotorColorVisionType;
+                }
+                short? smotorAbute = null;
+                if (short.TryParse(diagTest.SmotorAbute, out short temp4)) {
+                    smotorAbute = temp4;
+                }
+                string smotorHtRtHorizSc = "";
+                if (diagTest.SmotorHtRtHorizSc != null) {
+                    smotorHtRtHorizSc = diagTest.SmotorHtRtHorizSc;
+                }
+                string smotorHtRtHorizTypeSc = "";
+                if (diagTest.SmotorHtRtHorizTypeSc != null) {
+                    smotorHtRtHorizTypeSc = diagTest.SmotorHtRtHorizTypeSc;
+                }
+                string smotorHtRtVertSc = "";
+                if (diagTest.SmotorHtRtVertSc != null) {
+                    smotorHtRtVertSc = diagTest.SmotorHtRtVertSc;
+                }
+                string smotorHtRtVertTypeSc = "";
+                if (diagTest.SmotorHtRtVertTypeSc != null) {
+                    smotorHtRtVertTypeSc = diagTest.SmotorHtRtVertTypeSc;
+                }
+                string smotorHtLtHorizSc = "";
+                if (diagTest.SmotorHtLtHorizSc != null) {
+                    smotorHtLtHorizSc = diagTest.SmotorHtLtHorizSc;
+                }
+                string smotorHtLtHorizTypeSc = "";
+                if (diagTest.SmotorHtLtHorizTypeSc != null) {
+                    smotorHtLtHorizTypeSc = diagTest.SmotorHtLtHorizTypeSc;
+                }
+                string smotorHtLtVertSc = "";
+                if (diagTest.SmotorHtLtVertSc != null) {
+                    smotorHtLtVertSc = diagTest.SmotorHtLtVertSc;
+                }
+                string smotorHtLtVertTypeSc = "";
+                if (diagTest.SmotorHtLtVertTypeSc != null) {
+                    smotorHtLtVertTypeSc = diagTest.SmotorHtLtVertTypeSc;
+                }
+                string smotorHtRtHorizCc = "";
+                if (diagTest.SmotorHtRtHorizCc != null) {
+                    smotorHtRtHorizCc = diagTest.SmotorHtRtHorizCc;
+                }
+                string smotorHtRtHorizTypeCc = "";
+                if (diagTest.SmotorHtRtHorizTypeCc != null) {
+                    smotorHtRtHorizTypeCc = diagTest.SmotorHtRtHorizTypeCc;
+                }
+                string smotorHtRtVertCc = "";
+                if (diagTest.SmotorHtRtVertCc != null) {
+                    smotorHtRtVertCc = diagTest.SmotorHtRtVertCc;
+                }
+                string smotorHtRtVertTypeCc = "";
+                if (diagTest.SmotorHtRtVertTypeCc != null) {
+                    smotorHtRtVertTypeCc = diagTest.SmotorHtRtVertTypeCc;
+                }
+                string smotorHtLtHorizCc = "";
+                if (diagTest.SmotorHtLtHorizCc != null) {
+                    smotorHtLtHorizCc = diagTest.SmotorHtLtHorizCc;
+                }
+                string smotorHtLtHorizTypeCc = "";
+                if (diagTest.SmotorHtLtHorizTypeCc != null) {
+                    smotorHtLtHorizTypeCc = diagTest.SmotorHtLtHorizTypeCc;
+                }
+                string smotorHtLtVertCc = "";
+                if (diagTest.SmotorHtLtVertCc != null) {
+                    smotorHtLtVertCc = diagTest.SmotorHtLtVertCc;
+                }
+                string smotorHtLtVertTypeCc = "";
+                if (diagTest.SmotorHtLtVertTypeCc != null) {
+                    smotorHtLtVertTypeCc = diagTest.SmotorHtLtVertTypeCc;
+                }
+                string smotorHtRtHorizScNear = "";
+                if (diagTest.SmotorHtRtHorizSc != null) {
+                    smotorHtRtHorizScNear = diagTest.SmotorHtRtHorizSc;
+                }
+                string smotorHtRtHorizTypeScNear = "";
+                if (diagTest.SmotorHtRtHorizTypeSc != null) {
+                    smotorHtRtHorizTypeScNear = diagTest.SmotorHtRtHorizTypeSc;
+                }
+                string smotorVertScNear = "";   
+                if (diagTest.SmotorVertScNear != null) {
+                    smotorVertScNear = diagTest.SmotorVertScNear;
+                }
+                string smotorVertTypeScNear = "";
+                if (diagTest.SmotorVertTypeScNear != null) {
+                    smotorVertTypeScNear = diagTest.SmotorVertTypeScNear;
+                }
+                string smotorHorizCcNear = "";
+                if (diagTest.SmotorHorizCcNear != null) {
+                    smotorHorizCcNear = diagTest.SmotorHorizCcNear;
+                }
+                string smotorHorizTypeCcNear = "";
+                if (diagTest.SmotorHorizTypeCcNear != null) {
+                    smotorHorizTypeCcNear = diagTest.SmotorHorizTypeCcNear;
+                }
+                string smotorVertCcNear = "";
+                if (diagTest.SmotorVertCcNear != null) {
+                    smotorVertCcNear = diagTest.SmotorVertCcNear;
+                }
+                string smotorVertTypeCcNear = "";
+                if (diagTest.SmotorVertTypeCcNear != null) {
+                    smotorVertTypeCcNear = diagTest.SmotorVertTypeCcNear;
+                }
+                string smotorHorizScDist = "";
+                if (diagTest.SmotorHorizScDist != null) {
+                    smotorHorizScDist = diagTest.SmotorHorizScDist;
+                }
+                string smotorHorizTypeScDist = "";
+                if (diagTest.SmotorHorizTypeScDist != null) {
+                    smotorHorizTypeScDist = diagTest.SmotorHorizTypeScDist;
+                }
+                string smotorVertScDist = "";
+                if (diagTest.SmotorVertScDist != null) {
+                    smotorVertScDist = diagTest.SmotorVertScDist;
+                }
+                string smotorVertTypeScDist = "";
+                if (diagTest.SmotorVertTypeScDist != null) {
+                    smotorVertTypeScDist = diagTest.SmotorVertTypeScDist;
+                }
+                string smotorHorizCcDist = "";
+                if (diagTest.SmotorHorizCcDist != null) {
+                    smotorHorizCcDist = diagTest.SmotorHorizCcDist;
+                }
+                string smotorHorizTypeCcDist = "";
+                if (diagTest.SmotorHorizTypeCcDist != null) {
+                    smotorHorizTypeCcDist = diagTest.SmotorHorizTypeCcDist;
+                }
+                string smotorVertCcDist = "";
+                if (diagTest.SmotorVertCcDist != null) {
+                    smotorVertCcDist = diagTest.SmotorVertCcDist;
+                }
+                string smotorVertTypeCcDist = "";
+                if (diagTest.SmotorVertTypeCcDist != null) {
+                    smotorVertTypeCcDist = diagTest.SmotorVertTypeCcDist;
+                }
+                string mbalanceMethodSc = "";
+                if (diagTest.MbalanceMethodSc != null) {
+                    mbalanceMethodSc = diagTest.MbalanceMethodSc;
+                }
+                string mbalanceMethodCc = "";
+                if (diagTest.MbalanceMethodCc != null) {
+                    mbalanceMethodCc = diagTest.MbalanceMethodCc;
+                }
+                string smotorPrismOd = "";
+                if (diagTest.SmotorPrismOd != null) {
+                    smotorPrismOd = diagTest.SmotorPrismOd;
+                }
+                string smotorPrismOs = "";
+                if (diagTest.SmotorPrismOs != null) {
+                    smotorPrismOs = diagTest.SmotorPrismOs;
+                }
+                string smotorDirectionOd = "";
+                if (diagTest.SmotorDirectionOd != null) {
+                    smotorDirectionOd = diagTest.SmotorDirectionOd;
+                }
+                string smotorDirectionOs = "";
+                if (diagTest.SmotorDirectionOs != null) {
+                    smotorDirectionOs = diagTest.SmotorDirectionOs;
+                }
+                string smotorComments = "";
+                if (diagTest.SmotorComments != null) {
+                    smotorComments = diagTest.SmotorComments;
+                }
+                string mBalanceHorizTypeScUpRtGaze = ""; 
+                if (diagTest.MbalanceHorizTypeScUpRtGaze != null) {
+                    mBalanceHorizTypeScUpRtGaze = diagTest.MbalanceHorizTypeScUpRtGaze;
+                }
+                string smotorHorizCcNear3Plus = "";
+                if (diagTest.SmotorHorizCcNear3Plus != null) {
+                    smotorHorizCcNear3Plus = diagTest.SmotorHorizCcNear3Plus;
+                }
+                string smotorHorizScNear3Plus = "";
+                // no smotorHorizScNear3Plus
+                string smotorHorizScNear = "";
+                if (diagTest.SmotorHorizScNear != null) {
+                    smotorHorizScNear = diagTest.SmotorHorizScNear;
+                }
+                string smotorHorizTypeScNear = "";
+                if (diagTest.SmotorHorizTypeScNear != null) {
+                    smotorHorizTypeScNear = diagTest.SmotorHorizTypeScNear;
+                }
+                string smotorVertCcNear3Plus = "";
+                if (diagTest.SmotorVertCcNear3Plus != null) {
+                    smotorVertCcNear3Plus = diagTest.SmotorVertCcNear3Plus;
+                }
+                string smotorVertTypeCcNear3Plus = "";
+                if (diagTest.SmotorVertTypeCcNear3Plus != null) {
+                    smotorVertTypeCcNear3Plus = diagTest.SmotorVertTypeCcNear3Plus;
+                }
+                #endregion diagTests
+
 
 
                 var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
                     VisitId = visitId,
                     PtId = ptId,
-
+                    Dosdate = dosDate,
+                    GonioAngleDepthInOd = gonioAngleDepthInOd,
+                    GonioAngleDepthInOs = gonioAngleDepthInOs,
+                    GonioAngleDepthMedialOd = gonioAngleDepthMedialOd,
+                    GonioAngleDepthMedialOs = gonioAngleDepthMedialOs,
+                    GonioAngleDepthSuOd = gonioAngleDepthSuOd,
+                    GonioAngleDepthSuOs = gonioAngleDepthSuOs,
+                    GonioAngleDepthTemporalOd = gonioAngleDepthTemporalOd,
+                    GonioAngleDepthTemporalOs = gonioAngleDepthTemporalOs,
+                    GonioAngleStructureInOd = gonioAngleStructureInOd,
+                    GonioAngleStructureInOs = gonioAngleStructureInOs,
+                    GonioAngleStructureMedialOd = gonioAngleStructureMedialOd,
+                    GonioAngleStructureMedialOs = gonioAngleStructureMedialOs,
+                    GonioAngleStructureSuOd = gonioAngleStructureSuOd,
+                    GonioAngleStructureSuOs = gonioAngleStructureSuOs,
+                    GonioAngleStructureTemporalOd = gonioAngleStructureTemporalOd,
+                    GonioAngleStructureTemporalOs = gonioAngleStructureTemporalOs,
+                    GonioComments = gonioComments,
+                    GonioPigmentOd = gonioPigmentOd,
+                    GonioPigmentOs = gonioPigmentOs,
+                    MbalanceCcOrtho = mBalanceCCOrtho,
+                    MbalanceHorizCcUpGaze = mBalanceHorizCcUpGaze,
+                    MbalanceHorizTypeCcUpGaze = mBalanceHorizTypeCcUpGaze,
+                    MbalanceVertCcUpGaze = mBalanceVertCcUpGaze,
+                    MbalanceCcType = mBalanceCcType,
+                    MbalanceHorizCcDownGaze = mBalanceHorizCcDownGaze,
+                    MbalanceHorizCcDownLtGaze = mBalanceHorizCcDownLtGaze,
+                    MbalanceHorizCcDownRtGaze = mBalanceHorizCcDownRtGaze,
+                    MbalanceHorizCcLtGaze = mBalanceHorizCcLtGaze,
+                    MbalanceHorizCcRtGaze = mBalanceHorizCcRtGaze,
+                    MbalanceHorizTypeCcDownGaze = mBalanceHorizTypeCcDownGaze,
+                    MbalanceHorizCcPriGaze = mBalanceHorizCcPriGaze,
+                    MbalanceHorizCcUpLtGaze = mBalanceHorizCcUpLtGaze,
+                    MbalanceHorizCcUpRtGaze = mBalanceHorizCcUpRtGaze,
+                    MbalanceHorizScDownGaze = mBalanceHorizScDownGaze,
+                    MbalanceHorizScDownLtGaze = mBalanceHorizScDownLtGaze,
+                    MbalanceHorizScDownRtGaze = mBalanceHorizScDownRtGaze,
+                    MbalanceHorizScLtGaze = mBalanceHorizScLtGaze,
+                    MbalanceHorizScPriGaze = mBalanceHorizScPriGaze,
+                    MbalanceHorizScRtGaze = mBalanceHorizScRtGaze,
+                    MbalanceHorizScUpGaze = mBalanceHorizScUpGaze,
+                    MbalanceHorizScUpLtGaze = mBalanceHorizScUpLtGaze,
+                    MbalanceHorizScUpRtGaze = mbalanceHorizScUpRtGaze,
+                    MbalanceHorizTypeCcDownLtGaze = mBalanceHorizTypeCcDownLtGaze,
+                    MbalanceHorizTypeCcDownRtGaze = mBalanceHorizTypeCcDownRtGaze,
+                    MbalanceHorizTypeCcLtGaze = mBalanceHorizTypeCcLtGaze,
+                    MbalanceHorizTypeCcPriGaze = mBalanceHorizTypeCcPriGaze,
+                    MbalanceHorizTypeCcRtGaze = mBalanceHorizTypeCcRtGaze,
+                    MbalanceHorizTypeCcUpLtGaze = mBalanceHorizTypeCcUpLtGaze,
+                    MbalanceHorizTypeCcUpRtGaze = mBalanceHorizTypeCcUpRtGaze,
+                    MbalanceHorizTypeScDownGaze = mBalanceHorizTypeScDownGaze,
+                    MbalanceHorizTypeScDownLtGaze = mBalanceHorizTypeScDownLtGaze,
+                    MbalanceHorizTypeScDownRtGaze = mBalanceHorizTypeScDownRtGaze,
+                    MbalanceHorizTypeScLtGaze = mBalanceHorizTypeScLtGaze,
+                    MbalanceHorizTypeScPriGaze = mBalanceHorizTypeScPriGaze,
+                    MbalanceHorizTypeScRtGaze = mBalanceHorizTypeScRtGaze,
+                    MbalanceHorizTypeScUpGaze = mBalanceHorizTypeScUpGaze,
+                    MbalanceHorizTypeScUpLtGaze = mBalanceHorizTypeScUpLtGaze,
+                    MbalanceHorizTypeScUpRtGaze = mBalanceHorizTypeScUpRtGaze,
+                    MbalanceMethod = mBalanceMethod,
+                    MbalanceMethodCc = mbalanceMethodCc,
+                    MbalanceMethodSc = mbalanceMethodSc,
+                    MbalanceScOrtho = mBalanceScOrtho,
+                    MbalanceScType = mBalanceScType,
+                    MbalanceVertCcDownGaze = mBalanceVertCcDownGaze,
+                    MbalanceVertCcDownLtGaze = mBalanceVertCcDownLtGaze,
+                    MbalanceVertCcDownRtGaze = mBalanceVertCcDownRtGaze,
+                    MbalanceVertCcLtGaze = mBalanceVertCcLtGaze,
+                    MbalanceVertCcPriGaze = mBalanceVertCcPriGaze,
+                    MbalanceVertCcRtGaze = mBalanceVertCcRtGaze,
+                    MbalanceVertCcUpLtGaze = mBalanceVertCcUpLtGaze,
+                    MbalanceVertCcUpRtGaze = mBalanceVertCcUpRtGaze,
+                    MbalanceVertScDownGaze = mBalanceVertScDownGaze,
+                    MbalanceVertScDownLtGaze = mBalanceVertScDownLtGaze,
+                    MbalanceVertScDownRtGaze = mBalanceVertScDownRtGaze,
+                    MbalanceVertScLtGaze = mBalanceVertScLtGaze,
+                    MbalanceVertScPriGaze = mBalanceVertScPriGaze,
+                    MbalanceVertScRtGaze = mBalanceVertScRtGaze,
+                    MbalanceVertScUpGaze = mBalanceVertScUpGaze,
+                    MbalanceVertScUpLtGaze = mBalanceVertScUpLtGaze,
+                    MbalanceVertScUpRtGaze = mBalanceVertScUpRtGaze,
+                    MbalanceVertTypeCcDownGaze = mBalanceVertTypeCcDownGaze,
+                    MbalanceVertTypeCcDownLtGaze = mBalanceVertTypeCcDownLtGaze,
+                    MbalanceVertTypeCcDownRtGaze = mBalanceVertTypeCcDownRtGaze,
+                    MbalanceVertTypeCcLtGaze = mBalanceVertTypeCcLtGaze,
+                    MbalanceVertTypeCcPriGaze = mBalanceVertTypeCcPriGaze,
+                    MbalanceVertTypeCcRtGaze = mBalanceVertTypeCcRtGaze,
+                    MbalanceVertTypeCcUpGaze = mBalanceVertTypeCcUpGaze,
+                    MbalanceVertTypeCcUpLtGaze = mBalanceVertTypeCcUpLtGaze,
+                    MbalanceVertTypeCcUpRtGaze = mBalanceVertTypeCcUpRtGaze,
+                    MbalanceVertTypeScDownGaze = mBalanceVertTypeScDownGaze,
+                    MbalanceVertTypeScDownLtGaze = mBalanceVertTypeScDownLtGaze,
+                    MbalanceVertTypeScDownRtGaze = mBalanceVertTypeScDownRtGaze,
+                    MbalanceVertTypeScLtGaze = mBalanceVertTypeScLtGaze,
+                    MbalanceVertTypeScPriGaze = mBalanceVertTypeScPriGaze,
+                    MbalanceVertTypeScRtGaze = mBalanceVertTypeScRtGaze,
+                    MbalanceVertTypeScUpGaze = mBalanceVertTypeScUpGaze,
+                    MbalanceVertTypeScUpLtGaze = mBalanceVertTypeScUpLtGaze,
+                    MbalanceVertTypeScUpRtGaze = mBalanceVertTypeScUpRtGaze,
+                    SmotorAbute = smotorAbute,
+                    SmotorAvpattern = smotorAvPattern,
+                    SmotorColorVisionOd = smotorColorVisionOd,
+                    SmotorColorVisionOs = smotorColorVisionOs,
+                    SmotorColorVisionType = smotorColorVisionType,
+                    SmotorComments = smotorComments,
+                    SmotorDirectionOd = smotorDirectionOd,
+                    SmotorDirectionOs = smotorDirectionOs,
+                    SmotorDistStereo = smotorDistStereo,
+                    SmotorDistVectograph = smotorDistVectograph,
+                    SmotorDmadRodOd = smotorDMadRodOd,
+                    SmotorDmadRodOs = smotorDMadRodOs,
+                    SmotorDmadRodTorsionOd = smotorDMadRodTorsionOd,
+                    SmotorDmadRodTorsionOs = smotorMadRodTorsionOs,
+                    SmotorFixPrefDist = smotorFixPrefDist,
+                    SmotorFixPrefNear = smotorFixPrefNear,
+                    SmotorFrisby = smotorFrisby,
+                    SmotorHorizCcDist = smotorHorizCcDist,
+                    SmotorHorizCcNear = smotorHorizCcNear,
+                    SmotorHorizCcNear3Plus = smotorHorizCcNear3Plus,
+                    SmotorHorizScDist = smotorHorizScDist,
+                    SmotorHorizScNear = smotorHorizScNear,
+                    SmotorHorizTypeCcDist = smotorHorizTypeCcDist,
+                    SmotorHorizTypeCcNear = smotorHorizTypeCcNear,
+                    SmotorHorizTypeCcNear3Plus = smotorHorizScNear3Plus,
+                    SmotorHorizTypeScDist = smotorHorizTypeScDist,
+                    SmotorHorizTypeScNear = smotorHorizTypeScNear,
+                    SmotorHorizVergBiBreak = smotorHorizVergBiBreak,
+                    SmotorHorizVergBiRecover = smotorHorizVergBiRecover,
+                    SmotorHorizVergBoBreak = smotorHorizVergBoBreak,
+                    SmotorHorizVergBoRecover = smotorHorizVergBoRecover,
+                    SmotorHtLtHorizCc = smotorHtLtHorizCc,
+                    SmotorHtLtHorizSc = smotorHtLtHorizSc,
+                    SmotorHtLtHorizTypeCc = smotorHtLtHorizTypeCc,
+                    SmotorHtLtHorizTypeSc = smotorHtLtHorizTypeSc,
+                    SmotorHtLtVertCc = smotorHtLtVertCc,
+                    SmotorHtLtVertSc = smotorHtLtVertSc,
+                    SmotorHtLtVertTypeCc = smotorHtLtVertTypeCc,
+                    SmotorHtLtVertTypeSc = smotorHtLtVertTypeSc,
+                    SmotorHtRtHorizCc = smotorHtRtHorizCc,
+                    SmotorHtRtHorizSc = smotorHtRtHorizSc,
+                    SmotorHtRtHorizTypeCc = smotorHtRtHorizTypeCc,
+                    SmotorHtRtHorizTypeSc = smotorHtRtHorizTypeSc,
+                    SmotorHtRtVertCc = smotorHtRtVertCc,
+                    SmotorHtRtVertSc = smotorHtRtVertSc,
+                    SmotorHtRtVertTypeCc = smotorHtRtVertCc,
+                    SmotorHtRtVertTypeSc = smotorHtRtVertTypeSc,
+                    SmotorLang = smotorLang,
+                    SmotorNpc = smotorNPC,
+                    SmotorNystagmus = smotorNystagmus,
+                    SmotorPrismOd = smotorPrismOd,
+                    SmotorPrismOs = smotorPrismOs,
+                    SmotorRandotCircles = smotorRandotCircles,
+                    SmotorTitmusStereoAnimals = smotorTitmusStereoAnimals,
+                    SmotorTitmusStereoCircles = smotorTitmusStereoCircles,
+                    SmotorTitmusStereoFly = smotorTitmusStereoFly,
+                    SmotorVertCcDist = smotorVertCcDist,
+                    SmotorVertCcNear = smotorVertCcNear,
+                    SmotorVertCcNear3Plus = smotorVertCcNear3Plus,
+                    SmotorVertScDist = smotorVertScDist,
+                    SmotorVertScNear = smotorVertScNear,
+                    SmotorVertTypeCcDist = smotorVertTypeCcDist,
+                    SmotorVertTypeCcNear = smotorVertTypeCcNear,
+                    SmotorVertTypeCcNear3Plus = smotorVertTypeCcNear3Plus,
+                    SmotorVertTypeScDist = smotorVertTypeScDist,
+                    SmotorVertTypeScNear = smotorVertTypeScNear,
+                    SmotorVertVergBdBreak = smotorVertVergBdBreak,
+                    SmotorVertVergBdRecover = smotorVertVergBdRecover,
+                    SmotorVertVergBuBreak = smotorVertVergBuBreak,
+                    SmotorVertVergBuRecover = smotorVertVergBuRecover,
+                    SmotorWorth4DotDist = smotorWorth4DotDist,
+                    UpsizeTs = null,
+                    SmotorWorth4DotNear = smotorWorth4DotNear,
+                    VisitDiagTestId = diagTest.Id
+                    
                 };
                 eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
 
