@@ -6421,8 +6421,214 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int ptId = -1;
+                if (refraction.PtId != null) {
+                    if (int.TryParse(refraction.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (refraction.VisitId != null) {
+                    if (int.TryParse(refraction.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == -1) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Refraction with ID: {refraction.Id}");
+                        return;
+                    }
+                }
+                DateTime dosDate = DateTime.Parse("1/1/1900");
+                if (refraction.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(refraction.Dosdate, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                string refractionClass = "";
+                if (refraction.RefractionClass != null) {
+                    refractionClass = refraction.RefractionClass;
+                }
+                string refractionType = "";
+                if (refraction.RefractionType != null) {
+                    refractionType = refraction.RefractionType;
+                }
+                string sphereOd = "";
+                if (refraction.SphereOd != null) {
+                    sphereOd = refraction.SphereOd;
+                }
+                string sphereOs = "";
+                if (refraction.SphereOs != null) {
+                    sphereOs = refraction.SphereOs;
+                }
+                string cylinderOd = "";
+                if (refraction.CylinderOd != null) {
+                    cylinderOd = refraction.CylinderOd;
+                }
+                string cylinderOs = "";
+                if (refraction.CylinderOs != null) {
+                    cylinderOs = refraction.CylinderOs;
+                }
+                string axisOd = "";
+                if (refraction.AxisOd != null) {
+                    axisOd = refraction.AxisOd;
+                }
+                string axisOs = "";
+                if (refraction.AxisOs != null) {
+                    axisOs = refraction.AxisOs;
+                }
+                string bifocalAddOd = "";
+                if (refraction.BifocalAddOd != null) {
+                    bifocalAddOd = refraction.BifocalAddOd;
+                }
+                string bifocalAddOs = "";
+                if (refraction.BifocalAddOs != null) {
+                    bifocalAddOs = refraction.BifocalAddOs;
+                }
+                string prismTypeOd = "";
+                if (refraction.PrismTypeOd != null) {
+                    prismTypeOd = refraction.PrismTypeOd;
+                }
+                string prismTypeOs = "";
+                if (refraction.PrismTypeOs != null) {
+                    prismTypeOs = refraction.PrismTypeOs;
+                }
+                string prism360Od = "";
+                if (refraction.Prism360Od != null) {
+                    prism360Od = refraction.Prism360Od;
+                }
+                string prism360Os = "";
+                if (refraction.Prism360Os != null) {
+                    prism360Os = refraction.Prism360Os;
+                }
+                string directionOd = "";
+                if (refraction.DirectionOd != null) {
+                    directionOd = refraction.DirectionOd;
+                }
+                string directionOs = "";
+                if (refraction.DirectionOs != null) {
+                    directionOs = refraction.DirectionOs;
+                }
+                string pdDistOd = "";
+                if (refraction.PdDistOd != null) {
+                    pdDistOd = refraction.PdDistOd;
+                }
+                string pdDistOs = "";
+                if (refraction.PdDistOs != null) {
+                    pdDistOs = refraction.PdDistOs;
+                }
+                string pdNearOd = "";
+                if (refraction.PdNearOd != null) {
+                    pdNearOd = refraction.PdNearOd;
+                }
+                string pdNearOs = "";
+                if (refraction.PdNearOs != null) {
+                    pdNearOs = refraction.PdNearOs;
+                }
+                string age = "";
+                if (refraction.Age != null) {
+                    age = refraction.Age;
+                }
+                string? vaDOd = "";
+                if (refraction.VaDOs != null) {
+                    vaDOd = refraction.VaDOd;
+                }
+                string vaDOs = "";
+                if (refraction.VaDOs != null) {
+                    vaDOs = refraction.VaDOs;
+                }
+                string vaDOu = "";
+                if (refraction.VaDOu != null) {
+                    vaDOu = refraction.VaDOu;
+                }
+                string vaNOd = "";
+                if (refraction.VaNOd != null) {
+                    vaNOd = refraction.VaNOd;
+                }
+                string vaNOs = "";
+                if (refraction.VaNOs != null) {
+                    vaNOs = refraction.VaNOs;
+                }
+                string vaNOu = "";
+                if (refraction.VaNOu != null) {
+                    vaNOu = refraction.VaNOu;
+                }
+                string vaIOd = "";
+                if (refraction.VaIOd != null) {
+                    vaIOd = refraction.VaIOd;
+                }
+                string vaIOs = "";
+                if (refraction.VaIOs != null) {
+                    vaIOs = refraction.VaIOs;
+                }
+                string vaIOu = "";
+                if (refraction.VaIOu != null) {
+                    vaIOu = refraction.VaIOu;
+                }
+                string expires = "";
+                if (refraction.Expires != null) {
+                    expires = refraction.Expires;
+                }
+                string remarks = "";
+                if (refraction.Remarks != null) {
+                    remarks = refraction.Remarks;
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+                bool printed = false;
+                // no printed in source table
+                bool sentToOptical = false;
+                // no sentToOptical in source table
+                string enteredBy = "";
+                // no enteredBy in source table
+
+
+
                 var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    RefractionClass = refractionClass,
+                    RefractionType = refractionType,
+                    SphereOd = sphereOd,
+                    SphereOs = sphereOs,
+                    CylinderOd = cylinderOd,
+                    CylinderOs = cylinderOs,
+                    AxisOd = axisOd,
+                    AxisOs = axisOs,    
+                    BifocalAddOd = bifocalAddOd,
+                    BifocalAddOs = bifocalAddOs,
+                    PrismTypeOd = prismTypeOd,
+                    PrismTypeOs = prismTypeOs,
+                    Prism360Od = prism360Od,
+                    Prism360Os = prism360Os,
+                    DirectionOd = directionOd,
+                    DirectionOs = directionOs,
+                    PdDistOd = pdDistOd,
+                    PdDistOs = pdDistOs,
+                    PdNearOd = pdNearOd,
+                    PdNearOs = pdNearOs,
+                    Age = age,
+                    VaDOd = vaDOd,
+                    VaDOs = vaDOs,
+                    VaDOu = vaDOu,
+                    VaNOd = vaNOd,
+                    VaNOs = vaNOs,
+                    VaNOu = vaNOu,
+                    VaIOd = vaIOd,
+                    VaIOs = vaIOs,
+                    VaIOu = vaIOu,
+                    Expires = expires,
+                    Remarks = remarks,
+                    InsertGuid = insertGUID,
+                    Printed = printed,
+                    SentToOptical = sentToOptical,
+                    EnteredBy = enteredBy
                 };
                 eyeMDDbContext.EmrvisitRefractions.Add(newRefraction);
 
