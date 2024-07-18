@@ -5633,8 +5633,83 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? visitId = null;
+                if (examCondition.VisitId != null) {
+                    if (int.TryParse(examCondition.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                int ptId = -1;
+                if (examCondition.PtId != null) {
+                    if (int.TryParse(examCondition.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == -1) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    }
+                    else {
+                        logger.Log($"EHR: EHR PatientID not found for Exam Condition with ID: {examCondition.Id}");
+                        return;
+                    }
+                }
+
+                DateTime dosDate = DateTime.Parse("1/1/1900");
+                if (examCondition.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (!DateTime.TryParseExact(examCondition.Dosdate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                if (dosDate == DateTime.Parse("1/1/1900")) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.Dosdate != null) {
+                        dosDate = (DateTime)eyeMDVisit.Dosdate;
+                        if (dosDate == DateTime.Parse("1/1/1900")) {
+                            logger.Log($"EHR: EHR DOSDate not found for Exam Condition with ID: {examCondition.Id}");
+                            return;
+                        }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR DOSDate not found for Exam Condition with ID: {examCondition.Id}");
+                        return;
+                    }
+                }
+                int? locationId = null;
+                // no locationId, but this is used
+                int? conditionId = null;
+                // conditionID is always -888 or -999, dont know what they mean, dont know where this comes from
+                string condition = "";
+                if (examCondition.Condition != null) {
+                    condition = examCondition.Condition;
+                }
+                string eye = "";
+                if (examCondition.Eye != null) {
+                    if (examCondition.Eye == "R") {
+                        eye = "OD";
+                    } else if (examCondition.Eye == "L") {
+                        eye = "OS";
+                    } else {
+                        eye = examCondition.Eye;
+                    }
+                }
+
+
+
+
                 var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
-                    // data here
+                    Snomed = null,
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    Comment = examCondition.Comment,
+                    Condition = condition,
+                    Laterality = eye,
+                    ConditionId = conditionId,
+                    LocationId = locationId
                 };
                 eyeMDDbContext.EmrvisitExamConditions.Add(newExamCondition);
 
