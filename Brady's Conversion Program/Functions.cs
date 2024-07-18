@@ -2858,7 +2858,8 @@ namespace Brady_s_Conversion_Program {
                     LastModified = lastModified,
                     Created = created,
                     CreatedEmpId = createdEmpId,
-                    LastModifiedEmpId = lastModifiedEmpId
+                    LastModifiedEmpId = lastModifiedEmpId,
+                    Location2OnsetVisitId = null
                 };
                 eyeMDDbContext.EmrvisitMedicalHistories.Add(newMedicalHistory);
 
@@ -3256,7 +3257,8 @@ namespace Brady_s_Conversion_Program {
                     InitialSignedOffDate = initialSignedOffDate,
                     InitialSignedOffEmpId = initialSignedOffEmpId,
                     TabExam = tabExam,
-                    TabDrawing = tabDrawing
+                    TabDrawing = tabDrawing,
+                    Wu2visitTypeId = null
                 };
                 eyeMDDbContext.Emrvisits.Add(newVisit);
 
@@ -3754,7 +3756,10 @@ namespace Brady_s_Conversion_Program {
                     CodingChargesSent = codingChargesSent,
                     CodingQrautoCheckStatus = codingQRAutoCheckStatus,
                     SentToWebPortal = sentToWebPortal,
-                    SentToWebPortalDays = sentToWebPortalDays
+                    SentToWebPortalDays = sentToWebPortalDays,
+                    PlanLensRxNotes = planLensRxNotes,
+                    ProvidedClinicalSummary = providedClinicalSummary,
+                    ProvidedClinicalSummaryDays = providedClinicalSummaryDays
                 };
                 eyeMDDbContext.EmrvisitDoctors.Add(newVisitDoctor);
 
@@ -4313,6 +4318,14 @@ namespace Brady_s_Conversion_Program {
                 if (contactLens.OrVaNOs != null) {
                     orVaNOs = contactLens.OrVaNOs;
                 }
+                string rotationDirectionOd = "";
+                if (contactLens.RotationDirectionOd != null) {
+                    rotationDirectionOd = contactLens.RotationDirectionOd;
+                }
+                string rotationDirectionOs = "";
+                if (contactLens.RotationDirectionOs != null) {
+                    rotationDirectionOs = contactLens.RotationDirectionOs;
+                }
 
 
 
@@ -4445,7 +4458,9 @@ namespace Brady_s_Conversion_Program {
                     OrVaDOd = orVaDOd,
                     OrVaDOs = orVaDOs,
                     OrVaNOd = orVaNOd,
-                    OrVaNOs = orVaNOs
+                    OrVaNOs = orVaNOs,
+                    RotationDirectionOd = rotationDirectionOd,
+                    RotationDirectionOs = rotationDirectionOs
                 };
                 eyeMDDbContext.EmrvisitContactLenses.Add(newContactLens);
 
@@ -4678,7 +4693,10 @@ namespace Brady_s_Conversion_Program {
                     ConditionId = conditionId,
                     LastModified = lastModified,
                     Created = created,
-                    CreatedEmpId = createdEmpId
+                    CreatedEmpId = createdEmpId,
+                    Dosdate = dosDate,
+                    LastModifiedEmpId = null,
+                    OnsetYear2 = onsetYear2
                 };
                 eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
 
