@@ -5741,6 +5741,8 @@ namespace Brady_s_Conversion_Program {
                     var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Family History with ID: {familyHistory.Id}");
                     }
                 }
                 DateTime? dosDate = null;
@@ -5812,8 +5814,95 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (iop.PtId != null) {
+                    if (int.TryParse(iop.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (iop.VisitId != null) {
+                    if (int.TryParse(iop.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for IOP with ID: {iop.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (iop.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(iop.Dosdate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                string iopOd = "";
+                if (iop.IopOd != null) {
+                    iopOd = iop.IopOd;
+                }
+                string iopOs = "";
+                if (iop.IopOs != null) {
+                    iopOs = iop.IopOs;
+                }
+                string iopDeviceUsed = "";
+                if (iop.IopdeviceUsed != null) {
+                    iopDeviceUsed = iop.IopdeviceUsed;
+                }
+                DateTime? iopTimeTaken = null;
+                if (iop.IoptimeTaken != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(iop.IoptimeTaken, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        iopTimeTaken = tempDateTime;
+                    }
+                }
+                string iopNotes = "";
+                if (iop.Iopnotes != null) {
+                    iopNotes = iop.Iopnotes;
+                }
+                string iopCcOd = "";
+                if (iop.IopccOd != null) {
+                    iopCcOd = iop.IopccOd;
+                }
+                string iopCcOs = "";
+                if (iop.IopccOs != null) {
+                    iopCcOs = iop.IopccOs;
+                }
+                decimal? cornealHysteresisOd = null;
+                if (iop.CornealHysteresisOd != null) {
+                    if (decimal.TryParse(iop.CornealHysteresisOd, out decimal locum)) {
+                        cornealHysteresisOd = locum;
+                    }
+                }
+                decimal? cornealHysteresisOs = null;
+                if (iop.CornealHysteresisOs != null) {
+                    if (decimal.TryParse(iop.CornealHysteresisOs, out decimal locum)) {
+                        cornealHysteresisOs = locum;
+                    }
+                }
+                
+
+
                 var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    IopOd = iopOd,
+                    IopOs = iopOs,
+                    IopdeviceUsed = iopDeviceUsed,
+                    IoptimeTaken = iopTimeTaken,
+                    Iopnotes = iopNotes,
+                    IopccOd = iopCcOd,
+                    IopccOs = iopCcOs,
+                    CornealHysteresisOd = cornealHysteresisOd,
+                    CornealHysteresisOs = cornealHysteresisOs
                 };
                 eyeMDDbContext.EmrvisitIops.Add(newIop);
 
