@@ -5922,6 +5922,7 @@ namespace Brady_s_Conversion_Program {
                 //};
                 // eyeMDDbContext.EmrpatientDocuments.Add(newPatientDocument);
                 // cant find a document table in modelsB (EyeMD)
+                // assuming this is a spare table, like patients and appointments
 
                 eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
@@ -5933,9 +5934,54 @@ namespace Brady_s_Conversion_Program {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
-            try {
+            try { // assuming this is also spare, but will give it conversion functionality since it is small and easy, save for guid
+                int? ptId = null;
+                if (patientNote.PtId != null) {
+                    if (int.TryParse(patientNote.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (patientNote.VisitId != null) {
+                    if (int.TryParse(patientNote.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+
+                string notes = "";
+                if (patientNote.Notes != null) {
+                    notes = patientNote.Notes;
+                }
+                DateTime? createdDate = null;
+                if (patientNote.Created != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(patientNote.Created, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        createdDate = tempDateTime;
+                    }
+                }
+                int? empId = null;
+                if (patientNote.EmpId != null) {
+                    if (int.TryParse(patientNote.EmpId, out int locum)) {
+                        empId = locum;
+                    }
+                }
+                short? showInVisitSummary = null;
+                // no showInVisitSummary in source table
+                string guid = "";
+                // no guid in source table
+
+                // there is no showInVisitSummary in the source table, and there is no visit id in the eyemd table
+
+
+
                 var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
-                    // data here
+                    PtId = ptId,
+                    Notes = notes,
+                    CreatedDate = createdDate,
+                    EmpId = empId,
+                    ShowInVisitSummary = showInVisitSummary,
+                    InsertGuid = guid
                 };
                 eyeMDDbContext.EmrptNotes.Add(newPatientNote);
 
@@ -5950,8 +5996,97 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int ptId = -1;
+                if (planNarrative.PtId != null) {
+                    if (int.TryParse(planNarrative.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (planNarrative.VisitId != null) {
+                    if (int.TryParse(planNarrative.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == -1) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Plan Narrative with ID: {planNarrative.Id}");
+                        return;
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (planNarrative.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(planNarrative.Dosdate, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                int? visitDoctorId = null;
+                if (planNarrative.VisitDoctorId != null) {
+                    if (int.TryParse(planNarrative.VisitDoctorId, out int locum)) {
+                        visitDoctorId = locum;
+                    }
+                }
+                string snomedCode = "";
+                if (planNarrative.Snomedcode != null) {
+                    snomedCode = planNarrative.Snomedcode;
+                }
+                int? visitDiagCodePoolId = null;
+                if (planNarrative.VisitDiagCodePoolId != null) {
+                    if (int.TryParse(planNarrative.VisitDiagCodePoolId, out int locum)) {
+                        visitDiagCodePoolId = locum;
+                    }
+                }
+                string ICD10Code = "";
+                if (planNarrative.Icd10code != null) {
+                    ICD10Code = planNarrative.Icd10code;
+                }
+                string ICD9Code = "";
+                if (planNarrative.Icd9code != null) {
+                    ICD9Code = planNarrative.Icd9code;
+                }
+                string narrativeHeader = "";
+                if (planNarrative.NarrativeHeader != null) {
+                    narrativeHeader = planNarrative.NarrativeHeader;
+                }
+                string narrativeText = "";
+                if (planNarrative.NarrativeText != null) {
+                    narrativeText = planNarrative.NarrativeText;
+                }
+                string narrativeType = "";
+                if (planNarrative.NarrativeType != null) {
+                    narrativeType = planNarrative.NarrativeType;
+                }
+                int displayOrder = -1;
+                if (planNarrative.DisplayOrder != null) {
+                    if (int.TryParse(planNarrative.DisplayOrder, out int locum)) {
+                        displayOrder = locum;
+                    }
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+
+
+
                 var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    VisitDoctorId = visitDoctorId,
+                    Snomedcode = snomedCode,
+                    VisitDiagCodePoolId = visitDiagCodePoolId,
+                    Icd10code = ICD10Code,
+                    Icd9code = ICD9Code,
+                    NarrativeHeader = narrativeHeader,
+                    NarrativeText = narrativeText,
+                    NarrativeType = narrativeType,
+                    DisplayOrder = displayOrder,
+                    InsertGuid = insertGUID
                 };
                 eyeMDDbContext.EmrvisitPlanNarratives.Add(newPlanNarrative);
 
