@@ -6643,8 +6643,39 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                // seemingly no conversions necessary
+
                 var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
-                    // data here
+                    RosbloodCustomDesc1 = ros.RosbloodCustomDesc1,
+                    RosbloodCustomDesc2 = ros.RosbloodCustomDesc2,
+                    RoscardioCustomDesc1 = ros.RoscardioCustomDesc1,
+                    RoscardioCustomDesc2 = ros.RoscardioCustomDesc2,
+                    RosconsCustomDesc1 = ros.RosconsCustomDesc1,
+                    RosconsCustomDesc2 = ros.RosconsCustomDesc2,
+                    RosendoCustomDesc1 = ros.RosendoCustomDesc1,
+                    RosendoCustomDesc2 = ros.RosendoCustomDesc2,
+                    RosentcustomDesc1 = ros.RosentcustomDesc1,
+                    RosentcustomDesc2 = ros.RosentcustomDesc2,
+                    RoseyeCustomDesc1 = ros.RoseyeCustomDesc1,
+                    RoseyeCustomDesc2 = ros.RoseyeCustomDesc2,
+                    RoseyeCustomDesc3 = ros.RoseyeCustomDesc3,
+                    RoseyeCustomDesc4 = ros.RoseyeCustomDesc4,
+                    RosgasCustomDesc1 = ros.RosgasCustomDesc1,
+                    RosgasCustomDesc2 = ros.RosgasCustomDesc2,
+                    RosimmuCustomDesc1 = ros.RosimmuCustomDesc1,
+                    RosimmuCustomDesc2 = ros.RosimmuCustomDesc2,
+                    RosmusSkeCustomDesc1 = ros.RosmusSkeCustomDesc1,
+                    RosmusSkeCustomDesc2 = ros.RosmusSkeCustomDesc2,
+                    RosneuroCustomDesc1 = ros.RosneuroCustomDesc1,
+                    RosneuroCustomDesc2 = ros.RosneuroCustomDesc2,
+                    RospsycCustomDesc1 = ros.RospsycCustomDesc1,
+                    RospsycCustomDesc2 = ros.RospsycCustomDesc2,
+                    RosrespCustomDesc1 = ros.RosrespCustomDesc1,
+                    RosrespCustomDesc2 = ros.RosrespCustomDesc2,
+                    RosskinCustomDesc1 = ros.RosskinCustomDesc1,
+                    RosskinCustomDesc2 = ros.RosskinCustomDesc2,
+                    RosurinaryCustomDesc1 = ros.RosurinaryCustomDesc1,
+                    RosurinaryCustomDesc2 = ros.RosurinaryCustomDesc2
                 };
                 eyeMDDbContext.Emrrosdefaults.Add(newRos);
 
