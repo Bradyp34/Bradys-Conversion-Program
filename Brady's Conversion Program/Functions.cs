@@ -2784,7 +2784,7 @@ namespace Brady_s_Conversion_Program {
                 if (medicalHistory.Notes != null) {
                     notes = medicalHistory.Notes;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 bool doNotReconcile = false;
                 if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes") {
                     doNotReconcile = true;
@@ -3137,7 +3137,7 @@ namespace Brady_s_Conversion_Program {
                 }
                 short? tabImmunizations = null;
                 // no tabImmunizations
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID
                 short? procIsDirty = null;
                 // no procIsDirty
@@ -3384,7 +3384,7 @@ namespace Brady_s_Conversion_Program {
                 if (visitOrder.OrderRemarks != null) {
                     orderRemarks = visitOrder.OrderRemarks;
                 }
-                string insertGUID = ""; // This looks like it is supposed to be some large string. I don't see where it is coming from
+                string insertGUID = Guid.NewGuid().ToString(); // This looks like it is supposed to be some large string. I don't see where it is coming from
                 
                 string studyInstanceUID = "";
                 if (visitOrder.StudyInstanceUid != null) {
@@ -4219,7 +4219,7 @@ namespace Brady_s_Conversion_Program {
                 if (contactLens.SpecialInstructionsOs != null) {
                     specialInstructionsOs = contactLens.SpecialInstructionsOs;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID, where does this always come from?
                 int? treeviewTableIdOd = null;
                 // no treeviewTableIdOd
@@ -4542,7 +4542,7 @@ namespace Brady_s_Conversion_Program {
                 if (diagCodePool.CodeSnomed != null) {
                     codeSNOMED = diagCodePool.CodeSnomed;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID
                 int? requestedProcId = null;
                 if (diagCodePool.RequestedProcedureId != null) {
@@ -6069,7 +6069,7 @@ namespace Brady_s_Conversion_Program {
                         displayOrder = locum;
                     }
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
 
 
@@ -6151,7 +6151,7 @@ namespace Brady_s_Conversion_Program {
                         requestedProcId = locum;
                     }
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
 
 
@@ -6319,7 +6319,7 @@ namespace Brady_s_Conversion_Program {
                 if (procPool.Qrcomponent != null) {
                     qrComponent = procPool.Qrcomponent;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
                 int? units = null;
                 if (procPool.Units != null) {
@@ -6579,7 +6579,7 @@ namespace Brady_s_Conversion_Program {
                 if (refraction.Remarks != null) {
                     remarks = refraction.Remarks;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
                 bool printed = false;
                 // no printed in source table
@@ -6872,7 +6872,7 @@ namespace Brady_s_Conversion_Program {
                 if (rx.RxRemarks != null) {
                     rxRemarks = rx.RxRemarks;
                 }
-                string insertGUID = "";
+                string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
                 int? recordedEmpRole = null;
                 if (rx.RecordedEmpRole != null) {
@@ -7176,8 +7176,8 @@ namespace Brady_s_Conversion_Program {
                 if (surgHistory.Notes != null) {
                     notes = surgHistory.Notes;
                 }
-                string insertGUID = "";
-                // no insertGUID in source table
+                string insertGUID = Guid.NewGuid().ToString();
+                
                 bool doNotReconcile = false;
                 if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes") {
                     doNotReconcile = true;
@@ -7267,8 +7267,362 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (tech.PtId != null) {
+                    if (int.TryParse(tech.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (tech.VisitId != null) {
+                    if (int.TryParse(tech.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Tech with ID: {tech.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (tech.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.Dosdate, dateFormats,
+                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                int? pmhSmoking = null;
+                if (tech.Pmhsmoking != null) {
+                    if (int.TryParse(tech.Pmhsmoking, out int locum)) {
+                        pmhSmoking = locum;
+                    }
+                }
+                int? pmhAlcohol = null;
+                if (tech.Pmhalcohol != null) {
+                    if (int.TryParse(tech.Pmhalcohol, out int locum)) {
+                        pmhAlcohol = locum;
+                    }
+                }
+                int? pmhDrugs = null;
+                if (tech.Pmhdrugs != null) {
+                    if (int.TryParse(tech.Pmhdrugs, out int locum)) {
+                        pmhDrugs = locum;
+                    }
+                }
+                int? wuvaCcType = null;
+                if (tech.WuvaCcType != null) {
+                    if (int.TryParse(tech.WuvaCcType, out int locum)) {
+                        wuvaCcType = locum;
+                    }
+                }
+                short? workupMdReviewed = null;
+                if (tech.WorkupMdreviewed != null) {
+                    if (short.TryParse(tech.WorkupMdreviewed, out short locum)) {
+                        workupMdReviewed = locum;
+                    }
+                }
+                DateTime? workupMdReviewedDate = null;
+                if (tech.WorkupMdreviewedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.WorkupMdreviewedDate, dateFormats,
+                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        workupMdReviewedDate = tempDateTime;
+                    }
+                }
+                int? workupMdReviewedEmpId = null;
+                if (tech.WorkupMdreviewedEmpId != null) {
+                    if (int.TryParse(tech.WorkupMdreviewedEmpId, out int locum)) {
+                        workupMdReviewedEmpId = locum;
+                    }
+                }
+                short? wucvfAbute = null;
+                if (tech.WucvfAbute != null) {
+                    if (short.TryParse(tech.WucvfAbute, out short locum)) {
+                        wucvfAbute = locum;
+                    }
+                }
+                int? wuDilated = null;
+                if (tech.Wudilated != null) {
+                    if (int.TryParse(tech.Wudilated, out int locum)) {
+                        wuDilated = locum;
+                    }
+                }
+                decimal? vitalsBmiPercentile = null;
+                if (tech.VitalsBmipercentile != null) {
+                    if (decimal.TryParse(tech.VitalsBmipercentile, out decimal locum)) {
+                        vitalsBmiPercentile = locum;
+                    }
+                }
+                decimal? vitalsHofcPercentile = null;
+                if (tech.VitalsHofcpercentile != null) {
+                    if (decimal.TryParse(tech.VitalsHofcpercentile, out decimal locum)) {
+                        vitalsHofcPercentile = locum;
+                    }
+                }
+                decimal? vitalsInhaled02Concentration = null;
+                if (tech.VitalsInhaled02Concentration != null) {
+                    if (decimal.TryParse(tech.VitalsInhaled02Concentration, out decimal locum)) {
+                        vitalsInhaled02Concentration = locum;
+                    }
+                }
+                decimal? vitalsPulseOximetry = null;
+                if (tech.VitalsPulseOximetry != null) {
+                    if (decimal.TryParse(tech.VitalsPulseOximetry, out decimal locum)) {
+                        vitalsPulseOximetry = locum;
+                    }
+                }
+                decimal? vitalsWflPercentile = null;
+                if (tech.VitalsWflpercentile != null) {
+                    if (decimal.TryParse(tech.VitalsWflpercentile, out decimal locum)) {
+                        vitalsWflPercentile = locum;
+                    }
+                }
+                short? historyReviewed = null;
+                if (tech.HistoryMdreviewed != null) {
+                    if (short.TryParse(tech.HistoryMdreviewed, out short locum)) {
+                        historyReviewed = locum;
+                    }
+                }
+                DateTime? historyMdReviewedDate = null;
+                if (tech.HistoryMdreviewedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.HistoryMdreviewedDate, dateFormats,
+                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        historyMdReviewedDate = tempDateTime;
+                    }
+                }
+                int? historyMdReviewedEmpId = null;
+                if (tech.HistoryMdreviewedEmpId != null) {
+                    if (int.TryParse(tech.HistoryMdreviewedEmpId, out int locum)) {
+                        historyMdReviewedEmpId = locum;
+                    }
+                }
+                DateTime? created = null;
+                if (tech.Created != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.Created, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        created = tempDateTime;
+                    }
+                }
+                int? createdEmpId = null;
+                if (tech.CreatedEmpId != null) {
+                    if (int.TryParse(tech.CreatedEmpId, out int locum)) {
+                        createdEmpId = locum;
+                    }
+                }
+                DateTime? wuDilatedTime = null;
+                if (tech.WudilatedTime != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.WudilatedTime, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        wuDilatedTime = tempDateTime;
+                    }
+                }
+                short? wuDilatedTimeZone = null;
+                if (tech.WudilatedTimeZone != null) {
+                    if (short.TryParse(tech.WudilatedTimeZone, out short locum)) {
+                        wuDilatedTimeZone = locum;
+                    }
+                }
+                bool intakeReconciled = false;
+                if (tech.IntakeReconciled != null && tech.IntakeReconciled.ToLower() == "yes") {
+                    intakeReconciled = true;
+                }
+                DateTime? lastModified = null;
+                if (tech.LasstModified != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech.LasstModified, dateFormats,
+                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        lastModified = tempDateTime;
+                    }
+                }
+                int? lastModifiedEmpId = null;
+                if (tech.LastModifiedEmpId != null) {
+                    if (int.TryParse(tech.LastModifiedEmpId, out int locum)) {
+                        lastModifiedEmpId = locum;
+                    }
+                }
+                short? medRecNotPerformed = null;
+                if (tech.MedRecNotPerformed != null) {
+                    if (short.TryParse(tech.MedRecNotPerformed, out short locum)) {
+                        medRecNotPerformed = locum;
+                    }
+                }
+                int? wuMood = null;
+                if (tech.Wumood != null) {
+                    if (int.TryParse(tech.Wumood, out int locum)) {
+                        wuMood = locum;
+                    }
+                }
+                int? wuextPan = null;
+                if (tech.Wuextpan != null) {
+                    if (int.TryParse(tech.Wuextpan, out int locum)) {
+                        wuextPan = locum;
+                    }
+                }
+                short? wuiopAbute = null;
+                if (tech.WuiopAbute != null) {
+                    if (short.TryParse(tech.WuiopAbute, out short locum)) {
+                        wuiopAbute = locum;
+                    }
+                }
+                int? wuOrientPerson = null;
+                if (tech.WuorientPerson != null) {
+                    if (int.TryParse(tech.WuorientPerson, out int locum)) {
+                        wuOrientPerson = locum;
+                    }
+                }
+                int? wuOrientPlace = null;
+                if (tech.WuorientPlace != null) {
+                    if (int.TryParse(tech.WuorientPlace, out int locum)) {
+                        wuOrientPlace = locum;
+                    }
+                }
+                int? wuOrientTime = null;
+                if (tech.WuorientTime != null) {
+                    if (int.TryParse(tech.WuorientTime, out int locum)) {
+                        wuOrientTime = locum;
+                    }
+                }
+                int? wuOrientSituation = null;
+                if (tech.WuorientSituation != null) {
+                    if (int.TryParse(tech.WuorientSituation, out int locum)) {
+                        wuOrientSituation = locum;
+                    }
+                }
+
+
+
                 var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    Pmhsmoking = pmhSmoking,
+                    Pmhalcohol = pmhAlcohol,
+                    Pmhdrugs = pmhDrugs,
+                    WuvaCcType = wuvaCcType,
+                    Pmhfhother = tech.Pmhfhother,
+                    PmhsmokeHowMuch = tech.PmhsmokeHowMuch,
+                    PmhsmokeHowLong = tech.PmhsmokeHowLong,
+                    PmhsmokeWhenQuit = tech.PmhsmokeWhenQuit,
+                    PmhalcoholHowMuch = tech.PmhalcoholHowMuch,
+                    PmhdrugsNames = tech.PmhdrugsNames,
+                    PmhdrugsHowMuch = tech.PmhdrugsHowMuch,
+                    PmhdrugsHowLong = tech.PmhdrugsHowLong,
+                    PmhdrugsWhenQuit = tech.PmhdrugsWhenQuit,
+                    HpichiefComplaint = tech.HpichiefComplaint,
+                    Hpilocation1 = tech.Hpilocation1,
+                    Hpiquality1 = tech.Hpiquality1,
+                    Hpiseverity1 = tech.Hpiseverity1,
+                    Hpitiming1 = tech.Hpitiming1,
+                    Hpiduration1 = tech.Hpiduration1,
+                    Hpicontext1 = tech.Hpicontext1,
+                    HpimodFactors1 = tech.HpimodFactors1,
+                    HpiassoSignsSymp1 = tech.HpiassoSignsSymp1,
+                    Hpi1letterText = tech.Hpi1letterText,
+                    WuvaCcOd = tech.WuvaCcOd,
+                    WuvaCcOs = tech.WuvaCcOs,
+                    WuvaCcOu = tech.WuvaCcOu,
+                    WuvaPhOd = tech.WuvaPhOd,
+                    WuvaPhOs = tech.WuvaPhOs,
+                    WuvaScOd = tech.WuvaScOd,
+                    WuvaScOs = tech.WuvaScOs,
+                    WuvaScOu = tech.WuvaScOu,
+                    WuvaTestUsed = tech.WuvaTestUsed,
+                    WunCcOd = tech.WunCcOd,
+                    WunCcOs = tech.WunCcOs,
+                    WunCcOu = tech.WunCcOu,
+                    Wunotes = tech.Wunotes,
+                    WunScOd = tech.WunScOd,
+                    WunScOs = tech.WunScOs,
+                    WunScOu = tech.WunScOu,
+                    WudomEye = tech.WudomEye,
+                    WutcvfOd = tech.WutcvfOd,
+                    WutcvfOs = tech.WutcvfOs,
+                    WucvfdiagOd = tech.WucvfdiagOd,
+                    WucvfdiagOs = tech.WucvfdiagOs,
+                    WueomSuTmOd = tech.WueomSuTmOd,
+                    WueomSuTmOs = tech.WueomSuTmOs,
+                    WueomMedialOd = tech.WueomMedialOd,
+                    WueomMedialOs = tech.WueomMedialOs,
+                    WueomInNaOs = tech.WueomInNaOs,
+                    WueomInNaOd = tech.WueomInNaOd,
+                    WueomInTmOd = tech.WueomInTmOd,
+                    WueomInTmOs = tech.WueomInTmOs,
+                    WueomSuNaOd = tech.WueomSuNaOd,
+                    WueomSuNaOs = tech.WueomSuNaOs,
+                    WupupilNearOd = tech.WupupilNearOd,
+                    WupupilNearOs = tech.WupupilNearOs,
+                    WorkupMdreviewed = workupMdReviewed,
+                    WorkupMdreviewedDate = workupMdReviewedDate,
+                    WorkupMdreviewedEmpId = workupMdReviewedEmpId,
+                    WuamslerOd = tech.WuamslerOd,
+                    WuamslerOs = tech.WuamslerOs,
+                    WucvfAbute = wucvfAbute,
+                    Wudilated = wuDilated,
+                    WudilatedAgent = tech.WudilatedAgent,
+                    WudilatedEye = tech.WudilatedEye,
+                    WudilatedFrequency = tech.WudilatedFrequency,
+                    VitalsTemp = tech.VitalsTemp,
+                    VitalsTempUnits = tech.VitalsTempUnits,
+                    VitalsPulse = tech.VitalsPulse,
+                    VitalsBpsys = tech.VitalsBpsys,
+                    VitalsBpdia = tech.VitalsBpdia,
+                    VitalsRespRate = tech.VitalsRespRate,
+                    VitalsWeight = tech.VitalsWeight,
+                    VitalsWeightUnits = tech.VitalsWeightUnits,
+                    VitalsHeight = tech.VitalsHeight,
+                    VitalsHeightUnits = tech.VitalsHeightUnits,
+                    VitalsBmi = tech.VitalsBmi,
+                    VitalsBmipercentile = vitalsBmiPercentile,
+                    VitalsBgl = tech.VitalsBgl,
+                    VitalsBglunits = tech.VitalsBglunits,
+                    VitalsHofcpercentile = vitalsHofcPercentile,
+                    VitalsInhaled02Concentration = vitalsInhaled02Concentration,
+                    VitalsPulseOximetry = vitalsPulseOximetry,
+                    VitalsWflpercentile = vitalsWflPercentile,
+                    HistoryMdreviewed = historyReviewed,
+                    HistoryMdreviewedDate = historyMdReviewedDate,
+                    HistoryMdreviewedEmpId = historyMdReviewedEmpId,
+                    Created = created,
+                    CreatedEmpId = createdEmpId,
+                    WupupilShapeOs = tech.WupupilShapeOs,
+                    WupupilShapeOd = tech.WupupilShapeOd,
+                    WudilatedTimeZone = wuDilatedTimeZone,
+                    WudilatedTime = wuDilatedTime,
+                    WueomTemporalOd = tech.WueomTemporalOd,
+                    WueomTemporalOs = tech.WueomTemporalOs,
+                    WueomType = tech.WueomType,
+                    Wuextlids = tech.Wuextlids,
+                    Wuextorbits = tech.Wuextorbits,
+                    PmhsmokingStatus = tech.PmhsmokingStatus,
+                    WupupilReactionOs = tech.WupupilReactionOs,
+                    WupupilReactionOd = tech.WupupilReactionOd,
+                    WupupilLightSizeOs = tech.WupupilLightSizeOs,
+                    WupupilLightSizeOd = tech.WupupilLightSizeOd,
+                    WupupilApdOd = tech.WupupilApdOd,
+                    WupupilApdOs = tech.WupupilApdOs,
+                    WupupilDarkSizeOd = tech.WupupilDarkSizeOd,
+                    WupupilDarkSizeOs = tech.WupupilDarkSizeOs,
+                    HpiadditionalComments1 = tech.HpiadditionalComments1,
+                    IntakeReconciled = intakeReconciled,
+                    LastModified = lastModified,
+                    LastModifiedEmpId = lastModifiedEmpId,
+                    MedRecNotPerformed = medRecNotPerformed,
+                    UpsizeTs = null,
+                    Wumood = wuMood,
+                    Wuextpan = wuextPan,
+                    WuiopAbute = wuiopAbute,
+                    WuorientPerson = wuOrientPerson,
+                    WuorientPlace = wuOrientPlace,
+                    WuorientTime = wuOrientTime,
+                    WuorientSituation = wuOrientSituation
                 };
                 eyeMDDbContext.EmrvisitTeches.Add(newTech);
 
