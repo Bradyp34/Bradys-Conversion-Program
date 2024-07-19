@@ -7637,8 +7637,175 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (tech2.PtId != null) {
+                    if (int.TryParse(tech2.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (tech2.VisitId != null) {
+                    if (int.TryParse(tech2.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Tech2 with ID: {tech2.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (tech2.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(tech2.Dosdate, dateFormats,
+                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                float? wu2kmaxOd = null;
+                if (tech2.Wu2kmaxOd != null) {
+                    if (float.TryParse(tech2.Wu2kmaxOd, out float locum)) {
+                        wu2kmaxOd = locum;
+                    }
+                }
+                float? wu2kmaxOs = null;
+                if (tech2.Wu2kmaxOs != null) {
+                    if (float.TryParse(tech2.Wu2kmaxOs, out float locum)) {
+                        wu2kmaxOs = locum;
+                    }
+                }
+                float? wu2kminOd = null;
+                if (tech2.Wu2kminOd != null) {
+                    if (float.TryParse(tech2.Wu2kminOd, out float locum)) {
+                        wu2kminOd = locum;
+                    }
+                }
+                float? wu2kminOs = null;
+                if (tech2.Wu2kminOs != null) {
+                    if (float.TryParse(tech2.Wu2kminOs, out float locum)) {
+                        wu2kminOs = locum;
+                    }
+                }
+                float? wu2kminDegOd = null;
+                if (tech2.Wu2kminDegOd != null) {
+                    if (float.TryParse(tech2.Wu2kminDegOd, out float locum)) {
+                        wu2kminDegOd = locum;
+                    }
+                }
+                float? wu2kminDegOs = null;
+                if (tech2.Wu2kminDegOs != null) {
+                    if (float.TryParse(tech2.Wu2kminDegOs, out float locum)) {
+                        wu2kminDegOs = locum;
+                    }
+                }
+                float? wu2kmaxDegOd = null;
+                if (tech2.Wu2kmaxDegOd != null) {
+                    if (float.TryParse(tech2.Wu2kmaxDegOd, out float locum)) {
+                        wu2kmaxDegOd = locum;
+                    }
+                }
+                float? wu2kmaxDegOs = null;
+                if (tech2.Wu2kmaxDegOs != null) {
+                    if (float.TryParse(tech2.Wu2kmaxDegOs, out float locum)) {
+                        wu2kmaxDegOs = locum;
+                    }
+                }
+                short? wu2TearOsmolarityCollectionDifficult = null;
+                if (tech2.Wu2tearOsmolarityCollectionDifficult != null) {
+                    if (short.TryParse(tech2.Wu2tearOsmolarityCollectionDifficult, out short locum)) {
+                        wu2TearOsmolarityCollectionDifficult = locum;
+                    }
+                }
+                byte[]? upsizets = null;
+                // no upsizets in source table
+
+                
+
                 var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    Wu2vaOrxOd = tech2.Wu2vaOrxOd,
+                    Wu2vaOrxOs = tech2.Wu2vaOrxOs,
+                    Wu2kmaxOd = wu2kmaxOd,
+                    Wu2kmaxOs = wu2kmaxOs,
+                    Wu2kminOd = wu2kminOd,
+                    Wu2kminOs = wu2kminOs,
+                    Wu2kminDegOd = wu2kminDegOd,
+                    Wu2kminDegOs = wu2kminDegOs,
+                    Wu2kmaxDegOd = wu2kmaxDegOd,
+                    Wu2kmaxDegOs = wu2kmaxDegOs,
+                    UpsizeTs = upsizets,
+                    Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
+                    Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
+                    Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
+                    Wu2custom1Data = tech2.Wu2custom1Data,
+                    Wu2custom1Desc = tech2.Wu2custom1Desc,
+                    Wu2custom2Data = tech2.Wu2custom2Data,
+                    Wu2custom2Desc = tech2.Wu2custom2Desc,
+                    Wu2custom3Data = tech2.Wu2custom3Data,
+                    Wu2custom3Desc = tech2.Wu2custom3Desc,
+                    Wu2custom4Data = tech2.Wu2custom4Data,
+                    Wu2custom4Desc = tech2.Wu2custom4Desc,
+                    Wu2custom5Data = tech2.Wu2custom5Data,
+                    Wu2custom5Desc = tech2.Wu2custom5Desc,
+                    Wu2custom6Data = tech2.Wu2custom6Data,
+                    Wu2custom6Desc = tech2.Wu2custom6Desc,
+                    Wu2custom7Data = tech2.Wu2custom7Data,
+                    Wu2custom7Desc = tech2.Wu2custom7Desc,
+                    Wu2custom8Data = tech2.Wu2custom8Data,
+                    Wu2custom8Desc = tech2.Wu2custom8Desc,
+                    Wu2custom9Data = tech2.Wu2custom9Data,
+                    Wu2custom9Desc = tech2.Wu2custom9Desc,
+                    Wu2custom10Data = tech2.Wu2custom10Data,
+                    Wu2custom10Desc = tech2.Wu2custom10Desc,
+                    Wu2custom11Data = tech2.Wu2custom11Data,
+                    Wu2custom11Desc = tech2.Wu2custom11Desc,
+                    Wu2custom12Data = tech2.Wu2custom12Data,
+                    Wu2custom12Desc = tech2.Wu2custom12Desc,
+                    Wu2custom13Data = tech2.Wu2custom13Data,
+                    Wu2custom13Desc = tech2.Wu2custom13Desc,
+                    Wu2custom14Data = tech2.Wu2custom14Data,
+                    Wu2custom14Desc = tech2.Wu2custom14Desc,
+                    Wu2custom15Data = tech2.Wu2custom15Data,
+                    Wu2custom15Desc = tech2.Wu2custom15Desc,
+                    Wu2custom16Data = tech2.Wu2custom16Data,
+                    Wu2custom16Desc = tech2.Wu2custom16Desc,
+                    Wu2custom17Data = tech2.Wu2custom17Data,
+                    Wu2custom17Desc = tech2.Wu2custom17Desc,
+                    Wu2custom18Data = tech2.Wu2custom18Data,
+                    Wu2custom18Desc = tech2.Wu2custom18Desc,
+                    Wu2custom19Data = tech2.Wu2custom19Data,
+                    Wu2custom19Desc = tech2.Wu2custom19Desc,
+                    Wu2custom20Data = tech2.Wu2custom20Data,
+                    Wu2custom20Desc = tech2.Wu2custom20Desc,
+                    Wu2custom21Data = tech2.Wu2custom21Data,
+                    Wu2custom21Desc = tech2.Wu2custom21Desc,
+                    Wu2custom22Data = tech2.Wu2custom22Data,
+                    Wu2custom22Desc = tech2.Wu2custom22Desc,
+                    Wu2GlareHighOd = tech2.Wu2GlareHighOd,
+                    Wu2GlareHighOs = tech2.Wu2GlareHighOs,
+                    Wu2GlareLowOd = tech2.Wu2GlareLowOd,
+                    Wu2GlareLowOs = tech2.Wu2GlareLowOs,
+                    Wu2GlareMedOd = tech2.Wu2GlareMedOd,
+                    Wu2GlareMedOs = tech2.Wu2GlareMedOs,
+                    Wu2GlareType = tech2.Wu2GlareType,
+                    Wu2hertelBase = tech2.Wu2hertelBase,
+                    Wu2hertelOd = tech2.Wu2hertelOd,
+                    Wu2hertelOs = tech2.Wu2hertelOs,
+                    Wu2ktype = tech2.Wu2ktype,
+                    Wu2kvalue = tech2.Wu2kvalue,
+                    Wu2pachCctOd = tech2.Wu2pachCctOd,
+                    Wu2pachCctOs = tech2.Wu2pachCctOs,
+                    Wu2ttvOd = tech2.Wu2ttvOd,
+                    Wu2ttvOs = tech2.Wu2ttvOs,
+                    Wu2ttvtype = tech2.Wu2ttvtype,
+                    Wu2vaPamOd = tech2.Wu2vaPamOd,
+                    Wu2vaPamOs = tech2.Wu2vaPamOs
                 };
                 eyeMDDbContext.EmrvisitTech2s.Add(newTech2);
 
