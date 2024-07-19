@@ -23,6 +23,7 @@ using System.Data.SqlTypes;
 using Brady_s_Conversion_Program.ModelsC;
 using Brady_s_Conversion_Program.ModelsD;
 using System.Web;
+using System.CodeDom;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -6690,8 +6691,332 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (rx.PtId != null) {
+                    if (int.TryParse(rx.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (rx.VisitId != null) {
+                    if (int.TryParse(rx.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Rx with ID: {rx.Id}");
+                    }
+                }
+
+                DateTime? dosDate = null;
+                if (rx.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(rx.Dosdate, dateFormats,
+                                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        dosDate = tempDateTime;
+                    }
+                }
+                string medName = "";
+                if (rx.MedName != null) {
+                    medName = rx.MedName;
+                }
+                string medSig = "";
+                if (rx.MedSig != null) {
+                    medSig = rx.MedSig;
+                }
+                string medDisp = "";
+                if (rx.MedDisp != null) {
+                    medDisp = rx.MedDisp;
+                }
+                string medRefill = "";
+                    
+                int? medType = null;
+                if (rx.MedType != null) {
+                    if (int.TryParse(rx.MedType, out int locum)) {
+                        medType = locum;
+                    }
+                }
+                short brandMedOnly = -1;
+                if (rx.BrandMedOnly != null) {
+                    if (short.TryParse(rx.BrandMedOnly, out short locum)) {
+                        brandMedOnly = locum;
+                    }
+                }
+                short doNotPrintRx = -1;
+                if (rx.DoNotPrintRx != null) {
+                    if (short.TryParse(rx.DoNotPrintRx, out short locum)) {
+                        doNotPrintRx = locum;
+                    }
+                }
+                short sampleGiven = -1;
+                if (rx.SampleGiven != null) {
+                    if (short.TryParse(rx.SampleGiven, out short locum)) {
+                        sampleGiven = locum;
+                    }
+                }
+                string notes = "";
+                if (rx.Notes != null) {
+                    notes = rx.Notes;
+                }
+                string description = "";
+                if (rx.Description != null) {
+                    description = rx.Description;
+                }
+                int? medTableId = null;
+                if (rx.MedTableId != null) {
+                    if (int.TryParse(rx.MedTableId, out int locum)) {
+                        medTableId = locum;
+                    }
+                }
+                short? medDispType = null;
+                if (rx.MedDispType != null) {
+                    if (short.TryParse(rx.MedDispType, out short locum)) {
+                        medDispType = locum;
+                    }
+                }
+                string drugStrength = "";
+                if (rx.DrugStrength != null) {
+                    drugStrength = rx.DrugStrength;
+                }
+                string drugRoute = "";
+                if (rx.DrugRoute != null) {
+                    drugRoute = rx.DrugRoute;
+                }
+                string drugForm = "";
+                if (rx.DrugForm != null) {
+                    drugForm = rx.DrugForm;
+                }
+                string drugMappingId = "";
+                if (rx.DrugMappingId != null) {
+                    drugMappingId = rx.DrugMappingId;
+                }
+                string drugAltMappingId = "";
+                if (rx.DrugAltMappingId != null) {
+                    drugAltMappingId = rx.DrugAltMappingId;
+                }
+                string drugName = "";
+                if (rx.DrugName != null) {
+                    drugName = rx.DrugName;
+                }
+                string drugNameId = "";
+                if (rx.DrugNameId != null) {
+                    drugNameId = rx.DrugNameId;
+                }
+                string erxGUID = "";
+                if (rx.ErxGuid != null) {
+                    erxGUID = rx.ErxGuid;
+                }
+                short? erxPendingTransmit = null;
+                if (rx.ErxPendingTransmit != null) {
+                    if (short.TryParse(rx.ErxPendingTransmit, out short locum)) {
+                        erxPendingTransmit = locum;
+                    }
+                }
+                int? calledInLocationId = null;
+                if (rx.CalledInLocationId != null) {
+                    if (int.TryParse(rx.CalledInLocationId, out int locum)) {
+                        calledInLocationId = locum;
+                    }
+                }
+                int? calledInProviderEmpId = null;
+                if (rx.CalledInProviderEmpId != null) {
+                    if (int.TryParse(rx.CalledInProviderEmpId, out int locum)) {
+                        calledInProviderEmpId = locum;
+                    }
+                }
+                string medDispUnitType = "";
+                if (rx.MedDispUnitType != null) {
+                    medDispUnitType = rx.MedDispUnitType;
+                }
+                string rxcui = "";
+                if (rx.Rxcui != null) {
+                    rxcui = rx.Rxcui;
+                }
+                short? isRefill = null;
+                if (rx.IsRefill != null) {
+                    if (short.TryParse(rx.IsRefill, out short locum)) {
+                        isRefill = locum;
+                    }
+                }
+                string originalMedicationId = "";
+                if (rx.OriginalMedicationId != null) {
+                    originalMedicationId = rx.OriginalMedicationId;
+                }
+                string originalMedicationDate = "";
+                if (rx.OriginalMedicationDate != null) {
+                    originalMedicationDate = rx.OriginalMedicationDate;
+                }
+                short? sentViaErx = null;
+                if (rx.SentViaErx != null) {
+                    if (short.TryParse(rx.SentViaErx, out short locum)) {
+                        sentViaErx = locum;
+                    }
+                }
+                string snomed = "";
+                if (rx.Snomed != null) {
+                    snomed = rx.Snomed;
+                }
+                string drugFdaStatus = "";
+                if (rx.DrugFdastatus != null) {
+                    drugFdaStatus = rx.DrugFdastatus;
+                }
+                string drugDeaClass = "";
+                if (rx.DrugDeaclass != null) {
+                    drugDeaClass = rx.DrugDeaclass;
+                }
+                string rxRemarks = "";
+                if (rx.RxRemarks != null) {
+                    rxRemarks = rx.RxRemarks;
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+                int? recordedEmpRole = null;
+                if (rx.RecordedEmpRole != null) {
+                    if (int.TryParse(rx.RecordedEmpRole, out int locum)) {
+                        recordedEmpRole = locum;
+                    }
+                }
+                short? administeredMed = null;
+                if (rx.AdministeredMed != null) {
+                    if (short.TryParse(rx.AdministeredMed, out short locum)) {
+                        administeredMed = locum;
+                    }
+                }
+                short? formularyChecked = null;
+                if (rx.FormularyChecked != null) {
+                    if (short.TryParse(rx.FormularyChecked, out short locum)) {
+                        formularyChecked = locum;
+                    }
+                }
+                short? printedRx = null;
+                if (rx.PrintedRx != null) {
+                    if (short.TryParse(rx.PrintedRx, out short locum)) {
+                        printedRx = locum;
+                    }
+                }
+                bool doNotReconcile = false;
+                if (rx.DoNotReconcile != null && rx.DoNotReconcile.ToLower() == "yes") {
+                    doNotReconcile = true;
+                }
+                DateTime? rxStartDate = null;
+                if (rx.RxStartDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(rx.RxStartDate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        rxStartDate = tempDateTime;
+                    }
+                }
+                DateTime? rxEndDate = null;
+                if (rx.RxEndDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(rx.RxEndDate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        rxEndDate = tempDateTime;
+                    }
+                }
+                int? rxDurationDays = null;
+                if (rx.RxDurationDays != null) {
+                    if (int.TryParse(rx.RxDurationDays, out int locum)) {
+                        rxDurationDays = locum;
+                    }
+                }
+                DateTime? lastModified = null;
+                if (rx.LastModified != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(rx.LastModified, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        lastModified = tempDateTime;
+                    }
+                }
+                int? visitDiagCodePoolId = null;
+                if (rx.VisitDiagCodePoolId != null) {
+                    if (int.TryParse(rx.VisitDiagCodePoolId, out int locum)) {
+                        visitDiagCodePoolId = locum;
+                    }
+                }
+                DateTime? created = null;
+                if (rx.Created != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(rx.Created, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        created = tempDateTime;
+                    }
+                }
+                int? createdEmpId = null;
+                if (rx.CreatedEmpId != null) {
+                    if (int.TryParse(rx.CreatedEmpId, out int locum)) {
+                        createdEmpId = locum;
+                    }
+                }
+                int? lastModifiedEmpId = null;
+                if (rx.LastModifiedEmpId != null) {
+                    if (int.TryParse(rx.LastModifiedEmpId, out int locum)) {
+                        lastModifiedEmpId = locum;
+                    }
+                }
+                string erxStatus = "";
+                if (rx.ErxStatus != null) {
+                    erxStatus = rx.ErxStatus;
+                }
+
+
+
                 var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    Dosdate = dosDate,
+                    MedName = medName,
+                    MedSig = medSig,
+                    MedDisp = medDisp,
+                    MedRefill = medRefill,
+                    MedType = medType,
+                    BrandMedOnly = brandMedOnly,
+                    DoNotPrintRx = doNotPrintRx,
+                    SampleGiven = sampleGiven,
+                    Notes = notes,
+                    Description = description,
+                    MedTableId = medTableId,
+                    MedDispType = medDispType,
+                    DrugStrength = drugStrength,
+                    DrugRoute = drugRoute,
+                    DrugForm = drugForm,
+                    DrugMappingId = drugMappingId,
+                    DrugAltMappingId = drugAltMappingId,
+                    DrugName = drugName,
+                    DrugNameId = drugNameId,
+                    ErxGuid = erxGUID,
+                    ErxPendingTransmit = erxPendingTransmit,
+                    CalledInLocationId = calledInLocationId,
+                    CalledInProviderEmpId = calledInProviderEmpId,
+                    MedDispUnitType = medDispUnitType,
+                    Rxcui = rxcui,
+                    IsRefill = isRefill,
+                    OriginalMedicationId = originalMedicationId,
+                    OriginalMedicationDate = originalMedicationDate,
+                    SentViaErx = sentViaErx,
+                    Snomed = snomed,
+                    DrugFdastatus = drugFdaStatus,
+                    DrugDeaclass = drugDeaClass,
+                    RxRemarks = rxRemarks,
+                    InsertGuid = insertGUID,
+                    RecordedEmpRole = recordedEmpRole,
+                    AdministeredMed = administeredMed,
+                    FormularyChecked = formularyChecked,
+                    PrintedRx = printedRx,
+                    DoNotReconcile = doNotReconcile,
+                    RxStartDate = rxStartDate,
+                    RxEndDate = rxEndDate,
+                    RxDurationDays = rxDurationDays,
+                    LastModified = lastModified,
+                    VisitDiagCodePoolId = visitDiagCodePoolId,
+                    Created = created,
+                    CreatedEmpId = createdEmpId,
+                    LastModifiedEmpId = lastModifiedEmpId,
+                    ErxStatus = erxStatus
                 };
                 eyeMDDbContext.EmrvisitRxMedications.Add(newRx);
 
