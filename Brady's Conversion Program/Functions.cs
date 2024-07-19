@@ -7031,8 +7031,228 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? ptId = null;
+                if (surgHistory.PtId != null) {
+                    if (int.TryParse(surgHistory.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                int? visitId = null;
+                if (surgHistory.VisitId != null) {
+                    if (int.TryParse(surgHistory.VisitId, out int locum)) {
+                        visitId = locum;
+                    }
+                }
+                if (ptId == null) {
+                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    } else {
+                        logger.Log($"EHR: EHR PatientID not found for Surg History with ID: {surgHistory.Id}");
+                    }
+                }
+
+                DateTime? visitDate = null;
+                if (surgHistory.Dosdate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(surgHistory.Dosdate, dateFormats,
+                                                                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        visitDate = tempDateTime;
+                    }
+                }
+                int? controlId = null;
+                // no controlId in source table
+                int? origVisitSurgicalHistoryId = null;
+                if (surgHistory.OrigVisitSurgicalHistoryId != null) {
+                    if (int.TryParse(surgHistory.OrigVisitSurgicalHistoryId, out int locum)) {
+                        origVisitSurgicalHistoryId = locum;
+                    }
+                }
+                DateTime? origVisitDate = null;
+                if (surgHistory.OrigVisitDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(surgHistory.OrigVisitDate, dateFormats,
+                                                                                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        origVisitDate = tempDateTime;
+                    }
+                }
+                string description = "";
+                if (surgHistory.Description != null) {
+                    description = surgHistory.Description;
+                }
+                int? typeId = null; 
+                if (surgHistory.TypeId != null) {
+                    if (int.TryParse(surgHistory.TypeId, out int locum)) {
+                        typeId = locum;
+                    }
+                }
+                int? codeId = null;
+                if (surgHistory.CodeId != null) {
+                    if (int.TryParse(surgHistory.CodeId, out int locum)) {
+                        codeId = locum;
+                    }
+                }
+                string code = "";
+                if (surgHistory.Code != null) {
+                    code = surgHistory.Code;
+                }
+                string modifier = "";
+                if (surgHistory.Modifier != null) {
+                    modifier = surgHistory.Modifier;
+                }
+                string codeICD10 = "";
+                if (surgHistory.CodeIcd10 != null) {
+                    codeICD10 = surgHistory.CodeIcd10;
+                }
+                string codeSnomed = "";
+                if (surgHistory.CodeSnomed != null) {
+                    codeSnomed = surgHistory.CodeSnomed;
+                }
+                string location1 = "";
+                if (surgHistory.Location1 != null) {
+                    location1 = surgHistory.Location1;
+                }
+                string procedureMonth1 = "";
+                if (surgHistory.ProcedureMonth1 != null) {
+                    procedureMonth1 = surgHistory.ProcedureMonth1;
+                }
+                string procedureDay1 = "";
+                if (surgHistory.ProcedureDay1 != null) {
+                    procedureDay1 = surgHistory.ProcedureDay1;
+                }
+                string procedureYear1 = "";
+                if (surgHistory.ProcedureYear1 != null) {
+                    procedureYear1 = surgHistory.ProcedureYear1;
+                }
+                int? performedByEmpId1 = null;
+                if (surgHistory.PerformedbyEmpId1 != null) {
+                    if (int.TryParse(surgHistory.PerformedbyEmpId1, out int locum)) {
+                        performedByEmpId1 = locum;
+                    }
+                }
+                int? performedByRefProvider1 = null;
+                if (surgHistory.ComanageRefProviderId1 != null) {
+                    if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
+                        performedByRefProvider1 = locum;
+                    }
+                }
+                string comanageFullName1 = "";
+                if (surgHistory.ComanageFullName1 != null) {
+                    comanageFullName1 = surgHistory.ComanageFullName1;
+                }
+                string location2 = "";
+                if (surgHistory.Location2 != null) {
+                    location2 = surgHistory.Location2;
+                }
+                string procedureMonth2 = "";
+                if (surgHistory.ProcedureMonth2 != null) {
+                    procedureMonth2 = surgHistory.ProcedureMonth2;
+                }
+                string procedureDay2 = "";
+                if (surgHistory.ProcedureDay2 != null) {
+                    procedureDay2 = surgHistory.ProcedureDay2;
+                }
+                string procedureYear2 = "";
+                if (surgHistory.ProcedureYear2 != null) {
+                    procedureYear2 = surgHistory.ProcedureYear2;
+                }
+                int? performedByEmpId2 = null;
+                if (surgHistory.PerformedbyEmpId2 != null) {
+                    if (int.TryParse(surgHistory.PerformedbyEmpId2, out int locum)) {
+                         performedByEmpId2 = locum;
+                    }
+                }
+                int? performedbyRefProviderId2 = null;
+                if (surgHistory.ComanageRefProviderId2 != null) {
+                    if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
+                        performedbyRefProviderId2 = locum;
+                    }
+                }
+                string comanageFullName2 = "";
+                if (surgHistory.ComanageFullName2 != null) {
+                    comanageFullName2 = surgHistory.ComanageFullName2;
+                }
+                string notes = "";
+                if (surgHistory.Notes != null) {
+                    notes = surgHistory.Notes;
+                }
+                string insertGUID = "";
+                // no insertGUID in source table
+                bool doNotReconcile = false;
+                if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes") {
+                    doNotReconcile = true;
+                }
+                int? ptDeviceId = null;
+                if (surgHistory.PtDeviceId != null) {
+                    if (int.TryParse(surgHistory.PtDeviceId, out int locum)) {
+                        ptDeviceId = locum;
+                    }
+                }
+                int? comanageRefProviderId1 = null;
+                if (surgHistory.ComanageRefProviderId1 != null) {
+                    if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
+                        comanageRefProviderId1 = locum;
+                    }
+                }
+                int? comanageRefProviderId2 = null;
+                if (surgHistory.ComanageRefProviderId2 != null) {
+                    if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
+                        comanageRefProviderId2 = locum;
+                    }
+                }
+                DateTime? created = null;
+                // no created in source table
+                DateTime? lastModified = null;
+                // no lastModified in source table
+                int? createdEmpId = null;
+                // no createdEmpId in source table
+                int? lastModifiedEmpId = null;
+                // no lastModifiedEmpId in source table
+
+
+
                 var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
-                    // data here
+                    PtId = ptId,
+                    VisitId = visitId,
+                    VisitDate = visitDate,
+                    ControlId = controlId,
+                    OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
+                    OrigVisitDate = origVisitDate,
+                    Description = description,
+                    TypeId = typeId,
+                    CodeId = codeId,
+                    Code = code,
+                    Modifier = modifier,
+                    CodeIcd10 = codeICD10,
+                    CodeSnomed = codeSnomed,
+                    ComanageEmpId1 = performedByEmpId1,
+                    ComanageRefProviderId1 = comanageRefProviderId1,
+                    ComanageFullName1 = comanageFullName1,
+                    ComanageEmpId2 = performedByEmpId2,
+                    ComanageRefProviderId2 = performedbyRefProviderId2,
+                    ComanageFullName2 = comanageFullName2,
+                    Notes = notes,
+                    Created = created,
+                    LastModified = lastModified,
+                    CreatedEmpId = createdEmpId,
+                    LastModifiedEmpId = lastModifiedEmpId,
+                    DoNotReconcile = doNotReconcile,
+                    PtDeviceId = ptDeviceId,
+                    InsertGuid = insertGUID,
+                    Location1 = location1,
+                    ProcedureMonth1 = procedureMonth1,
+                    ProcedureDay1 = procedureDay1,
+                    ProcedureYear1 = procedureYear1,
+                    PerformedbyEmpId1 = performedByEmpId1,
+                    PerformedbyFullName1 = comanageFullName1,
+                    PerformedbyRefProviderId1 = performedByRefProvider1,
+                    Location2 = location2,
+                    ProcedureMonth2 = procedureMonth2,
+                    ProcedureDay2 = procedureDay2,
+                    ProcedureYear2 = procedureYear2,
+                    PerformedbyEmpId2 = performedByEmpId2,
+                    PerformedbyFullName2 = comanageFullName2,
+                    PerformedbyRefProviderId2 = performedbyRefProviderId2
                 };
                 eyeMDDbContext.EmrvisitSurgicalHistories.Add(newSurgHistory);
 
