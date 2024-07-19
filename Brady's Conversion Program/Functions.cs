@@ -229,6 +229,11 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 if (inv == true) {
+                    using (var invDbContext = new InvDbContext(invConnection)) {
+                        ConvertInv(invDbContext, logger, progress); // need to find out where inv data goes
+                        invDbContext.SaveChanges();
+                        
+                    }
                     return completeConnection + "\nInv not yet implemented";
                 }
             }
@@ -2490,10 +2495,6 @@ namespace Brady_s_Conversion_Program {
                 MedicalHistoriesConvert(medicalHistory, eyeMDDbContext, logger, progress);
             }
 
-            foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
-                AllergiesConvert(allergy, eyeMDDbContext, logger, progress);
-            }
-
             foreach (var visit in eHRDbContext.Visits.ToList()) {
                 VisitsConvert(visit, eyeMDDbContext, logger, progress);
             }
@@ -2504,6 +2505,10 @@ namespace Brady_s_Conversion_Program {
 
             foreach (var visitDoctor in eHRDbContext.VisitDoctors.ToList()) {
                 VisitDoctorsConvert(visitDoctor, eyeMDDbContext, logger, progress);
+            }
+
+            foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
+                AllergiesConvert(allergy, eyeMDDbContext, logger, progress);
             }
 
             foreach (var appointments in eHRDbContext.Appointments.ToList()) {
@@ -7798,7 +7803,6 @@ namespace Brady_s_Conversion_Program {
                     Wu2hertelOd = tech2.Wu2hertelOd,
                     Wu2hertelOs = tech2.Wu2hertelOs,
                     Wu2ktype = tech2.Wu2ktype,
-                    Wu2kvalue = tech2.Wu2kvalue,
                     Wu2pachCctOd = tech2.Wu2pachCctOd,
                     Wu2pachCctOs = tech2.Wu2pachCctOs,
                     Wu2ttvOd = tech2.Wu2ttvOd,
@@ -7815,5 +7819,12 @@ namespace Brady_s_Conversion_Program {
             }
         }
         #endregion EyeMDConversion
+
+        #region InvConversion
+        public static void ConvertInv(InvDbContext invDbContext, ILogger logger, ProgressBar progress) {
+
+        }
+
+        #endregion InvConversion
     }
 }
