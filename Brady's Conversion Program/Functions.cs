@@ -230,9 +230,11 @@ namespace Brady_s_Conversion_Program {
 
                 if (inv == true) {
                     using (var invDbContext = new InvDbContext(invConnection)) {
-                        ConvertInv(invDbContext, logger, progress); // need to find out where inv data goes
-                        invDbContext.SaveChanges();
-                        
+                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                            ffpmDbContext.Database.OpenConnection();
+                            ConvertInv(invDbContext, ffpmDbContext, logger, progress); // need to find out where inv data goes
+                            invDbContext.SaveChanges();
+                        }
                     }
                     return completeConnection + "\nInv not yet implemented";
                 }
@@ -7821,8 +7823,441 @@ namespace Brady_s_Conversion_Program {
         #endregion EyeMDConversion
 
         #region InvConversion
-        public static void ConvertInv(InvDbContext invDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            foreach (var clBrand in invDbContext.ClBrands) {
+                CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
+            }
 
+            foreach (var clInventory in invDbContext.ClInventories) {
+                clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var clLense in invDbContext.ClLenses) {
+                CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var cptDept in invDbContext.CptDepts) {
+                CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var cptMapping in invDbContext.CptMappings) {
+                CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var cpt in invDbContext.Cpts) {
+                CPTConvert(cpt, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameCategory in invDbContext.FrameCategories) {
+                FrameCategoryConvert(frameCategory, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameCollection in invDbContext.FrameCollections) {
+                FrameCollectionConvert(frameCollection, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameColor in invDbContext.FrameColors) {
+                FrameColorConvert(frameColor, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameShape in invDbContext.FrameShapes) {
+                FrameShapeConvert(frameShape, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameStatus in invDbContext.FrameStatuses) {
+                FrameStatusConvert(frameStatus, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameTemple in invDbContext.FrameTemples) {
+                FrameTempleConvert(frameTemple, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameEtype in invDbContext.FrameEtypes) {
+                FrameETypeConvert(frameEtype, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameFtype in invDbContext.FrameFtypes) {
+                FrameFTypeConvert(frameFtype, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameLensColor in invDbContext.FrameLensColors) {
+                FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameMaterial in invDbContext.FrameMaterials) {
+                FrameMaterialConvert(frameMaterial, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frameOrder in invDbContext.FrameOrders) {
+                FrameOrderConvert(frameOrder, invDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var frames in invDbContext.Frames) {
+                FrameConvert(frames, invDbContext, ffpmDbContext, logger, progress);
+            }
+        }
+
+        public static void CLBrandsConvert(ClBrand clBrand, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var clnsBrands = ffpmDbContext.ClnsBrands.ToList();
+
+
+
+                var newClBrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
+                    BrandName = clBrand.BrandName,
+                };
+                ffpmDbContext.ClnsBrands.Add(newClBrand);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
+            }
+        } 
+
+        public static void clInventoryConvert(ClInventory clInventory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
+
+                };
+                ffpmDbContext.ClnsInventories.Add(newClInventory);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void CLLensesConvert(ClLense clLense, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
+
+                };
+                ffpmDbContext.ClnsContactLens.Add(newClLens);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void CPTDeptConvert(CptDept cptDept, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newCptDept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
+
+                };
+                ffpmDbContext.CptDepartments.Add(newCptDept);
+
+                ffpmDbContext.SaveChanges();
+            }
+            catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID {cptDept.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void CPTMappingConvert(CptMapping cptMapping, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+                var newCptMapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
+
+                };
+                ffpmDbContext.CptGroupMappings.Add(newCptMapping);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void CPTConvert(Cpt cpt, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
+
+                };
+                ffpmDbContext.Cptids.Add(newCpt);
+
+                ffpmDbContext.SaveChanges();
+            }
+            catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the CPT with ID {cpt.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameCategoryConvert(ModelsD.FrameCategory frameCategory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
+
+                };
+                ffpmDbContext.FrameCategories.Add(newFrameCategory);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameCollectionConvert(ModelsD.FrameCollection frameCollection, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
+
+                };
+                ffpmDbContext.FrameCollections.Add(newFrameCollection);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameColorConvert(ModelsD.FrameColor frameColor, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
+
+                };
+                ffpmDbContext.FrameColors.Add(newFrameColor);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameShapeConvert(ModelsD.FrameShape frameShape, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
+
+                };
+                ffpmDbContext.FrameShapes.Add(newFrameShape);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameStatusConvert(ModelsD.FrameStatus frameStatus, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
+
+                };
+                ffpmDbContext.FrameStatuses.Add(newFrameStatus);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameTempleConvert(ModelsD.FrameTemple frameTemple, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
+
+                };
+                ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameETypeConvert(ModelsD.FrameEtype frameEType, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
+
+                };
+                ffpmDbContext.FrameEtypes.Add(newFrameEType);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameFTypeConvert(ModelsD.FrameFtype frameFType, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
+
+                };
+                ffpmDbContext.FrameFtypes.Add(newFrameFType);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameLensColorConvert(ModelsD.FrameLensColor frameLensColor, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
+
+                };
+                ffpmDbContext.FrameDblensColors.Add(newFrameLensColor);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameMaterialConvert(ModelsD.FrameMaterial frameMaterial, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
+
+                };
+                ffpmDbContext.FrameMaterials.Add(newFrameMaterial);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameMountConvert(ModelsD.FrameMount frameMount, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
+
+                };
+                ffpmDbContext.FrameMounts.Add(newFrameMount);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameOrderConvert(ModelsD.FrameOrder frameOrder, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+
+
+
+                var newFrameOrder = new Brady_s_Conversion_Program.ModelsA.FrameOrderInfo {
+
+                };
+                ffpmDbContext.FrameOrderInfos.Add(newFrameOrder);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameConvert(ModelsD.Frame frame, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try { 
+            
+            
+            
+                var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
+
+                };
+                ffpmDbContext.Frames.Add(newFrame);
+
+                ffpmDbContext.SaveChanges();
+            } catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
+            }
         }
 
         #endregion InvConversion
