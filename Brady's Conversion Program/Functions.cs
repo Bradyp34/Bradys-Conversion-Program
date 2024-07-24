@@ -8300,11 +8300,121 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? sortOrder = null;
+                if (cpt.SortOrder != null) {
+                    if (int.TryParse(cpt.SortOrder, out int locum)) {
+                        sortOrder = locum;
+                    }
+                }
+                bool? active = null;
+                if (cpt.Active != null && cpt.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                else if (cpt.Active != null && cpt.Active.ToLower() == "no") {
+                    active = false;
+                }
+                long? locationId = null;
+                if (cpt.LocationId != null) {
+                    if (long.TryParse(cpt.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
+                decimal? fee = null;
+                if (cpt.Fee != null) {
+                    if (decimal.TryParse(cpt.Fee, out decimal locum)) {
+                        fee = locum;
+                    }
+                }
+                bool taxable = false;
+                if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes") {
+                    taxable = true;
+                }
+                int departmentId = -1;
+                if (cpt.DepartmentId != null) {
+                    if (int.TryParse(cpt.DepartmentId, out int locum)) {
+                        departmentId = locum;
+                    }
+                }
+                int typeOfServiceId = -1;
+                if (cpt.TypeOfServiceId != null) {
+                    if (int.TryParse(cpt.TypeOfServiceId, out int locum)) {
+                        typeOfServiceId = locum;
+                    }
+                }
+                int taxTypeId = -1;
+                if (cpt.TaxTypeId != null) {
+                    if (int.TryParse(cpt.TaxTypeId, out int locum)) {
+                        taxTypeId = locum;
+                    }
+                }
+                bool useCliaNumber = false;
+                if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes") {
+                    useCliaNumber = true;
+                }
+                int units = -1;
+                if (cpt.Units != null) {
+                    if (int.TryParse(cpt.Units, out int locum)) {
+                        units = locum;
+                    }
+                }
+                bool ndcActive = false;
+                if (cpt.NdcActive != null && cpt.NdcActive.ToLower() == "yes") {
+                    ndcActive = true;
+                }
+                decimal? ndcCost = null;
+                if (cpt.NdcCost != null) {
+                    if (decimal.TryParse(cpt.NdcCost, out decimal locum)) {
+                        ndcCost = locum;
+                    }
+                }
+                int? ndcUnitsMeasurementId = null;
+                if (cpt.NdcUnitsMeasurementId != null) {
+                    if (int.TryParse(cpt.NdcUnitsMeasurementId, out int locum)) {
+                        ndcUnitsMeasurementId = locum;
+                    }
+                }
+                decimal? ndcQuantity = null;
+                if (cpt.NdcQuantity != null) {
+                    if (decimal.TryParse(cpt.NdcQuantity, out decimal locum)) {
+                        ndcQuantity = locum;
+                    }
+                }
+                bool autoUpdateReferringProvider = false;
+                if (cpt.AutoUpdateReferringProvider != null && cpt.AutoUpdateReferringProvider.ToLower() == "yes") {
+                    autoUpdateReferringProvider = true;
+                }
+                string privateStatementDescription = "";
+                if (cpt.PrivateStatementDescription != null) {
+                    privateStatementDescription = cpt.PrivateStatementDescription;
+                }
+                string alternateCode = "";
+                if (cpt.AlternateCode != null) {
+                    alternateCode = cpt.AlternateCode;
+                }
 
 
 
                 var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
-
+                    Cpt = cpt.Cpt1, // what is the 1 for? is it because it is the same name as the table?
+                    Description = cpt.Description,
+                    SortOrder = sortOrder,
+                    Active = active,
+                    LocationId = locationId,
+                    Fee = fee,
+                    Taxable = taxable,
+                    DepartmentId = departmentId,
+                    TypeOfServiceId = typeOfServiceId,
+                    TaxTypeId = taxTypeId,
+                    PrivateStatementDescription = privateStatementDescription,
+                    AlternateCode = alternateCode,
+                    UseClianumber = useCliaNumber,
+                    Units = units,
+                    NdcActive = ndcActive,
+                    NdcCost = ndcCost,
+                    NdcCode = cpt.NdcCode,
+                    NdcUnitsMeasurementId = ndcUnitsMeasurementId,
+                    NdcQuantity = ndcQuantity,
+                    AutoUpdateReferringProvider = autoUpdateReferringProvider
                 };
                 ffpmDbContext.Cptids.Add(newCpt);
 
