@@ -8475,11 +8475,27 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string collectionName = "";
+                if (frameCollection.CollectionName != null) {
+                    collectionName = frameCollection.CollectionName;
+                }
+                bool active = false;
+                if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                long locationId = -1;
+                if (frameCollection.LocationId != null) {
+                    if (long.TryParse(frameCollection.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
-
+                    CollectionName = collectionName,
+                    Active = active,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameCollections.Add(newFrameCollection);
 
@@ -8494,11 +8510,24 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                bool active = false;
+                if (frameColor.Active != null && frameColor.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                long locationId = -1;
+                if (frameColor.LocationId != null) {
+                    if (long.TryParse(frameColor.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
-
+                    ColorCode = frameColor.ColorCode,
+                    ColorDescription = frameColor.ColorDescription,
+                    Active = active,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameColors.Add(newFrameColor);
 
@@ -8513,11 +8542,35 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string shape = "";
+                if (frameShape.FrameShape1 != null) {
+                    shape = frameShape.FrameShape1;
+                }
+                bool active = false;
+                if (frameShape.Active != null && frameShape.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                long sortOrder = -1;
+                if (frameShape.SortOrder != null) {
+                    if (long.TryParse(frameShape.SortOrder, out long locum)) {
+                        sortOrder = locum;
+                    }
+                }
+                long? locationId = null;
+                if (frameShape.LocationId != null) {
+                    if (long.TryParse(frameShape.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
-
+                    FrameShape1 = shape,
+                    ShapeDescription = frameShape.ShapeDescription,
+                    Active = active,
+                    SortOrder = sortOrder,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameShapes.Add(newFrameShape);
 
@@ -8532,11 +8585,17 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string status = "";
+                if (frameStatus.StatusId != null) {
+                    status = frameStatus.StatusId;
+                }
 
 
 
                 var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
-
+                    Status = status,
+                    Description = frameStatus.Description,
+                    LabCode = frameStatus.LabCode
                 };
                 ffpmDbContext.FrameStatuses.Add(newFrameStatus);
 
@@ -8551,11 +8610,17 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string temple = "";
+                if (frameTemple.TempleId != null) {
+                    temple = frameTemple.TempleId;
+                }
 
 
 
                 var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
-
+                    Temple = temple,
+                    Description = frameTemple.Description,
+                    LabCode = frameTemple.LabCode
                 };
                 ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
 
@@ -8570,11 +8635,17 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string eType = "";
+                if (frameEType.EtypeId != null) {
+                    eType = frameEType.EtypeId;
+                }
 
 
 
                 var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
-
+                    Etype = eType,
+                    Description = frameEType.Description,
+                    LabCode = frameEType.LabCode
                 };
                 ffpmDbContext.FrameEtypes.Add(newFrameEType);
 
@@ -8589,11 +8660,17 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string fType = "";
+                if (frameFType.FtypeId != null) {
+                    fType = frameFType.FtypeId;
+                }
 
 
 
                 var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
-
+                    Ftype = fType,
+                    Description = frameFType.Description,
+                    LabCode = frameFType.LabCode
                 };
                 ffpmDbContext.FrameFtypes.Add(newFrameFType);
 
@@ -8608,11 +8685,34 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string colorCode = "";
+                if (frameLensColor.ColorCode != null) {
+                    colorCode = frameLensColor.ColorCode;
+                }
+                string colorDescription = "";
+                if (frameLensColor.ColorDescription != null) {
+                    colorDescription = frameLensColor.ColorDescription;
+                }
+                int statusId = -1;
+                if (frameLensColor.StatusId != null) {
+                    if (int.TryParse(frameLensColor.StatusId, out int locum)) {
+                        statusId = locum;
+                    }
+                }
+                long locationId = -1;
+                if (frameLensColor.LocationId != null) {
+                    if (long.TryParse(frameLensColor.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
-
+                    ColorCode = colorCode,
+                    ColorDescription = colorDescription,
+                    StatusId = statusId,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameDblensColors.Add(newFrameLensColor);
 
@@ -8627,11 +8727,35 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string materialName = "";
+                if (frameMaterial.MaterialName != null) {
+                    materialName = frameMaterial.MaterialName;
+                }
+                bool active = false;
+                if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                long sortOrder = -1;
+                if (frameMaterial.SortOrder != null) {
+                    if (long.TryParse(frameMaterial.SortOrder, out long locum)) {
+                        sortOrder = locum;
+                    }
+                }
+                long locationId = -1;
+                if (frameMaterial.LocationId != null) {
+                    if (long.TryParse(frameMaterial.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
-
+                    MaterialName = materialName,
+                    MaterialDescription = frameMaterial.MaterialDescription,
+                    Active = active,
+                    SortOrder = sortOrder,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameMaterials.Add(newFrameMaterial);
 
@@ -8646,11 +8770,35 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string frameMount1 = "";
+                if (frameMount.FrameMount1 != null) {
+                    frameMount1 = frameMount.FrameMount1;
+                }
+                bool active = false;
+                if (frameMount.Active != null && frameMount.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                long sortOrder = -1;
+                if (frameMount.SortOrder != null) {
+                    if (long.TryParse(frameMount.SortOrder, out long locum)) {
+                        sortOrder = locum;
+                    }
+                }
+                long locationId = -1;
+                if (frameMount.LocationId != null) {
+                    if (long.TryParse(frameMount.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
-
+                    FrameMount1 = frameMount1,
+                    MountDescription = frameMount.MountDescription,
+                    Active = active,
+                    SortOrder = sortOrder,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameMounts.Add(newFrameMount);
 
@@ -8665,11 +8813,144 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string name = "";
+                if (frameOrder.Name != null) {
+                    name = frameOrder.Name;
+                }
+                int materialId = -1;
+                if (frameOrder.MaterialId != null) {
+                    if (int.TryParse(frameOrder.MaterialId, out int locum)) {
+                        materialId = locum;
+                    }
+                }
+                int statusId = -1;
+                if (frameOrder.StatusId != null) {
+                    if (int.TryParse(frameOrder.StatusId, out int locum)) {
+                        statusId = locum;
+                    }
+                }
+                int cptId = -1;
+                if (frameOrder.CptId != null) {
+                    if (int.TryParse(frameOrder.CptId, out int locum)) {
+                        cptId = locum;
+                    }
+                }
+                int eTypId = -1;
+                if (frameOrder.EtypId != null) {
+                    if (int.TryParse(frameOrder.EtypId, out int locum)) {
+                        eTypId = locum;
+                    }
+                }
+                int fTypId = -1;
+                if (frameOrder.FtypId != null) {
+                    if (int.TryParse(frameOrder.FtypId, out int locum)) {
+                        fTypId = locum;
+                    }
+                }
+                string color = "";
+                if (frameOrder.Color != null) {
+                    color = frameOrder.Color;
+                }
+                long manufacturerId = -1;
+                if (frameOrder.ManufacturerId != null) {
+                    if (long.TryParse(frameOrder.ManufacturerId, out long locum)) {
+                        manufacturerId = locum;
+                    }
+                }
+                int eye = -1;
+                if (frameOrder.Eye != null) {
+                    if (int.TryParse(frameOrder.Eye, out int locum)) {
+                        eye = locum;
+                    }
+                }
+                int bridge = -1;
+                if (frameOrder.Bridge != null) {
+                    if (int.TryParse(frameOrder.Bridge, out int locum)) {
+                        bridge = locum;
+                    }
+                }
+                decimal a = -1;
+                if (frameOrder.A != null) {
+                    if (decimal.TryParse(frameOrder.A, out decimal locum)) {
+                        a = locum;
+                    }
+                }
+                decimal b = -1;
+                if (frameOrder.B != null) {
+                    if (decimal.TryParse(frameOrder.B, out decimal locum)) {
+                        b = locum;
+                    }
+                }
+                decimal ed = -1;   
+                if (frameOrder.Ed != null) {
+                    if (decimal.TryParse(frameOrder.Ed, out decimal locum)) {
+                        ed = locum;
+                    }
+                }
+                decimal dbl = -1;
+                if (frameOrder.Dbl != null) {
+                    if (decimal.TryParse(frameOrder.Dbl, out decimal locum)) {
+                        dbl = locum;
+                    }
+                }
+                decimal cSize = -1;
+                if (frameOrder.Csize != null) {
+                    if (decimal.TryParse(frameOrder.Csize, out decimal locum)) {
+                        cSize = locum;
+                    }
+                }
+                int templeSize = -1;
+                if (frameOrder.TempleSize != null) {
+                    if (int.TryParse(frameOrder.TempleSize, out int locum)) {
+                        templeSize = locum;
+                    }
+                }
+                int templeStyleId = -1;
+                if (frameOrder.TempleStyleId != null) {
+                    if (int.TryParse(frameOrder.TempleStyleId, out int locum)) {
+                        templeStyleId = locum;
+                    }
+                }
+                decimal retail = -1;
+                if (frameOrder.Retail != null) {
+                    if (decimal.TryParse(frameOrder.Retail, out decimal locum)) {
+                        retail = locum;
+                    }
+                }
+                long inventoryId = -1;
+                if (frameOrder.InventoryId != null) {
+                    if (long.TryParse(frameOrder.InventoryId, out long locum)) {
+                        inventoryId = locum;
+                    }
+                }
+                bool isLmsFrame = false;
+                if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes") {
+                    isLmsFrame = true;
+                }
 
 
 
                 var newFrameOrder = new Brady_s_Conversion_Program.ModelsA.FrameOrderInfo {
-
+                    Name = name,
+                    MaterialId = materialId,
+                    StatusId = statusId,
+                    CptId = cptId,
+                    EtypId = eTypId,
+                    FtypId = fTypId,
+                    Color = color,
+                    ManufacturerId = manufacturerId,
+                    Eye = eye,
+                    Bridge = bridge,
+                    A = a,
+                    B = b,
+                    Ed = ed,
+                    Dbl = dbl,
+                    Csize = cSize,
+                    TempleSize = templeSize,
+                    TempleStyleId = templeStyleId,
+                    Retail = retail,
+                    InventoryId = inventoryId,
+                    IsLmsframe = isLmsFrame
                 };
                 ffpmDbContext.FrameOrderInfos.Add(newFrameOrder);
 
@@ -8684,11 +8965,258 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try { 
+                string upc = "";
+                if (frame.Upc != null) {
+                    upc = frame.Upc;
+                }
+                int styleId = -1;
+                if (frame.StyleId != null) {
+                    if (int.TryParse(frame.StyleId, out int locum)) {
+                        styleId = locum;
+                    }
+                }
+                int? eye = null;
+                if (frame.Eye != null) {
+                    if (int.TryParse(frame.Eye, out int locum)) {
+                        eye = locum;
+                    }
+                }
+                int? bridge = null;
+                if (frame.Bridge != null) {
+                    if (int.TryParse(frame.Bridge, out int locum)) {
+                        bridge = locum;
+                    }
+                }
+                int? temple = null;
+                if (frame.Temple != null) {
+                    if (int.TryParse(frame.Temple, out int locum)) {
+                        temple = locum;
+                    }
+                }
+                decimal? dbl = null;
+                if (frame.Dbl != null) {
+                    if (decimal.TryParse(frame.Dbl, out decimal locum)) {
+                        dbl = locum;
+                    }
+                }
+                decimal? a = null;
+                if (frame.A != null) {
+                    if (decimal.TryParse(frame.A, out decimal locum)) {
+                        a = locum;
+                    }
+                }
+                decimal? b = null;
+                if (frame.B != null) {
+                    if (decimal.TryParse(frame.B, out decimal locum)) {
+                        b = locum;
+                    }
+                }
+                decimal? ed = null;
+                if (frame.Ed != null) {
+                    if (decimal.TryParse(frame.Ed, out decimal locum)) {
+                        ed = locum;
+                    }
+                }
+                decimal? circumference = null;
+                if (frame.Circumference != null) {
+                    if (decimal.TryParse(frame.Circumference, out decimal locum)) {
+                        circumference = locum;
+                    }
+                }
+                decimal? edAngle = null;
+                if (frame.Edangle != null) {
+                    if (decimal.TryParse(frame.Edangle, out decimal locum)) {
+                        edAngle = locum;
+                    }
+                }
+                decimal? frontPrice = null;
+                if (frame.FrontPrice != null) {
+                    if (decimal.TryParse(frame.FrontPrice, out decimal locum)) {
+                        frontPrice = locum;
+                    }
+                }
+                decimal? halfTemplesPrice = null;
+                if (frame.HalfTemplesPrice != null) {
+                    if (decimal.TryParse(frame.HalfTemplesPrice, out decimal locum)) {
+                        halfTemplesPrice = locum;
+                    }
+                }
+                decimal? templesPrice = null;
+                if (frame.TemplesPrice != null) {
+                    if (decimal.TryParse(frame.TemplesPrice, out decimal locum)) {
+                        templesPrice = locum;
+                    }
+                }
+                decimal? completePrice = null;
+                if (frame.CompletePrice != null) {
+                    if (decimal.TryParse(frame.CompletePrice, out decimal locum)) {
+                        completePrice = locum;
+                    }
+                }
+                bool? styleNew = null;
+                if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes") {
+                    styleNew = true;
+                } else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
+                    styleNew = false;
+                }
+                bool? changedPrice = null;
+                if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes") {
+                    changedPrice = true;
+                } else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
+                    changedPrice = false;
+                }
+                long? manufacturerId = null;
+                if (frame.ManufacturerId != null) {
+                    if (long.TryParse(frame.ManufacturerId, out long locum)) {
+                        manufacturerId = locum;
+                    }
+                }
+                long? vendorId = null;
+                if (frame.VendorId != null) {
+                    if (long.TryParse(frame.VendorId, out long locum)) {
+                        vendorId = locum;
+                    }
+                }
+                long? brandId = null;
+                if (frame.BrandId != null) {
+                    if (long.TryParse(frame.BrandId, out long locum)) {
+                        brandId = locum;
+                    }
+                }
+                long? collectionId = null;
+                if (frame.CollectionId != null) {
+                    if (long.TryParse(frame.CollectionId, out long locum)) {
+                        collectionId = locum;
+                    }
+                }
+                int? frameCategoryId = null;
+                if (frame.FrameCategoryId != null) {
+                    if (int.TryParse(frame.FrameCategoryId, out int locum)) {
+                        frameCategoryId = locum;
+                    }
+                }
+                int? frameShapeId = null;
+                if (frame.FrameShapeId != null) {
+                    if (int.TryParse(frame.FrameShapeId, out int locum)) {
+                        frameShapeId = locum;
+                    }
+                }
+                int? materialId = null;
+                if (frame.MaterialId != null) {
+                    if (int.TryParse(frame.MaterialId, out int locum)) {
+                        materialId = locum;
+                    }
+                }
+                int? frameMountId = null;
+                if (frame.FrameMountId != null) {
+                    if (int.TryParse(frame.FrameMountId, out int locum)) {
+                        frameMountId = locum;
+                    }
+                }
+                long? frameColorId = null;
+                if (frame.FrameColorId != null) {
+                    if (long.TryParse(frame.FrameColorId, out long locum)) {
+                        frameColorId = locum;
+                    }
+                }
+                long? lensColorId = null;
+                if (frame.LensColorId != null) {
+                    if (long.TryParse(frame.LensColorId, out long locum)) {
+                        lensColorId = locum;
+                    }
+                }
+                int? genderId = null;
+                if (frame.GenderId != null) {
+                    if (int.TryParse(frame.GenderId, out int locum)) {
+                        genderId = locum;
+                    }
+                }
+                long? countryId = null;
+                if (frame.CountryId != null) {
+                    if (long.TryParse(frame.CountryId, out long locum)) {
+                        countryId = locum;
+                    }
+                }
+                int? ageGroupId = null;
+                if (frame.AgeGroupId != null) {
+                    if (int.TryParse(frame.AgeGroupId, out int locum)) {
+                        ageGroupId = locum;
+                    }
+                }
+                long? locationId = null;
+                if (frame.LocationId != null) {
+                    if (long.TryParse(frame.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
+                int? cptid = null;
+                if (frame.Cptid != null) {
+                    if (int.TryParse(frame.Cptid, out int locum)) {
+                        cptid = locum;
+                    }
+                }
+                bool? active = null;
+                if (frame.Active != null && frame.Active.ToLower() == "yes") {
+                    active = true;
+                } else if (frame.Active != null && frame.Active.ToLower() == "no") {
+                    active = false;
+                }
+                DateTime? dateAdded = null;
+                if (frame.DateAdded != null) {
+                    if (DateTime.TryParse(frame.DateAdded, out DateTime locum)) {
+                        dateAdded = locum;
+                    }
+                }
+                DateTime? lastUpdated = null;
+                if (frame.LastUpdated != null) {
+                    if (DateTime.TryParse(frame.LastUpdated, out DateTime locum)) {
+                        lastUpdated = locum;
+                    }
+                }
+
             
             
             
                 var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
-
+                    Fpc = frame.Fpc,
+                    Upc = upc,
+                    StyleId = styleId,
+                    StyleName = frame.StyleName,
+                    Eye = eye,
+                    Bridge = bridge,
+                    Temple = temple,
+                    Dbl = dbl,
+                    A = a,
+                    B = b,
+                    Ed = ed,
+                    Circumference = circumference,
+                    Edangle = edAngle,
+                    FrontPrice = frontPrice,
+                    HalfTemplesPrice = halfTemplesPrice,
+                    TemplesPrice = templesPrice,
+                    CompletePrice = completePrice,
+                    StyleNew = styleNew,
+                    ChangedPrice = changedPrice,
+                    Sku = frame.Sku,
+                    YearIntroduced = frame.YearIntroduced,
+                    ManufacturerId = manufacturerId,
+                    VendorId = vendorId,
+                    BrandId = brandId,
+                    CollectionId = collectionId,
+                    FrameCategoryId = frameCategoryId,
+                    FrameShapeId = frameShapeId,
+                    MaterialId = materialId,
+                    FrameMountId = frameMountId,
+                    FrameColorId = frameColorId,
+                    LensColorId = lensColorId,
+                    GenderId = genderId,
+                    CountryId = countryId,
+                    AgeGroupId = ageGroupId,
+                    LocationId = locationId,
+                    Cptid = cptid,
+                    Active = active,
+                    DateAdded = dateAdded,
+                    LastUpdated = lastUpdated
                 };
                 ffpmDbContext.Frames.Add(newFrame);
 

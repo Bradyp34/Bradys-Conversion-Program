@@ -78,7 +78,7 @@
             // 
             // FFPMServerTextBox
             // 
-            FFPMServerTextBox.Location = new Point(150, 12);
+            FFPMServerTextBox.Location = new Point(12, 70);
             FFPMServerTextBox.Name = "FFPMServerTextBox";
             FFPMServerTextBox.PlaceholderText = "FFPM Server Name";
             FFPMServerTextBox.Size = new Size(132, 23);
@@ -86,7 +86,7 @@
             // 
             // FFPMDataBaseTextBox
             // 
-            FFPMDataBaseTextBox.Location = new Point(150, 41);
+            FFPMDataBaseTextBox.Location = new Point(12, 99);
             FFPMDataBaseTextBox.Name = "FFPMDataBaseTextBox";
             FFPMDataBaseTextBox.PlaceholderText = "FFPM Database";
             FFPMDataBaseTextBox.Size = new Size(132, 23);
@@ -94,7 +94,7 @@
             // 
             // EyeMDDBTextBox
             // 
-            EyeMDDBTextBox.Location = new Point(288, 41);
+            EyeMDDBTextBox.Location = new Point(150, 99);
             EyeMDDBTextBox.Name = "EyeMDDBTextBox";
             EyeMDDBTextBox.PlaceholderText = "EyeMD Database";
             EyeMDDBTextBox.Size = new Size(132, 23);
@@ -102,7 +102,7 @@
             // 
             // EyeMDServerNameTextBox
             // 
-            EyeMDServerNameTextBox.Location = new Point(288, 12);
+            EyeMDServerNameTextBox.Location = new Point(150, 70);
             EyeMDServerNameTextBox.Name = "EyeMDServerNameTextBox";
             EyeMDServerNameTextBox.PlaceholderText = "EyeMD Server Name";
             EyeMDServerNameTextBox.Size = new Size(132, 23);
@@ -149,7 +149,7 @@
             // 
             // EHRTextBox
             // 
-            EHRTextBox.Location = new Point(12, 100);
+            EHRTextBox.Location = new Point(150, 41);
             EHRTextBox.Name = "EHRTextBox";
             EHRTextBox.PlaceholderText = "EHR Database";
             EHRTextBox.Size = new Size(132, 23);
@@ -157,7 +157,7 @@
             // 
             // InvTextBox
             // 
-            InvTextBox.Location = new Point(150, 100);
+            InvTextBox.Location = new Point(288, 41);
             InvTextBox.Name = "InvTextBox";
             InvTextBox.PlaceholderText = "Inv Database";
             InvTextBox.Size = new Size(132, 23);
@@ -217,7 +217,7 @@
             // 
             // EHRServerTextBox
             // 
-            EHRServerTextBox.Location = new Point(12, 71);
+            EHRServerTextBox.Location = new Point(150, 12);
             EHRServerTextBox.Name = "EHRServerTextBox";
             EHRServerTextBox.PlaceholderText = "EHR Server";
             EHRServerTextBox.Size = new Size(132, 23);
@@ -225,7 +225,7 @@
             // 
             // InvServerTextBox
             // 
-            InvServerTextBox.Location = new Point(150, 70);
+            InvServerTextBox.Location = new Point(288, 11);
             InvServerTextBox.Name = "InvServerTextBox";
             InvServerTextBox.PlaceholderText = "Inv Server";
             InvServerTextBox.Size = new Size(132, 23);
@@ -236,7 +236,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 311);
+            ClientSize = new Size(432, 312);
             Controls.Add(InvServerTextBox);
             Controls.Add(EHRServerTextBox);
             Controls.Add(InvCheckBox);
