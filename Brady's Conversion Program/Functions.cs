@@ -8430,11 +8430,37 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-
+                string categoryName = "";
+                if (frameCategory.CategoryName != null) {
+                    categoryName = frameCategory.CategoryName;
+                }
+                bool? active = null;
+                if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                else if (frameCategory.Active != null && frameCategory.Active.ToLower() == "no") {
+                    active = false;
+                }
+                long sortOrder = -1;
+                if (frameCategory.SortOrder != null) {
+                    if (long.TryParse(frameCategory.SortOrder, out long locum)) {
+                        sortOrder = locum;
+                    }
+                }
+                long? locationId = null;
+                if (frameCategory.LocationId != null) {
+                    if (long.TryParse(frameCategory.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
                 var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
-
+                    CategoryName = categoryName,
+                    CategoryDescription = frameCategory.CategoryDescription,
+                    Active = active,
+                    SortOrder = sortOrder,
+                    LocationId = locationId
                 };
                 ffpmDbContext.FrameCategories.Add(newFrameCategory);
 
