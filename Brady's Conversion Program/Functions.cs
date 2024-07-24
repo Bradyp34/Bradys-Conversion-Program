@@ -8253,10 +8253,39 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int? cptId = null;
+                if (cptMapping.CptId != null) {
+                    if (int.TryParse(cptMapping.CptId, out int locum)) {
+                        cptId = locum;
+                    }
+                }
+                int? groupId = null;
+                if (cptMapping.GroupId != null) {
+                    if (int.TryParse(cptMapping.GroupId, out int locum)) {
+                        groupId = locum;
+                    }
+                }
+                int? locationId = null;
+                if (cptMapping.LocationId != null) {
+                    if (int.TryParse(cptMapping.LocationId, out int locum)) {
+                        locationId = locum;
+                    }
+                }
+                bool? Active = null;
+                if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes") {
+                    Active = true;
+                }
+                else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
+                    Active = false;
+                }
+
 
 
                 var newCptMapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
-
+                    CptId = cptId,
+                    GroupId = groupId,
+                    LocationId = locationId,
+                    Active = Active                    
                 };
                 ffpmDbContext.CptGroupMappings.Add(newCptMapping);
 
