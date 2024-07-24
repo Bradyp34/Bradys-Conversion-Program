@@ -7902,12 +7902,42 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                
+                long? addedBy = null;
+                if (clBrand.AddedBy != null) {
+                    if (long.TryParse(clBrand.AddedBy, out long locum)) {
+                        addedBy = locum;
+                    }
+                }
+                DateTime? addedDate = null;
+                if (clBrand.AddedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clBrand.AddedDate, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        addedDate = tempDateTime;
+                    }
+                }
+                long? locationId = null;
+                if (clBrand.LocationId != null) {
+                    if (long.TryParse(clBrand.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
+                bool? isActive = null;
+                if (clBrand.IsActive != null) {
+                    if (bool.TryParse(clBrand.IsActive, out bool locum)) {
+                        isActive = locum;
+                    }
+                }
 
 
 
                 var newClBrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
                     BrandName = clBrand.BrandName,
+                    BrandCode = clBrand.BrandCode,
+                    AddedBy = addedBy,
+                    AddedDate = addedDate,
+                    LocationId = locationId,
+                    IsActive = isActive
                 };
                 ffpmDbContext.ClnsBrands.Add(newClBrand);
 
@@ -7915,18 +7945,127 @@ namespace Brady_s_Conversion_Program {
             } catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
             }
-        } 
+        }
 
         public static void clInventoryConvert(ClInventory clInventory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
+                if (clInventory.ContactLensId != -1) {
+                    logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID {clInventory.Id}");
+                    return;
+                }
+                int? quantityOrdered = null;
+                if (clInventory.QuantityOrdered != null) {
+                    if (int.TryParse(clInventory.QuantityOrdered, out int locum)) {
+                        quantityOrdered = locum;
+                    }
+                }
+                int? received = null;
+                if (clInventory.Received != null) {
+                    if (int.TryParse(clInventory.Received, out int locum)) {
+                        received = locum;
+                    }
+                }
+                int? onHand = null;
+                if (clInventory.OnHand != null) {
+                    if (int.TryParse(clInventory.OnHand, out int locum)) {
+                        onHand = locum;
+                    }
+                }
+                int? dispensed = null;
+                if (clInventory.Dispensed != null) {
+                    if (int.TryParse(clInventory.Dispensed, out int locum)) {
+                        dispensed = locum;
+                    }
+                }
+                long? addedBy = null;
+                if (clInventory.AddedBy != null) {
+                    if (long.TryParse(clInventory.AddedBy, out long locum)) {
+                        addedBy = locum;
+                    }
+                }
+                DateTime? addedDate = null;
+                if (clInventory.AddedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clInventory.AddedDate, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        addedDate = tempDateTime;
+                    }
+                }
+                DateTime? invoiceDate = null;
+                if (clInventory.InvoiceDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clInventory.InvoiceDate, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        invoiceDate = tempDateTime;
+                    }
+                }
+                DateTime? expiryDate = null;
+                if (clInventory.ExpiryDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clInventory.ExpiryDate, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        expiryDate = tempDateTime;
+                    }
+                }
+                long? updatedBy = null;
+                if (clInventory.UpdatedBy != null) {
+                    if (long.TryParse(clInventory.UpdatedBy, out long locum)) {
+                        updatedBy = locum;
+                    }
+                }
+                DateTime? updatedDate = null;
+                if (clInventory.UpdatedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clInventory.UpdatedDate, dateFormats,
+                                                                                                                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        updatedDate = tempDateTime;
+                    }
+                }
+                bool? isTrials = null;
+                if (clInventory.IsTrials != null) {
+                    if (bool.TryParse(clInventory.IsTrials, out bool locum)) {
+                        isTrials = locum;
+                    }
+                }
+                bool? isActive = null;
+                if (clInventory.IsActive != null) {
+                    if (bool.TryParse(clInventory.IsActive, out bool locum)) {
+                        isActive = locum;
+                    }
+                }
+                long? locationId = null;
+                if (clInventory.LocationId != null) {
+                    if (long.TryParse(clInventory.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
 
 
 
                 var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
-
+                    ContactLensId = clInventory.ContactLensId,
+                    Barcode = clInventory.Barcode,
+                    InvoiceNumber = clInventory.InvoiceNumber,
+                    ItemCost = clInventory.ItemCost,
+                    WholesalePrice = clInventory.WholesalePrice,
+                    RetailPrice = clInventory.RetailPrice,
+                    Notes = clInventory.Notes,
+                    QuantityOrdered = quantityOrdered,
+                    Received = received,
+                    OnHand = onHand,
+                    Dispensed = dispensed,
+                    AddedBy = addedBy,
+                    AddedDate = addedDate,
+                    InvoiceDate = invoiceDate,
+                    ExpiryDate = expiryDate,
+                    UpdatedBy = updatedBy,
+                    UpdatedDate = updatedDate,
+                    IsTrials = isTrials,
+                    IsActive = isActive,
+                    LocationId = locationId
                 };
                 ffpmDbContext.ClnsInventories.Add(newClInventory);
 
@@ -7941,11 +8080,119 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int clnsBrandId = -1;
+                if (clLense.ClnsBrandId != null) {
+                    if (int.TryParse(clLense.ClnsBrandId, out int locum)) {
+                        clnsBrandId = locum;
+                    }
+                }
+                if (clnsBrandId == -1) {
+                    logger.Log($"INV: INV Brand ID not found for CL Lense with ID {clLense.Id}");
+                    return;
+                }
+                int? clnsManufacturerId = null;
+                if (clLense.ClnsManufacturerId != null) {
+                    if (int.TryParse(clLense.ClnsManufacturerId, out int locum)) {
+                        clnsManufacturerId = locum;
+                    }
+                }
+                int? clnsLensTypeId = null;
+                if (clLense.ClnsLensTypeId != null) {
+                    if (int.TryParse(clLense.ClnsLensTypeId, out int locum)) {
+                        clnsLensTypeId = locum;
+                    }
+                }
+                int? cptId = null;
+                if (clLense.CptId != null) {
+                    if (int.TryParse(clLense.CptId, out int locum)) {
+                        cptId = locum;
+                    }
+                }
+                DateTime? addedDate = null;
+                if (clLense.AddedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clLense.AddedDate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        addedDate = tempDateTime;
+                    }
+                }
+                long? addedBy = null;
+                if (clLense.AddedBy != null) {
+                    if (long.TryParse(clLense.AddedBy, out long locum)) {
+                        addedBy = locum;
+                    }
+                }
+                DateTime? updatedDate = null;
+                if (clLense.UpdatedDate != null) {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(clLense.UpdatedDate, dateFormats,
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        updatedDate = tempDateTime;
+                    }
+                }
+                long? updatedBy = null;
+                if (clLense.UpdatedBy != null) {
+                    if (long.TryParse(clLense.UpdatedBy, out long locum)) {
+                        updatedBy = locum;
+                    }
+                }
+                bool? isSoftContact = null;
+                if (clLense.IsSoftContact != null) {
+                    if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
+                        isSoftContact = locum;
+                    }
+                }
+                bool? isActive = null;
+                if (clLense.IsActive != null) {
+                    if (bool.TryParse(clLense.IsActive, out bool locum)) {
+                        isActive = locum;
+                    }
+                }
+                long? locationId = null;
+                if (clLense.LocationId != null) {
+                    if (long.TryParse(clLense.LocationId, out long locum)) {
+                        locationId = locum;
+                    }
+                }
+                int? lensPerBox = null;
+                if (clLense.LensPerBox != null) {
+                    if (int.TryParse(clLense.LensPerBox, out int locum)) {
+                        lensPerBox = locum;
+                    }
+                }
+                bool? isLensFromClxCatalog = null;
+                if (clLense.IsLensFromClxCatalog != null) {
+                    if (bool.TryParse(clLense.IsLensFromClxCatalog, out bool locum)) {
+                        isLensFromClxCatalog = locum;
+                    }
+                }
 
 
 
                 var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
-
+                    ClnsBrandId = clnsBrandId,
+                    ClnsManufacturerId = clnsManufacturerId,
+                    Sphere = clLense.Sphere,
+                    Cylinder = clLense.Cylinder,
+                    Axis = clLense.Axis,
+                    BaseCurve = clLense.BaseCurve,
+                    Diameter = clLense.Diameter,
+                    AddPower = clLense.AddPower,
+                    AddPowerName = clLense.AddPowerName,
+                    Multifocal = clLense.Multifocal,
+                    Color = clLense.Color,
+                    Upc = clLense.Upc,
+                    ClnsLensTypeId = clnsLensTypeId,
+                    CptId = cptId,
+                    AddedDate = addedDate,
+                    AddedBy = addedBy,
+                    UpdatedDate = updatedDate,
+                    UpdatedBy = updatedBy,
+                    IsSoftContact = isSoftContact,
+                    IsActive = isActive,
+                    LocationId = locationId,
+                    LensPerBox = lensPerBox,
+                    IsLensFromClxCatalog = isLensFromClxCatalog
                 };
                 ffpmDbContext.ClnsContactLens.Add(newClLens);
 
@@ -7960,11 +8207,37 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                string code = "";
+                if (cptDept.Code != null) {
+                    code = cptDept.Code;
+                }
+                string description = "";
+                if (cptDept.Description != null) {
+                    description = cptDept.Description;
+                }
+                int locationId = -1;
+                if (cptDept.LocationId != null) {
+                    if (int.TryParse(cptDept.LocationId, out int locum)) {
+                        locationId = locum;
+                    }
+                }
+                bool active = false;
+                if (cptDept.Active != null && cptDept.Active.ToLower() == "yes") {
+                    active = true;
+                }
+                string sortNumber = "";
+                if (cptDept.SortNumber != null) {
+                    sortNumber = cptDept.SortNumber;
+                } // max size here is 3. it is a number in string form.
 
 
 
                 var newCptDept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
-
+                    Code = code,
+                    Description = description,
+                    LocationId = locationId,
+                    Active = active,
+                    SortNumber = sortNumber
                 };
                 ffpmDbContext.CptDepartments.Add(newCptDept);
 
