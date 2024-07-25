@@ -2894,6 +2894,54 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ehrOrig = eyeMDDbContext.EmrvisitMedicalHistories.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitMedicalHistories.FirstOrDefault(x => x.VisitId == visitId);
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.ControlId = controlId;
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.OrigVisitMedicalHistoryId = origVisMedHisID;
+                    ehrOrig.OrigVisitDiagCodePoolId = origVisDiagCodePoolID;
+                    ehrOrig.OrigDosdate = origDosDate;
+                    ehrOrig.Description = description;
+                    ehrOrig.Code = code;
+                    ehrOrig.Modifier = modifier;
+                    ehrOrig.CodeIcd10 = codeICD10;
+                    ehrOrig.CodeSnomed = codeSnomed;
+                    ehrOrig.TypeId = typeId;
+                    ehrOrig.Location1 = location1;
+                    ehrOrig.Severity1 = severity1;
+                    ehrOrig.OnsetMonth1 = onsetMonth1;
+                    ehrOrig.OnsetDay1 = onsetDay1;
+                    ehrOrig.OnsetYear1 = onsetYear1;
+                    ehrOrig.Location2 = location2;
+                    ehrOrig.Severity2 = severity2;
+                    ehrOrig.OnsetMonth2 = onsetMonth2;
+                    ehrOrig.OnsetDay2 = onsetDay2;
+                    ehrOrig.OnsetYear2 = onsetYear2;
+                    ehrOrig.IsResolved1 = isResolved1;
+                    ehrOrig.ResolvedVisitId1 = resolvedVisitID1;
+                    ehrOrig.ResolvedRequestedProcedureId1 = resolvedReqProcID1;
+                    ehrOrig.ResolvedDate1 = resolvedDate1;
+                    ehrOrig.ResolveType1 = resolveType1;
+                    ehrOrig.IsResolved2 = isResolved2;
+                    ehrOrig.ResolvedVisitId2 = resolvedVisitID2;
+                    ehrOrig.ResolvedRequestedProcedureId2 = resolvedReqProcID2;
+                    ehrOrig.ResolvedDate2 = resolvedDate2;
+                    ehrOrig.ResolveType2 = resolveType2;
+                    ehrOrig.Notes = notes;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.DoNotReconcile = doNotReconcile;
+                    ehrOrig.LastModified = lastModified;
+                    ehrOrig.Created = created;
+                    ehrOrig.CreatedEmpId = createdEmpId;
+                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
+                    ehrOrig.Location2OnsetVisitId = null;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
                 var newMedicalHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitMedicalHistory {
                     PtId = ptId,
