@@ -201,6 +201,7 @@ namespace Brady_s_Conversion_Program {
                                 progress.Invoke((MethodInvoker)delegate {
                                     progress.Maximum = totalEntries;
                                     progress.Step = 1;
+                                    progress.Value = 0;
                                 });
 
                                 // Perform conversion for each table
@@ -220,6 +221,44 @@ namespace Brady_s_Conversion_Program {
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            totalEntries = eHRDbContext.MedicalHistories.Count() +
+                                            eHRDbContext.Visits.Count() +
+                                            eHRDbContext.VisitOrders.Count() +
+                                            eHRDbContext.VisitDoctors.Count() +
+                                            eHRDbContext.Allergies.Count() +
+                                            eHRDbContext.ContactLens.Count() +
+                                            eHRDbContext.DiagCodePools.Count() +
+                                            eHRDbContext.DiagTests.Count() +
+                                            eHRDbContext.ExamConditions.Count() +
+                                            eHRDbContext.FamilyHistories.Count() +
+                                            eHRDbContext.Iops.Count() +
+                                            eHRDbContext.PlanNarratives.Count() +
+                                            eHRDbContext.ProcDiagPools.Count() +
+                                            eHRDbContext.ProcPools.Count() +
+                                            eHRDbContext.Refractions.Count() +
+                                            eHRDbContext.Ros.Count() +
+                                            eHRDbContext.RxMedications.Count() +
+                                            eHRDbContext.SurgHistories.Count() +
+                                            eHRDbContext.Teches.Count() +
+                                            eHRDbContext.Tech2s.Count() +
+                                            eHRDbContext.PatientDocuments.Count() +
+                                            eHRDbContext.Appointments.Count() +
+                                            eHRDbContext.Patients.Count() +
+                                            eHRDbContext.PatientDocuments.Count() +
+                                            eHRDbContext.PatientNotes.Count();
+
+
+
+
+                            // Set progress bar properties on UI thread
+                            progress.Invoke((MethodInvoker)delegate {
+                                progress.Maximum = totalEntries;
+                                progress.Step = 1;
+                                progress.Value = 0;
+                            });
+
+
+
                             eyeMDDbContext.Database.OpenConnection();
                             ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress);
                             eyeMDDbContext.SaveChanges();
@@ -231,9 +270,39 @@ namespace Brady_s_Conversion_Program {
                 if (inv == true) {
                     using (var invDbContext = new InvDbContext(invConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                            totalEntries = invDbContext.ClBrands.Count() +
+                                            invDbContext.ClInventories.Count() +
+                                            invDbContext.ClLenses.Count() +
+                                            invDbContext.CptDepts.Count() +
+                                            invDbContext.CptMappings.Count() +
+                                            invDbContext.Cpts.Count() +
+                                            invDbContext.FrameCategories.Count() +
+                                            invDbContext.FrameCollections.Count() +
+                                            invDbContext.FrameColors.Count() +
+                                            invDbContext.FrameShapes.Count() +
+                                            invDbContext.FrameStatuses.Count() +
+                                            invDbContext.FrameTemples.Count() +
+                                            invDbContext.FrameEtypes.Count() +
+                                            invDbContext.FrameFtypes.Count() +
+                                            invDbContext.FrameLensColors.Count() +
+                                            invDbContext.FrameMaterials.Count() +
+                                            invDbContext.FrameMounts.Count() +
+                                            invDbContext.FrameOrders.Count() +
+                                            invDbContext.Frames.Count();
+
+
+                            // Set progress bar properties on UI thread
+                            progress.Invoke((MethodInvoker)delegate {
+                                progress.Maximum = totalEntries;
+                                progress.Step = 1;
+                                progress.Value = 0;
+                            });
+
+
+
                             ffpmDbContext.Database.OpenConnection();
                             ConvertInv(invDbContext, ffpmDbContext, logger, progress); // need to find out where inv data goes
-                            invDbContext.SaveChanges();
+                            ffpmDbContext.SaveChanges();
                         }
                     }
                     return completeConnection + "\nInv not yet implemented";
@@ -247,6 +316,10 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.Value = 0;
+            });
+
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
@@ -2489,6 +2562,10 @@ namespace Brady_s_Conversion_Program {
         #region EyeMDConversion
 
         public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.Value = 0;
+            });
+
             foreach (var patient in eHRDbContext.Patients.ToList()) {
                 PatientsConvert(patient, eyeMDDbContext, logger, progress);
             }
@@ -7824,6 +7901,10 @@ namespace Brady_s_Conversion_Program {
 
         #region InvConversion
         public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.Value = 0;
+            });
+
             foreach (var clBrand in invDbContext.ClBrands) {
                 CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
             }
@@ -7927,6 +8008,15 @@ namespace Brady_s_Conversion_Program {
                     if (bool.TryParse(clBrand.IsActive, out bool locum)) {
                         isActive = locum;
                     }
+                }
+
+                var invList = ffpmDbContext.ClnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
+                if (invList != null) {
+                    invList.BrandCode = clBrand.BrandCode;
+                    invList.AddedBy = addedBy;
+                    invList.AddedDate = addedDate;
+                    invList.LocationId = locationId;
+                    invList.IsActive = isActive;
                 }
 
 
@@ -9225,7 +9315,7 @@ namespace Brady_s_Conversion_Program {
                 logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
             }
         }
-
+        
         #endregion InvConversion
     }
 }
