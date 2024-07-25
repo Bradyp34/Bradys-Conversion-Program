@@ -3055,6 +3055,32 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ehrOrig = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(x => x.VisitId == visitId);
+
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.Inactive = inactive;
+                    ehrOrig.StartDate = allergy.StartDate;
+                    ehrOrig.Created = created;
+                    ehrOrig.CreatedEmpId = empId;
+                    ehrOrig.Severity = allergy.Severity;
+                    ehrOrig.Reaction = allergy.Reaction;
+                    ehrOrig.AllergyName = allergy.AllergyName;
+                    ehrOrig.Snomedtype = null;
+                    ehrOrig.AllergyConceptId = null;
+                    ehrOrig.AllergyMappingId = null;
+                    ehrOrig.InsertGuid = null;
+                    ehrOrig.LastModified = null;
+                    ehrOrig.Rxcui = null;
+                    ehrOrig.Snomed = null;
+                    ehrOrig.LastModifiedEmpId = null;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
@@ -3315,6 +3341,10 @@ namespace Brady_s_Conversion_Program {
                 if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes") {
                     reconciledCCDA = true;
                 }
+
+                // one patient can have multiple visits, so I wont check this one
+                
+
 
 
                 var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
