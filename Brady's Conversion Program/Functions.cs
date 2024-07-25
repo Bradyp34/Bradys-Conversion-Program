@@ -316,10 +316,6 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.Value = 0;
-            });
-
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
@@ -2562,10 +2558,6 @@ namespace Brady_s_Conversion_Program {
         #region EyeMDConversion
 
         public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.Value = 0;
-            });
-
             foreach (var patient in eHRDbContext.Patients.ToList()) {
                 PatientsConvert(patient, eyeMDDbContext, logger, progress);
             }
@@ -7901,10 +7893,6 @@ namespace Brady_s_Conversion_Program {
 
         #region InvConversion
         public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.Value = 0;
-            });
-
             foreach (var clBrand in invDbContext.ClBrands) {
                 CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
             }
@@ -8017,6 +8005,8 @@ namespace Brady_s_Conversion_Program {
                     invList.AddedDate = addedDate;
                     invList.LocationId = locationId;
                     invList.IsActive = isActive;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8110,7 +8100,7 @@ namespace Brady_s_Conversion_Program {
                 if (clInventory.UpdatedDate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(clInventory.UpdatedDate, dateFormats,
-                                                                                                                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         updatedDate = tempDateTime;
                     }
                 }
@@ -8131,6 +8121,31 @@ namespace Brady_s_Conversion_Program {
                     if (long.TryParse(clInventory.LocationId, out long locum)) {
                         locationId = locum;
                     }
+                }
+
+                var invList = ffpmDbContext.ClnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
+                if (invList != null) {
+                    invList.Barcode = clInventory.Barcode;
+                    invList.InvoiceNumber = clInventory.InvoiceNumber;
+                    invList.ItemCost = clInventory.ItemCost;
+                    invList.WholesalePrice = clInventory.WholesalePrice;
+                    invList.RetailPrice = clInventory.RetailPrice;
+                    invList.Notes = clInventory.Notes;
+                    invList.QuantityOrdered = quantityOrdered;
+                    invList.Received = received;
+                    invList.OnHand = onHand;
+                    invList.Dispensed = dispensed;
+                    invList.AddedBy = addedBy;
+                    invList.AddedDate = addedDate;
+                    invList.InvoiceDate = invoiceDate;
+                    invList.ExpiryDate = expiryDate;
+                    invList.UpdatedBy = updatedBy;
+                    invList.UpdatedDate = updatedDate;
+                    invList.IsTrials = isTrials;
+                    invList.IsActive = isActive;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8257,6 +8272,34 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var invList = ffpmDbContext.ClnsContactLens.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+                if (invList != null) {
+                    invList.ClnsManufacturerId = clnsManufacturerId;
+                    invList.Sphere = clLense.Sphere;
+                    invList.Cylinder = clLense.Cylinder;
+                    invList.Axis = clLense.Axis;
+                    invList.BaseCurve = clLense.BaseCurve;
+                    invList.Diameter = clLense.Diameter;
+                    invList.AddPower = clLense.AddPower;
+                    invList.AddPowerName = clLense.AddPowerName;
+                    invList.Multifocal = clLense.Multifocal;
+                    invList.Color = clLense.Color;
+                    invList.Upc = clLense.Upc;
+                    invList.ClnsLensTypeId = clnsLensTypeId;
+                    invList.CptId = cptId;
+                    invList.AddedDate = addedDate;
+                    invList.AddedBy = addedBy;
+                    invList.UpdatedDate = updatedDate;
+                    invList.UpdatedBy = updatedBy;
+                    invList.IsSoftContact = isSoftContact;
+                    invList.IsActive = isActive;
+                    invList.LocationId = locationId;
+                    invList.LensPerBox = lensPerBox;
+                    invList.IsLensFromClxCatalog = isLensFromClxCatalog;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
@@ -8320,6 +8363,16 @@ namespace Brady_s_Conversion_Program {
                     sortNumber = cptDept.SortNumber;
                 } // max size here is 3. it is a number in string form.
 
+                var invList = ffpmDbContext.CptDepartments.FirstOrDefault(x => x.Code == code);
+                if (invList != null) {
+                    invList.Description = description;
+                    invList.LocationId = locationId;
+                    invList.Active = active;
+                    invList.SortNumber = sortNumber;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newCptDept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
@@ -8367,6 +8420,14 @@ namespace Brady_s_Conversion_Program {
                 }
                 else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
                     Active = false;
+                }
+
+                var invList = ffpmDbContext.CptGroupMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
+                if (invList != null) {
+                    invList.LocationId = locationId;
+                    invList.Active = Active;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8482,6 +8543,31 @@ namespace Brady_s_Conversion_Program {
                     alternateCode = cpt.AlternateCode;
                 }
 
+                var invList = ffpmDbContext.Cptids.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
+                if (invList != null) {
+                    invList.Description = cpt.Description;
+                    invList.SortOrder = sortOrder;
+                    invList.Active = active;
+                    invList.LocationId = locationId;
+                    invList.Fee = fee;
+                    invList.Taxable = taxable;
+                    invList.DepartmentId = departmentId;
+                    invList.TypeOfServiceId = typeOfServiceId;
+                    invList.TaxTypeId = taxTypeId;
+                    invList.PrivateStatementDescription = privateStatementDescription;
+                    invList.AlternateCode = alternateCode;
+                    invList.UseClianumber = useCliaNumber;
+                    invList.Units = units;
+                    invList.NdcActive = ndcActive;
+                    invList.NdcCost = ndcCost;
+                    invList.NdcCode = cpt.NdcCode;
+                    invList.NdcUnitsMeasurementId = ndcUnitsMeasurementId;
+                    invList.NdcQuantity = ndcQuantity;
+                    invList.AutoUpdateReferringProvider = autoUpdateReferringProvider;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
@@ -8544,6 +8630,16 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var invList = ffpmDbContext.FrameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
+                if (invList != null) {
+                    invList.CategoryDescription = frameCategory.CategoryDescription;
+                    invList.Active = active;
+                    invList.SortOrder = sortOrder;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
                 var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
                     CategoryName = categoryName,
@@ -8580,6 +8676,14 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var invList = ffpmDbContext.FrameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
+                if (invList != null) {
+                    invList.Active = active;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
@@ -8609,6 +8713,15 @@ namespace Brady_s_Conversion_Program {
                     if (long.TryParse(frameColor.LocationId, out long locum)) {
                         locationId = locum;
                     }
+                }
+
+                var invList = ffpmDbContext.FrameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
+                if (invList != null) {
+                    invList.ColorDescription = frameColor.ColorDescription;
+                    invList.Active = active;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8653,6 +8766,16 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
+                if (invList != null) {
+                    invList.ShapeDescription = frameShape.ShapeDescription;
+                    invList.Active = active;
+                    invList.SortOrder = sortOrder;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
@@ -8680,6 +8803,14 @@ namespace Brady_s_Conversion_Program {
                     status = frameStatus.StatusId;
                 }
 
+                var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
+                if (invList != null) {
+                    invList.Description = frameStatus.Description;
+                    invList.LabCode = frameStatus.LabCode;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
@@ -8703,6 +8834,14 @@ namespace Brady_s_Conversion_Program {
                 string temple = "";
                 if (frameTemple.TempleId != null) {
                     temple = frameTemple.TempleId;
+                }
+
+                var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
+                if (invList != null) {
+                    invList.Description = frameTemple.Description;
+                    invList.LabCode = frameTemple.LabCode;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8730,6 +8869,14 @@ namespace Brady_s_Conversion_Program {
                     eType = frameEType.EtypeId;
                 }
 
+                var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
+                if (invList != null) {
+                    invList.Description = frameEType.Description;
+                    invList.LabCode = frameEType.LabCode;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
@@ -8753,6 +8900,14 @@ namespace Brady_s_Conversion_Program {
                 string fType = "";
                 if (frameFType.FtypeId != null) {
                     fType = frameFType.FtypeId;
+                }
+
+                var invList = ffpmDbContext.FrameFtypes.FirstOrDefault(x => x.Ftype == fType);
+                if (invList != null) {
+                    invList.Description = frameFType.Description;
+                    invList.LabCode = frameFType.LabCode;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8794,6 +8949,15 @@ namespace Brady_s_Conversion_Program {
                     if (long.TryParse(frameLensColor.LocationId, out long locum)) {
                         locationId = locum;
                     }
+                }
+
+                var invList = ffpmDbContext.FrameDblensColors.FirstOrDefault(x => x.ColorCode == colorCode);
+                if (invList != null) {
+                    invList.ColorDescription = colorDescription;
+                    invList.StatusId = statusId;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -8838,6 +9002,16 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var invList = ffpmDbContext.FrameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
+                if (invList != null) {
+                    invList.MaterialDescription = frameMaterial.MaterialDescription;
+                    invList.Active = active;
+                    invList.SortOrder = sortOrder;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
@@ -8879,6 +9053,16 @@ namespace Brady_s_Conversion_Program {
                     if (long.TryParse(frameMount.LocationId, out long locum)) {
                         locationId = locum;
                     }
+                }
+
+                var invList = ffpmDbContext.FrameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
+                if (invList != null) {
+                    invList.MountDescription = frameMount.MountDescription;
+                    invList.Active = active;
+                    invList.SortOrder = sortOrder;
+                    invList.LocationId = locationId;
+                    ffpmDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -9017,6 +9201,9 @@ namespace Brady_s_Conversion_Program {
                 if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes") {
                     isLmsFrame = true;
                 }
+
+                // since it is orders, there can be multiple that are the exact same
+                // because of this, I wont check for duplicate orders
 
 
 
@@ -9263,6 +9450,8 @@ namespace Brady_s_Conversion_Program {
                         lastUpdated = locum;
                     }
                 }
+
+                // how do we know if a frame is a duplicate?
 
             
             
