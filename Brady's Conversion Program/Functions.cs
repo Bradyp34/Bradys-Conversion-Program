@@ -3601,6 +3601,49 @@ namespace Brady_s_Conversion_Program {
                     refProvOrgName = visitOrder.RefProviderOrganizationName;
                 }
 
+                var ehrOrig = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(x => x.VisitId == visitId);
+
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.Dosdate = dosdate;
+                    ehrOrig.OrderDescription = description;
+                    ehrOrig.OrderWhen = orderWhen;
+                    ehrOrig.OrderScheduledDate = orderScheduledDate;
+                    ehrOrig.DoNotPrintRx = doNotPrintRx;
+                    ehrOrig.AddedbyFastPlanId = addedbyFastPlanId;
+                    ehrOrig.OrderTypeId = orderTypeId;
+                    ehrOrig.OrderHasSpecimen = orderHasSpecimen;
+                    ehrOrig.OrderSpecimenType = orderSpecimenType;
+                    ehrOrig.OrderSpecimenId = orderSpecimenId;
+                    ehrOrig.OrderLabResultFulfilledDate = orderLabResultFulfilledDate;
+                    ehrOrig.OrderLabResultId = orderLabResultId;
+                    ehrOrig.OrderNeedsFollowup = orderNeedsFollowUp;
+                    ehrOrig.OrderWasFollowedup = orderWasFollowedUp;
+                    ehrOrig.OrderNotes = orderNotes;
+                    ehrOrig.SummarySent = summarySent;
+                    ehrOrig.OrderRemarks = orderRemarks;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.StudyInstanceUid = studyInstanceUID;
+                    ehrOrig.DicomrequestedProcedureId = dicomRequestedProc;
+                    ehrOrig.DicomscheduledProcedureStepId = dicomScheduledProcStepId;
+                    ehrOrig.OrderModalityId = orderModality;
+                    ehrOrig.ScheduledAe = scheduledAE;
+                    ehrOrig.CodeCpt = CodeCPT;
+                    ehrOrig.CodeSnomed = CodeSNOMED;
+                    ehrOrig.RecordedEmpRole = recordedEmpRole;
+                    ehrOrig.SummaryTransmitted = summaryTransmitted;
+                    ehrOrig.CodeLoinc = codeLOINC;
+                    ehrOrig.RefProviderFirstName = RefProvFirst;
+                    ehrOrig.RefProviderLastName = RefProvLast;
+                    ehrOrig.RefProviderId = refProvId;
+                    ehrOrig.RefProviderOrganizationName = refProvOrgName;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
+
 
                 var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
                     VisitId = visitId,
@@ -3864,6 +3907,48 @@ namespace Brady_s_Conversion_Program {
                 string pdNearOu = "";
                 if (visitDoctor.PdNearOu != null) {
                     pdNearOu = visitDoctor.PdNearOu;
+                }
+
+                var ehrOrig = eyeMDDbContext.EmrvisitDoctors.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitDoctors.FirstOrDefault(x => x.VisitId == visitId);
+
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.Dosdate = dosdate;
+                    ehrOrig.SleDiagOd = sleDiagOd;
+                    ehrOrig.SleDiagOs = sleDiagOs;
+                    ehrOrig.Slecomments = sleComments;
+                    ehrOrig.DfeCdratioVertOd = dfeCdRatioVertOd;
+                    ehrOrig.DfeCdratioVertOs = dfeCdRatioVertOs;
+                    ehrOrig.DfeCdratioHorizOd = dfeCdRatioHorizOd;
+                    ehrOrig.DfeCdratioHorizOs = dfeCdRatioHorizOs;
+                    ehrOrig.DfeDiagOd = dfeDiagOd;
+                    ehrOrig.DfeDiagOs = dfeDIagOs;
+                    ehrOrig.Dfecomments = dfeComments;
+                    ehrOrig.DiagOtherDiagnoses = diagOtherDiagnoses;
+                    ehrOrig.PlanStaffOrderComments = planStaffOrderComments;
+                    ehrOrig.PlanRtowhen = planRTOWhen;
+                    ehrOrig.PlanRtoreason = PlanRTOReason;
+                    ehrOrig.PlanDictateReferingDoc = planDictateReferingDoc;
+                    ehrOrig.PlanDictatePriCareDoc = planDictatePriCareDoc;
+                    ehrOrig.PlanDictatePatient = planDictatePatient;
+                    ehrOrig.PlanNextScheduledAppt = planNextScheduledAppt;
+                    ehrOrig.CodingMdm = codingMDM;
+                    ehrOrig.CodingAdditionalProcedures = codingAdditionalProcs;
+                    ehrOrig.PlanRxMedRemarks = planRxMedRemarks;
+                    ehrOrig.PlanRxOrdersRemarks = planRxOrdersRemarks;
+                    ehrOrig.DfeextOpth = dfeExtOpth;
+                    ehrOrig.DfelensUsed = dfeLensUsed;
+                    ehrOrig.PlanTargetIopOd = planTargetIOPOd;
+                    ehrOrig.PlanTargetIopOs = planTargetIOPOs;
+                    ehrOrig.DfedilatedPupilSizeOd = dfeDilatedPupilSizeOd;
+                    ehrOrig.DfedilatedPupilSizeOs = dfeDilatedPupilSizeOs;
+                    ehrOrig.PlanDictateEyeCareDoc = planDictateEyeCareDoc;
+                    ehrOrig.SleAbutehl = sleAbutehl;
+                    ehrOrig.ScribeEmpId = scribeEmpId;
+                    eyeMDDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -4480,6 +4565,144 @@ namespace Brady_s_Conversion_Program {
                 string rotationDirectionOs = "";
                 if (contactLens.RotationDirectionOs != null) {
                     rotationDirectionOs = contactLens.RotationDirectionOs;
+                }
+
+                var ehrOrig = eyeMDDbContext.EmrvisitContactLenses.FirstOrDefault(x => x.PtId == ptId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.Dosdate = dosdate;
+                    ehrOrig.RxId = rxId;
+                    ehrOrig.ContactClass = contactClass;
+                    ehrOrig.LensType = lensType;
+                    ehrOrig.PowerOd = powerOd;
+                    ehrOrig.PowerOs = powerOs;
+                    ehrOrig.CylinderOd = cylinderOd;
+                    ehrOrig.CylinderOs = cylinderOs;
+                    ehrOrig.AxisOd = axisOd;
+                    ehrOrig.AxisOs = axisOs;
+                    ehrOrig.BcOd = bcOd;
+                    ehrOrig.BcOs = bcOs;
+                    ehrOrig.AddOd = addOd;
+                    ehrOrig.AddOs = addOs;
+                    ehrOrig.ColorOd = colorOd;
+                    ehrOrig.ColorOs = colorOs;
+                    ehrOrig.PupilOd = pupilOd;
+                    ehrOrig.PupilOs = pupilOs;
+                    ehrOrig.VaDOd = vaDOd;
+                    ehrOrig.VaDOs = vaDOs;
+                    ehrOrig.VaDOu = vaDOu;
+                    ehrOrig.VaNOd = VaNOd;
+                    ehrOrig.VaNOs = VaNOs;
+                    ehrOrig.VaNOu = VaNOu;
+                    ehrOrig.VaIOd = vaIOd;
+                    ehrOrig.VaIOs = vaIOs;
+                    ehrOrig.VaIOu = vaIOu;
+                    ehrOrig.ComfortOd = comfortOd;
+                    ehrOrig.ComfortOs = comfortOs;
+                    ehrOrig.CentrationOd = centrationOd;
+                    ehrOrig.CentrationOs = centrationOs;
+                    ehrOrig.CoverageOd = coverageOd;
+                    ehrOrig.CoverageOs = coverageOs;
+                    ehrOrig.MovementOd = movementOd;
+                    ehrOrig.MovementOs = movementOs;
+                    ehrOrig.DiameterOd = diameterOd;
+                    ehrOrig.DiameterOs = diameterOs;
+                    ehrOrig.RotationDegOd = rotationDegOd;
+                    ehrOrig.RotationDegOs = rotationDegOs;
+                    ehrOrig.KOd = kOd;
+                    ehrOrig.KOs = kOs;
+                    ehrOrig.EdgeLiftOd = edgeLiftOd;
+                    ehrOrig.EdgeLiftOs = edgeLiftOs;
+                    ehrOrig.DistNearOd = distNearOd;
+                    ehrOrig.DistNearOs = distNearOs;
+                    ehrOrig.PtInsertedRemoved = ptInsertedRemoved;
+                    ehrOrig.WAgeOd = wAgeOd;
+                    ehrOrig.WAgeOs = wAgeOs;
+                    ehrOrig.WTimeTodayOd = wTimeTodayOd;
+                    ehrOrig.WTimeTodayOs = wTimeTodayOs;
+                    ehrOrig.WAvgWearTimeOd = wAvgWearTimeOd;
+                    ehrOrig.WAvgWearTimeOs = wAvgWearTimeOs;
+                    ehrOrig.Solution = solution;
+                    ehrOrig.ProductOd = productOd;
+                    ehrOrig.ProductOs = productOs;
+                    ehrOrig.LensDesignOd = lensDesignOd;
+                    ehrOrig.LensDesignOs = lensDesignOs;
+                    ehrOrig.MaterialOd = materialOd;
+                    ehrOrig.MaterialOs = materialOs;
+                    ehrOrig.ReplacementSchedule = replacementSchedule;
+                    ehrOrig.WearingInstructions = wearingInstructions;
+                    ehrOrig.Expires = expires;
+                    ehrOrig.RgpLayoutOd = rgpLayoutOd;
+                    ehrOrig.RgpLayoutOs = rgpLayoutOs;
+                    ehrOrig.Power2Od = power2Od;
+                    ehrOrig.Power2Os = power2Os;
+                    ehrOrig.Cylinder2Od = cylinder2Od;
+                    ehrOrig.Cylinder2Os = cylinder2Os;
+                    ehrOrig.Axis2Od = axis2Od;
+                    ehrOrig.Axis2Os = axis2Os;
+                    ehrOrig.Bc2Od = bc2Od;
+                    ehrOrig.Bc2Os = bc2Os;
+                    ehrOrig.Diameter2Od = diameter2Od;
+                    ehrOrig.Diameter2Os = diameter2Os;
+                    ehrOrig.PeriphCurveOd = periphCurveOd;
+                    ehrOrig.PeriphCurveOs = periphCurveOs;
+                    ehrOrig.PeriphCurve2Od = peripheralCurve2Od;
+                    ehrOrig.PeriphCurve2Os = peripheralCurve2Os;
+                    ehrOrig.SecondaryCurveOd = secondaryCurveOd;
+                    ehrOrig.SecondaryCurveOs = secondaryCurveOs;
+                    ehrOrig.EquivalentCurveOd = equivalentCurveOd;
+                    ehrOrig.EquivalentCurveOs = equivalentCurveOs;
+                    ehrOrig.CenterThicknessOd = centerThicknessOd;
+                    ehrOrig.CenterThicknessOs = centerThicknessOs;
+                    ehrOrig.OpticalZoneDiaOd = opticalZoneDiaOd;
+                    ehrOrig.OpticalZoneDiaOs = opticalZoneDiaOs;
+                    ehrOrig.EdgeOd = edgeOd;
+                    ehrOrig.EdgeOs = edgeOs;
+                    ehrOrig.BlendOd = blendOd;
+                    ehrOrig.BlendOs = blendOs;
+                    ehrOrig.NaFlPatternOd = naFlPatternOd;
+                    ehrOrig.NaFlPatternOs = naFlPatternOs;
+                    ehrOrig.SurfaceWettingOd = surfaceWettingOd;
+                    ehrOrig.SurfaceWettingOs = surfaceWettingOs;
+                    ehrOrig.DkOd = dkOd;
+                    ehrOrig.DkOs = dkOs;
+                    ehrOrig.SegHeightOd = segHeightOd;
+                    ehrOrig.SegHeightOs = segHeightOs;
+                    ehrOrig.SpecialInstructionsOd = specialInstructionsOd;
+                    ehrOrig.SpecialInstructionsOs = specialInstructionsOs;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.TreeviewTableIdOd = treeviewTableIdOd;
+                    ehrOrig.TreeviewTableIdOs = treeviewTableIdOs;
+                    ehrOrig.Notes = notes;
+                    ehrOrig.Remarks = remarks;
+                    ehrOrig.Printed = printed;
+                    ehrOrig.SentToOptical = sentToOptical;
+                    ehrOrig.UpcOd = upcOd;
+                    ehrOrig.UpcOs = upcOs;
+                    ehrOrig.CatalogSource = catalogSource;
+                    ehrOrig.CatalogManufacturerIdOd = catalogManufacturerIdOd;
+                    ehrOrig.CatalogManufacturerIdOs = catalogManufacturerIdOs;
+                    ehrOrig.CatalogBrandIdOd = catalogBrandIdOd;
+                    ehrOrig.CatalogBrandIdOs = catalogBrandIdOs;
+                    ehrOrig.CatalogProductIdOd = catalogProductIdOd;
+                    ehrOrig.CatalogProductIdOs = catalogProductIdOs;
+                    ehrOrig.TrialNumber = trialNumber;
+                    ehrOrig.OrSphereOd = orSphereOd;
+                    ehrOrig.OrSphereOs = orSphereOs;
+                    ehrOrig.OrCylinderOd = orCylinderOd;
+                    ehrOrig.OrCylinderOs = orCylinderOs;
+                    ehrOrig.OrAxisOd = orAxisOd;
+                    ehrOrig.OrAxisOs = orAxisOs;
+                    ehrOrig.OrVaDOd = orVaDOd;
+                    ehrOrig.OrVaDOs = orVaDOs;
+                    ehrOrig.OrVaNOd = orVaNOd;
+                    ehrOrig.OrVaNOs = orVaNOs;
+                    ehrOrig.RotationDirectionOd = rotationDirectionOd;
+                    ehrOrig.RotationDirectionOs = rotationDirectionOs;
+                    eyeMDDbContext.SaveChanges();
+                    return;
                 }
 
 
