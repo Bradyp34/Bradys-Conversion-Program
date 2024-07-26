@@ -5034,6 +5034,50 @@ namespace Brady_s_Conversion_Program {
                 int? createdEmpId = null;
                 // no createdEmpId
 
+                var ehrOrig = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(x => x.VisitId == visitId);
+
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.VisitId = visitId;
+                    ehrOrig.PtId = ptId;
+                    ehrOrig.ControlId = controlId;
+                    ehrOrig.DiagText = diagText;
+                    ehrOrig.Code = code;
+                    ehrOrig.Modifier = modifier;
+                    ehrOrig.SourceField = sourceField;
+                    ehrOrig.IsActive = isactive;
+                    ehrOrig.CodeIcd10 = codeICD10;
+                    ehrOrig.CodeSnomed = codeSNOMED;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.RequestedProcedureId = requestedProcId;
+                    ehrOrig.Location1 = location1;
+                    ehrOrig.OnsetMonth1 = onsetMonth1;
+                    ehrOrig.OnsetDay1 = onsetDay1;
+                    ehrOrig.OnsetYear1 = onsetYear1;
+                    ehrOrig.Location2 = location2;
+                    ehrOrig.Location2OnsetVisitId = location2onsetVisitId;
+                    ehrOrig.OnsetMonth2 = onsetMonth2;
+                    ehrOrig.OnsetDay2 = onsetDay2;
+                    ehrOrig.IsResolved1 = isResolved1;
+                    ehrOrig.ResolvedVisitId1 = resolvedVisitId1;
+                    ehrOrig.ResolvedRequestedProcedureId1 = resolvedRequestedProcId1;
+                    ehrOrig.ResolvedDate1 = resolvedDate1;
+                    ehrOrig.ResolveType1 = resolveType1;
+                    ehrOrig.IsResolved2 = isResolved2;
+                    ehrOrig.ResolvedVisitId2 = resolvedVisitId2;
+                    ehrOrig.ResolvedRequestedProcedureId2 = resolvedRequestedProc2;
+                    ehrOrig.ResolvedDate2 = resolvedDate2;
+                    ehrOrig.ResolveType2 = resolveType2;
+                    ehrOrig.DoNotReconcile = doNotReconcile;
+                    ehrOrig.ConditionId = conditionId;
+                    ehrOrig.LastModified = lastModified;
+                    ehrOrig.Created = created;
+                    ehrOrig.CreatedEmpId = createdEmpId;
+                    ehrOrig.Dosdate = dosDate;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
@@ -5818,6 +5862,186 @@ namespace Brady_s_Conversion_Program {
                 }
                 #endregion diagTests
 
+                var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrigVisit = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(x => x.VisitId == visitId);
+
+                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.GonioAngleDepthInOd = gonioAngleDepthInOd;
+                    ehrOrig.GonioAngleDepthInOs = gonioAngleDepthInOs;
+                    ehrOrig.GonioAngleDepthMedialOd = gonioAngleDepthMedialOd;
+                    ehrOrig.GonioAngleDepthMedialOs = gonioAngleDepthMedialOs;
+                    ehrOrig.GonioAngleDepthSuOd = gonioAngleDepthSuOd;
+                    ehrOrig.GonioAngleDepthSuOs = gonioAngleDepthSuOs;
+                    ehrOrig.GonioAngleDepthTemporalOd = gonioAngleDepthTemporalOd;
+                    ehrOrig.GonioAngleDepthTemporalOs = gonioAngleDepthTemporalOs;
+                    ehrOrig.GonioAngleStructureInOd = gonioAngleStructureInOd;
+                    ehrOrig.GonioAngleStructureInOs = gonioAngleStructureInOs;
+                    ehrOrig.GonioAngleStructureMedialOd = gonioAngleStructureMedialOd;
+                    ehrOrig.GonioAngleStructureMedialOs = gonioAngleStructureMedialOs;
+                    ehrOrig.GonioAngleStructureSuOd = gonioAngleStructureSuOd;
+                    ehrOrig.GonioAngleStructureSuOs = gonioAngleStructureSuOs;
+                    ehrOrig.GonioAngleStructureTemporalOd = gonioAngleStructureTemporalOd;
+                    ehrOrig.GonioAngleStructureTemporalOs = gonioAngleStructureTemporalOs;
+                    ehrOrig.GonioComments = gonioComments;
+                    ehrOrig.GonioPigmentOd = gonioPigmentOd;
+                    ehrOrig.GonioPigmentOs = gonioPigmentOs;
+                    ehrOrig.MbalanceCcOrtho = mBalanceCCOrtho;
+                    ehrOrig.MbalanceHorizCcUpGaze = mBalanceHorizCcUpGaze;
+                    ehrOrig.MbalanceHorizTypeCcUpGaze = mBalanceHorizTypeCcUpGaze;
+                    ehrOrig.MbalanceVertCcUpGaze = mBalanceVertCcUpGaze;
+                    ehrOrig.MbalanceCcType = mBalanceCcType;
+                    ehrOrig.MbalanceHorizCcDownGaze = mBalanceHorizCcDownGaze;
+                    ehrOrig.MbalanceHorizCcDownLtGaze = mBalanceHorizCcDownLtGaze;
+                    ehrOrig.MbalanceHorizCcDownRtGaze = mBalanceHorizCcDownRtGaze;
+                    ehrOrig.MbalanceHorizCcLtGaze = mBalanceHorizCcLtGaze;
+                    ehrOrig.MbalanceHorizCcRtGaze = mBalanceHorizCcRtGaze;
+                    ehrOrig.MbalanceHorizTypeCcDownGaze = mBalanceHorizTypeCcDownGaze;
+                    ehrOrig.MbalanceHorizCcPriGaze = mBalanceHorizCcPriGaze;
+                    ehrOrig.MbalanceHorizCcUpLtGaze = mBalanceHorizCcUpLtGaze;
+                    ehrOrig.MbalanceHorizCcUpRtGaze = mBalanceHorizCcUpRtGaze;
+                    ehrOrig.MbalanceHorizScDownGaze = mBalanceHorizScDownGaze;
+                    ehrOrig.MbalanceHorizScDownLtGaze = mBalanceHorizScDownLtGaze;
+                    ehrOrig.MbalanceHorizScDownRtGaze = mBalanceHorizScDownRtGaze;
+                    ehrOrig.MbalanceHorizScLtGaze = mBalanceHorizScLtGaze;
+                    ehrOrig.MbalanceHorizScPriGaze = mBalanceHorizScPriGaze;
+                    ehrOrig.MbalanceHorizScRtGaze = mBalanceHorizScRtGaze;
+                    ehrOrig.MbalanceHorizScUpGaze = mBalanceHorizScUpGaze;
+                    ehrOrig.MbalanceHorizScUpLtGaze = mBalanceHorizScUpLtGaze;
+                    ehrOrig.MbalanceHorizScUpRtGaze = mbalanceHorizScUpRtGaze;
+                    ehrOrig.MbalanceHorizTypeCcDownLtGaze = mBalanceHorizTypeCcDownLtGaze;
+                    ehrOrig.MbalanceHorizTypeCcDownRtGaze = mBalanceHorizTypeCcDownRtGaze;
+                    ehrOrig.MbalanceHorizTypeCcLtGaze = mBalanceHorizTypeCcLtGaze;
+                    ehrOrig.MbalanceHorizTypeCcPriGaze = mBalanceHorizTypeCcPriGaze;
+                    ehrOrig.MbalanceHorizTypeCcRtGaze = mBalanceHorizTypeCcRtGaze;
+                    ehrOrig.MbalanceHorizTypeCcUpLtGaze = mBalanceHorizTypeCcUpLtGaze;
+                    ehrOrig.MbalanceHorizTypeCcUpRtGaze = mBalanceHorizTypeCcUpRtGaze;
+                    ehrOrig.MbalanceHorizTypeScDownGaze = mBalanceHorizTypeScDownGaze;
+                    ehrOrig.MbalanceHorizTypeScDownLtGaze = mBalanceHorizTypeScDownLtGaze;
+                    ehrOrig.MbalanceHorizTypeScDownRtGaze = mBalanceHorizTypeScDownRtGaze;
+                    ehrOrig.MbalanceHorizTypeScLtGaze = mBalanceHorizTypeScLtGaze;
+                    ehrOrig.MbalanceHorizTypeScPriGaze = mBalanceHorizTypeScPriGaze;
+                    ehrOrig.MbalanceHorizTypeScRtGaze = mBalanceHorizTypeScRtGaze;
+                    ehrOrig.MbalanceHorizTypeScUpGaze = mBalanceHorizTypeScUpGaze;
+                    ehrOrig.MbalanceHorizTypeScUpLtGaze = mBalanceHorizTypeScUpLtGaze;
+                    ehrOrig.MbalanceHorizTypeScUpRtGaze = mBalanceHorizTypeScUpRtGaze;
+                    ehrOrig.MbalanceMethod = mBalanceMethod;
+                    ehrOrig.MbalanceMethodCc = mbalanceMethodCc;
+                    ehrOrig.MbalanceMethodSc = mbalanceMethodSc;
+                    ehrOrig.MbalanceScOrtho = mBalanceScOrtho;
+                    ehrOrig.MbalanceScType = mBalanceScType;
+                    ehrOrig.MbalanceVertCcDownGaze = mBalanceVertCcDownGaze;
+                    ehrOrig.MbalanceVertCcDownLtGaze = mBalanceVertCcDownLtGaze;
+                    ehrOrig.MbalanceVertCcDownRtGaze = mBalanceVertCcDownRtGaze;
+                    ehrOrig.MbalanceVertCcLtGaze = mBalanceVertCcLtGaze;
+                    ehrOrig.MbalanceVertCcPriGaze = mBalanceVertCcPriGaze;
+                    ehrOrig.MbalanceVertCcRtGaze = mBalanceVertCcRtGaze;
+                    ehrOrig.MbalanceVertCcUpLtGaze = mBalanceVertCcUpLtGaze;
+                    ehrOrig.MbalanceVertCcUpRtGaze = mBalanceVertCcUpRtGaze;
+                    ehrOrig.MbalanceVertScDownGaze = mBalanceVertScDownGaze;
+                    ehrOrig.MbalanceVertScDownLtGaze = mBalanceVertScDownLtGaze;
+                    ehrOrig.MbalanceVertScDownRtGaze = mBalanceVertScDownRtGaze;
+                    ehrOrig.MbalanceVertScLtGaze = mBalanceVertScLtGaze;
+                    ehrOrig.MbalanceVertScPriGaze = mBalanceVertScPriGaze;
+                    ehrOrig.MbalanceVertScRtGaze = mBalanceVertScRtGaze;
+                    ehrOrig.MbalanceVertScUpGaze = mBalanceVertScUpGaze;
+                    ehrOrig.MbalanceVertScUpLtGaze = mBalanceVertScUpLtGaze;
+                    ehrOrig.MbalanceVertScUpRtGaze = mBalanceVertScUpRtGaze;
+                    ehrOrig.MbalanceVertTypeCcDownGaze = mBalanceVertTypeCcDownGaze;
+                    ehrOrig.MbalanceVertTypeCcDownLtGaze = mBalanceVertTypeCcDownLtGaze;
+                    ehrOrig.MbalanceVertTypeCcDownRtGaze = mBalanceVertTypeCcDownRtGaze;
+                    ehrOrig.MbalanceVertTypeCcLtGaze = mBalanceVertTypeCcLtGaze;
+                    ehrOrig.MbalanceVertTypeCcPriGaze = mBalanceVertTypeCcPriGaze;
+                    ehrOrig.MbalanceVertTypeCcRtGaze = mBalanceVertTypeCcRtGaze;
+                    ehrOrig.MbalanceVertTypeCcUpGaze = mBalanceVertTypeCcUpGaze;
+                    ehrOrig.MbalanceVertTypeCcUpLtGaze = mBalanceVertTypeCcUpLtGaze;
+                    ehrOrig.MbalanceVertTypeCcUpRtGaze = mBalanceVertTypeCcUpRtGaze;
+                    ehrOrig.MbalanceVertTypeScDownGaze = mBalanceVertTypeScDownGaze;
+                    ehrOrig.MbalanceVertTypeScDownLtGaze = mBalanceVertTypeScDownLtGaze;
+                    ehrOrig.MbalanceVertTypeScDownRtGaze = mBalanceVertTypeScDownRtGaze;
+                    ehrOrig.MbalanceVertTypeScLtGaze = mBalanceVertTypeScLtGaze;
+                    ehrOrig.MbalanceVertTypeScPriGaze = mBalanceVertTypeScPriGaze;
+                    ehrOrig.MbalanceVertTypeScRtGaze = mBalanceVertTypeScRtGaze;
+                    ehrOrig.MbalanceVertTypeScUpGaze = mBalanceVertTypeScUpGaze;
+                    ehrOrig.MbalanceVertTypeScUpLtGaze = mBalanceVertTypeScUpLtGaze;
+                    ehrOrig.MbalanceVertTypeScUpRtGaze = mBalanceVertTypeScUpRtGaze;
+                    ehrOrig.SmotorAbute = smotorAbute;
+                    ehrOrig.SmotorAvpattern = smotorAvPattern;
+                    ehrOrig.SmotorColorVisionOd = smotorColorVisionOd;
+                    ehrOrig.SmotorColorVisionOs = smotorColorVisionOs;
+                    ehrOrig.SmotorColorVisionType = smotorColorVisionType;
+                    ehrOrig.SmotorComments = smotorComments;
+                    ehrOrig.SmotorDirectionOd = smotorDirectionOd;
+                    ehrOrig.SmotorDirectionOs = smotorDirectionOs;
+                    ehrOrig.SmotorDistStereo = smotorDistStereo;
+                    ehrOrig.SmotorDistVectograph = smotorDistVectograph;
+                    ehrOrig.SmotorDmadRodOd = smotorDMadRodOd;
+                    ehrOrig.SmotorDmadRodOs = smotorDMadRodOs;
+                    ehrOrig.SmotorDmadRodTorsionOd = smotorDMadRodTorsionOd;
+                    ehrOrig.SmotorDmadRodTorsionOs = smotorMadRodTorsionOs;
+                    ehrOrig.SmotorFixPrefDist = smotorFixPrefDist;
+                    ehrOrig.SmotorFixPrefNear = smotorFixPrefNear;
+                    ehrOrig.SmotorFrisby = smotorFrisby;
+                    ehrOrig.SmotorHorizCcDist = smotorHorizCcDist;
+                    ehrOrig.SmotorHorizCcNear = smotorHorizCcNear;
+                    ehrOrig.SmotorHorizCcNear3Plus = smotorHorizCcNear3Plus;
+                    ehrOrig.SmotorHorizScDist = smotorHorizScDist;
+                    ehrOrig.SmotorHorizScNear = smotorHorizScNear;
+                    ehrOrig.SmotorHorizTypeCcDist = smotorHorizTypeCcDist;
+                    ehrOrig.SmotorHorizTypeCcNear = smotorHorizTypeCcNear;
+                    ehrOrig.SmotorHorizTypeCcNear3Plus = smotorHorizScNear3Plus;
+                    ehrOrig.SmotorHorizTypeScDist = smotorHorizTypeScDist;
+                    ehrOrig.SmotorHorizTypeScNear = smotorHorizTypeScNear;
+                    ehrOrig.SmotorHorizVergBiBreak = smotorHorizVergBiBreak;
+                    ehrOrig.SmotorHorizVergBiRecover = smotorHorizVergBiRecover;
+                    ehrOrig.SmotorHorizVergBoBreak = smotorHorizVergBoBreak;
+                    ehrOrig.SmotorHorizVergBoRecover = smotorHorizVergBoRecover;
+                    ehrOrig.SmotorHtLtHorizCc = smotorHtLtHorizCc;
+                    ehrOrig.SmotorHtLtHorizSc = smotorHtLtHorizSc;
+                    ehrOrig.SmotorHtLtHorizTypeCc = smotorHtLtHorizTypeCc;
+                    ehrOrig.SmotorHtLtHorizTypeSc = smotorHtLtHorizTypeSc;
+                    ehrOrig.SmotorHtLtVertCc = smotorHtLtVertCc;
+                    ehrOrig.SmotorHtLtVertSc = smotorHtLtVertSc;
+                    ehrOrig.SmotorHtLtVertTypeCc = smotorHtLtVertTypeCc;
+                    ehrOrig.SmotorHtLtVertTypeSc = smotorHtLtVertTypeSc;
+                    ehrOrig.SmotorHtRtHorizCc = smotorHtRtHorizCc;
+                    ehrOrig.SmotorHtRtHorizSc = smotorHtRtHorizSc;
+                    ehrOrig.SmotorHtRtHorizTypeCc = smotorHtRtHorizTypeCc;
+                    ehrOrig.SmotorHtRtHorizTypeSc = smotorHtRtHorizTypeSc;
+                    ehrOrig.SmotorHtRtVertCc = smotorHtRtVertCc;
+                    ehrOrig.SmotorHtRtVertSc = smotorHtRtVertSc;
+                    ehrOrig.SmotorHtRtVertTypeCc = smotorHtRtVertCc;
+                    ehrOrig.SmotorHtRtVertTypeSc = smotorHtRtVertTypeSc;
+                    ehrOrig.SmotorLang = smotorLang;
+                    ehrOrig.SmotorNpc = smotorNPC;
+                    ehrOrig.SmotorNystagmus = smotorNystagmus;
+                    ehrOrig.SmotorPrismOd = smotorPrismOd;
+                    ehrOrig.SmotorPrismOs = smotorPrismOs;
+                    ehrOrig.SmotorRandotCircles = smotorRandotCircles;
+                    ehrOrig.SmotorTitmusStereoAnimals = smotorTitmusStereoAnimals;
+                    ehrOrig.SmotorTitmusStereoCircles = smotorTitmusStereoCircles;
+                    ehrOrig.SmotorTitmusStereoFly = smotorTitmusStereoFly;
+                    ehrOrig.SmotorVertCcDist = smotorVertCcDist;
+                    ehrOrig.SmotorVertCcNear = smotorVertCcNear;
+                    ehrOrig.SmotorVertCcNear3Plus = smotorVertCcNear3Plus;
+                    ehrOrig.SmotorVertScDist = smotorVertScDist;
+                    ehrOrig.SmotorVertScNear = smotorVertScNear;
+                    ehrOrig.SmotorVertTypeCcDist = smotorVertTypeCcDist;
+                    ehrOrig.SmotorVertTypeCcNear = smotorVertTypeCcNear;
+                    ehrOrig.SmotorVertTypeCcNear3Plus = smotorVertTypeCcNear3Plus;
+                    ehrOrig.SmotorVertTypeScDist = smotorVertTypeScDist;
+                    ehrOrig.SmotorVertTypeScNear = smotorVertTypeScNear;
+                    ehrOrig.SmotorVertVergBdBreak = smotorVertVergBdBreak;
+                    ehrOrig.SmotorVertVergBdRecover = smotorVertVergBdRecover;
+                    ehrOrig.SmotorVertVergBuBreak = smotorVertVergBuBreak;
+                    ehrOrig.SmotorVertVergBuRecover = smotorVertVergBuRecover;
+                    ehrOrig.SmotorWorth4DotDist = smotorWorth4DotDist;
+                    ehrOrig.UpsizeTs = null;
+                    ehrOrig.SmotorWorth4DotNear = smotorWorth4DotNear;
+                    ehrOrig.VisitDiagTestId = diagTest.Id;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
 
 
                 var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
@@ -5996,7 +6220,6 @@ namespace Brady_s_Conversion_Program {
                     UpsizeTs = null,
                     SmotorWorth4DotNear = smotorWorth4DotNear,
                     VisitDiagTestId = diagTest.Id
-                    
                 };
                 eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
 
