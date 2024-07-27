@@ -24,6 +24,9 @@ using Brady_s_Conversion_Program.ModelsC;
 using Brady_s_Conversion_Program.ModelsD;
 using System.Web;
 using System.CodeDom;
+using Microsoft.Identity.Client.NativeInterop;
+using static Azure.Core.HttpHeader;
+using System.Windows.Forms;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -2894,9 +2897,9 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitMedicalHistories.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitMedicalHistories.FirstOrDefault(x => x.VisitId == visitId);
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                var ehrOrig = eyeMDDbContext.EmrvisitMedicalHistories.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
                     ehrOrig.PtId = ptId;
                     ehrOrig.VisitId = visitId;
                     ehrOrig.ControlId = controlId;
@@ -3055,10 +3058,9 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(x => x.VisitId == visitId);
+                var ehrOrig = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                if (ehrOrig != null) {
                     ehrOrig.PtId = ptId;
                     ehrOrig.VisitId = visitId;
                     ehrOrig.Dosdate = dosDate;
@@ -3601,10 +3603,9 @@ namespace Brady_s_Conversion_Program {
                     refProvOrgName = visitOrder.RefProviderOrganizationName;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(x => x.VisitId == visitId);
+                var ehrOrig = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                if (ehrOrig != null) {
                     ehrOrig.VisitId = visitId;
                     ehrOrig.PtId = ptId;
                     ehrOrig.Dosdate = dosdate;
@@ -3909,10 +3910,9 @@ namespace Brady_s_Conversion_Program {
                     pdNearOu = visitDoctor.PdNearOu;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDoctors.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitDoctors.FirstOrDefault(x => x.VisitId == visitId);
+                var ehrOrig = eyeMDDbContext.EmrvisitDoctors.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                if (ehrOrig != null) {
                     ehrOrig.VisitId = visitId;
                     ehrOrig.PtId = ptId;
                     ehrOrig.Dosdate = dosdate;
@@ -5034,10 +5034,9 @@ namespace Brady_s_Conversion_Program {
                 int? createdEmpId = null;
                 // no createdEmpId
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(x => x.VisitId == visitId);
+                var ehrOrig = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                if (ehrOrig != null) {
                     ehrOrig.VisitId = visitId;
                     ehrOrig.PtId = ptId;
                     ehrOrig.ControlId = controlId;
@@ -5862,10 +5861,9 @@ namespace Brady_s_Conversion_Program {
                 }
                 #endregion diagTests
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(x => x.PtId == ptId);
-                var ehrOrigVisit = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(x => x.VisitId == visitId);
+                var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
-                if (ehrOrig != null && ehrOrigVisit != null && ehrOrig == ehrOrigVisit) {
+                if (ehrOrig != null) {
                     ehrOrig.Dosdate = dosDate;
                     ehrOrig.GonioAngleDepthInOd = gonioAngleDepthInOd;
                     ehrOrig.GonioAngleDepthInOs = gonioAngleDepthInOs;
@@ -6299,6 +6297,18 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ehrOrig = eyeMDDbContext.EmrvisitExamConditions.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.Comment = examCondition.Comment;
+                    ehrOrig.Condition = condition;
+                    ehrOrig.Laterality = eye;
+                    ehrOrig.ConditionId = conditionId;
+                    ehrOrig.LocationId = locationId;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
 
 
 
@@ -6488,6 +6498,23 @@ namespace Brady_s_Conversion_Program {
                         cornealHysteresisOs = locum;
                     }
                 }
+
+                var ehrOrig = eyeMDDbContext.EmrvisitIops.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.IopOd = iopOd;
+                    ehrOrig.IopOs = iopOs;
+                    ehrOrig.IopdeviceUsed = iopDeviceUsed;
+                    ehrOrig.IoptimeTaken = iopTimeTaken;
+                    ehrOrig.Iopnotes = iopNotes;
+                    ehrOrig.IopccOd = iopCcOd;
+                    ehrOrig.IopccOs = iopCcOs;
+                    ehrOrig.CornealHysteresisOd = cornealHysteresisOd;
+                    ehrOrig.CornealHysteresisOs = cornealHysteresisOs;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
                 
 
 
@@ -6573,6 +6600,18 @@ namespace Brady_s_Conversion_Program {
                 // no guid in source table
 
                 // there is no showInVisitSummary in the source table, and there is no visit id in the eyemd table
+
+                var ehrOrig = eyeMDDbContext.EmrptNotes.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Notes = notes;
+                    ehrOrig.CreatedDate = createdDate;
+                    ehrOrig.EmpId = empId;
+                    ehrOrig.ShowInVisitSummary = showInVisitSummary;
+                    ehrOrig.InsertGuid = guid;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
 
 
 
@@ -6672,6 +6711,24 @@ namespace Brady_s_Conversion_Program {
                 string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
 
+                var ehrOrig = eyeMDDbContext.EmrvisitPlanNarratives.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.VisitDoctorId = visitDoctorId;
+                    ehrOrig.Snomedcode = snomedCode;
+                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
+                    ehrOrig.Icd10code = ICD10Code;
+                    ehrOrig.Icd9code = ICD9Code;
+                    ehrOrig.NarrativeHeader = narrativeHeader;
+                    ehrOrig.NarrativeText = narrativeText;
+                    ehrOrig.NarrativeType = narrativeType;
+                    ehrOrig.DisplayOrder = displayOrder;
+                    ehrOrig.InsertGuid = insertGUID;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
@@ -6753,6 +6810,20 @@ namespace Brady_s_Conversion_Program {
                 }
                 string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
+
+                var ehrOrig = eyeMDDbContext.EmrvisitProcCodePoolDiags.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.ControlId = controlId;
+                    ehrOrig.VisitProcCodePoolId = visitProcCodePoolId;
+                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
+                    ehrOrig.RequestedProcedureId = requestedProcId;
+                    ehrOrig.InsertGuid = insertGUID;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
@@ -6968,6 +7039,45 @@ namespace Brady_s_Conversion_Program {
                     if (int.TryParse(procPool.BillingOrder, out int locum)) {
                         billingOrder = locum;
                     }
+                }
+
+                var ehrOrig = eyeMDDbContext.EmrvisitProcCodePools.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.ControlId = controlId;
+                    ehrOrig.ProcText = procText;
+                    ehrOrig.Code = code;
+                    ehrOrig.Modifier = modifier;
+                    ehrOrig.OriginalModifier = originalModifier;
+                    ehrOrig.Location = location;
+                    ehrOrig.SourceField = sourceField;
+                    ehrOrig.IsBilled = isBilled;
+                    ehrOrig.ProcLocationType = procLocationType;
+                    ehrOrig.ProcDiagTestComponents = procDiagTestComponents;
+                    ehrOrig.NotPorelated = notPoRelated;
+                    ehrOrig.ProcType = procType;
+                    ehrOrig.BillMultiProcId = billMultiProcId;
+                    ehrOrig.BillMultiProcControlId = billMultiProcControlId;
+                    ehrOrig.AdditionalModifier = additionalModifier;
+                    ehrOrig.IsQr = isQr;
+                    ehrOrig.EyeMdqrnum = eyeMDQRNum;
+                    ehrOrig.Pqrsnum = pqrsNum;
+                    ehrOrig.Nqfnum = nqfNum;
+                    ehrOrig.Numerator = numerator;
+                    ehrOrig.Denominator = denominator;
+                    ehrOrig.IsHidden = isHidden;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.Units = units;
+                    ehrOrig.RequestedProcedureId = requestedProcedureId;
+                    ehrOrig.SentInVisit = sentInVisit;
+                    ehrOrig.SourceRecordId = sourceRecordId;
+                    ehrOrig.InitialPatientPopulation = initialPatientPopulation;
+                    ehrOrig.DenominatorExclusion = denominatorExclusion;
+                    ehrOrig.DenominatorException = denominatorException;
+                    ehrOrig.BillingOrder = billingOrder;
+                    eyeMDDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -7188,6 +7298,50 @@ namespace Brady_s_Conversion_Program {
                 string enteredBy = "";
                 // no enteredBy in source table
 
+                var ehrOrig = eyeMDDbContext.EmrvisitRefractions.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.RefractionClass = refractionClass;
+                    ehrOrig.RefractionType = refractionType;
+                    ehrOrig.SphereOd = sphereOd;
+                    ehrOrig.SphereOs = sphereOs;
+                    ehrOrig.CylinderOd = cylinderOd;
+                    ehrOrig.CylinderOs = cylinderOs;
+                    ehrOrig.AxisOd = axisOd;
+                    ehrOrig.AxisOs = axisOs;
+                    ehrOrig.BifocalAddOd = bifocalAddOd;
+                    ehrOrig.BifocalAddOs = bifocalAddOs;
+                    ehrOrig.PrismTypeOd = prismTypeOd;
+                    ehrOrig.PrismTypeOs = prismTypeOs;
+                    ehrOrig.Prism360Od = prism360Od;
+                    ehrOrig.Prism360Os = prism360Os;
+                    ehrOrig.DirectionOd = directionOd;
+                    ehrOrig.DirectionOs = directionOs;
+                    ehrOrig.PdDistOd = pdDistOd;
+                    ehrOrig.PdDistOs = pdDistOs;
+                    ehrOrig.PdNearOd = pdNearOd;
+                    ehrOrig.PdNearOs = pdNearOs;
+                    ehrOrig.Age = age;
+                    ehrOrig.VaDOd = vaDOd;
+                    ehrOrig.VaDOs = vaDOs;
+                    ehrOrig.VaDOu = vaDOu;
+                    ehrOrig.VaNOd = vaNOd;
+                    ehrOrig.VaNOs = vaNOs;
+                    ehrOrig.VaNOu = vaNOu;
+                    ehrOrig.VaIOd = vaIOd;
+                    ehrOrig.VaIOs = vaIOs;
+                    ehrOrig.VaIOu = vaIOu;
+                    ehrOrig.Expires = expires;
+                    ehrOrig.Remarks = remarks;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.Printed = printed;
+                    ehrOrig.SentToOptical = sentToOptical;
+                    ehrOrig.EnteredBy = enteredBy;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
@@ -7245,6 +7399,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 // seemingly no conversions necessary
+
+
 
                 var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
                     RosbloodCustomDesc1 = ros.RosbloodCustomDesc1,
@@ -7316,7 +7472,7 @@ namespace Brady_s_Conversion_Program {
                 if (rx.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(rx.Dosdate, dateFormats,
-                                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dosDate = tempDateTime;
                     }
                 }
@@ -7561,6 +7717,62 @@ namespace Brady_s_Conversion_Program {
                 string erxStatus = "";
                 if (rx.ErxStatus != null) {
                     erxStatus = rx.ErxStatus;
+                }
+
+                var ehrOrig = eyeMDDbContext.EmrvisitRxMedications.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.MedName = medName;
+                    ehrOrig.MedSig = medSig;
+                    ehrOrig.MedDisp = medDisp;
+                    ehrOrig.MedRefill = medRefill;
+                    ehrOrig.MedType = medType;
+                    ehrOrig.BrandMedOnly = brandMedOnly;
+                    ehrOrig.DoNotPrintRx = doNotPrintRx;
+                    ehrOrig.SampleGiven = sampleGiven;
+                    ehrOrig.Notes = notes;
+                    ehrOrig.Description = description;
+                    ehrOrig.MedTableId = medTableId;
+                    ehrOrig.MedDispType = medDispType;
+                    ehrOrig.DrugStrength = drugStrength;
+                    ehrOrig.DrugRoute = drugRoute;
+                    ehrOrig.DrugForm = drugForm;
+                    ehrOrig.DrugMappingId = drugMappingId;
+                    ehrOrig.DrugAltMappingId = drugAltMappingId;
+                    ehrOrig.DrugName = drugName;
+                    ehrOrig.DrugNameId = drugNameId;
+                    ehrOrig.ErxGuid = erxGUID;
+                    ehrOrig.ErxPendingTransmit = erxPendingTransmit;
+                    ehrOrig.CalledInLocationId = calledInLocationId;
+                    ehrOrig.CalledInProviderEmpId = calledInProviderEmpId;
+                    ehrOrig.MedDispUnitType = medDispUnitType;
+                    ehrOrig.Rxcui = rxcui;
+                    ehrOrig.IsRefill = isRefill;
+                    ehrOrig.OriginalMedicationId = originalMedicationId;
+                    ehrOrig.OriginalMedicationDate = originalMedicationDate;
+                    ehrOrig.SentViaErx = sentViaErx;
+                    ehrOrig.Snomed = snomed;
+                    ehrOrig.DrugFdastatus = drugFdaStatus;
+                    ehrOrig.DrugDeaclass = drugDeaClass;
+                    ehrOrig.RxRemarks = rxRemarks;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.RecordedEmpRole = recordedEmpRole;
+                    ehrOrig.AdministeredMed = administeredMed;
+                    ehrOrig.FormularyChecked = formularyChecked;
+                    ehrOrig.PrintedRx = printedRx;
+                    ehrOrig.RxStartDate = rxStartDate;
+                    ehrOrig.RxEndDate = rxEndDate;
+                    ehrOrig.RxDurationDays = rxDurationDays;
+                    ehrOrig.LastModified = lastModified;
+                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
+                    ehrOrig.DoNotReconcile = doNotReconcile;
+                    ehrOrig.Created = created;
+                    ehrOrig.CreatedEmpId = createdEmpId;
+                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
+                    ehrOrig.ErxStatus = erxStatus;
+                    eyeMDDbContext.SaveChanges();
+                    return;
                 }
 
 
@@ -7808,6 +8020,52 @@ namespace Brady_s_Conversion_Program {
                 // no createdEmpId in source table
                 int? lastModifiedEmpId = null;
                 // no lastModifiedEmpId in source table
+
+                var ehrOrig = eyeMDDbContext.EmrvisitSurgicalHistories.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.VisitDate = visitDate;
+                    ehrOrig.ControlId = controlId;
+                    ehrOrig.OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId;
+                    ehrOrig.OrigVisitDate = origVisitDate;
+                    ehrOrig.Description = description;
+                    ehrOrig.TypeId = typeId;
+                    ehrOrig.CodeId = codeId;
+                    ehrOrig.Code = code;
+                    ehrOrig.Modifier = modifier;
+                    ehrOrig.CodeIcd10 = codeICD10;
+                    ehrOrig.CodeSnomed = codeSnomed;
+                    ehrOrig.ComanageEmpId1 = performedByEmpId1;
+                    ehrOrig.ComanageRefProviderId1 = comanageRefProviderId1;
+                    ehrOrig.ComanageFullName1 = comanageFullName1;
+                    ehrOrig.ComanageEmpId2 = performedByEmpId2;
+                    ehrOrig.ComanageRefProviderId2 = performedbyRefProviderId2;
+                    ehrOrig.ComanageFullName2 = comanageFullName2;
+                    ehrOrig.Notes = notes;
+                    ehrOrig.Created = created;
+                    ehrOrig.LastModified = lastModified;
+                    ehrOrig.CreatedEmpId = createdEmpId;
+                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
+                    ehrOrig.DoNotReconcile = doNotReconcile;
+                    ehrOrig.PtDeviceId = ptDeviceId;
+                    ehrOrig.InsertGuid = insertGUID;
+                    ehrOrig.Location1 = location1;
+                    ehrOrig.ProcedureMonth1 = procedureMonth1;
+                    ehrOrig.ProcedureDay1 = procedureDay1;
+                    ehrOrig.ProcedureYear1 = procedureYear1;
+                    ehrOrig.PerformedbyEmpId1 = performedByEmpId1;
+                    ehrOrig.PerformedbyFullName1 = comanageFullName1;
+                    ehrOrig.PerformedbyRefProviderId1 = performedByRefProvider1;
+                    ehrOrig.Location2 = location2;
+                    ehrOrig.ProcedureMonth2 = procedureMonth2;
+                    ehrOrig.ProcedureDay2 = procedureDay2;
+                    ehrOrig.ProcedureYear2 = procedureYear2;
+                    ehrOrig.PerformedbyEmpId2 = performedByEmpId2;
+                    ehrOrig.PerformedbyFullName2 = comanageFullName2;
+                    ehrOrig.PerformedbyRefProviderId2 = performedbyRefProviderId2;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
 
 
 
@@ -8097,6 +8355,116 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ehrOrig = eyeMDDbContext.EmrvisitTeches.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.Pmhsmoking = pmhSmoking;
+                    ehrOrig.Pmhalcohol = pmhAlcohol;
+                    ehrOrig.Pmhdrugs = pmhDrugs;
+                    ehrOrig.WuvaCcType = wuvaCcType;
+                    ehrOrig.WorkupMdreviewed = workupMdReviewed;
+                    ehrOrig.WorkupMdreviewedDate = workupMdReviewedDate;
+                    ehrOrig.WorkupMdreviewedEmpId = workupMdReviewedEmpId;
+                    ehrOrig.WucvfAbute = wucvfAbute;
+                    ehrOrig.Wudilated = wuDilated;
+                    ehrOrig.VitalsBmipercentile = vitalsBmiPercentile;
+                    ehrOrig.VitalsHofcpercentile = vitalsHofcPercentile;
+                    ehrOrig.VitalsInhaled02Concentration = vitalsInhaled02Concentration;
+                    ehrOrig.VitalsPulseOximetry = vitalsPulseOximetry;
+                    ehrOrig.VitalsWflpercentile = vitalsWflPercentile;
+                    ehrOrig.HistoryMdreviewed = historyReviewed;
+                    ehrOrig.HistoryMdreviewedDate = historyMdReviewedDate;
+                    ehrOrig.HistoryMdreviewedEmpId = historyMdReviewedEmpId;
+                    ehrOrig.Created = created;
+                    ehrOrig.WudilatedTime = wuDilatedTime;
+                    ehrOrig.WudilatedTimeZone = wuDilatedTimeZone;
+                    ehrOrig.IntakeReconciled = intakeReconciled;
+                    ehrOrig.LastModified = lastModified;
+                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
+                    ehrOrig.MedRecNotPerformed = medRecNotPerformed;
+                    ehrOrig.Wumood = wuMood;
+                    ehrOrig.Wuextpan = wuextPan;
+                    ehrOrig.WuiopAbute = wuiopAbute;
+                    ehrOrig.WuorientPerson = wuOrientPerson;
+                    ehrOrig.WuorientPlace = wuOrientPlace;
+                    ehrOrig.WuorientTime = wuOrientTime;
+                    ehrOrig.WuorientSituation = wuOrientSituation;
+                    ehrOrig.Pmhfhother = tech.Pmhfhother;
+                    ehrOrig.PmhsmokeHowMuch = tech.PmhsmokeHowMuch;
+                    ehrOrig.PmhsmokeHowLong = tech.PmhsmokeHowLong;
+                    ehrOrig.PmhsmokeWhenQuit = tech.PmhsmokeWhenQuit;
+                    ehrOrig.PmhalcoholHowMuch = tech.PmhalcoholHowMuch;
+                    ehrOrig.PmhdrugsNames = tech.PmhdrugsNames;
+                    ehrOrig.PmhdrugsHowMuch = tech.PmhdrugsHowMuch;
+                    ehrOrig.PmhdrugsHowLong = tech.PmhdrugsHowLong;
+                    ehrOrig.PmhdrugsWhenQuit = tech.PmhdrugsWhenQuit;
+                    ehrOrig.HpichiefComplaint = tech.HpichiefComplaint;
+                    ehrOrig.Hpilocation1 = tech.Hpilocation1;
+                    ehrOrig.Hpiquality1 = tech.Hpiquality1;
+                    ehrOrig.Hpiseverity1 = tech.Hpiseverity1;
+                    ehrOrig.Hpitiming1 = tech.Hpitiming1;
+                    ehrOrig.Hpiduration1 = tech.Hpiduration1;
+                    ehrOrig.Hpicontext1 = tech.Hpicontext1;
+                    ehrOrig.HpimodFactors1 = tech.HpimodFactors1;
+                    ehrOrig.HpiassoSignsSymp1 = tech.HpiassoSignsSymp1;
+                    ehrOrig.Hpi1letterText = tech.Hpi1letterText;
+                    ehrOrig.WuvaCcOd = tech.WuvaCcOd;
+                    ehrOrig.WuvaCcOs = tech.WuvaCcOs;
+                    ehrOrig.WuvaCcOu = tech.WuvaCcOu;
+                    ehrOrig.WuvaPhOd = tech.WuvaPhOd;
+                    ehrOrig.WuvaPhOs = tech.WuvaPhOs;
+                    ehrOrig.WuvaScOd = tech.WuvaScOd;
+                    ehrOrig.WuvaScOs = tech.WuvaScOs;
+                    ehrOrig.WuvaScOu = tech.WuvaScOu;
+                    ehrOrig.WuvaTestUsed = tech.WuvaTestUsed;
+                    ehrOrig.WunCcOd = tech.WunCcOd;
+                    ehrOrig.WunCcOs = tech.WunCcOs;
+                    ehrOrig.WunCcOu = tech.WunCcOu;
+                    ehrOrig.Wunotes = tech.Wunotes;
+                    ehrOrig.WunScOd = tech.WunScOd;
+                    ehrOrig.WunScOs = tech.WunScOs;
+                    ehrOrig.WunScOu = tech.WunScOu;
+                    ehrOrig.WudomEye = tech.WudomEye;
+                    ehrOrig.WutcvfOd = tech.WutcvfOd;
+                    ehrOrig.WutcvfOs = tech.WutcvfOs;
+                    ehrOrig.WucvfdiagOd = tech.WucvfdiagOd;
+                    ehrOrig.WucvfdiagOs = tech.WucvfdiagOs;
+                    ehrOrig.WueomSuTmOd = tech.WueomSuTmOd;
+                    ehrOrig.WueomSuTmOs = tech.WueomSuTmOs;
+                    ehrOrig.WueomMedialOd = tech.WueomMedialOd;
+                    ehrOrig.WueomMedialOs = tech.WueomMedialOs;
+                    ehrOrig.WueomInNaOs = tech.WueomInNaOs;
+                    ehrOrig.WueomInNaOd = tech.WueomInNaOd;
+                    ehrOrig.WueomInTmOd = tech.WueomInTmOd;
+                    ehrOrig.WueomInTmOs = tech.WueomInTmOs;
+                    ehrOrig.WueomSuNaOd = tech.WueomSuNaOd;
+                    ehrOrig.WueomSuNaOs = tech.WueomSuNaOs;
+                    ehrOrig.WupupilNearOd = tech.WupupilNearOd;
+                    ehrOrig.WupupilNearOs = tech.WupupilNearOs;
+                    ehrOrig.WuamslerOd = tech.WuamslerOd;
+                    ehrOrig.WuamslerOs = tech.WuamslerOs;
+                    ehrOrig.WudilatedAgent = tech.WudilatedAgent;
+                    ehrOrig.WudilatedEye = tech.WudilatedEye;
+                    ehrOrig.WudilatedFrequency = tech.WudilatedFrequency;
+                    ehrOrig.VitalsTemp = tech.VitalsTemp;
+                    ehrOrig.VitalsTempUnits = tech.VitalsTempUnits;
+                    ehrOrig.VitalsPulse = tech.VitalsPulse;
+                    ehrOrig.VitalsBpsys = tech.VitalsBpsys;
+                    ehrOrig.VitalsBpdia = tech.VitalsBpdia;
+                    ehrOrig.VitalsRespRate = tech.VitalsRespRate;
+                    ehrOrig.VitalsWeight = tech.VitalsWeight;
+                    ehrOrig.VitalsWeightUnits = tech.VitalsWeightUnits;
+                    ehrOrig.VitalsHeight = tech.VitalsHeight;
+                    ehrOrig.VitalsHeightUnits = tech.VitalsHeightUnits;
+                    ehrOrig.VitalsBmi = tech.VitalsBmi;
+                    ehrOrig.VitalsBgl = tech.VitalsBgl;
+                    ehrOrig.VitalsBglunits = tech.VitalsBglunits;
+                    ehrOrig.VitalsHofcpercentile = vitalsHofcPercentile;
+                    eyeMDDbContext.SaveChanges();
+                    return;
+                }
+
 
 
                 var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
@@ -8323,7 +8691,90 @@ namespace Brady_s_Conversion_Program {
                 byte[]? upsizets = null;
                 // no upsizets in source table
 
-                
+                var ehrOrig = eyeMDDbContext.EmrvisitTech2s.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+
+                if (ehrOrig != null) {
+                    ehrOrig.Dosdate = dosDate;
+                    ehrOrig.Wu2vaOrxOd = tech2.Wu2vaOrxOd;
+                    ehrOrig.Wu2vaOrxOs = tech2.Wu2vaOrxOs;
+                    ehrOrig.Wu2kmaxOd = wu2kmaxOd;
+                    ehrOrig.Wu2kmaxOs = wu2kmaxOs;
+                    ehrOrig.Wu2kminOd = wu2kminOd;
+                    ehrOrig.Wu2kminOs = wu2kminOs;
+                    ehrOrig.Wu2kminDegOd = wu2kminDegOd;
+                    ehrOrig.Wu2kminDegOs = wu2kminDegOs;
+                    ehrOrig.Wu2kmaxDegOd = wu2kmaxDegOd;
+                    ehrOrig.Wu2kmaxDegOs = wu2kmaxDegOs;
+                    ehrOrig.UpsizeTs = upsizets;
+                    ehrOrig.Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd;
+                    ehrOrig.Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs;
+                    ehrOrig.Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult;
+                    ehrOrig.Wu2custom1Data = tech2.Wu2custom1Data;
+                    ehrOrig.Wu2custom1Desc = tech2.Wu2custom1Desc;
+                    ehrOrig.Wu2custom2Data = tech2.Wu2custom2Data;
+                    ehrOrig.Wu2custom2Desc = tech2.Wu2custom2Desc;
+                    ehrOrig.Wu2custom3Data = tech2.Wu2custom3Data;
+                    ehrOrig.Wu2custom3Desc = tech2.Wu2custom3Desc;
+                    ehrOrig.Wu2custom4Data = tech2.Wu2custom4Data;
+                    ehrOrig.Wu2custom4Desc = tech2.Wu2custom4Desc;
+                    ehrOrig.Wu2custom5Data = tech2.Wu2custom5Data;
+                    ehrOrig.Wu2custom5Desc = tech2.Wu2custom5Desc;
+                    ehrOrig.Wu2custom6Data = tech2.Wu2custom6Data;
+                    ehrOrig.Wu2custom6Desc = tech2.Wu2custom6Desc;
+                    ehrOrig.Wu2custom7Data = tech2.Wu2custom7Data;
+                    ehrOrig.Wu2custom7Desc = tech2.Wu2custom7Desc;
+                    ehrOrig.Wu2custom8Data = tech2.Wu2custom8Data;
+                    ehrOrig.Wu2custom8Desc = tech2.Wu2custom8Desc;
+                    ehrOrig.Wu2custom9Data = tech2.Wu2custom9Data;
+                    ehrOrig.Wu2custom9Desc = tech2.Wu2custom9Desc;
+                    ehrOrig.Wu2custom10Data = tech2.Wu2custom10Data;
+                    ehrOrig.Wu2custom10Desc = tech2.Wu2custom10Desc;
+                    ehrOrig.Wu2custom11Data = tech2.Wu2custom11Data;
+                    ehrOrig.Wu2custom11Desc = tech2.Wu2custom11Desc;
+                    ehrOrig.Wu2custom12Data = tech2.Wu2custom12Data;
+                    ehrOrig.Wu2custom12Desc = tech2.Wu2custom12Desc;
+                    ehrOrig.Wu2custom13Data = tech2.Wu2custom13Data;
+                    ehrOrig.Wu2custom13Desc = tech2.Wu2custom13Desc;
+                    ehrOrig.Wu2custom14Data = tech2.Wu2custom14Data;
+                    ehrOrig.Wu2custom14Desc = tech2.Wu2custom14Desc;
+                    ehrOrig.Wu2custom15Data = tech2.Wu2custom15Data;
+                    ehrOrig.Wu2custom15Desc = tech2.Wu2custom15Desc;
+                    ehrOrig.Wu2custom16Data = tech2.Wu2custom16Data;
+                    ehrOrig.Wu2custom16Desc = tech2.Wu2custom16Desc;
+                    ehrOrig.Wu2custom17Data = tech2.Wu2custom17Data;
+                    ehrOrig.Wu2custom17Desc = tech2.Wu2custom17Desc;
+                    ehrOrig.Wu2custom18Data = tech2.Wu2custom18Data;
+                    ehrOrig.Wu2custom18Desc = tech2.Wu2custom18Desc;
+                    ehrOrig.Wu2custom19Data = tech2.Wu2custom19Data;
+                    ehrOrig.Wu2custom19Desc = tech2.Wu2custom19Desc;
+                    ehrOrig.Wu2custom20Data = tech2.Wu2custom20Data;
+                    ehrOrig.Wu2custom20Desc = tech2.Wu2custom20Desc;
+                    ehrOrig.Wu2custom21Data = tech2.Wu2custom21Data;
+                    ehrOrig.Wu2custom21Desc = tech2.Wu2custom21Desc;
+                    ehrOrig.Wu2custom22Data = tech2.Wu2custom22Data;
+                    ehrOrig.Wu2custom22Desc = tech2.Wu2custom22Desc;
+                    ehrOrig.Wu2GlareHighOd = tech2.Wu2GlareHighOd;
+                    ehrOrig.Wu2GlareHighOs = tech2.Wu2GlareHighOs;
+                    ehrOrig.Wu2GlareLowOd = tech2.Wu2GlareLowOd;
+                    ehrOrig.Wu2GlareLowOs = tech2.Wu2GlareLowOs;
+                    ehrOrig.Wu2GlareMedOd = tech2.Wu2GlareMedOd;
+                    ehrOrig.Wu2GlareMedOs = tech2.Wu2GlareMedOs;
+                    ehrOrig.Wu2GlareType = tech2.Wu2GlareType;
+                    ehrOrig.Wu2hertelBase = tech2.Wu2hertelBase;
+                    ehrOrig.Wu2hertelOd = tech2.Wu2hertelOd;
+                    ehrOrig.Wu2hertelOs = tech2.Wu2hertelOs;
+                    ehrOrig.Wu2ktype = tech2.Wu2ktype;
+                    ehrOrig.Wu2pachCctOd = tech2.Wu2pachCctOd;
+                    ehrOrig.Wu2pachCctOs = tech2.Wu2pachCctOs;
+                    ehrOrig.Wu2ttvOd = tech2.Wu2ttvOd;
+                    ehrOrig.Wu2ttvOs = tech2.Wu2ttvOs;
+                    ehrOrig.Wu2ttvtype = tech2.Wu2ttvtype;
+                    ehrOrig.Wu2vaPamOd = tech2.Wu2vaPamOd;
+                    ehrOrig.Wu2vaPamOs = tech2.Wu2vaPamOs;
+                }
+
+
+
 
                 var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
                     PtId = ptId,
