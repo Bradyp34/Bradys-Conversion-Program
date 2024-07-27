@@ -587,6 +587,44 @@ namespace Brady_s_Conversion_Program {
                 string preferredContactsNotes = patient.PatientPreferredContact1 + "; " + patient.PatientPreferredContact2 + "; " + patient.PatientPreferredContact3;
                 DateTime minDate = DateTime.Parse("1/1/1900");
 
+                var ffpmOrig = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == patient.PatientAccountNumber 
+                        && p.FirstName == patient.PatientFirst && p.LastName == patient.PatientLast);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.DateCreated = DateTime.Now;
+                    ffpmOrig.AccountNumber = patient.PatientAccountNumber;
+                    ffpmOrig.AltAccountNumber = patient.PatientAltAccountNumber;
+                    ffpmOrig.LastName = patient.PatientLast;
+                    ffpmOrig.MiddleName = patient.PatientMiddle;
+                    ffpmOrig.FirstName = patient.PatientFirst;
+                    ffpmOrig.PreferredName = patient.PatientPreferredName;
+                    ffpmOrig.Ssn = patient.PatientSsn;
+                    ffpmOrig.DateOfBirth = dob;
+                    ffpmOrig.MaritialStatusId = maritalStatusInt;
+                    ffpmOrig.TitleId = titleInt;
+                    ffpmOrig.IsActive = patientIsActive;
+                    ffpmOrig.IsDeceased = deceased;
+                    ffpmOrig.DeceasedDate = deceasedDate;
+                    ffpmOrig.LastExamDate = lastExamDate;
+                    ffpmOrig.PatientBalance = 0;  // assuming the balance is reset or initialized
+                    ffpmOrig.InsuranceBalance = 0;  // assuming the balance is reset or initialized
+                    ffpmOrig.OtherBalance = 0;  // assuming the balance is reset or initialized
+                    ffpmOrig.GenderId = genderInt;
+                    ffpmOrig.SuffixId = suffixInt;
+                    ffpmOrig.BalanceLastUpdatedDateTime = minDate;
+                    ffpmOrig.EmailNotApplicable = isEmailValid;
+                    ffpmOrig.DoNotSendStatements = dontSendStatements;
+                    ffpmOrig.EmailStatements = emailStatements;
+                    ffpmOrig.OpenEdgeCustomerId = "";  // assuming the ID is reset or a new one will be assigned later
+                    ffpmOrig.TextStatements = true;
+                    ffpmOrig.LocationId = 0;  // assuming the location is reset or a new one will be assigned later
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
+
                 var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                     DateCreated = DateTime.Now,
                     AccountNumber = patient.PatientAccountNumber,
@@ -745,6 +783,28 @@ namespace Brady_s_Conversion_Program {
                     isEmergency = true;
                     isActive = true;
                 }
+
+                var ffpmOrig = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && 
+                        ((p.IsAlternateAddress == true && isAlternate == false) || (p.IsAlternateAddress == false && isAlternate == true)));
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.Address1 = address.Address1;
+                    ffpmOrig.Address2 = address.Address2;
+                    ffpmOrig.City = address.City;
+                    ffpmOrig.StateId = ffpmPatientAdditional.DriversLicenseStateId;
+                    ffpmOrig.Zip = zipCode;
+                    ffpmOrig.ZipExt = zipExtension;
+                    ffpmOrig.Email = ConvPatient.PatientEmail;
+                    ffpmOrig.Notes = address.Note;
+                    ffpmOrig.IsPrimary = isPrimary;
+                    ffpmOrig.IsActive = isActive;
+                    ffpmOrig.IsPreferred = isPreferred;
+                    ffpmOrig.IsEmergencyContactAddress = isEmergency;
+                    ffpmOrig.IsAlternateAddress = isAlternate;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
 
                 var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
                     PatientId = ffpmPatient.PatientId,
@@ -922,6 +982,36 @@ namespace Brady_s_Conversion_Program {
                     appId = long.Parse(appointment.AppointmentId);
                 }
 
+                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.ResourceId == resource && p.StartDate == start);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.BillingLocationId = billingLocId;
+                    ffpmOrig.StartDate = start;
+                    ffpmOrig.EndDate = end;
+                    ffpmOrig.Notes = appointment.Notes;
+                    ffpmOrig.Duration = duration;
+                    ffpmOrig.DateTimeCreated = created;
+                    ffpmOrig.LocationId = ffpmPatient.LocationId;
+                    ffpmOrig.Confirmed = confirmed;
+                    ffpmOrig.Sequence = sequence;
+                    ffpmOrig.RequestId = requestId;
+                    ffpmOrig.Status = status;
+                    ffpmOrig.CheckInDateTime = acceptableMinDateTime;
+                    ffpmOrig.TakeBackDateTime = takeback;
+                    ffpmOrig.CheckOutDateTime = checkOut;
+                    ffpmOrig.Description = appointment.Description;
+                    ffpmOrig.PriorAppointmentId = prior;
+                    ffpmOrig.LinkedAppointmentId = linked;
+                    ffpmOrig.SchedulingCodeId = schedulingCode;
+                    ffpmOrig.SchedulingCodeNotes = appointment.SchedulingCodeNotes;
+                    ffpmOrig.AppointmentTypeId = type;
+                    ffpmOrig.DateTimeUpdated = updated;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
                 var newAppointment = new SchedulingAppointment {
                     PatientId = ffpmPatient.PatientId,
                     ResourceId = resource,
@@ -996,6 +1086,22 @@ namespace Brady_s_Conversion_Program {
                 if (appointmentType.Notes != null) {
                     notes = appointmentType.Notes;
                 }
+
+                var ffpmOrig = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(p => p.Code == code);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.LocationId = 0;
+                    ffpmOrig.PatientRequired = required;
+                    ffpmOrig.Notes = notes;
+                    ffpmOrig.IsExamType = examType;
+                    ffpmOrig.DefaultDuration = duration;
+                    ffpmOrig.Active = isActive;
+                    ffpmOrig.CanSchedule = schedule;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
 
                 var newAppointmentType = new SchedulingAppointmentType {
                     Code = code,
@@ -1120,6 +1226,31 @@ namespace Brady_s_Conversion_Program {
                 } else if (insurance.InsCompanyCarrierType == "vision") {
                     carrierTypeId = 2;
                 }
+
+                var ffpmOrig = ffpmDbContext.InsInsuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.InsCompanyAddress1 = insurance.InsCompanyAddress1;
+                    ffpmOrig.InsCompanyAddress2 = insurance.InsCompanyAddress2;
+                    ffpmOrig.InsCompanyCity = insurance.InsCompanyCity;
+                    ffpmOrig.InsCompanyStateId = stateId;
+                    ffpmOrig.InsCompanyZip = insZip;
+                    ffpmOrig.InsCompanyPhone = insPhone;
+                    ffpmOrig.InsCompanyFax = insFax;
+                    ffpmOrig.InsCompanyCode = code;
+                    ffpmOrig.InsCompanyEmail = insEmail;
+                    ffpmOrig.InsCompanyPayerId = payerId;
+                    ffpmOrig.IsActive = active;
+                    ffpmOrig.IsCollectionsInsurance = collections;
+                    ffpmOrig.IsDmercPlaceOfService = dmerc;
+                    ffpmOrig.InsCompanyClaimTypeId = claimTypeId;
+                    ffpmOrig.InsCompanyPolicyTypeId = policyTypeId;
+                    ffpmOrig.InsCompanyCarrierTypeId = carrierTypeId;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
 
                 var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
                     InsCompanyName = companyName,
@@ -1276,6 +1407,49 @@ namespace Brady_s_Conversion_Program {
                 if (int.TryParse(location.PlaceOfTreatment, out int temp)) {
                     treatmentPlaceId = temp;
                 }
+
+                var ffpmOrig = ffpmDbContext.BillingLocations.FirstOrDefault(x => x.Name == name);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.PrimaryTaxonomyId = primaryTaxId;
+                    ffpmOrig.AlternateTaxonomy1Id = tax1Id;
+                    ffpmOrig.AlternateTaxonomy2Id = tax2Id;
+                    ffpmOrig.AlternateTaxonomy3Id = tax3Id;
+                    ffpmOrig.AlternateTaxonomy4Id = tax4Id;
+                    ffpmOrig.AlternateTaxonomy5Id = tax5Id;
+                    ffpmOrig.AlternateTaxonomy6Id = tax6Id;
+                    ffpmOrig.AlternateTaxonomy7Id = tax7Id;
+                    ffpmOrig.AlternateTaxonomy8Id = tax8Id;
+                    ffpmOrig.AlternateTaxonomy9Id = tax9Id;
+                    ffpmOrig.AlternateTaxonomy10Id = tax10Id;
+                    ffpmOrig.AlternateTaxonomy11Id = tax11Id;
+                    ffpmOrig.AlternateTaxonomy12Id = tax12Id;
+                    ffpmOrig.AlternateTaxonomy13Id = tax13Id;
+                    ffpmOrig.AlternateTaxonomy14Id = tax14Id;
+                    ffpmOrig.AlternateTaxonomy15Id = tax15Id;
+                    ffpmOrig.AlternateTaxonomy16Id = tax16Id;
+                    ffpmOrig.AlternateTaxonomy17Id = tax17Id;
+                    ffpmOrig.AlternateTaxonomy18Id = tax18Id;
+                    ffpmOrig.AlternateTaxonomy19Id = tax19Id;
+                    ffpmOrig.AlternateTaxonomy20Id = tax20Id;
+                    ffpmOrig.Name = name;
+                    ffpmOrig.IsBillingLocation = isBilling;
+                    ffpmOrig.CliaIdNo = location.Clia;
+                    ffpmOrig.Npi = location.Npi;
+                    ffpmOrig.FederalIdNo = location.FederalEin;
+                    ffpmOrig.IsSchedulingLocation = isSchedule;
+                    ffpmOrig.PlaceOfTreatmentId = treatmentPlaceId;
+                    ffpmOrig.LocationId = 0;  // Assuming this should be reset or handled specifically
+                    ffpmOrig.IsActive = true;
+                    ffpmOrig.CaculateTaxOnEstimatedPatientBalance = false;
+                    ffpmOrig.IsDefaultLocation = true;
+                    ffpmOrig.CaculateTaxOnTotalFee = false;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
 
                 var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
                     PrimaryTaxonomyId = primaryTaxId,
