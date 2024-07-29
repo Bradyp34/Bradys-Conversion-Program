@@ -1732,6 +1732,20 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ffpmOrig = ffpmDbContext.ImgPatientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.DocumentType = imageType;
+                    ffpmOrig.DocumentRemarks = patientDocument.DocumentNotes;
+                    ffpmOrig.AddedDate = dateDocument;
+                    ffpmOrig.DocumentName = patientDocument.DocumentDescription;
+                    ffpmOrig.DocumentLocation = patientDocument.FilePathName;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
                 var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
                     PatientId = ffpmPatient.PatientId,
                     DocumentType = imageType,
@@ -1846,6 +1860,27 @@ namespace Brady_s_Conversion_Program {
                 }
                 insCompId = insuranceCompany.InsCompanyId;
 
+                var ffpmOrig = ffpmDbContext.DmgPatientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.StartDate = startDate;
+                    ffpmOrig.EndDate = endDate;
+                    ffpmOrig.Copay = copay;
+                    ffpmOrig.Deductible = deductible;
+                    ffpmOrig.Rank = rank;
+                    ffpmOrig.PlanId = plan_id;
+                    ffpmOrig.IsMedicalInsurance = medical;
+                    ffpmOrig.IsVisionInsurance = vision;
+                    ffpmOrig.IsAdditionalInsurance = isAdditional;
+                    ffpmOrig.InsuranceCompanyId = insCompId;
+                    ffpmOrig.PolicyNumber = patientInsurance.Cert;
+                    ffpmOrig.GroupId = patientInsurance.Group;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
                 var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
                     PatientId = ffpmPatient.PatientId,
                     StartDate = startDate,
@@ -1892,6 +1927,10 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
+
+                // I believe you can have more than 1 note per patient, so I wont check for duplicates
+
+
 
                 var newPatientRemarks = new Brady_s_Conversion_Program.ModelsA.DmgPatientRemark {
                     PatientId = ffpmPatient.PatientId,
@@ -2186,12 +2225,9 @@ namespace Brady_s_Conversion_Program {
                 #endregion taxonomys
 
 
-                DmgProvider? ffpmProvider = null;
-                foreach (var prov in ffpmDbContext.DmgProviders.ToList()) {
-                    if (prov.ProviderCode == provider.ProviderCode) {
-                        ffpmProvider = prov;
-                    }
-                }
+                var ffpmProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == provider.ProviderCode && p.FirstName == provider.FirstName 
+                                    && p.LastName == provider.LastName);
+
                 if (ffpmProvider != null) {
                     ffpmProvider.FirstName = provider.FirstName;
                     ffpmProvider.MiddleName = provider.MiddleName;
@@ -2340,6 +2376,20 @@ namespace Brady_s_Conversion_Program {
                     note = recall.Notes;
                 }
 
+                var ffpmOrig = ffpmDbContext.SchedulingPatientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType && p.RecallListDate == recallDate);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.ResourceId = resource;
+                    ffpmOrig.BillingLocationId = billingLocation;
+                    ffpmOrig.Active = isActive;
+                    ffpmOrig.LocationId = location;
+                    ffpmOrig.NumberOfRecallSent = number;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
                 var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
                     PatientId = ffpmPatient.PatientId,
                     AppointmentTypeId = appointmentType,
@@ -2385,6 +2435,19 @@ namespace Brady_s_Conversion_Program {
                 if (recallType.Notes != null) {
                     note = recallType.Notes;
                 }
+
+                var ffpmOrig = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(p => p.Code == code);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.Description = description;
+                    ffpmOrig.DefaultDuration = defaultDuration;
+                    ffpmOrig.Active = isActive;
+                    ffpmOrig.Notes = note;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
 
                 var newRecallType = new Brady_s_Conversion_Program.ModelsA.SchedulingAppointmentType {
                     IsRecallType = true,
@@ -2598,61 +2661,38 @@ namespace Brady_s_Conversion_Program {
                 }
                 #endregion taxonomys
 
-                var newReferral = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
-                    LocationId = 0,
-                    FirstName = referral.FirstName,
-                    MiddleName = referral.MiddleName,
-                    LastName = referral.LastName,
-                    RefProviderCode = referral.ReferralCode,
-                    Active = isActive
-                };
-                ffpmDbContext.ReferringProviders.Add(newReferral);
+                var ffpmOrig = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.RefProviderCode == referral.ReferralCode);
+                var ffpmOrigProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == referral.FirstName && p.LastName == referral.LastName && p.ProviderCode == referral.ReferralCode);
 
-                ffpmDbContext.SaveChanges();
+                if (ffpmOrig != null && ffpmOrigProvider != null) {
+                    ffpmOrigProvider.MiddleName = referral.MiddleName;
+                    ffpmOrigProvider.SuffixId = suffixInt;
+                    ffpmOrigProvider.TitleId = titleInt;
+                    ffpmOrigProvider.ProviderSsn = ssnString;
+                    ffpmOrigProvider.ProviderEin = einString;
+                    ffpmOrigProvider.ProviderUpin = upinString;
+                    ffpmOrigProvider.ProviderDob = dobDate;
+                    ffpmOrigProvider.ProviderNpi = npiString;
+                    ffpmOrigProvider.IsActive = isActive;
+                    ffpmOrigProvider.PrimaryTaxonomyId = primaryTaxId;
+                    
 
-                DmgProvider? ffpmProvider = null;
-                foreach (var prov in ffpmDbContext.DmgProviders.ToList()) {
-                    if (prov.ProviderCode == referral.ReferralCode) {
-                        ffpmProvider = prov;
-                    }
-                }
-                if (ffpmProvider != null) {
-                    ffpmProvider.FirstName = referral.FirstName;
-                    ffpmProvider.MiddleName = referral.MiddleName;
-                    ffpmProvider.LastName = referral.LastName;
-                    ffpmProvider.ProviderCode = referral.ReferralCode;
-                    ffpmProvider.SuffixId = suffixInt;
-                    ffpmProvider.TitleId = titleInt;
-                    ffpmProvider.ProviderSsn = ssnString;
-                    ffpmProvider.ProviderEin = einString;
-                    ffpmProvider.ProviderUpin = upinString;
-                    ffpmProvider.ProviderDob = dobDate;
-                    ffpmProvider.ProviderNpi = npiString;
-                    ffpmProvider.IsActive = isActive;
-                    ffpmProvider.PrimaryTaxonomyId = primaryTaxId;
-                    ffpmProvider.AlternateTaxonomy1Id = tax1Id;
-                    ffpmProvider.AlternateTaxonomy2Id = tax2Id;
-                    ffpmProvider.AlternateTaxonomy3Id = tax3Id;
-                    ffpmProvider.AlternateTaxonomy4Id = tax4Id;
-                    ffpmProvider.AlternateTaxonomy5Id = tax5Id;
-                    ffpmProvider.AlternateTaxonomy6Id = tax6Id;
-                    ffpmProvider.AlternateTaxonomy7Id = tax7Id;
-                    ffpmProvider.AlternateTaxonomy8Id = tax8Id;
-                    ffpmProvider.AlternateTaxonomy9Id = tax9Id;
-                    ffpmProvider.AlternateTaxonomy10Id = tax10Id;
-                    ffpmProvider.AlternateTaxonomy11Id = tax11Id;
-                    ffpmProvider.AlternateTaxonomy12Id = tax12Id;
-                    ffpmProvider.AlternateTaxonomy13Id = tax13Id;
-                    ffpmProvider.AlternateTaxonomy14Id = tax14Id;
-                    ffpmProvider.AlternateTaxonomy15Id = tax15Id;
-                    ffpmProvider.AlternateTaxonomy16Id = tax16Id;
-                    ffpmProvider.AlternateTaxonomy17Id = tax17Id;
-                    ffpmProvider.AlternateTaxonomy18Id = tax18Id;
-                    ffpmProvider.AlternateTaxonomy19Id = tax19Id;
-                    ffpmProvider.AlternateTaxonomy20Id = tax20Id;
+                    // now do referring providers table
+                    
+                    ffpmOrig.RefProviderId = ffpmOrigProvider.ProviderId;
+                    ffpmOrig.FirstName = referral.FirstName;
+                    ffpmOrig.MiddleName = referral.MiddleName;
+                    ffpmOrig.LastName = referral.LastName;
+                    ffpmOrig.RefProviderCode = referral.ReferralCode;
+                    ffpmOrig.Active = isActive;
+                    
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
+
+                
+
+
+                
 
                 var newProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
                     FirstName = referral.FirstName,
@@ -2687,9 +2727,22 @@ namespace Brady_s_Conversion_Program {
                     AlternateTaxonomy17Id = tax17Id,
                     AlternateTaxonomy18Id = tax18Id,
                     AlternateTaxonomy19Id = tax19Id,
-                    AlternateTaxonomy20Id = tax20Id,
+                    AlternateTaxonomy20Id = tax20Id
                 };
                 ffpmDbContext.DmgProviders.Add(newProvider);
+
+                ffpmDbContext.SaveChanges();
+
+                var newReferral = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
+                    RefProviderId = newProvider.ProviderId,
+                    LocationId = 0,
+                    FirstName = referral.FirstName,
+                    MiddleName = referral.MiddleName,
+                    LastName = referral.LastName,
+                    RefProviderCode = referral.ReferralCode,
+                    Active = isActive
+                };
+                ffpmDbContext.ReferringProviders.Add(newReferral);
 
                 ffpmDbContext.SaveChanges();
             } catch (Exception e) {
@@ -2724,6 +2777,20 @@ namespace Brady_s_Conversion_Program {
                 if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes") {
                     noShow = true;
                 }
+
+                var ffpmOrig = ffpmDbContext.SchedulingCodes.FirstOrDefault(p => p.Code == code);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.Description = description;
+                    ffpmOrig.Active = isActive;
+                    ffpmOrig.LocationId = location;
+                    ffpmOrig.IsDefaultCode = isDefault;
+                    ffpmOrig.IsNoShow = noShow;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
 
                 var newSchdulingCode = new Brady_s_Conversion_Program.ModelsA.SchedulingCode {
                     TypeId = type,
