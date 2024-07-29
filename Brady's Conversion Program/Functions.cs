@@ -1666,6 +1666,21 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ffpmOrig = ffpmDbContext.DmgPatientAlerts.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AlertMessage == patientAlert.AlertMessage);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.PriorityId = priorityID;
+                    ffpmOrig.AlertCreatedDate = alertDate;
+                    ffpmOrig.AlertExpiryDate = alertEndDate;
+                    ffpmOrig.AlertCreatedBy = alertCreatedBy;
+                    ffpmOrig.IsActive = isActive;
+                    ffpmOrig.AlertFlash = alertFlash;
+                    ffpmDbContext.SaveChanges();
+                    return;
+                }
+
+
+
                 var newPatientAlert = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
                     PatientId = ffpmPatient.PatientId,
                     AlertMessage = patientAlert.AlertMessage,
