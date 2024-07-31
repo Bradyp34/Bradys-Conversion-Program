@@ -118,6 +118,8 @@ namespace Brady_s_Conversion_Program
 
         private void ClearInputButton_Click(object sender, EventArgs e) {
             ServerTextBox.Text = "";
+            EHRServerTextBox.Text = "";
+            InvServerTextBox.Text = "";
             ConvTextBox.Text = "";
             EHRTextBox.Text = "";
             InvTextBox.Text = "";
@@ -127,6 +129,7 @@ namespace Brady_s_Conversion_Program
             EyeMDDBTextBox.Text = "";
             ConvCheckBox.Checked = false;
             EHRCheckBox.Checked = false;
+            InvCheckBox.Checked = false;
             FFPMNewDBCheckBox.Checked = false;
             EyeMDNewDBCheckBox.Checked = false;
         }
