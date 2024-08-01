@@ -27,7 +27,7 @@
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            ServerTextBox = new TextBox();
+            ConvServerTextBox = new TextBox();
             ConvTextBox = new TextBox();
             DBBeginButton = new Button();
             FFPMServerTextBox = new TextBox();
@@ -50,13 +50,13 @@
             InvServerTextBox = new TextBox();
             SuspendLayout();
             // 
-            // ServerTextBox
+            // ConvServerTextBox
             // 
-            ServerTextBox.Location = new Point(12, 12);
-            ServerTextBox.Name = "ServerTextBox";
-            ServerTextBox.PlaceholderText = "Inbound Server Name";
-            ServerTextBox.Size = new Size(132, 23);
-            ServerTextBox.TabIndex = 0;
+            ConvServerTextBox.Location = new Point(12, 12);
+            ConvServerTextBox.Name = "ConvServerTextBox";
+            ConvServerTextBox.PlaceholderText = "Conv Server";
+            ConvServerTextBox.Size = new Size(132, 23);
+            ConvServerTextBox.TabIndex = 0;
             // 
             // ConvTextBox
             // 
@@ -255,7 +255,7 @@
             Controls.Add(FFPMDataBaseTextBox);
             Controls.Add(FFPMServerTextBox);
             Controls.Add(DBBeginButton);
-            Controls.Add(ServerTextBox);
+            Controls.Add(ConvServerTextBox);
             Controls.Add(ConvTextBox);
             Name = "Form1";
             Text = "Form1";
@@ -267,7 +267,7 @@
         #endregion
 
         public Button DBBeginButton;
-        public TextBox ServerTextBox;
+        public TextBox ConvServerTextBox;
         public TextBox ConvTextBox;
         public TextBox FFPMServerTextBox;
         public TextBox FFPMDataBaseTextBox;

@@ -157,7 +157,7 @@ namespace Brady_s_Conversion_Program {
         public static string EyeMDString = "";
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
-            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress) {
+            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             string completeConnection = "";
@@ -216,7 +216,9 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
-                    completeConnection += "FFPM Conversion Successful\n";
+                    resultsBox.Invoke((MethodInvoker)delegate {
+                        resultsBox.Text = "Foxfire Conversion Successful\n";
+                    });
                 }
                 if (ehr == true) { // not positive what this will entail yet
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
@@ -267,9 +269,10 @@ namespace Brady_s_Conversion_Program {
                             eyeMDDbContext.SaveChanges();
                         }
                     }
-                    completeConnection += "EyeMD Conversion Successful\n";
+                    resultsBox.Invoke((MethodInvoker)delegate {
+                        resultsBox.Text += "EHR Conversion Successful\n";
+                    });
                 }
-
                 if (inv == true) {
                     using (var invDbContext = new InvDbContext(invConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
@@ -308,7 +311,10 @@ namespace Brady_s_Conversion_Program {
                             ffpmDbContext.SaveChanges();
                         }
                     }
-                    return completeConnection + "\nInv not yet implemented";
+                    resultsBox.Invoke((MethodInvoker)delegate {
+                        resultsBox.Text += "Inv Conversion Successful\n";
+                    });
+                    return completeConnection + "\nProgram run completed:\n";
                 }
             }
             catch (Exception e) {
