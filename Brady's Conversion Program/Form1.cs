@@ -61,7 +61,7 @@ namespace Brady_s_Conversion_Program
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox);
             ResultsBox.Invoke((MethodInvoker)delegate {
-                ResultsBox.Text = result;
+                ResultsBox.Text += "\n" + result;
             });
             progressBar1.Invoke((MethodInvoker)delegate {
                 progressBar1.Hide();
@@ -69,12 +69,27 @@ namespace Brady_s_Conversion_Program
             });
             ConvCheckBox.Invoke((MethodInvoker)delegate {
                 ConvCheckBox.Show();
+                if (FFPMNewDBCheckBox.Checked) {
+                    FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
+                        FFPMNewDBCheckBox.Show();
+                    });
+                }
             });
             EHRCheckBox.Invoke((MethodInvoker)delegate {
                 EHRCheckBox.Show();
+                if (EyeMDNewDBCheckBox.Checked) {
+                    EyeMDNewDBCheckBox.Invoke((MethodInvoker)delegate {
+                        EyeMDNewDBCheckBox.Show();
+                    });
+                }
             });
             InvCheckBox.Invoke((MethodInvoker)delegate {
                 InvCheckBox.Show();
+                if (FFPMNewDBCheckBox.Checked) {
+                    FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
+                        FFPMNewDBCheckBox.Show();
+                    });
+                }
             });
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {

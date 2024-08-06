@@ -314,7 +314,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Invoke((MethodInvoker)delegate {
                         resultsBox.Text += "Inv Conversion Successful\n";
                     });
-                    return completeConnection + "\nProgram run completed:\n";
+                    return completeConnection + "\nProgram run completed.\n";
                 }
             }
             catch (Exception e) {
@@ -2573,6 +2573,47 @@ namespace Brady_s_Conversion_Program {
                     isActive = true;
                 }
 
+                int? country = null;
+                if (referral.LicenseIssuingCountryId != null) {
+                    if (int.TryParse(referral.LicenseIssuingCountryId, out int countryInt)) {
+                        country = countryInt;
+                    }
+                }
+                int? state = null;
+                if (referral.LicenseIssuingStateId != null) {
+                    if (int.TryParse(referral.LicenseIssuingStateId, out int stateInt)) {
+                        state = stateInt;
+                    }
+                }
+
+                long? providerAddressId = null;
+                // no address
+
+                int? providerSpecialtyId = null;
+                if (referral.ReferralSpecialityId != null) {
+                    if (int.TryParse(referral.ReferralSpecialityId, out int providerSpecialtyIdInt)) {
+                        providerSpecialtyId = providerSpecialtyIdInt;
+                    }
+                }
+
+                int? providerUserId = null;
+                // no userId
+
+                short? TitleId = null;
+                if (referral.Title != null) {
+                    if (short.TryParse(referral.Title, out short TitleIdInt)) {
+                        TitleId = TitleIdInt;
+                    }
+                }
+
+                short? suffixId = null;
+                if (referral.Suffix != null) {
+                    if (short.TryParse(referral.Suffix, out short suffixIdInt)) {
+                        suffixId = suffixIdInt;
+                    }
+                }
+
+
                 #region taxonomys
                 int primaryTaxId = 0;
                 if (int.TryParse(referral.PrimaryTaxonomyId, out primaryTaxId)) {
@@ -2670,7 +2711,7 @@ namespace Brady_s_Conversion_Program {
                 var ffpmOrig = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.RefProviderCode == referral.ReferralCode);
                 var ffpmOrigProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == referral.FirstName && p.LastName == referral.LastName && p.ProviderCode == referral.ReferralCode);
 
-                if (ffpmOrig != null && ffpmOrigProvider != null) {
+                if (ffpmOrigProvider != null) {
                     ffpmOrigProvider.MiddleName = referral.MiddleName;
                     ffpmOrigProvider.SuffixId = suffixInt;
                     ffpmOrigProvider.TitleId = titleInt;
@@ -2684,21 +2725,29 @@ namespace Brady_s_Conversion_Program {
                     
 
                     // now do referring providers table
-                    
-                    ffpmOrig.RefProviderId = ffpmOrigProvider.ProviderId;
-                    ffpmOrig.FirstName = referral.FirstName;
-                    ffpmOrig.MiddleName = referral.MiddleName;
-                    ffpmOrig.LastName = referral.LastName;
-                    ffpmOrig.RefProviderCode = referral.ReferralCode;
-                    ffpmOrig.Active = isActive;
+                    if (ffpmOrig != null) {
+                        ffpmOrig.FirstName = referral.FirstName;
+                        ffpmOrig.MiddleName = referral.MiddleName;
+                        ffpmOrig.LastName = referral.LastName;
+                        ffpmOrig.RefProviderCode = referral.ReferralCode;
+                        ffpmOrig.Active = isActive;
+                    } else {
+                        var newReferral1 = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
+                            LocationId = 0,
+                            FirstName = referral.FirstName,
+                            MiddleName = referral.MiddleName,
+                            LastName = referral.LastName,
+                            RefProviderCode = referral.ReferralCode,
+                            Active = isActive
+                        };
+                        ffpmDbContext.ReferringProviders.Add(newReferral1);
+                    }
                     
                     ffpmDbContext.SaveChanges();
+                    return;
                 }
 
-                
 
-
-                
 
                 var newProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
                     FirstName = referral.FirstName,
@@ -2713,6 +2762,24 @@ namespace Brady_s_Conversion_Program {
                     ClExpiration = 0,
                     SpectacleExpirationTypeId = 0,
                     ClExpirationTypeId = 0,
+                    ProviderDeaNumber = referral.ReferralDeaNumber,
+                    ProviderEin = einString,
+                    ProviderNpi = npiString,
+                    ProviderLicenseNo = referral.ReferralLicenseNo,
+                    ProviderMedicaidNumber = referral.ReferralMedicaidNumber,
+                    ProviderSsn = ssnString,
+                    ProviderUpin = upinString,
+                    ProviderExternalPmCode = "",
+                    LicenseIssuingCountryId = country,
+                    LicenseIssuingStateId = state,
+                    ProviderAddressId = providerAddressId,
+                    ProviderDob = dobDate,
+                    ProviderSpecialityId = providerSpecialtyId,
+                    ProviderUserId = providerUserId,
+                    TitleId = TitleId,
+                    SuffixId = suffixId,
+
+
                     PrimaryTaxonomyId = primaryTaxId,
                     AlternateTaxonomy1Id = tax1Id,
                     AlternateTaxonomy2Id = tax2Id,
@@ -2740,7 +2807,6 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
 
                 var newReferral = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
-                    RefProviderId = newProvider.ProviderId,
                     LocationId = 0,
                     FirstName = referral.FirstName,
                     MiddleName = referral.MiddleName,
