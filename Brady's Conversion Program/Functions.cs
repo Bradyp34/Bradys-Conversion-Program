@@ -3446,7 +3446,18 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(visit.PtId);
+                int ptId = 0;
+                if (visit.PtId != null) {
+                    if (int.TryParse(visit.PtId, out int locum)) {
+                        ptId = locum;
+                    }
+                }
+                if (ptId == 0) {
+                    logger.Log($"EHR: EHR Patient ID not found for visit with ID: {visit.Id}");
+                    return;
+                }
+
+                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
 
                 short tabPOHPMH = -1;
                 // no tabPOHPMH
@@ -9284,7 +9295,7 @@ namespace Brady_s_Conversion_Program {
                 if (clBrand.AddedDate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(clBrand.AddedDate, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         addedDate = tempDateTime;
                     }
                 }
