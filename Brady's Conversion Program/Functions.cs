@@ -9345,7 +9345,7 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                if (clInventory.ContactLensId != -1) {
+                if (clInventory.ContactLensId <= -1) {
                     logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID {clInventory.Id}");
                     return;
                 }
