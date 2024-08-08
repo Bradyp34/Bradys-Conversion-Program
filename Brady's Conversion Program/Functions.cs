@@ -6375,7 +6375,6 @@ namespace Brady_s_Conversion_Program {
                     ehrOrig.SmotorWorth4DotDist = smotorWorth4DotDist;
                     ehrOrig.UpsizeTs = null;
                     ehrOrig.SmotorWorth4DotNear = smotorWorth4DotNear;
-                    ehrOrig.VisitDiagTestId = diagTest.Id;
                     eyeMDDbContext.SaveChanges();
                     return;
                 }
@@ -6555,8 +6554,7 @@ namespace Brady_s_Conversion_Program {
                     SmotorVertVergBuRecover = smotorVertVergBuRecover,
                     SmotorWorth4DotDist = smotorWorth4DotDist,
                     UpsizeTs = null,
-                    SmotorWorth4DotNear = smotorWorth4DotNear,
-                    VisitDiagTestId = diagTest.Id
+                    SmotorWorth4DotNear = smotorWorth4DotNear
                 };
                 eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
 
