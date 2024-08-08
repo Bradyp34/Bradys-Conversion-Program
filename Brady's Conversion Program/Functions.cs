@@ -6600,7 +6600,7 @@ namespace Brady_s_Conversion_Program {
                         dosDate = tempDateTime;
                     }
                 }
-                if (dosDate == DateTime.Parse("1/1/1900")) {
+                else {
                     var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.Dosdate != null) {
                         dosDate = (DateTime)eyeMDVisit.Dosdate;
@@ -6614,6 +6614,7 @@ namespace Brady_s_Conversion_Program {
                         return;
                     }
                 }
+
                 int? locationId = null;
                 // no locationId, but this is used
                 int? conditionId = null;
