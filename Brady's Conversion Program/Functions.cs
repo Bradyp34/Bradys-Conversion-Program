@@ -8898,6 +8898,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.ClnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
+
                 if (invList != null) {
                     invList.BrandCode = clBrand.BrandCode;
                     invList.AddedBy = addedBy;
@@ -8908,11 +8909,9 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newClBrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
-                    BrandName = clBrand.BrandName,
-                    BrandCode = clBrand.BrandCode,
+                    BrandName = TruncateString(clBrand.BrandName, 50),
+                    BrandCode = TruncateString(clBrand.BrandCode, 10),
                     AddedBy = addedBy,
                     AddedDate = addedDate,
                     LocationId = locationId,
@@ -9023,13 +9022,14 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.ClnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
+
                 if (invList != null) {
-                    invList.Barcode = clInventory.Barcode;
-                    invList.InvoiceNumber = clInventory.InvoiceNumber;
-                    invList.ItemCost = clInventory.ItemCost;
-                    invList.WholesalePrice = clInventory.WholesalePrice;
-                    invList.RetailPrice = clInventory.RetailPrice;
-                    invList.Notes = clInventory.Notes;
+                    invList.Barcode = TruncateString(clInventory.Barcode, 8);
+                    invList.InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20);
+                    invList.ItemCost = TruncateString(clInventory.ItemCost, 20);
+                    invList.WholesalePrice = TruncateString(clInventory.WholesalePrice, 20);
+                    invList.RetailPrice = TruncateString(clInventory.RetailPrice, 20);
+                    invList.Notes = clInventory.Notes;  // Notes is varchar(MAX), no truncation needed
                     invList.QuantityOrdered = quantityOrdered;
                     invList.Received = received;
                     invList.OnHand = onHand;
@@ -9047,16 +9047,14 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
                     ContactLensId = clInventory.ContactLensId,
-                    Barcode = clInventory.Barcode,
-                    InvoiceNumber = clInventory.InvoiceNumber,
-                    ItemCost = clInventory.ItemCost,
-                    WholesalePrice = clInventory.WholesalePrice,
-                    RetailPrice = clInventory.RetailPrice,
-                    Notes = clInventory.Notes,
+                    Barcode = TruncateString(clInventory.Barcode, 8),
+                    InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20),
+                    ItemCost = TruncateString(clInventory.ItemCost, 20),
+                    WholesalePrice = TruncateString(clInventory.WholesalePrice, 20),
+                    RetailPrice = TruncateString(clInventory.RetailPrice, 20),
+                    Notes = clInventory.Notes,  // Notes is varchar(MAX), no truncation needed
                     QuantityOrdered = quantityOrdered,
                     Received = received,
                     OnHand = onHand,
@@ -9172,18 +9170,19 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.ClnsContactLens.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+
                 if (invList != null) {
                     invList.ClnsManufacturerId = clnsManufacturerId;
-                    invList.Sphere = clLense.Sphere;
-                    invList.Cylinder = clLense.Cylinder;
-                    invList.Axis = clLense.Axis;
-                    invList.BaseCurve = clLense.BaseCurve;
-                    invList.Diameter = clLense.Diameter;
-                    invList.AddPower = clLense.AddPower;
-                    invList.AddPowerName = clLense.AddPowerName;
-                    invList.Multifocal = clLense.Multifocal;
-                    invList.Color = clLense.Color;
-                    invList.Upc = clLense.Upc;
+                    invList.Sphere = TruncateString(clLense.Sphere, 10);
+                    invList.Cylinder = TruncateString(clLense.Cylinder, 10);
+                    invList.Axis = TruncateString(clLense.Axis, 10);
+                    invList.BaseCurve = TruncateString(clLense.BaseCurve, 10);
+                    invList.Diameter = TruncateString(clLense.Diameter, 10);
+                    invList.AddPower = TruncateString(clLense.AddPower, 10);
+                    invList.AddPowerName = TruncateString(clLense.AddPowerName, 20);
+                    invList.Multifocal = TruncateString(clLense.Multifocal, 50);
+                    invList.Color = TruncateString(clLense.Color, 50);
+                    invList.Upc = TruncateString(clLense.Upc, 15);
                     invList.ClnsLensTypeId = clnsLensTypeId;
                     invList.CptId = cptId;
                     invList.AddedDate = addedDate;
@@ -9199,21 +9198,19 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
                     ClnsBrandId = clnsBrandId,
                     ClnsManufacturerId = clnsManufacturerId,
-                    Sphere = clLense.Sphere,
-                    Cylinder = clLense.Cylinder,
-                    Axis = clLense.Axis,
-                    BaseCurve = clLense.BaseCurve,
-                    Diameter = clLense.Diameter,
-                    AddPower = clLense.AddPower,
-                    AddPowerName = clLense.AddPowerName,
-                    Multifocal = clLense.Multifocal,
-                    Color = clLense.Color,
-                    Upc = clLense.Upc,
+                    Sphere = TruncateString(clLense.Sphere, 10),
+                    Cylinder = TruncateString(clLense.Cylinder, 10),
+                    Axis = TruncateString(clLense.Axis, 10),
+                    BaseCurve = TruncateString(clLense.BaseCurve, 10),
+                    Diameter = TruncateString(clLense.Diameter, 10),
+                    AddPower = TruncateString(clLense.AddPower, 10),
+                    AddPowerName = TruncateString(clLense.AddPowerName, 20),
+                    Multifocal = TruncateString(clLense.Multifocal, 50),
+                    Color = TruncateString(clLense.Color, 50),
+                    Upc = TruncateString(clLense.Upc, 15),
                     ClnsLensTypeId = clnsLensTypeId,
                     CptId = cptId,
                     AddedDate = addedDate,
@@ -9226,6 +9223,7 @@ namespace Brady_s_Conversion_Program {
                     LensPerBox = lensPerBox,
                     IsLensFromClxCatalog = isLensFromClxCatalog
                 };
+
                 ffpmDbContext.ClnsContactLens.Add(newClLens);
 
                 ffpmDbContext.SaveChanges();
@@ -9263,23 +9261,22 @@ namespace Brady_s_Conversion_Program {
                 } // max size here is 3. it is a number in string form.
 
                 var invList = ffpmDbContext.CptDepartments.FirstOrDefault(x => x.Code == code);
+
                 if (invList != null) {
-                    invList.Description = description;
+                    invList.Description = TruncateString(description, 500);
                     invList.LocationId = locationId;
                     invList.Active = active;
-                    invList.SortNumber = sortNumber;
+                    invList.SortNumber = TruncateString(sortNumber, 3);
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newCptDept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
-                    Code = code,
-                    Description = description,
+                    Code = TruncateString(code, 10),
+                    Description = TruncateString(description, 500),
                     LocationId = locationId,
                     Active = active,
-                    SortNumber = sortNumber
+                    SortNumber = TruncateString(sortNumber, 3)
                 };
                 ffpmDbContext.CptDepartments.Add(newCptDept);
 
@@ -9322,6 +9319,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.CptGroupMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
+
                 if (invList != null) {
                     invList.LocationId = locationId;
                     invList.Active = Active;
@@ -9329,14 +9327,13 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newCptMapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
                     CptId = cptId,
                     GroupId = groupId,
                     LocationId = locationId,
-                    Active = Active                    
+                    Active = Active
                 };
+
                 ffpmDbContext.CptGroupMappings.Add(newCptMapping);
 
                 ffpmDbContext.SaveChanges();
@@ -9443,8 +9440,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.Cptids.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
+
                 if (invList != null) {
-                    invList.Description = cpt.Description;
+                    invList.Description = TruncateString(cpt.Description, 250);
                     invList.SortOrder = sortOrder;
                     invList.Active = active;
                     invList.LocationId = locationId;
@@ -9453,13 +9451,13 @@ namespace Brady_s_Conversion_Program {
                     invList.DepartmentId = departmentId;
                     invList.TypeOfServiceId = typeOfServiceId;
                     invList.TaxTypeId = taxTypeId;
-                    invList.PrivateStatementDescription = privateStatementDescription;
-                    invList.AlternateCode = alternateCode;
+                    invList.PrivateStatementDescription = TruncateString(privateStatementDescription, 250);
+                    invList.AlternateCode = TruncateString(alternateCode, 20);
                     invList.UseClianumber = useCliaNumber;
                     invList.Units = units;
                     invList.NdcActive = ndcActive;
                     invList.NdcCost = ndcCost;
-                    invList.NdcCode = cpt.NdcCode;
+                    invList.NdcCode = TruncateString(cpt.NdcCode, 11);
                     invList.NdcUnitsMeasurementId = ndcUnitsMeasurementId;
                     invList.NdcQuantity = ndcQuantity;
                     invList.AutoUpdateReferringProvider = autoUpdateReferringProvider;
@@ -9467,11 +9465,9 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
-                    Cpt = cpt.Cpt1, // what is the 1 for? is it because it is the same name as the table?
-                    Description = cpt.Description,
+                    Cpt = cpt.Cpt1,
+                    Description = TruncateString(cpt.Description, 250),
                     SortOrder = sortOrder,
                     Active = active,
                     LocationId = locationId,
@@ -9480,13 +9476,13 @@ namespace Brady_s_Conversion_Program {
                     DepartmentId = departmentId,
                     TypeOfServiceId = typeOfServiceId,
                     TaxTypeId = taxTypeId,
-                    PrivateStatementDescription = privateStatementDescription,
-                    AlternateCode = alternateCode,
+                    PrivateStatementDescription = TruncateString(privateStatementDescription, 250),
+                    AlternateCode = TruncateString(alternateCode, 20),
                     UseClianumber = useCliaNumber,
                     Units = units,
                     NdcActive = ndcActive,
                     NdcCost = ndcCost,
-                    NdcCode = cpt.NdcCode,
+                    NdcCode = TruncateString(cpt.NdcCode, 11),
                     NdcUnitsMeasurementId = ndcUnitsMeasurementId,
                     NdcQuantity = ndcQuantity,
                     AutoUpdateReferringProvider = autoUpdateReferringProvider
@@ -9530,8 +9526,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
+
                 if (invList != null) {
-                    invList.CategoryDescription = frameCategory.CategoryDescription;
+                    invList.CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250);
                     invList.Active = active;
                     invList.SortOrder = sortOrder;
                     invList.LocationId = locationId;
@@ -9541,8 +9538,8 @@ namespace Brady_s_Conversion_Program {
 
 
                 var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
-                    CategoryName = categoryName,
-                    CategoryDescription = frameCategory.CategoryDescription,
+                    CategoryName = TruncateString(categoryName, 150),
+                    CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
                     Active = active,
                     SortOrder = sortOrder,
                     LocationId = locationId
@@ -9576,6 +9573,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
+
                 if (invList != null) {
                     invList.Active = active;
                     invList.LocationId = locationId;
@@ -9584,9 +9582,8 @@ namespace Brady_s_Conversion_Program {
                 }
 
 
-
                 var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
-                    CollectionName = collectionName,
+                    CollectionName = TruncateString(collectionName, 250),
                     Active = active,
                     LocationId = locationId
                 };
@@ -9615,19 +9612,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
+
                 if (invList != null) {
-                    invList.ColorDescription = frameColor.ColorDescription;
+                    invList.ColorDescription = TruncateString(frameColor.ColorDescription, 150);
                     invList.Active = active;
                     invList.LocationId = locationId;
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
-                    ColorCode = frameColor.ColorCode,
-                    ColorDescription = frameColor.ColorDescription,
+                    ColorCode = TruncateString(frameColor.ColorCode, 50),
+                    ColorDescription = TruncateString(frameColor.ColorDescription, 150),
                     Active = active,
                     LocationId = locationId
                 };
@@ -9666,8 +9662,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
+
                 if (invList != null) {
-                    invList.ShapeDescription = frameShape.ShapeDescription;
+                    invList.ShapeDescription = TruncateString(frameShape.ShapeDescription, 250);
                     invList.Active = active;
                     invList.SortOrder = sortOrder;
                     invList.LocationId = locationId;
@@ -9676,10 +9673,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
 
-
                 var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
-                    FrameShape1 = shape,
-                    ShapeDescription = frameShape.ShapeDescription,
+                    FrameShape1 = TruncateString(shape, 50),
+                    ShapeDescription = TruncateString(frameShape.ShapeDescription, 250),
                     Active = active,
                     SortOrder = sortOrder,
                     LocationId = locationId
@@ -9703,19 +9699,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
+                
                 if (invList != null) {
-                    invList.Description = frameStatus.Description;
-                    invList.LabCode = frameStatus.LabCode;
+                    invList.Description = TruncateString(frameStatus.Description, 100);
+                    invList.LabCode = TruncateString(frameStatus.LabCode, 25);
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
-                    Status = status,
-                    Description = frameStatus.Description,
-                    LabCode = frameStatus.LabCode
+                    Status = TruncateString(status, 100),
+                    Description = TruncateString(frameStatus.Description, 100),
+                    LabCode = TruncateString(frameStatus.LabCode, 25)
                 };
                 ffpmDbContext.FrameStatuses.Add(newFrameStatus);
 
@@ -9736,19 +9731,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
+
                 if (invList != null) {
-                    invList.Description = frameTemple.Description;
-                    invList.LabCode = frameTemple.LabCode;
+                    invList.Description = TruncateString(frameTemple.Description, 100);
+                    invList.LabCode = TruncateString(frameTemple.LabCode, 25);
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
-                    Temple = temple,
-                    Description = frameTemple.Description,
-                    LabCode = frameTemple.LabCode
+                    Temple = TruncateString(temple, 100),
+                    Description = TruncateString(frameTemple.Description, 100),
+                    LabCode = TruncateString(frameTemple.LabCode, 25)
                 };
                 ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
 
@@ -9769,19 +9763,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
+
                 if (invList != null) {
-                    invList.Description = frameEType.Description;
-                    invList.LabCode = frameEType.LabCode;
+                    invList.Description = TruncateString(frameEType.Description, 100);
+                    invList.LabCode = TruncateString(frameEType.LabCode, 25);
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
-                    Etype = eType,
-                    Description = frameEType.Description,
-                    LabCode = frameEType.LabCode
+                    Etype = TruncateString(eType, 100),
+                    Description = TruncateString(frameEType.Description, 100),
+                    LabCode = TruncateString(frameEType.LabCode, 25)
                 };
                 ffpmDbContext.FrameEtypes.Add(newFrameEType);
 
@@ -9802,19 +9795,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameFtypes.FirstOrDefault(x => x.Ftype == fType);
+
                 if (invList != null) {
-                    invList.Description = frameFType.Description;
-                    invList.LabCode = frameFType.LabCode;
+                    invList.Description = TruncateString(frameFType.Description, 100);
+                    invList.LabCode = TruncateString(frameFType.LabCode, 25);
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
-                    Ftype = fType,
-                    Description = frameFType.Description,
-                    LabCode = frameFType.LabCode
+                    Ftype = TruncateString(fType, 100),
+                    Description = TruncateString(frameFType.Description, 100),
+                    LabCode = TruncateString(frameFType.LabCode, 25)
                 };
                 ffpmDbContext.FrameFtypes.Add(newFrameFType);
 
@@ -9851,19 +9843,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameDblensColors.FirstOrDefault(x => x.ColorCode == colorCode);
+
                 if (invList != null) {
-                    invList.ColorDescription = colorDescription;
+                    invList.ColorDescription = TruncateString(colorDescription, 150);
                     invList.StatusId = statusId;
                     invList.LocationId = locationId;
                     ffpmDbContext.SaveChanges();
                     return;
                 }
 
-
-
                 var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
-                    ColorCode = colorCode,
-                    ColorDescription = colorDescription,
+                    ColorCode = TruncateString(colorCode, 50),
+                    ColorDescription = TruncateString(colorDescription, 150),
                     StatusId = statusId,
                     LocationId = locationId
                 };
@@ -9902,8 +9893,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
+
                 if (invList != null) {
-                    invList.MaterialDescription = frameMaterial.MaterialDescription;
+                    invList.MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250);
                     invList.Active = active;
                     invList.SortOrder = sortOrder;
                     invList.LocationId = locationId;
@@ -9911,11 +9903,9 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
-                    MaterialName = materialName,
-                    MaterialDescription = frameMaterial.MaterialDescription,
+                    MaterialName = TruncateString(materialName, 50),
+                    MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
                     Active = active,
                     SortOrder = sortOrder,
                     LocationId = locationId
@@ -9955,8 +9945,9 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
+
                 if (invList != null) {
-                    invList.MountDescription = frameMount.MountDescription;
+                    invList.MountDescription = TruncateString(frameMount.MountDescription, 250);
                     invList.Active = active;
                     invList.SortOrder = sortOrder;
                     invList.LocationId = locationId;
@@ -9964,11 +9955,9 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
                 var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
-                    FrameMount1 = frameMount1,
-                    MountDescription = frameMount.MountDescription,
+                    FrameMount1 = TruncateString(frameMount1, 50),
+                    MountDescription = TruncateString(frameMount.MountDescription, 250),
                     Active = active,
                     SortOrder = sortOrder,
                     LocationId = locationId
@@ -10107,13 +10096,13 @@ namespace Brady_s_Conversion_Program {
 
 
                 var newFrameOrder = new Brady_s_Conversion_Program.ModelsA.FrameOrderInfo {
-                    Name = name,
+                    Name = TruncateString(name, 50),
                     MaterialId = materialId,
                     StatusId = statusId,
                     CptId = cptId,
                     EtypId = eTypId,
                     FtypId = fTypId,
-                    Color = color,
+                    Color = TruncateString(color, 20),
                     ManufacturerId = manufacturerId,
                     Eye = eye,
                     Bridge = bridge,
@@ -10352,14 +10341,14 @@ namespace Brady_s_Conversion_Program {
 
                 // how do we know if a frame is a duplicate?
 
-            
-            
-            
+
+
+
                 var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
-                    Fpc = frame.Fpc,
-                    Upc = upc,
+                    Fpc = TruncateString(frame.Fpc, 14),
+                    Upc = TruncateString(upc, 14),
                     StyleId = styleId,
-                    StyleName = frame.StyleName,
+                    StyleName = TruncateString(frame.StyleName, 37),
                     Eye = eye,
                     Bridge = bridge,
                     Temple = temple,
@@ -10375,8 +10364,8 @@ namespace Brady_s_Conversion_Program {
                     CompletePrice = completePrice,
                     StyleNew = styleNew,
                     ChangedPrice = changedPrice,
-                    Sku = frame.Sku,
-                    YearIntroduced = frame.YearIntroduced,
+                    Sku = TruncateString(frame.Sku, 30),
+                    YearIntroduced = TruncateString(frame.YearIntroduced, 4),
                     ManufacturerId = manufacturerId,
                     VendorId = vendorId,
                     BrandId = brandId,
