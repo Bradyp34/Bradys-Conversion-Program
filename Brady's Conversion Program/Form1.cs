@@ -57,7 +57,7 @@ namespace Brady_s_Conversion_Program
             string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;";
-            
+
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox);
             ResultsBox.Invoke((MethodInvoker)delegate {
@@ -69,7 +69,7 @@ namespace Brady_s_Conversion_Program
             });
             ConvCheckBox.Invoke((MethodInvoker)delegate {
                 ConvCheckBox.Show();
-                if (FFPMNewDBCheckBox.Checked) {
+                if (ConvCheckBox.Checked) {
                     FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
                         FFPMNewDBCheckBox.Show();
                     });
@@ -77,7 +77,7 @@ namespace Brady_s_Conversion_Program
             });
             EHRCheckBox.Invoke((MethodInvoker)delegate {
                 EHRCheckBox.Show();
-                if (EyeMDNewDBCheckBox.Checked) {
+                if (EHRCheckBox.Checked) {
                     EyeMDNewDBCheckBox.Invoke((MethodInvoker)delegate {
                         EyeMDNewDBCheckBox.Show();
                     });
@@ -85,7 +85,7 @@ namespace Brady_s_Conversion_Program
             });
             InvCheckBox.Invoke((MethodInvoker)delegate {
                 InvCheckBox.Show();
-                if (FFPMNewDBCheckBox.Checked) {
+                if (InvCheckBox.Checked) {
                     FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
                         FFPMNewDBCheckBox.Show();
                     });
@@ -103,19 +103,19 @@ namespace Brady_s_Conversion_Program
             }
         }
 
-        private void FFPMCheckBox_CheckedChanged(object sender, EventArgs e) {
+        private void ConvCheckBox_CheckedChanged(object sender, EventArgs e) {
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Checked = false;
             }
             if (ConvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Show();
             }
-            else {
+            else if (!InvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Hide();
             }
         }
 
-        private void EyeMDCheckBox_CheckedChanged(object sender, EventArgs e) {
+        private void EhrCheckBox_CheckedChanged(object sender, EventArgs e) {
             if (EyeMDNewDBCheckBox.Checked) {
                 EyeMDNewDBCheckBox.Checked = false;
             }
@@ -124,6 +124,15 @@ namespace Brady_s_Conversion_Program
             }
             else {
                 EyeMDNewDBCheckBox.Hide();
+            }
+        }
+
+        private void InvCheckBox_CheckedChanged(object sender, EventArgs e) {
+            if (InvCheckBox.Checked) {
+                FFPMNewDBCheckBox.Show();
+            }
+            else if (!ConvCheckBox.Checked) {
+                    FFPMNewDBCheckBox.Hide();
             }
         }
 

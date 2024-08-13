@@ -172,7 +172,7 @@
             ConvCheckBox.TabIndex = 15;
             ConvCheckBox.Text = "Conv";
             ConvCheckBox.UseVisualStyleBackColor = true;
-            ConvCheckBox.CheckedChanged += FFPMCheckBox_CheckedChanged;
+            ConvCheckBox.CheckedChanged += ConvCheckBox_CheckedChanged;
             // 
             // EHRCheckBox
             // 
@@ -183,7 +183,7 @@
             EHRCheckBox.TabIndex = 16;
             EHRCheckBox.Text = "EHR";
             EHRCheckBox.UseVisualStyleBackColor = true;
-            EHRCheckBox.CheckedChanged += EyeMDCheckBox_CheckedChanged;
+            EHRCheckBox.CheckedChanged += EhrCheckBox_CheckedChanged;
             // 
             // ClearTextButton
             // 
@@ -214,6 +214,7 @@
             InvCheckBox.TabIndex = 19;
             InvCheckBox.Text = "Inv";
             InvCheckBox.UseVisualStyleBackColor = true;
+            InvCheckBox.CheckedChanged += InvCheckBox_CheckedChanged;
             // 
             // EHRServerTextBox
             // 
