@@ -1559,7 +1559,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmPatientAdditional.EmergencyPatientId = accNum;
                     ffpmPatientAdditional.EmergencyAddressId = addId;
                 }
-                else if (name.Relationship.ToLower() == "guar" || name.Relationship == "guarantor") {
+                else if (name.Relationship.ToLower() == "guarantor") {
                     bool isExistingPatient = accNum != null;
                     var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
                         PatientId = ffpmPatient.PatientId,
