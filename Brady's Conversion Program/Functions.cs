@@ -170,7 +170,7 @@ namespace Brady_s_Conversion_Program {
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
         private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-        private static Regex phoneRegex = new Regex(@"^(\d{3}-\d{3}-\d{4})$");
+        private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$");
 
         public static string FFPMString = "";
         public static string EyeMDString = "";
@@ -1554,7 +1554,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmPatientAdditional.EmergencyPatientId = accNum;
                     ffpmPatientAdditional.EmergencyAddressId = addId;
                 }
-                else if (name.Relationship.ToLower() == "guarantor") {
+                else if (name.Relationship.ToLower() == "guarantor" || name.Relationship.ToLower() == "guar") {
                     bool isExistingPatient = accNum != null;
                     var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
                         PatientId = ffpmPatient.PatientId,
@@ -1948,51 +1948,57 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                int id = -1;
+                if (phone.PrimaryId != null) {
+                    if (int.TryParse(phone.PrimaryId, out int temp)) {
+                        id = temp;
+                    }
+                }
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(phone.Id);
                 var ffpmAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
                 if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
                     return;
                 }
                 if (ffpmPatients == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
                     return;
                 }
                 if (ffpmAddresses == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
                     return;
                 }
                 DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
                     return;
                 }
                 DmgPatientAddress? address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
                 if (address == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
                     return;
                 }
 
                 if (phone.TypeOfPhone != null) {
                     switch (phone.TypeOfPhone.ToLower()) {
                         case "home":
-                            address.HomePhone = phone.PhoneNumber;
+                            address.HomePhone = TruncateString(phone.PhoneNumber, 15);
                             break;
                         case "work":
-                            address.WorkPhone = phone.PhoneNumber;
+                            address.WorkPhone = TruncateString(phone.PhoneNumber, 15);
                             break;
                         case "cell":
-                            address.CellPhone = phone.PhoneNumber;
+                            address.CellPhone = TruncateString(phone.PhoneNumber, 15);
                             break;
                         case "mobile":
-                            address.CellPhone = phone.PhoneNumber;
+                            address.CellPhone = TruncateString(phone.PhoneNumber, 15);
                             break;
                         case "fax":
-                            address.Fax = phone.PhoneNumber;
+                            address.Fax = TruncateString(phone.PhoneNumber, 15);
                             break;
                         default:
-                            address.CellPhone = phone.PhoneNumber;
+                            address.CellPhone = TruncateString(phone.PhoneNumber, 15);
                             break;
                     }
                     address.Extension = phone.Extension;
