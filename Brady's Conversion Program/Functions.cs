@@ -65,107 +65,154 @@ namespace Brady_s_Conversion_Program {
             return date;
         }
 
+        public static readonly Dictionary<string, short> stateCodes = new Dictionary<string, short>
+        {
+            {"NJ", 1},
+            {"MA", 2},
+            {"NY", 3},
+            {"IA", 4},
+            {"FL", 5},
+            {"MI", 6},
+            {"AK", 7},
+            {"AZ", 8},
+            {"CA", 9},
+            {"CO", 10},
+            {"CT", 11},
+            {"GA", 12},
+            {"IL", 13},
+            {"IN", 14},
+            {"KS", 15},
+            {"KY", 16},
+            {"LA", 17},
+            {"MD", 18},
+            {"ME", 19},
+            {"MN", 20},
+            {"MO", 21},
+            {"MS", 22},
+            {"MT", 23},
+            {"NC", 24},
+            {"ND", 25},
+            {"NE", 26},
+            {"NH", 27},
+            {"NM", 28},
+            {"NV", 29},
+            {"OH", 30},
+            {"OK", 31},
+            {"OR", 32},
+            {"PA", 33},
+            {"RI", 34},
+            {"SC", 35},
+            {"SD", 36},
+            {"TN", 37},
+            {"TX", 38},
+            {"UT", 39},
+            {"VA", 40},
+            {"VT", 41},
+            {"WA", 42},
+            {"WI", 43},
+            {"WV", 44},
+            {"WY", 45},
+            {"AL", 46},
+            {"AR", 47},
+            {"HI", 48},
+            {"ID", 49},
+            {"DE", 50},
+            {"DC", 51},
+            {"PR", 52},
+            {"GU", 53},
+            {"VI", 54},
+            {"MP", 55},
+            {"AS", 56},
+            {"FM", 57},
+            {"PW", 58},
+            {"AA", 59},
+            {"AE", 60},
+            {"MH", 61},
+            {"AP", 62}
+        };
+
         public static readonly DateTime minDate = DateTime.Parse("1/1/1900");
 
         public static readonly string[] dateFormats = new string[] {
             // Date-only formats with numeric and abbreviated months
-            "MM/dd/yyyy", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy/dd/MM",
-            "M/d/yyyy", "d/M/yyyy", "yyyy/M/d", "yyyy/d/M",
-            "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy-dd-MM",
-            "M-d-yyyy", "d-M-yyyy", "yyyy-M-d", "yyyy-d-M",
-            "MM dd yyyy", "dd MM yyyy", "yyyy MM dd", "yyyy dd MM",
-            "M d yyyy", "d M yyyy", "yyyy M d", "yyyy d M",
-            "MMM dd, yyyy", "dd MMM, yyyy",
+            "yyyy/MM/dd", "MM/dd/yyyy", "dd/MM/yyyy", "yyyy/dd/MM",
+            "yyyy/M/d", "M/d/yyyy", "d/M/yyyy", "yyyy/d/M",
+            "yyyy-MM-dd", "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-dd-MM",
+            "yyyy-M-d", "M-d-yyyy", "d-M-yyyy", "yyyy-d-M",
+            "yyyy MM dd", "MM dd yyyy", "dd MM yyyy", "yyyy dd MM",
+            "yyyy M d", "M d yyyy", "d M yyyy", "yyyy d M",
+            "yyyy MMM dd", "MMM dd, yyyy", "dd MMM, yyyy",
 
             // Date-only formats with full month names
-            "MMMM dd, yyyy", "dd MMMM, yyyy",
-            "MMMM-d-yyyy", "d-MMMM-yyyy",
-            "MMMM/dd/yyyy", "dd/MMMM/yyyy",
-            "MMMM dd yyyy", "dd MMMM yyyy",
-            "MMMM d, yyyy", "d MMMM, yyyy",
+            "yyyy MMMM dd", "MMMM dd, yyyy", "dd MMMM, yyyy",
+            "yyyy MMMM-d", "MMMM-d-yyyy", "d-MMMM-yyyy",
+            "yyyy MMMM/dd", "MMMM/dd/yyyy", "dd/MMMM/yyyy",
+            "yyyy MMMM dd", "MMMM dd yyyy", "dd MMMM yyyy",
+            "yyyy MMMM d", "MMMM d, yyyy", "d MMMM, yyyy",
 
             // Date-only formats with concatenated month and day names
-            "MMMddyyyy", "ddMMMyyyy",
+            "yyyMMdd", "MMMddyyyy", "ddMMMyyyy",
 
             // Date with 24-hour time formats with numeric and abbreviated months
-            "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
-            "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss", "yyyy/M/d HH:mm:ss", "yyyy/d/M HH:mm:ss",
-            "MM-dd-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
-            "MM dd yyyy HH:mm:ss", "dd MM yyyy HH:mm:ss", "M d yyyy HH:mm:ss", "d M yyyy HH:mm:ss",
-            "MMMddyyyy HH:mm:ss", "ddMMMyyyy HH:mm:ss",
-            "MMM dd, yyyy HH:mm:ss", "dd MMM, yyyy HH:mm:ss",
+            "yyyy/MM/dd HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
+            "yyyy/M/d HH:mm:ss", "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss", "yyyy/d/M HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss", "MM-dd-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
+            "yyyy MM dd HH:mm:ss", "MM dd yyyy HH:mm:ss", "dd MM yyyy HH:mm:ss",
+            "yyyy M d HH:mm:ss", "M d yyyy HH:mm:ss", "d M yyyy HH:mm:ss",
+            "yyyyMMMdd HH:mm:ss", "MMMddyyyy HH:mm:ss", "ddMMMyyyy HH:mm:ss",
+            "yyyy MMM dd HH:mm:ss", "MMM dd, yyyy HH:mm:ss", "dd MMM, yyyy HH:mm:ss",
 
             // Date with 24-hour time formats with full month names
-            "MMMM/dd/yyyy HH:mm:ss", "dd/MMMM/yyyy HH:mm:ss",
-            "MMMM-dd-yyyy HH:mm:ss", "dd-MMMM-yyyy HH:mm:ss",
-            "MMMM dd, yyyy HH:mm:ss", "dd MMMM, yyyy HH:mm:ss",
-            "MMMM d, yyyy HH:mm:ss", "d MMMM, yyyy HH:mm:ss",
+            "yyyy MMMM/dd HH:mm:ss", "MMMM/dd/yyyy HH:mm:ss", "dd/MMMM/yyyy HH:mm:ss",
+            "yyyy MMMM-dd HH:mm:ss", "MMMM-dd-yyyy HH:mm:ss", "dd-MMMM-yyyy HH:mm:ss",
+            "yyyy MMMM dd HH:mm:ss", "MMMM dd, yyyy HH:mm:ss", "dd MMMM, yyyy HH:mm:ss",
+            "yyyy MMMM d HH:mm:ss", "MMMM d, yyyy HH:mm:ss", "d MMMM, yyyy HH:mm:ss",
 
             // Date with 12-hour time formats (AM/PM) with numeric and abbreviated months
-            "MM/dd/yyyy hh:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
-            "M/d/yyyy hh:mm:ss tt", "d/M/yyyy hh:mm:ss tt", "yyyy/M/d hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
-            "MM-dd-yyyy hh:mm:ss tt", "dd-MM-yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
-            "MM dd yyyy hh:mm:ss tt", "dd MM yyyy hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "d M yyyy hh:mm:ss tt",
-            "MMMddyyyy hh:mm:ss tt", "ddMMMyyyy hh:mm:ss tt",
-            "MMM dd, yyyy hh:mm:ss tt", "dd MMM, yyyy hh:mm:ss tt",
+            "yyyy/MM/dd hh:mm:ss tt", "MM/dd/yyyy hh:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
+            "yyyy/M/d hh:mm:ss tt", "M/d/yyyy hh:mm:ss tt", "d/M/yyyy hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
+            "yyyy-MM-dd hh:mm:ss tt", "MM-dd-yyyy hh:mm:ss tt", "dd-MM-yyyy hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
+            "yyyy MM dd hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "dd MM yyyy hh:mm:ss tt",
+            "yyyy M d hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "d M yyyy hh:mm:ss tt",
+            "yyyyMMMdd hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt", "ddMMMyyyy hh:mm:ss tt",
+            "yyyy MMM dd hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt", "dd MMM, yyyy hh:mm:ss tt",
 
             // Date with 12-hour time formats (AM/PM) with full month names
-            "MMMM/dd/yyyy hh:mm:ss tt", "dd/MMMM/yyyy hh:mm:ss tt",
-            "MMMM-dd-yyyy hh:mm:ss tt", "dd-MMMM-yyyy hh:mm:ss tt",
-            "MMMM dd, yyyy hh:mm:ss tt", "dd MMMM, yyyy hh:mm:ss tt",
-            "MMMM d, yyyy hh:mm:ss tt", "d MMMM, yyyy hh:mm:ss tt",
+            "yyyy MMMM/dd hh:mm:ss tt", "MMMM/dd/yyyy hh:mm:ss tt", "dd/MMMM/yyyy hh:mm:ss tt",
+            "yyyy MMMM-dd hh:mm:ss tt", "MMMM-dd-yyyy hh:mm:ss tt", "dd-MMMM-yyyy hh:mm:ss tt",
+            "yyyy MMMM dd hh:mm:ss tt", "MMMM dd, yyyy hh:mm:ss tt", "dd MMMM, yyyy hh:mm:ss tt",
+            "yyyy MMMM d hh:mm:ss tt", "MMMM d, yyyy hh:mm:ss tt", "d MMMM, yyyy hh:mm:ss tt",
 
             // Date with 24-hour time formats (without seconds) with numeric and abbreviated months
-            "MM/dd/yyyy HH:mm", "dd/MM/yyyy HH:mm", "yyyy/MM/dd HH:mm", "yyyy/dd/MM HH:mm",
-            "M/d/yyyy HH:mm", "d/M/yyyy HH:mm", "yyyy/M/d HH:mm", "yyyy/d/M HH:mm",
-            "MM-dd-yyyy HH:mm", "dd-MM-yyyy HH:mm", "yyyy-MM-dd HH:mm", "yyyy-dd-MM HH:mm",
-            "MM dd yyyy HH:mm", "dd MM yyyy HH:mm", "M d yyyy HH:mm", "d M yyyy HH:mm",
-            "MMMddyyyy HH:mm", "ddMMMyyyy HH:mm",
-            "MMM dd, yyyy HH:mm", "dd MMM, yyyy HH:mm",
+            "yyyy/MM/dd HH:mm", "MM/dd/yyyy HH:mm", "dd/MM/yyyy HH:mm", "yyyy/dd/MM HH:mm",
+            "yyyy/M/d HH:mm", "M/d/yyyy HH:mm", "d/M/yyyy HH:mm", "yyyy/d/M HH:mm",
+            "yyyy-MM-dd HH:mm", "MM-dd-yyyy HH:mm", "dd-MM-yyyy HH:mm", "yyyy-dd-MM HH:mm",
+            "yyyy MM dd HH:mm", "MM dd yyyy HH:mm", "dd MM yyyy HH:mm",
+            "yyyy M d HH:mm", "M d yyyy HH:mm", "d M yyyy HH:mm",
+            "yyyyMMMdd HH:mm", "MMMddyyyy HH:mm", "ddMMMyyyy HH:mm",
+            "yyyy MMM dd HH:mm", "MMM dd, yyyy HH:mm", "dd MMM, yyyy HH:mm",
 
             // Date with 24-hour time formats (without seconds) with full month names
-            "MMMM/dd/yyyy HH:mm", "dd/MMMM/yyyy HH:mm",
-            "MMMM-dd-yyyy HH:mm", "dd-MMMM-yyyy HH:mm",
-            "MMMM dd, yyyy HH:mm", "dd MMMM, yyyy HH:mm",
-            "MMMM d, yyyy HH:mm", "d MMMM, yyyy HH:mm",
+            "yyyy MMMM/dd HH:mm", "MMMM/dd/yyyy HH:mm", "dd/MMMM/yyyy HH:mm",
+            "yyyy MMMM-dd HH:mm", "MMMM-dd-yyyy HH:mm", "dd-MMMM-yyyy HH:mm",
+            "yyyy MMMM dd HH:mm", "MMMM dd, yyyy HH:mm", "dd MMMM, yyyy HH:mm",
+            "yyyy MMMM d HH:mm", "MMMM d, yyyy HH:mm", "d MMMM, yyyy HH:mm",
 
             // Date with 12-hour time formats (AM/PM) without seconds with numeric and abbreviated months
-            "MM/dd/yyyy hh:mm tt", "dd/MM/yyyy hh:mm tt", "yyyy/MM/dd hh:mm tt", "yyyy/dd/MM hh:mm tt",
-            "M/d/yyyy hh:mm tt", "d/M/yyyy hh:mm tt", "yyyy/M/d hh:mm tt", "yyyy/d/M hh:mm tt",
-            "MM-dd-yyyy hh:mm tt", "dd-MM-yyyy hh:mm tt", "yyyy-MM-dd hh:mm tt", "yyyy-dd-MM hh:mm tt",
-            "MM dd yyyy hh:mm tt", "dd MM yyyy hh:mm tt", "M d yyyy hh:mm tt", "d M yyyy hh:mm tt",
-            "MMMddyyyy hh:mm tt", "ddMMMyyyy hh:mm tt",
-            "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt",
+            "yyyy/MM/dd hh:mm tt", "MM/dd/yyyy hh:mm tt", "dd/MM/yyyy hh:mm tt", "yyyy/dd/MM hh:mm tt",
+            "yyyy/M/d hh:mm tt", "M/d/yyyy hh:mm tt", "d/M/yyyy hh:mm tt", "yyyy/d/M hh:mm tt",
+            "yyyy-MM-dd hh:mm tt", "MM-dd-yyyy hh:mm tt", "dd-MM-yyyy hh:mm tt", "yyyy-dd-MM hh:mm tt",
+            "yyyy MM dd hh:mm tt", "MM dd yyyy hh:mm tt", "dd MM yyyy hh:mm tt",
+            "yyyy M d hh:mm tt", "M d yyyy hh:mm tt", "d M yyyy hh:mm tt",
+            "yyyyMMMdd hh:mm tt", "MMMddyyyy hh:mm tt", "ddMMMyyyy hh:mm tt",
+            "yyyy MMM dd hh:mm tt", "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt",
 
             // Date with 12-hour time formats (AM/PM) without seconds with full month names
-            "MMMM/dd/yyyy hh:mm tt", "dd/MMMM/yyyy hh:mm tt",
-            "MMMM-dd-yyyy hh:mm tt", "dd-MMMM-yyyy hh:mm tt",
-            "MMMM dd, yyyy hh:mm tt", "dd MMMM, yyyy hh:mm tt",
-            "MMMM d, yyyy hh:mm tt", "d MMMM, yyyy hh:mm tt"
+            "yyyy MMMM/dd hh:mm tt", "MMMM/dd/yyyy hh:mm tt", "dd/MMMM/yyyy hh:mm tt",
+            "yyyy MMMM-dd hh:mm tt", "MMMM-dd-yyyy hh:mm tt", "dd-MMMM-yyyy hh:mm tt",
+            "yyyy MMMM dd hh:mm tt", "MMMM dd, yyyy hh:mm tt", "dd MMMM, yyyy hh:mm tt",
+            "yyyy MMMM d hh:mm tt", "MMMM d, yyyy hh:mm tt", "d MMMM, yyyy hh:mm tt"
         };
-
-
-        private static Dictionary<string, short> stateDictionary = new Dictionary<string, short> {
-            {"Alabama", 1}, {"Alaska", 2}, {"Arizona", 3}, {"Arkansas", 4}, {"California", 5},
-            {"Colorado", 6}, {"Connecticut", 7}, {"Delaware", 8}, {"Florida", 9}, {"Georgia", 10},
-            {"Hawaii", 11}, {"Idaho", 12}, {"Illinois", 13}, {"Indiana", 14}, {"Iowa", 15},
-            {"Kansas", 16}, {"Kentucky", 17}, {"Louisiana", 18}, {"Maine", 19}, {"Maryland", 20},
-            {"Massachusetts", 21}, {"Michigan", 22}, {"Minnesota", 23}, {"Mississippi", 24}, {"Missouri", 25},
-            {"Montana", 26}, {"Nebraska", 27}, {"Nevada", 28}, {"New Hampshire", 29}, {"New Jersey", 30},
-            {"New Mexico", 31}, {"New York", 32}, {"North Carolina", 33}, {"North Dakota", 34}, {"Ohio", 35},
-            {"Oklahoma", 36}, {"Oregon", 37}, {"Pennsylvania", 38}, {"Rhode Island", 39}, {"South Carolina", 40},
-            {"South Dakota", 41}, {"Tennessee", 42}, {"Texas", 43}, {"Utah", 44}, {"Vermont", 45},
-            {"Virginia", 46}, {"Washington", 47}, {"West Virginia", 48}, {"Wisconsin", 49}, {"Wyoming", 50}
-        };
-
-        public static short? ConvertStateToShort(string? state) {
-            if (state == null) {
-                return null;
-            }
-            if (stateDictionary.ContainsKey(state))
-                return stateDictionary[state];
-            return null;
-        }
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
@@ -440,6 +487,12 @@ namespace Brady_s_Conversion_Program {
                     ssn = "";
                 }
 
+                short? licenseShort = null;
+                if (patient.DriversLicenseState != null) {
+                    stateCodes.TryGetValue(patient.DriversLicenseState, out short temp);
+                    licenseShort = temp;
+                }
+
                 DateTime dob = minDate;
 
                 if (patient.PatientDob != null) {
@@ -520,7 +573,6 @@ namespace Brady_s_Conversion_Program {
                 if (patient.DriversLicenseState == null) {
 
                 }
-                short? licenseShort = ConvertStateToShort(patient.DriversLicenseState);
 
                 short? race = null;
                 if (patient.PatientRace != null) {
@@ -1160,7 +1212,7 @@ namespace Brady_s_Conversion_Program {
                 int stateId = 0; // Default value for not found or null
 
                 if (insurance.InsCompanyState != null) {
-                    stateId = ConvertStateToShort(insurance.InsCompanyState) ?? 0;
+                    stateId = stateCodes.TryGetValue(insurance.InsCompanyState, out short stateIdShort) ? stateIdShort : -1;
                 }
 
                 string insZip = "";
