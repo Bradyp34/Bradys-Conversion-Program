@@ -49,6 +49,7 @@ namespace Brady_s_Conversion_Program
             InvCheckBox.Hide();
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
+            DBBeginButton.Enabled = false;
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) {
@@ -101,6 +102,9 @@ namespace Brady_s_Conversion_Program
                     EyeMDNewDBCheckBox.Show();
                 });
             }
+            DBBeginButton.Invoke((MethodInvoker)delegate {
+                DBBeginButton.Enabled = true;
+            });
         }
 
         private void ConvCheckBox_CheckedChanged(object sender, EventArgs e) {

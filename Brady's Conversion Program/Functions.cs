@@ -435,23 +435,18 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                     return;
                 }
-                else if (patient.PatientSsn == null || !ssnRegex.IsMatch(patient.PatientSsn)) {
-                    logger.Log($"Conv: Conv Patient SSN is null or invalid for patient with ID: {patient.Id}");
-                    return;
-                }
-                else if (patient.PatientDob == null) {
-                    logger.Log($"Conv: Conv Patient DOB is null for patient with ID: {patient.Id}");
-                    return;
+                string? ssn = patient.PatientSsn;
+                if (patient.PatientSsn == null || !ssnRegex.IsMatch(patient.PatientSsn)) {
+                    ssn = "";
                 }
 
                 DateTime dob = minDate;
-                string dobString = patient.PatientDob.Trim(); // Remove any leading/trailing whitespaces
-                                                              // Try parsing the date using the specified formats
-                if (!DateTime.TryParseExact(dobString, dateFormats,
+
+                if (patient.PatientDob != null) {
+                    string dobString = patient.PatientDob.Trim(); // Remove any leading/trailing whitespaces
+                    if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                    if (dob == minDate) {
-                        logger.Log($"Conv: Conv Patient DOB is invalid or not in an expected format for patient with ID: {patient.Id}");
-                        return;
+                        dob = isValidDate(dob);
                     }
                 }
                 short? maritalStatusInt = null;
@@ -626,7 +621,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.MiddleName = TruncateString(patient.PatientMiddle, 50);
                     ffpmOrig.FirstName = TruncateString(patient.PatientFirst, 50);
                     ffpmOrig.PreferredName = TruncateString(patient.PatientPreferredName, 50);
-                    ffpmOrig.Ssn = TruncateString(patient.PatientSsn, 15);
+                    ffpmOrig.Ssn = TruncateString(ssn, 15);
                     ffpmOrig.DateOfBirth = dob;
                     ffpmOrig.MaritialStatusId = maritalStatusInt;
                     ffpmOrig.TitleId = titleInt;
