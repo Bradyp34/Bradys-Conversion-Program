@@ -215,8 +215,8 @@ namespace Brady_s_Conversion_Program {
         };
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
-        private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
-        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+        private static Regex zipRegex = new Regex(@"(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9}|\d{3} \d{2} \d{4})"); // Regex for US ZIP codes
+        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,})+)$");
         private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$");
 
         public static string FFPMString = "";
