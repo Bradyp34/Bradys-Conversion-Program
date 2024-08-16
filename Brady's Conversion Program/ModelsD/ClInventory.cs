@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.ModelsD2;
+namespace Brady_s_Conversion_Program.ModelsD;
 
 [Table("CLInventory")]
 public partial class Clinventory

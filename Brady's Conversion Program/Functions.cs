@@ -247,13 +247,13 @@ namespace Brady_s_Conversion_Program {
 
                                 // Calculate total number of entries for progress tracking
                                 totalEntries = convDbContext.Patients.Count() +
-                                                convDbContext.AccountXrefs.Count() +
                                                 convDbContext.Addresses.Count() +
                                                 convDbContext.Appointments.Count() +
                                                 convDbContext.AppointmentTypes.Count() +
                                                 convDbContext.Insurances.Count() +
                                                 convDbContext.Locations.Count() +
-                                                convDbContext.Names.Count() +
+                                                convDbContext.Guarantors.Count() +
+                                                convDbContext.PolicyHolders.Count() +
                                                 convDbContext.PatientAlerts.Count() +
                                                 convDbContext.PatientDocuments.Count() +
                                                 convDbContext.PatientInsurances.Count() +

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.ModelsC2;
+namespace Brady_s_Conversion_Program.ModelsC;
 
 public partial class EHRDbContext : DbContext
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.ModelsD2;
+namespace Brady_s_Conversion_Program.ModelsD;
 
 public partial class InvDbContext : DbContext
 {

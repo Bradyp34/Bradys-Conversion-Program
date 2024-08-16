@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.Models2;
+namespace Brady_s_Conversion_Program.Models;
 
 [Table("PatientNote")]
 public partial class PatientNote
