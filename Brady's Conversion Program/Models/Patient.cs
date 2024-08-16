@@ -1,87 +1,177 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.Models;
+namespace Brady_s_Conversion_Program.Models2;
 
+[Table("Patient")]
 public partial class Patient
 {
+    [Key]
+    [Column("ID")]
     public int Id { get; set; }
 
-    public string? PatientAccountNumber { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? OldPatientAccountNumber { get; set; }
 
-    public string? PatientAltAccountNumber { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? OldPatientAltAccountNumber { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? PatientChartNumber { get; set; }
 
-    public string? PatientFirst { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? FirstName { get; set; }
 
-    public string? PatientMiddle { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MiddleName { get; set; }
 
-    public string? PatientLast { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? LastName { get; set; }
 
-    public string? PatientPreferredName { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredName { get; set; }
 
+    [StringLength(20)]
+    [Unicode(false)]
     public string? Title { get; set; }
 
+    [StringLength(20)]
+    [Unicode(false)]
     public string? Suffix { get; set; }
 
-    public string? PatientDob { get; set; }
+    [Column("DOB")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Dob { get; set; }
 
-    public string? PatientSex { get; set; }
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Sex { get; set; }
 
-    public string? PatientMaritalStatus { get; set; }
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? MaritalStatus { get; set; }
 
-    public string? PatientRace { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? Race { get; set; }
 
-    public string? PatientEthnicity { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? Ethnicity { get; set; }
 
-    public string? PatientSsn { get; set; }
+    [Column("SSN")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Ssn { get; set; }
 
-    public string? PatientEmail { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? Email { get; set; }
 
-    public string? DriversLicense { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? LicenseNo { get; set; }
 
-    public string? DriversLicenseState { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? LicenseState { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MedicareSecondaryCode { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MedicareSecondaryNotes { get; set; }
 
+    [StringLength(10)]
+    [Unicode(false)]
     public string? Active { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? Consent { get; set; }
 
+    [StringLength(20)]
+    [Unicode(false)]
     public string? ConsentDate { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? ReleaseOfInfo { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? NoticeOfPrivPractice { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? NoticeOfPrivPracticeDate { get; set; }
 
-    public string? DeceasedFlag { get; set; }
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Deceased { get; set; }
 
+    [StringLength(20)]
+    [Unicode(false)]
     public string? DateOfDeath { get; set; }
 
-    public string? PatientReferralProviderCode { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PatientReferralCode { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? PatientAssignedProviderCode { get; set; }
 
+    [StringLength(20)]
+    [Unicode(false)]
     public string? LastExamDate { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LastExamLocation { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LastExamType { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LastExamProvider { get; set; }
 
-    public string? PatientPreferredContact1 { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? EmployerName { get; set; }
 
-    public string? PatientPreferredContact2 { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredContact1 { get; set; }
 
-    public string? PatientPreferredContact3 { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredContact2 { get; set; }
 
-    public string? PatientPreferredContact4 { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredContact3 { get; set; }
 
-    public string? PatientPreferredContact5 { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredContact4 { get; set; }
+
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? PreferredContact5 { get; set; }
 }

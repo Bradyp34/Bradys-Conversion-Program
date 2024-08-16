@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.Models;
+namespace Brady_s_Conversion_Program.Models2;
 
 [Table("Guarantor")]
 public partial class Guarantor

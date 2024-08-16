@@ -1,355 +1,879 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.ModelsC;
+namespace Brady_s_Conversion_Program.ModelsC2;
 
+[Table("DiagTest")]
 public partial class DiagTest
 {
+    [Key]
+    [Column("ID")]
     public int Id { get; set; }
 
-    public string? VisitId { get; set; }
+    [Column("PtID")]
+    public int PtId { get; set; }
 
-    public string? PtId { get; set; }
+    [Column("VisitID")]
+    public int? VisitId { get; set; }
 
+    [Column("DOSDate")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? Dosdate { get; set; }
 
+    [Column("GonioAngleDepthSuOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthSuOd { get; set; }
 
+    [Column("GonioAngleDepthMedialOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthMedialOd { get; set; }
 
+    [Column("GonioAngleDepthInOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthInOd { get; set; }
 
+    [Column("GonioAngleDepthTemporalOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthTemporalOd { get; set; }
 
+    [Column("GonioAngleStructureSuOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureSuOd { get; set; }
 
+    [Column("GonioAngleStructureMedialOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureMedialOd { get; set; }
 
+    [Column("GonioAngleStructureInOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureInOd { get; set; }
 
+    [Column("GonioAngleStructureTemporalOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureTemporalOd { get; set; }
 
+    [Column("GonioAngleDepthSuOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthSuOs { get; set; }
 
+    [Column("GonioAngleDepthMedialOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthMedialOs { get; set; }
 
+    [Column("GonioAngleDepthInOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthInOs { get; set; }
 
+    [Column("GonioAngleDepthTemporalOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleDepthTemporalOs { get; set; }
 
+    [Column("GonioAngleStructureSuOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureSuOs { get; set; }
 
+    [Column("GonioAngleStructureMedialOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureMedialOs { get; set; }
 
+    [Column("GonioAngleStructureInOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureInOs { get; set; }
 
+    [Column("GonioAngleStructureTemporalOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioAngleStructureTemporalOs { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioComments { get; set; }
 
-    public string? MbalanceScOrtho { get; set; }
+    [Column("MBalanceSCOrtho")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceScortho { get; set; }
 
-    public string? MbalanceHorizScPriGaze { get; set; }
+    [Column("MBalanceHorizSCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScpriGaze { get; set; }
 
-    public string? MbalanceHorizTypeScPriGaze { get; set; }
+    [Column("MBalanceHorizTypeSCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScpriGaze { get; set; }
 
-    public string? MbalanceVertScPriGaze { get; set; }
+    [Column("MBalanceVertSCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScpriGaze { get; set; }
 
-    public string? MbalanceVertTypeScPriGaze { get; set; }
+    [Column("MBalanceVertTypeSCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScpriGaze { get; set; }
 
-    public string? MbalanceHorizScUpGaze { get; set; }
+    [Column("MBalanceHorizSCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScupGaze { get; set; }
 
-    public string? MbalanceHorizTypeScUpGaze { get; set; }
+    [Column("MBalanceHorizTypeSCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScupGaze { get; set; }
 
-    public string? MbalanceVertScUpGaze { get; set; }
+    [Column("MBalanceVertSCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScupGaze { get; set; }
 
-    public string? MbalanceVertTypeScUpGaze { get; set; }
+    [Column("MBalanceVertTypeSCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScupGaze { get; set; }
 
-    public string? MbalanceHorizScDownGaze { get; set; }
+    [Column("MBalanceHorizSCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScdownGaze { get; set; }
 
-    public string? MbalanceHorizTypeScDownGaze { get; set; }
+    [Column("MBalanceHorizTypeSCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScdownGaze { get; set; }
 
-    public string? MbalanceVertScDownGaze { get; set; }
+    [Column("MBalanceVertSCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScdownGaze { get; set; }
 
-    public string? MbalanceVertTypeScDownGaze { get; set; }
+    [Column("MBalanceVertTypeSCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScdownGaze { get; set; }
 
-    public string? MbalanceHorizScRtGaze { get; set; }
+    [Column("MBalanceHorizSCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScrtGaze { get; set; }
 
-    public string? MbalanceHorizTypeScRtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScrtGaze { get; set; }
 
-    public string? MbalanceVertScRtGaze { get; set; }
+    [Column("MBalanceVertSCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScrtGaze { get; set; }
 
-    public string? MbalanceVertTypeScRtGaze { get; set; }
+    [Column("MBalanceVertTypeSCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScrtGaze { get; set; }
 
-    public string? MbalanceHorizScLtGaze { get; set; }
+    [Column("MBalanceHorizSCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScltGaze { get; set; }
 
-    public string? MbalanceHorizTypeScLtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScltGaze { get; set; }
 
-    public string? MbalanceVertScLtGaze { get; set; }
+    [Column("MBalanceVertSCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScltGaze { get; set; }
 
-    public string? MbalanceVertTypeScLtGaze { get; set; }
+    [Column("MBalanceVertTypeSCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScltGaze { get; set; }
 
-    public string? MbalanceCcOrtho { get; set; }
+    [Column("MBalanceCCOrtho")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceCcortho { get; set; }
 
-    public string? MbalanceHorizCcPriGaze { get; set; }
+    [Column("MBalanceHorizCCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcpriGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcPriGaze { get; set; }
+    [Column("MBalanceHorizTypeCCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcpriGaze { get; set; }
 
-    public string? MbalanceVertCcPriGaze { get; set; }
+    [Column("MBalanceVertCCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcpriGaze { get; set; }
 
-    public string? MbalanceVertTypeCcPriGaze { get; set; }
+    [Column("MBalanceVertTypeCCPriGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcpriGaze { get; set; }
 
-    public string? MbalanceHorizCcUpGaze { get; set; }
+    [Column("MBalanceHorizCCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcupGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcUpGaze { get; set; }
+    [Column("MBalanceHorizTypeCCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcupGaze { get; set; }
 
-    public string? MbalanceVertCcUpGaze { get; set; }
+    [Column("MBalanceVertCCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcupGaze { get; set; }
 
-    public string? MbalanceVertTypeCcUpGaze { get; set; }
+    [Column("MBalanceVertTypeCCUpGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcupGaze { get; set; }
 
-    public string? MbalanceHorizCcDownGaze { get; set; }
+    [Column("MBalanceHorizCCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcdownGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcDownGaze { get; set; }
+    [Column("MBalanceHorizTypeCCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcdownGaze { get; set; }
 
-    public string? MbalanceVertCcDownGaze { get; set; }
+    [Column("MBalanceVertCCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcdownGaze { get; set; }
 
-    public string? MbalanceVertTypeCcDownGaze { get; set; }
+    [Column("MBalanceVertTypeCCDownGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcdownGaze { get; set; }
 
-    public string? MbalanceHorizCcRtGaze { get; set; }
+    [Column("MBalanceHorizCCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcrtGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcRtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcrtGaze { get; set; }
 
-    public string? MbalanceVertCcRtGaze { get; set; }
+    [Column("MBalanceVertCCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcrtGaze { get; set; }
 
-    public string? MbalanceVertTypeCcRtGaze { get; set; }
+    [Column("MBalanceVertTypeCCRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcrtGaze { get; set; }
 
-    public string? MbalanceHorizCcLtGaze { get; set; }
+    [Column("MBalanceHorizCCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcltGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcLtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcltGaze { get; set; }
 
-    public string? MbalanceVertCcLtGaze { get; set; }
+    [Column("MBalanceVertCCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcltGaze { get; set; }
 
-    public string? MbalanceVertTypeCcLtGaze { get; set; }
+    [Column("MBalanceVertTypeCCLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcltGaze { get; set; }
 
+    [Column("MBalanceMethod")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MbalanceMethod { get; set; }
 
+    [Column("GonioPigmentOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioPigmentOd { get; set; }
 
+    [Column("GonioPigmentOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? GonioPigmentOs { get; set; }
 
-    public string? MbalanceScType { get; set; }
+    [Column("MBalanceSCType")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceSctype { get; set; }
 
-    public string? MbalanceCcType { get; set; }
+    [Column("MBalanceCCType")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceCctype { get; set; }
 
-    public string? MbalanceHorizScUpRtGaze { get; set; }
+    [Column("MBalanceHorizSCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScupRtGaze { get; set; }
 
-    public string? MbalanceHorizTypeScUpRtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScupRtGaze { get; set; }
 
-    public string? MbalanceVertScUpRtGaze { get; set; }
+    [Column("MBalanceVertSCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScupRtGaze { get; set; }
 
-    public string? MbalanceVertTypeScUpRtGaze { get; set; }
+    [Column("MBalanceVertTypeSCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScupRtGaze { get; set; }
 
-    public string? MbalanceHorizScDownRtGaze { get; set; }
+    [Column("MBalanceHorizSCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScdownRtGaze { get; set; }
 
-    public string? MbalanceHorizTypeScDownRtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScdownRtGaze { get; set; }
 
-    public string? MbalanceVertScDownRtGaze { get; set; }
+    [Column("MBalanceVertSCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScdownRtGaze { get; set; }
 
-    public string? MbalanceVertTypeScDownRtGaze { get; set; }
+    [Column("MBalanceVertTypeSCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScdownRtGaze { get; set; }
 
-    public string? MbalanceHorizScUpLtGaze { get; set; }
+    [Column("MBalanceHorizSCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScupLtGaze { get; set; }
 
-    public string? MbalanceHorizTypeScUpLtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScupLtGaze { get; set; }
 
-    public string? MbalanceVertScUpLtGaze { get; set; }
+    [Column("MBalanceVertSCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScupLtGaze { get; set; }
 
-    public string? MbalanceVertTypeScUpLtGaze { get; set; }
+    [Column("MBalanceVertTypeSCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScupLtGaze { get; set; }
 
-    public string? MbalanceHorizScDownLtGaze { get; set; }
+    [Column("MBalanceHorizSCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizScdownLtGaze { get; set; }
 
-    public string? MbalanceHorizTypeScDownLtGaze { get; set; }
+    [Column("MBalanceHorizTypeSCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeScdownLtGaze { get; set; }
 
-    public string? MbalanceVertScDownLtGaze { get; set; }
+    [Column("MBalanceVertSCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertScdownLtGaze { get; set; }
 
-    public string? MbalanceVertTypeScDownLtGaze { get; set; }
+    [Column("MBalanceVertTypeSCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeScdownLtGaze { get; set; }
 
-    public string? MbalanceHorizCcUpRtGaze { get; set; }
+    [Column("MBalanceHorizCCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcupRtGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcUpRtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcupRtGaze { get; set; }
 
-    public string? MbalanceVertCcUpRtGaze { get; set; }
+    [Column("MBalanceVertCCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcupRtGaze { get; set; }
 
-    public string? MbalanceVertTypeCcUpRtGaze { get; set; }
+    [Column("MBalanceVertTypeCCUpRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcupRtGaze { get; set; }
 
-    public string? MbalanceHorizCcDownRtGaze { get; set; }
+    [Column("MBalanceHorizCCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcdownRtGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcDownRtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcdownRtGaze { get; set; }
 
-    public string? MbalanceVertCcDownRtGaze { get; set; }
+    [Column("MBalanceVertCCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcdownRtGaze { get; set; }
 
-    public string? MbalanceVertTypeCcDownRtGaze { get; set; }
+    [Column("MBalanceVertTypeCCDownRtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcdownRtGaze { get; set; }
 
-    public string? MbalanceHorizCcUpLtGaze { get; set; }
+    [Column("MBalanceHorizCCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcupLtGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcUpLtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcupLtGaze { get; set; }
 
-    public string? MbalanceVertCcUpLtGaze { get; set; }
+    [Column("MBalanceVertCCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcupLtGaze { get; set; }
 
-    public string? MbalanceVertTypeCcUpLtGaze { get; set; }
+    [Column("MBalanceVertTypeCCUpLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcupLtGaze { get; set; }
 
-    public string? MbalanceHorizCcDownLtGaze { get; set; }
+    [Column("MBalanceHorizCCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizCcdownLtGaze { get; set; }
 
-    public string? MbalanceHorizTypeCcDownLtGaze { get; set; }
+    [Column("MBalanceHorizTypeCCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceHorizTypeCcdownLtGaze { get; set; }
 
-    public string? MbalanceVertCcDownLtGaze { get; set; }
+    [Column("MBalanceVertCCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertCcdownLtGaze { get; set; }
 
-    public string? MbalanceVertTypeCcDownLtGaze { get; set; }
+    [Column("MBalanceVertTypeCCDownLtGaze")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MbalanceVertTypeCcdownLtGaze { get; set; }
 
+    [Column("SMotorFixPrefDist")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorFixPrefDist { get; set; }
 
+    [Column("SMotorFixPrefNear")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorFixPrefNear { get; set; }
 
+    [Column("SMotorNystagmus")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorNystagmus { get; set; }
 
+    [Column("SMotorFrisby")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorFrisby { get; set; }
 
+    [Column("SMotorLang")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorLang { get; set; }
 
+    [Column("SMotorTitmusStereoFly")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorTitmusStereoFly { get; set; }
 
+    [Column("SMotorTitmusStereoAnimals")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorTitmusStereoAnimals { get; set; }
 
+    [Column("SMotorTitmusStereoCircles")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorTitmusStereoCircles { get; set; }
 
+    [Column("SMotorRandotCircles")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorRandotCircles { get; set; }
 
+    [Column("SMotorWorth4DotDist")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorWorth4DotDist { get; set; }
 
+    [Column("SMotorWorth4DotNear")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorWorth4DotNear { get; set; }
 
+    [Column("SMotorAVPattern")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorAvpattern { get; set; }
 
+    [Column("SMotorDistStereo")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDistStereo { get; set; }
 
+    [Column("SMotorDistVectograph")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDistVectograph { get; set; }
 
+    [Column("SMotorNPC")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorNpc { get; set; }
 
-    public string? SmotorHorizVergBoBreak { get; set; }
+    [Column("SMotorHorizVergBOBreak")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizVergBobreak { get; set; }
 
-    public string? SmotorHorizVergBoRecover { get; set; }
+    [Column("SMotorHorizVergBORecover")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizVergBorecover { get; set; }
 
-    public string? SmotorHorizVergBiBreak { get; set; }
+    [Column("SMotorHorizVergBIBreak")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizVergBibreak { get; set; }
 
-    public string? SmotorHorizVergBiRecover { get; set; }
+    [Column("SMotorHorizVergBIRecover")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizVergBirecover { get; set; }
 
-    public string? SmotorVertVergBuBreak { get; set; }
+    [Column("SMotorVertVergBUBreak")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertVergBubreak { get; set; }
 
-    public string? SmotorVertVergBuRecover { get; set; }
+    [Column("SMotorVertVergBURecover")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertVergBurecover { get; set; }
 
-    public string? SmotorVertVergBdBreak { get; set; }
+    [Column("SMotorVertVergBDBreak")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertVergBdbreak { get; set; }
 
-    public string? SmotorVertVergBdRecover { get; set; }
+    [Column("SMotorVertVergBDRecover")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertVergBdrecover { get; set; }
 
+    [Column("SMotorDMadRodOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDmadRodOd { get; set; }
 
+    [Column("SMotorDMadRodTorsionOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDmadRodTorsionOd { get; set; }
 
+    [Column("SMotorDMadRodOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDmadRodOs { get; set; }
 
+    [Column("SMotorDMadRodTorsionOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDmadRodTorsionOs { get; set; }
 
+    [Column("SMotorColorVisionOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorColorVisionOd { get; set; }
 
+    [Column("SMotorColorVisionOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorColorVisionOs { get; set; }
 
+    [Column("SMotorColorVisionType")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorColorVisionType { get; set; }
 
+    [Column("SMotorABUTE")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorAbute { get; set; }
 
-    public string? SmotorHtRtHorizSc { get; set; }
+    [Column("SMotorHTRtHorizSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtHorizSc { get; set; }
 
-    public string? SmotorHtRtHorizTypeSc { get; set; }
+    [Column("SMotorHTRtHorizTypeSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtHorizTypeSc { get; set; }
 
-    public string? SmotorHtRtVertSc { get; set; }
+    [Column("SMotorHTRtVertSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtVertSc { get; set; }
 
-    public string? SmotorHtRtVertTypeSc { get; set; }
+    [Column("SMotorHTRtVertTypeSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtVertTypeSc { get; set; }
 
-    public string? SmotorHtLtHorizSc { get; set; }
+    [Column("SMotorHTLtHorizSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltHorizSc { get; set; }
 
-    public string? SmotorHtLtHorizTypeSc { get; set; }
+    [Column("SMotorHTLtHorizTypeSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltHorizTypeSc { get; set; }
 
-    public string? SmotorHtLtVertSc { get; set; }
+    [Column("SMotorHTLtVertSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltVertSc { get; set; }
 
-    public string? SmotorHtLtVertTypeSc { get; set; }
+    [Column("SMotorHTLtVertTypeSC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltVertTypeSc { get; set; }
 
-    public string? SmotorHtRtHorizCc { get; set; }
+    [Column("SMotorHTRtHorizCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtHorizCc { get; set; }
 
-    public string? SmotorHtRtHorizTypeCc { get; set; }
+    [Column("SMotorHTRtHorizTypeCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtHorizTypeCc { get; set; }
 
-    public string? SmotorHtRtVertCc { get; set; }
+    [Column("SMotorHTRtVertCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtVertCc { get; set; }
 
-    public string? SmotorHtRtVertTypeCc { get; set; }
+    [Column("SMotorHTRtVertTypeCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtrtVertTypeCc { get; set; }
 
-    public string? SmotorHtLtHorizTypeCc { get; set; }
+    [Column("SMotorHTLtHorizTypeCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltHorizTypeCc { get; set; }
 
-    public string? SmotorHtLtVertCc { get; set; }
+    [Column("SMotorHTLtVertCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltVertCc { get; set; }
 
-    public string? SmotorHtLtVertTypeCc { get; set; }
+    [Column("SMotorHTLtVertTypeCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltVertTypeCc { get; set; }
 
-    public string? SmotorHtLtHorizCc { get; set; }
+    [Column("SMotorHTLtHorizCC")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHtltHorizCc { get; set; }
 
-    public string? SmotorHorizScNear { get; set; }
+    [Column("SMotorHorizSCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizScnear { get; set; }
 
-    public string? SmotorHorizTypeScNear { get; set; }
+    [Column("SMotorHorizTypeSCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizTypeScnear { get; set; }
 
-    public string? SmotorVertScNear { get; set; }
+    [Column("SMotorVertSCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertScnear { get; set; }
 
-    public string? SmotorVertTypeScNear { get; set; }
+    [Column("SMotorVertTypeSCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertTypeScnear { get; set; }
 
-    public string? SmotorHorizCcNear { get; set; }
+    [Column("SMotorHorizCCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizCcnear { get; set; }
 
-    public string? SmotorHorizTypeCcNear { get; set; }
+    [Column("SMotorHorizTypeCCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizTypeCcnear { get; set; }
 
-    public string? SmotorVertCcNear { get; set; }
+    [Column("SMotorVertCCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertCcnear { get; set; }
 
-    public string? SmotorVertTypeCcNear { get; set; }
+    [Column("SMotorVertTypeCCNear")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertTypeCcnear { get; set; }
 
-    public string? SmotorHorizScDist { get; set; }
+    [Column("SMotorHorizSCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizScdist { get; set; }
 
-    public string? SmotorHorizTypeScDist { get; set; }
+    [Column("SMotorHorizTypeSCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizTypeScdist { get; set; }
 
-    public string? SmotorVertScDist { get; set; }
+    [Column("SMotorVertSCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertScdist { get; set; }
 
-    public string? SmotorVertTypeScDist { get; set; }
+    [Column("SMotorVertTypeSCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertTypeScdist { get; set; }
 
-    public string? SmotorHorizCcDist { get; set; }
+    [Column("SMotorHorizCCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizCcdist { get; set; }
 
-    public string? SmotorHorizTypeCcDist { get; set; }
+    [Column("SMotorHorizTypeCCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizTypeCcdist { get; set; }
 
-    public string? SmotorVertCcDist { get; set; }
+    [Column("SMotorVertCCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertCcdist { get; set; }
 
-    public string? SmotorVertTypeCcDist { get; set; }
+    [Column("SMotorVertTypeCCDist")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertTypeCcdist { get; set; }
 
-    public string? SmotorHorizCcNear3Plus { get; set; }
+    [Column("SMotorHorizCCNear3Plus")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizCcnear3Plus { get; set; }
 
-    public string? SmotorHorizTypeCcNear3Plus { get; set; }
+    [Column("SMotorHorizTypeCCNear3Plus")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorHorizTypeCcnear3Plus { get; set; }
 
-    public string? SmotorVertCcNear3Plus { get; set; }
+    [Column("SMotorVertCCNear3Plus")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertCcnear3Plus { get; set; }
 
-    public string? SmotorVertTypeCcNear3Plus { get; set; }
+    [Column("SMotorVertTypeCCNear3Plus")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SmotorVertTypeCcnear3Plus { get; set; }
 
+    [Column("MBalanceMethodSC")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MbalanceMethodSc { get; set; }
 
+    [Column("MBalanceMethodCC")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MbalanceMethodCc { get; set; }
 
+    [Column("SMotorPrismOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorPrismOd { get; set; }
 
+    [Column("SMotorDirectionOD")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDirectionOd { get; set; }
 
+    [Column("SMotorPrismOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorPrismOs { get; set; }
 
+    [Column("SMotorDirectionOS")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? SmotorDirectionOs { get; set; }
 
+    [Column("SMotorComments")]
+    [StringLength(500)]
+    [Unicode(false)]
     public string? SmotorComments { get; set; }
+
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Active { get; set; }
 }

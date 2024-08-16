@@ -1,89 +1,206 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace Brady_s_Conversion_Program.Models;
+namespace Brady_s_Conversion_Program.Models2;
 
+[Table("Referral")]
 public partial class Referral
 {
+    [Key]
+    [Column("ID")]
     public int Id { get; set; }
 
-    public string? ReferralId { get; set; }
+    [Column("OldReferralID")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? OldReferralId { get; set; }
 
+    [Column("FIrstName")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? FirstName { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? MiddleName { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LastName { get; set; }
 
-    public string? ReferralCode { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? OldReferralCode { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? Title { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? Suffix { get; set; }
 
-    public string? ReferralSsn { get; set; }
+    [Column("SSN")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Ssn { get; set; }
 
-    public string? ReferralEin { get; set; }
+    [Column("EIN")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Ein { get; set; }
 
-    public string? ReferralUpin { get; set; }
+    [Column("UPIN")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Upin { get; set; }
 
-    public string? ReferralDob { get; set; }
+    [Column("DOB")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Dob { get; set; }
 
-    public string? ReferralSpecialityId { get; set; }
+    [Column("SpecialtyID")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? SpecialtyId { get; set; }
 
-    public string? ReferralLicenseNo { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? LicenseNo { get; set; }
 
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LicenseIssuingStateId { get; set; }
 
+    [Column("LicenseIssuingCountryID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? LicenseIssuingCountryId { get; set; }
 
-    public string? ReferralMedicaidNumber { get; set; }
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? MedicaidNumber { get; set; }
 
-    public string? ReferralDeaNumber { get; set; }
+    [Column("DEANumber")]
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? Deanumber { get; set; }
 
-    public string? IsActive { get; set; }
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? Active { get; set; }
 
-    public string? ReferralNpi { get; set; }
+    [Column("NPI")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Npi { get; set; }
 
+    [Column("PrimaryTaxonomyID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? PrimaryTaxonomyId { get; set; }
 
+    [Column("AlternateTaxonomy1ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy1Id { get; set; }
 
+    [Column("AlternateTaxonomy2ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy2Id { get; set; }
 
+    [Column("AlternateTaxonomy3ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy3Id { get; set; }
 
+    [Column("AlternateTaxonomy4ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy4Id { get; set; }
 
+    [Column("AlternateTaxonomy5ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy5Id { get; set; }
 
+    [Column("AlternateTaxonomy6ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy6Id { get; set; }
 
+    [Column("AlternateTaxonomy7ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy7Id { get; set; }
 
+    [Column("AlternateTaxonomy8ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy8Id { get; set; }
 
+    [Column("AlternateTaxonomy9ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy9Id { get; set; }
 
+    [Column("AlternateTaxonomy10ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy10Id { get; set; }
 
+    [Column("AlternateTaxonomy11ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy11Id { get; set; }
 
+    [Column("AlternateTaxonomy12ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy12Id { get; set; }
 
+    [Column("AlternateTaxonomy13ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy13Id { get; set; }
 
+    [Column("AlternateTaxonomy14ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy14Id { get; set; }
 
+    [Column("AlternateTaxonomy15ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy15Id { get; set; }
 
+    [Column("AlternateTaxonomy16ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy16Id { get; set; }
 
+    [Column("AlternateTaxonomy17ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy17Id { get; set; }
 
+    [Column("AlternateTaxonomy18ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy18Id { get; set; }
 
+    [Column("AlternateTaxonomy19ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy19Id { get; set; }
 
+    [Column("AlternateTaxonomy20ID")]
+    [StringLength(50)]
+    [Unicode(false)]
     public string? AlternateTaxonomy20Id { get; set; }
 }
