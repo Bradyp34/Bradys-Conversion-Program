@@ -4,13 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brady_s_Conversion_Program.ModelsC2;
 
-public partial class EHRContext : DbContext
+public partial class EHRDbContext : DbContext
 {
-    public EHRContext()
-    {
+    private readonly string _connectionString;
+    public EHRDbContext(string connectionString) {
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
-    public EHRContext(DbContextOptions<EHRContext> options)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public EHRDbContext(DbContextOptions<EHRDbContext> options)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         : base(options)
     {
     }
@@ -66,8 +69,7 @@ public partial class EHRContext : DbContext
     public virtual DbSet<VisitOrder> VisitOrders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=FoxDevSql19;Database=Foxfire_EHR_Conv;Integrated Security=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
