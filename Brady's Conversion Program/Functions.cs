@@ -65,72 +65,6 @@ namespace Brady_s_Conversion_Program {
             return date;
         }
 
-        public static readonly Dictionary<string, short> stateCodes = new Dictionary<string, short>
-        {
-            {"NJ", 1},
-            {"MA", 2},
-            {"NY", 3},
-            {"IA", 4},
-            {"FL", 5},
-            {"MI", 6},
-            {"AK", 7},
-            {"AZ", 8},
-            {"CA", 9},
-            {"CO", 10},
-            {"CT", 11},
-            {"GA", 12},
-            {"IL", 13},
-            {"IN", 14},
-            {"KS", 15},
-            {"KY", 16},
-            {"LA", 17},
-            {"MD", 18},
-            {"ME", 19},
-            {"MN", 20},
-            {"MO", 21},
-            {"MS", 22},
-            {"MT", 23},
-            {"NC", 24},
-            {"ND", 25},
-            {"NE", 26},
-            {"NH", 27},
-            {"NM", 28},
-            {"NV", 29},
-            {"OH", 30},
-            {"OK", 31},
-            {"OR", 32},
-            {"PA", 33},
-            {"RI", 34},
-            {"SC", 35},
-            {"SD", 36},
-            {"TN", 37},
-            {"TX", 38},
-            {"UT", 39},
-            {"VA", 40},
-            {"VT", 41},
-            {"WA", 42},
-            {"WI", 43},
-            {"WV", 44},
-            {"WY", 45},
-            {"AL", 46},
-            {"AR", 47},
-            {"HI", 48},
-            {"ID", 49},
-            {"DE", 50},
-            {"DC", 51},
-            {"PR", 52},
-            {"GU", 53},
-            {"VI", 54},
-            {"MP", 55},
-            {"AS", 56},
-            {"FM", 57},
-            {"PW", 58},
-            {"AA", 59},
-            {"AE", 60},
-            {"MH", 61},
-            {"AP", 62}
-        };
-
         public static readonly DateTime minDate = DateTime.Parse("1/1/1900");
 
         public static readonly string[] dateFormats = new string[] {
@@ -342,11 +276,11 @@ namespace Brady_s_Conversion_Program {
                 if (inv == true) {
                     using (var invDbContext = new InvDbContext(invConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            totalEntries = invDbContext.ClBrands.Count() +
-                                            invDbContext.ClInventories.Count() +
-                                            invDbContext.ClLenses.Count() +
-                                            invDbContext.CptDepts.Count() +
-                                            invDbContext.CptMappings.Count() +
+                            totalEntries = invDbContext.Clbrands.Count() +
+                                            invDbContext.Clinventories.Count() +
+                                            invDbContext.Cllenses.Count() +
+                                            invDbContext.Cptdepts.Count() +
+                                            invDbContext.Cptmappings.Count() +
                                             invDbContext.Cpts.Count() +
                                             invDbContext.FrameCategories.Count() +
                                             invDbContext.FrameCollections.Count() +
@@ -419,8 +353,8 @@ namespace Brady_s_Conversion_Program {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var name in convDbContext.Names.ToList()) {
-                ConvertName(name, convDbContext, ffpmDbContext, logger, progress);
+            foreach (var guarantor in convDbContext.Guarantors.ToList()) {
+                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress);
             }
 
             foreach (var patientAlert in convDbContext.PatientAlerts.ToList()) {
@@ -441,6 +375,10 @@ namespace Brady_s_Conversion_Program {
 
             foreach (var phone in convDbContext.Phones.ToList()) {
                 ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress);
+            }
+
+            foreach (var policyHolder in convDbContext.PolicyHolders.ToList()) {
+                ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress);
             }
 
             foreach (var provider in convDbContext.Providers.ToList()) {
@@ -470,124 +408,71 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                if (patient.PatientAccountNumber == null) {
-                    logger.Log($"Conv: Conv Patient Account Number is null for patient with ID: {patient.Id}");
-                    return;
-                }
-                else if (patient.PatientLast == null) {
+                if (patient.LastName == null) {
                     logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
                     return;
                 }
-                else if (patient.PatientFirst == null) {
+                else if (patient.FirstName == null) {
                     logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                     return;
                 }
-                string? ssn = patient.PatientSsn;
-                if (patient.PatientSsn == null || !ssnRegex.IsMatch(patient.PatientSsn)) {
+                else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
+                    return;
+                }
+                string? ssn = patient.Ssn;
+                if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
                     ssn = "";
                 }
 
                 short? licenseShort = null;
-                if (patient.DriversLicenseState != null) {
-                    stateCodes.TryGetValue(patient.DriversLicenseState, out short temp);
-                    licenseShort = temp;
+                var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == patient.LicenseState);
+                if (stateXref != null) {
+                    licenseShort = stateXref.StateId;
                 }
 
                 DateTime dob = minDate;
 
-                if (patient.PatientDob != null) {
-                    string dobString = patient.PatientDob.Trim(); // Remove any leading/trailing whitespaces
+                if (patient.Dob != null) {
+                    string dobString = patient.Dob.Trim(); // Remove any leading/trailing whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
                         dob = isValidDate(dob);
                     }
                 }
                 short? maritalStatusInt = null;
-                if (patient.PatientMaritalStatus != null) {
-                    switch (patient.PatientMaritalStatus.ToLower()) {
-                        case "married":
-                            maritalStatusInt = 1;
-                            break;
-                        case "single":
-                            maritalStatusInt = 2;
-                            break;
-                        case "divorced":
-                            maritalStatusInt = 3;
-                            break;
-                        case "widowed":
-                            maritalStatusInt = 4;
-                            break;
-                    }
+                var maritalStatusXref = ffpmDbContext.MntMaritalStatuses.FirstOrDefault(m => m.MaritalStatus == patient.MaritalStatus);
+                if (maritalStatusXref != null) {
+                    maritalStatusInt = maritalStatusXref.MaritalStatusId;
                 }
 
+
                 short? titleInt = null;
-                if (patient.Title != null) {
-                    switch (patient.Title.ToLower()) {
-                        case "mr":
-                        case "mr.":
-                            titleInt = 1;
-                            break;
-                        case "mrs":
-                        case "mrs.":
-                            titleInt = 2;
-                            break;
-                        case "ms":
-                        case "ms.":
-                            titleInt = 3;
-                            break;
-                        case "miss":
-                            titleInt = 4;
-                            break;
-                    }
+                var titleXref = ffpmDbContext.MntTitles.FirstOrDefault(t => t.Title == patient.Title);
+                if (titleXref != null) {
+                    titleInt = titleXref.TitleId;
                 }
 
                 short? suffixInt = null;
-                if (patient.Suffix != null) {
-                    switch (patient.Suffix.ToLower()) {
-                        case "jr":
-                    suffixInt = 1;
-                    break;
-                        case "sr":
-                    case "sr.":
-                        suffixInt = 2;
-                        break;
-                    case "ii":
-                        suffixInt = 3;
-                        break;
-                    case "iii":
-                        suffixInt = 4;
-                        break;
-                    case "iv":
-                        suffixInt = 5;
-                        break;
-                    case "v":
-                        suffixInt = 6;
-                        break;
-                    }
+                var suffixXref = ffpmDbContext.MntSuffixes.FirstOrDefault(s => s.Suffix == patient.Suffix);
+                if (suffixXref != null) {
+                    suffixInt = suffixXref.SuffixId;
                 }
 
                 short? genderInt = null;
-                if (patient.PatientSex != null) {
-                    genderInt = patient.PatientSex.ToLower() == "m" ? (short)1 : (short)2;
-                }
-                if (patient.DriversLicenseState == null) {
-
+                if (patient.Sex != null) {
+                    genderInt = patient.Sex.ToLower() == "m" ? (short)1 : (short)2;
                 }
 
                 short? race = null;
-                if (patient.PatientRace != null) {
-                    if (short.TryParse(patient.PatientRace, out short raceInt)) {
-                        race = raceInt;
-                    }
+                var raceXref = ffpmDbContext.MntRaces.FirstOrDefault(s => s.Race == patient.Race);
+                if (raceXref != null) {
+                    race = raceXref.RaceId;
                 }
 
                 short? ethnicity = null;
-                string ethnicityString = "";
-                if (patient.PatientEthnicity != null) {
-                    if (short.TryParse(patient.PatientEthnicity, out short ethnicityInt)) {
-                        ethnicity = ethnicityInt;
-                        ethnicityString = patient.PatientEthnicity;
-                    }
+                var ethnicityXref = ffpmDbContext.MntEthnicities.FirstOrDefault(s => s.Ethnicity == patient.Ethnicity);
+                if (ethnicityXref != null) {
+                    ethnicity = ethnicityXref.EthnicityId;
                 }
 
                 string? medicareSecondary = null;
@@ -601,8 +486,8 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool? deceased = null;
-                if (patient.DeceasedFlag != null) {
-                    deceased = patient.DeceasedFlag.ToUpper() == "YES" ? true : false;
+                if (patient.Deceased != null) {
+                    deceased = patient.Deceased.ToUpper() == "YES" ? true : false;
                 }
 
                 bool? consent = null;
@@ -635,44 +520,44 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 lastExamDate = isValidDate(lastExamDate);
-                if (patient.PatientEmail != null && patient.PatientEmail != "") {
-                    string email = patient.PatientEmail;
+                if (patient.Email != null && emailRegex.IsMatch(patient.Email)) {
+                    string email = patient.Email;
                 }
-                bool isEmailValid = new EmailAddressAttribute().IsValid(patient.PatientEmail);
+                bool isEmailValid = new EmailAddressAttribute().IsValid(patient.Email);
                 bool dontSendStatements = false;
                 bool emailStatements = false;
                 short? prefContact1 = null;
-                if (patient.PatientPreferredContact1 != null) {
-                    if (short.TryParse(patient.PatientPreferredContact1, out short prefContact1Int)) {
+                if (patient.PreferredContact1 != null) {
+                    if (short.TryParse(patient.PreferredContact1, out short prefContact1Int)) {
                         prefContact1 = prefContact1Int;
                     }
                 }
                 short? prefContact2 = null;
-                if (patient.PatientPreferredContact2 != null) {
-                    if (short.TryParse(patient.PatientPreferredContact2, out short prefContact2Int)) {
+                if (patient.PreferredContact2 != null) {
+                    if (short.TryParse(patient.PreferredContact2, out short prefContact2Int)) {
                         prefContact2 = prefContact2Int;
                     }
                 }
                 short? prefContact3 = null;
-                if (patient.PatientPreferredContact3 != null) {
-                    if (short.TryParse(patient.PatientPreferredContact3, out short prefContact3Int)) {
+                if (patient.PreferredContact3 != null) {
+                    if (short.TryParse(patient.PreferredContact3, out short prefContact3Int)) {
                         prefContact3 = prefContact3Int;
                     }
                 }
-                string preferredContactsNotes = patient.PatientPreferredContact1 + "; " + patient.PatientPreferredContact2 + "; " + patient.PatientPreferredContact3;
+                string preferredContactsNotes = patient.PreferredContact1 + "; " + patient.PreferredContact2 + "; " + patient.PreferredContact3;
 
-                var ffpmOrig = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == patient.PatientAccountNumber 
-                        && p.FirstName == patient.PatientFirst && p.LastName == patient.PatientLast);
-
+                var ffpmOrig = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber 
+                        && p.FirstName == patient.FirstName && p.LastName == patient.LastName);
+                
 
                 if (ffpmOrig != null) {
                     ffpmOrig.DateCreated = DateTime.Now;
-                    ffpmOrig.AccountNumber = TruncateString(patient.PatientAccountNumber, 10);
-                    ffpmOrig.AltAccountNumber = TruncateString(patient.PatientAltAccountNumber, 10);
-                    ffpmOrig.LastName = TruncateString(patient.PatientLast, 50);
-                    ffpmOrig.MiddleName = TruncateString(patient.PatientMiddle, 50);
-                    ffpmOrig.FirstName = TruncateString(patient.PatientFirst, 50);
-                    ffpmOrig.PreferredName = TruncateString(patient.PatientPreferredName, 50);
+                    ffpmOrig.AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10);
+                    ffpmOrig.AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10);
+                    ffpmOrig.LastName = TruncateString(patient.LastName, 50);
+                    ffpmOrig.MiddleName = TruncateString(patient.MiddleName, 50);
+                    ffpmOrig.FirstName = TruncateString(patient.FirstName, 50);
+                    ffpmOrig.PreferredName = TruncateString(patient.PreferredName, 50);
                     ffpmOrig.Ssn = TruncateString(ssn, 15);
                     ffpmOrig.DateOfBirth = dob;
                     ffpmOrig.MaritialStatusId = maritalStatusInt;
@@ -692,7 +577,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.EmailStatements = emailStatements;
                     ffpmOrig.OpenEdgeCustomerId = TruncateString("", 100);  // assuming the ID is reset or a new one will be assigned later
                     ffpmOrig.TextStatements = true;
-                    ffpmOrig.LocationId = 0;  // assuming the location is reset or a new one will be assigned later
+                    ffpmOrig.LocationId = 0; // there is no incoming location id, Dave has suggested that since most are set to 0, we can just set it to 0
                     ffpmDbContext.SaveChanges();
                     return;
                 }
@@ -701,13 +586,13 @@ namespace Brady_s_Conversion_Program {
 
                 var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                     DateCreated = DateTime.Now,
-                    AccountNumber = TruncateString(patient.PatientAccountNumber, 10),
-                    AltAccountNumber = TruncateString(patient.PatientAltAccountNumber, 10),
-                    LastName = TruncateString(patient.PatientLast, 50),
-                    MiddleName = TruncateString(patient.PatientMiddle, 50),
-                    FirstName = TruncateString(patient.PatientFirst, 50),
-                    PreferredName = TruncateString(patient.PatientPreferredName, 50),
-                    Ssn = TruncateString(patient.PatientSsn, 15),
+                    AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                    AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10),
+                    LastName = TruncateString(patient.LastName, 50),
+                    MiddleName = TruncateString(patient.MiddleName, 50),
+                    FirstName = TruncateString(patient.FirstName, 50),
+                    PreferredName = TruncateString(patient.PreferredName, 50),
+                    Ssn = TruncateString(patient.Ssn, 15),
                     DateOfBirth = dob,
                     MaritialStatusId = maritalStatusInt,
                     TitleId = titleInt,
@@ -733,33 +618,23 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.DmgPatients.Add(newPatient);
                 ffpmDbContext.SaveChanges();
 
-                var newRace = new Brady_s_Conversion_Program.ModelsA.MntRace {
-                    Race = TruncateString(patient.PatientRace, 50)
-                };
-                ffpmDbContext.MntRaces.Add(newRace);
-                ffpmDbContext.SaveChanges();
-
-                var newEthnicity = new Brady_s_Conversion_Program.ModelsA.MntEthnicity {
-                    Ethnicity = TruncateString(ethnicityString, 50)
-                };
-                ffpmDbContext.MntEthnicities.Add(newEthnicity);
-                ffpmDbContext.SaveChanges();
-
-                var newMedicareSecondary = new Brady_s_Conversion_Program.ModelsA.MntMedicareSecondary {
-                    MedicareSecondarryCode = TruncateString(medicareSecondary, 5),
-                    MedicareSecondaryDescription = TruncateString(patient.MedicareSecondaryNotes, 500)
-                };
-                ffpmDbContext.MntMedicareSecondaries.Add(newMedicareSecondary);
-                ffpmDbContext.SaveChanges();
+                short? medicareSecondaryId = null;
+                string medicareSecondaryNotes = "";
+                var medicareSecondaryXref = ffpmDbContext.MntMedicareSecondaries.FirstOrDefault(s => s.MedicareSecondarryCode == medicareSecondary);
+                if (medicareSecondaryXref != null) {
+                    medicareSecondaryId = medicareSecondaryXref.MedicareSecondaryId;
+                    if (medicareSecondaryXref.MedicareSecondaryDescription != null)
+                        medicareSecondaryNotes = medicareSecondaryXref.MedicareSecondaryDescription;
+                }
 
                 var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
                     PatientId = newPatient.PatientId,
-                    DriversLicenseNumber = TruncateString(patient.DriversLicense, 25),
+                    DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
                     DriversLicenseStateId = licenseShort,  // Assuming this is already an int and doesn't need truncation
-                    RaceId = newRace.RaceId,
-                    EthnicityId = newEthnicity.EthnicityId,
-                    MedicareSecondaryId = newMedicareSecondary.MedicareSecondaryId,
-                    MedicareSecondaryNotes = TruncateString(patient.MedicareSecondaryNotes, 500),
+                    RaceId = race,
+                    EthnicityId = ethnicity,
+                    MedicareSecondaryId = medicareSecondaryId,
+                    MedicareSecondaryNotes = medicareSecondaryNotes,
                     HippaConsent = consent,
                     HippaConsentDate = consentDate,
                     PreferredContactFirstId = prefContact1,
@@ -794,11 +669,6 @@ namespace Brady_s_Conversion_Program {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(address.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
-                    return;
-                }
-                var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-                if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                     return;
                 }
@@ -1528,113 +1398,43 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertName(Models.Name name, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatients = convDbContext.Patients.ToList();
-                var ConvPatient = convDbContext.Patients.FirstOrDefault(p => p.PatientAccountNumber == name.AccountNumber);
+                var ConvPatient = convDbContext.Patients.Find(guarantor.Id);
                 if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Conv patient not found for name with ID: {name.Id}");
+                    logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
                     return;
                 }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
                 if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv FFPM patient not found for name with ID: {name.Id}");
+                    logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
                     return;
                 }
-                DmgPatientAdditionalDetail? ffpmPatientAdditional = null;
-                foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
-                    if (details.PatientId == ffpmPatient.PatientId) {
-                        ffpmPatientAdditional = details;
-                    }
-                }
-                if (ffpmPatientAdditional == null) {
-                    logger.Log($"Conv: Conv FFPM patient additional details not found for name with ID: {name.Id}");
+            }
+        }
+
+        public static void ConvertPolicyHolder(Models.PolicyHolder policyHolder, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+                var ConvPatient = convDbContext.Patients.Find(policyHolder.Id);
+                if (ConvPatient == null) {
+                    logger.Log($"Conv: Conv Patient not found for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
-                long? accNum = null;
-                long? addId = null;
-                if (name.AccountNumber != null) {
-                    DmgPatient?tempPatient = ffpmPatients.Find(p => p.AccountNumber == name.AccountNumber);
-                    DmgPatientAdditionalDetail? tempAdditionalDetail = null;
-                    if (tempPatient == null) {
-                        logger.Log($"Conv: Conv FFPM patient w/ account number not found for name with ID: {name.Id}");
-                        return;
-                    }
-                    foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
-                        if (details.PatientId == tempPatient.PatientId) {
-                            tempAdditionalDetail = details;
-                        }
-                    }
-                    accNum = tempPatient.PatientId;
-                    addId = tempPatient.AddressId;
-                }
-                string? ssn = null;
-                if (name.Ssn != null && ssnRegex.IsMatch(name.Ssn)) {
-                    ssn = name.Ssn;
+                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+                if (ffpmPatient == null) {
+                    logger.Log($"Conv: Conv Patient not found for policy holder with ID: {policyHolder.Id}");
+                    return;
                 }
 
-                DateTime? dob = null;
-                if (name.Dob != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(name.Dob, dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dob = tempDateTime;
-                    }
-                }
-                short? genderInt = null;
-                if (name.Sex != null) {
-                    if (name.Sex.ToUpper() == "M" || name.Sex.ToLower() == "male") {
-                        genderInt = 1;
-                    }
-                    else if (name.Sex.ToUpper() == "F" || name.Sex.ToLower() == "female") {
-                        genderInt = 2;
-                    } else {
-                        genderInt = 0;
-                    }
-                }
-                if (name.Relationship == null) {
-                    logger.Log($"Conv: Conv Relationship is null for name with ID: {name.Id}");
-                    return;
-                }
-                if (name.Relationship.ToLower() == "emergency contact") {
-                    ffpmPatientAdditional.EmergencyLast = TruncateString(name.LastName, 50);
-                    ffpmPatientAdditional.EmergencyFirst = TruncateString(name.FirstName, 50);
-                    ffpmPatientAdditional.EmergencyPatientId = accNum;
-                    ffpmPatientAdditional.EmergencyAddressId = addId;
-                }
-                else if (name.Relationship.ToLower() == "guarantor" || name.Relationship.ToLower() == "guar") {
-                    bool isExistingPatient = accNum != null;
-                    var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
-                        PatientId = ffpmPatient.PatientId,
-                        AddressId = addId,
-                        IsGuarantorExistingPatient = isExistingPatient,
-                        FirstName = TruncateString(name.FirstName, 50),
-                        LastName = TruncateString(name.LastName, 50),
-                        MiddleName = TruncateString(name.MiddleName, 50),
-                        Ssn = TruncateString(ssn, 15),
-                        Dob = dob,
-                        GenderId = genderInt
-                    };
-                    ffpmDbContext.DmgGuarantors.Add(newGuarantor);
-                    ffpmDbContext.SaveChanges();
-                }
-                else if (name.Relationship.ToLower() == "employer") {
-                    ffpmPatientAdditional.EmployerName = TruncateString(name.LastName, 50);  // Assuming 'LastName' field holds the employer's name
-                    ffpmPatientAdditional.EmployerWebsite = TruncateString(name.FirstName, 50);  // Assuming 'FirstName' field is used for the website
-                    ffpmPatientAdditional.EmployerAddressId = addId;
-                }
-                else {
-                    logger.Log($"Conv: Conv Invalid relationship for name with ID: {name.Id}");
-                    return;
-                }
-                ffpmDbContext.SaveChanges();
-            }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the name with ID: {name.Id}. Error: {ex.Message}");
+
             }
         }
 
