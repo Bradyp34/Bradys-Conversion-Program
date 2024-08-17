@@ -1628,7 +1628,101 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
+                var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
+                var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
+                if (convPatient == null) {
+                    logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
+                    return;
+                }
+                var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
+                    (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                if (ffpmPatient == null) {
+                    logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {guarantor.Id}");
+                    return;
+                }
+
+                string ssn = "";
+                if (guarantor.Ssn != null) {
+                    if (ssnRegex.IsMatch(guarantor.Ssn)) {
+                        ssn = guarantor.Ssn;
+                    }
+                }
+                DateTime dob = minDate;
+                if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
+                                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
+                    dob = isValidDate(dob);
+                }
+                short? relationID = null;
+                var relationXref = ffpmDbContext.MntRelationships.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
+                if (relationXref != null) {
+                    relationID = relationXref.RelationshipId;
+                }
+                short? titleID = null;
+                // no titleID in incoming tables
+                short? suffixID = null;
+                // no suffixID in incoming tables
+                short? genderID = null;
+                var genderXref = ffpmDbContext.MntGenders.FirstOrDefault(g => g.Gender == guarantor.Sex);
+                if (genderXref != null) {
+                    genderID = genderXref.GenderId;
+                }
+                bool? isActive = null;
+                if (guarantor.Active != null && guarantor.Active.ToLower() == "yes" || guarantor.Active == "1") {
+                    isActive = true;
+                }
+                bool? guarantorIsPatient = null;
+                // no guarantorIsPatient in incoming tables
+                long? guarantorIsPatientID = null;
+                // no guarantorIsPatientID in incoming tables
+                short? employmentStatusID = null;
+                // no employmentStatusID in incoming tables
+                DateTime? addedDate = null;
+                // no addedDate in incoming tables
+                DateTime? removedDate = null;
+                // no removedDate in incoming tables
+                DateTime? lastModified = null;
+                // no lastModified in incoming tables
                 
+
+
+                var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+
+                if (ffpmGuarantor != null) {
+                    ffpmGuarantor.FirstName = TruncateString(guarantor.FirstName, 50);
+                    ffpmGuarantor.LastName = TruncateString(guarantor.LastName, 50);
+                    ffpmGuarantor.MiddleName = TruncateString(guarantor.MiddleName, 50);
+                    ffpmGuarantor.Ssn = TruncateString(ssn, 15);
+                    ffpmGuarantor.Dob = dob;
+                    ffpmGuarantor.RelationId = relationID;
+                    ffpmGuarantor.TitleId = titleID;
+                    ffpmGuarantor.SuffixId = suffixID;
+                }
+
+                var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
+                    PatientId = ffpmPatient.PatientId,
+                    FirstName = TruncateString(guarantor.FirstName, 50),
+                    LastName = TruncateString(guarantor.LastName, 50),
+                    MiddleName = TruncateString(guarantor.MiddleName, 50),
+                    Ssn = TruncateString(ssn, 15),
+                    Dob = dob,
+                    RelationId = relationID,
+                    TitleId = titleID,
+                    SuffixId = suffixID,
+                    GenderId = genderID,
+                    IsActive = isActive,
+                    EmploymentStatusId = employmentStatusID,
+                    AddedDate = addedDate,
+                    RemovedDate = removedDate,
+                    LastModifiedDate = lastModified,
+                    GuarantorExistingPatientId = guarantorIsPatientID,
+                    AddressId = null,
+                    IsGuarantorExistingPatient = guarantorIsPatient,
+                    LastModifiedBy = null
+                };
+                ffpmDbContext.DmgGuarantors.Add(newGuarantor);
+
+                ffpmDbContext.SaveChanges();
+
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
@@ -8863,23 +8957,23 @@ namespace Brady_s_Conversion_Program {
 
         #region InvConversion
         public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            foreach (var clBrand in invDbContext.ClBrands) {
+            foreach (var clBrand in invDbContext.Clbrands) {
                 CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var clInventory in invDbContext.ClInventories) {
+            foreach (var clInventory in invDbContext.Clinventories) {
                 clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var clLense in invDbContext.ClLenses) {
+            foreach (var clLense in invDbContext.Cllenses) {
                 CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var cptDept in invDbContext.CptDepts) {
+            foreach (var cptDept in invDbContext.Cptdepts) {
                 CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var cptMapping in invDbContext.CptMappings) {
+            foreach (var cptMapping in invDbContext.Cptmappings) {
                 CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
             }
 
