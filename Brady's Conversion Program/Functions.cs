@@ -1729,27 +1729,6 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertPolicyHolder(Models.PolicyHolder policyHolder, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(policyHolder.Id);
-                if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for policy holder with ID: {policyHolder.Id}");
-                    return;
-                }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for policy holder with ID: {policyHolder.Id}");
-                    return;
-                }
-
-
-            }
-        }
-
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
@@ -1762,16 +1741,16 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                     return;
                 }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
+                    (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
+                    logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                     return;
                 }
                 short? priorityID = null;
-                if (patientAlert.PriorityId != null) {
-                    if (short.TryParse(patientAlert.PriorityId, out short priority)) {
-                        priorityID = priority;
-                    }
+                var priorityXref = ffpmDbContext.MntPriorities.FirstOrDefault(p => p.PriorityId == priorityID);
+                if (priorityXref != null) {
+                    priorityID = priorityXref.PriorityId;
                 }
 
                 DateTime? alertDate = null;
@@ -1797,8 +1776,8 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? isActive = null;
-                if (patientAlert.IsActive != null) {
-                    if (bool.TryParse(patientAlert.IsActive, out bool active)) {
+                if (patientAlert.Active != null) {
+                    if (bool.TryParse(patientAlert.Active, out bool active)) {
                         isActive = active;
                     }
                 }
