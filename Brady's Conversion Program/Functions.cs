@@ -377,10 +377,6 @@ namespace Brady_s_Conversion_Program {
                 ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress);
             }
 
-            foreach (var policyHolder in convDbContext.PolicyHolders.ToList()) {
-                ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress);
-            }
-
             foreach (var provider in convDbContext.Providers.ToList()) {
                 ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress);
             }
@@ -985,9 +981,6 @@ namespace Brady_s_Conversion_Program {
 
                             break;
                         case "pol": // Policy Holders / patient insurances
-
-                            break;
-                        case "pat":
 
                             break;
                     };
@@ -2088,26 +2081,26 @@ namespace Brady_s_Conversion_Program {
                 var ConvPatient = convDbContext.Patients.Find(phone.Id);
                 var ffpmAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
                 if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 if (ffpmPatients == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 if (ffpmAddresses == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
                 DmgPatientAddress? address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
                 if (address == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {id}");
+                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
 
@@ -2545,84 +2538,49 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 short? suffixInt = null;
-                if (referral.Suffix != null) {
-                    switch (referral.Suffix.ToLower()) {
-                        case "jr":
-                        case "jr.":
-                            suffixInt = 1;
-                            break;
-                        case "sr":
-                        case "sr.":
-                            suffixInt = 2;
-                            break;
-                        case "ii":
-                            suffixInt = 3;
-                            break;
-                        case "iii":
-                            suffixInt = 4;
-                            break;
-                        case "iv":
-                            suffixInt = 5;
-                            break;
-                        case "v":
-                            suffixInt = 6;
-                            break;
-                    }
+                var suffixXref = ffpmDbContext.MntSuffixes.FirstOrDefault(s => s.Suffix == referral.Suffix);
+                if (suffixXref != null) {
+                    suffixInt = suffixXref.SuffixId;
                 }
 
                 short? titleInt = null;
-                if (referral.Title != null) {
-                    switch (referral.Title.ToLower()) {
-                        case "mr":
-                        case "mr.":
-                            titleInt = 1;
-                            break;
-                        case "mrs":
-                        case "mrs.":
-                            titleInt = 2;
-                            break;
-                        case "ms":
-                        case "ms.":
-                            titleInt = 3;
-                            break;
-                        case "miss":
-                            titleInt = 4;
-                            break;
-                    }
+                var titleXref = ffpmDbContext.MntTitles.FirstOrDefault(t => t.Title == referral.Title);
+                if (titleXref != null) {
+                    titleInt = titleXref.TitleId;
                 }
 
                 string? ssnString = null;
-                if (referral.ReferralSsn != null) {
-                    if (ssnRegex.IsMatch(referral.ReferralSsn)) {
-                        ssnString = referral.ReferralSsn;
+                if (referral.Ssn != null) {
+                    if (ssnRegex.IsMatch(referral.Ssn)) {
+                        ssnString = referral.Ssn;
                     }
                 }
 
                 DateTime? dobDate = null;
-                if (referral.ReferralDob != null) {
+                if (referral.Dob != null) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParse(referral.ReferralDob, out tempDateTime)) {
+                    if (DateTime.TryParse(referral.Dob, out tempDateTime)) {
                         dobDate = tempDateTime;
                     }
                 }
 
                 string? einString = null;
-                if (referral.ReferralEin != null) {
-                    einString = referral.ReferralEin;
+                if (referral.Ein != null) {
+                    einString = referral.Ein;
                 }
 
                 string? upinString = null;
-                if (referral.ReferralUpin != null) {
-                    upinString = referral.ReferralUpin;
+                if (referral.Upin != null) {
+                    upinString = referral.Upin;
                 }
 
                 string? npiString = null;
-                if (referral.ReferralNpi != null) {
-                    npiString = referral.ReferralNpi;
+                if (referral.Npi != null) {
+                    npiString = referral.Npi;
                 }
 
                 bool? isActive = null;
-                if (referral.IsActive != null && referral.IsActive.ToLower() == "yes" || == "1") {
+                if (referral.Active != null && referral.Active.ToLower() == "yes" || referral.Active == "1") {
                     isActive = true;
                 }
 
