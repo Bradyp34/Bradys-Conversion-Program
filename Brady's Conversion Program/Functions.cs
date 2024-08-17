@@ -2530,8 +2530,8 @@ namespace Brady_s_Conversion_Program {
                 var providersList = ffpmDbContext.DmgProviders.ToList();
 
                 long providerID = 0;
-                if (long.TryParse(referral.ReferralId, out providerID)) {
-                    providerID = long.Parse(referral.ReferralId);
+                if (long.TryParse(referral.OldReferralCode, out providerID)) {
+                    providerID = long.Parse(referral.OldReferralCode);
                 }
                 else {
                     logger.Log($"Conv: Conv Provider ID not found for referral with ID: {referral.Id}");
@@ -2601,8 +2601,8 @@ namespace Brady_s_Conversion_Program {
                 // no address
 
                 int? providerSpecialtyId = null;
-                if (referral.ReferralSpecialityId != null) {
-                    if (int.TryParse(referral.ReferralSpecialityId, out int providerSpecialtyIdInt)) {
+                if (referral.SpecialtyId != null) {
+                    if (int.TryParse(referral.SpecialtyId, out int providerSpecialtyIdInt)) {
                         providerSpecialtyId = providerSpecialtyIdInt;
                     }
                 }
@@ -2719,8 +2719,9 @@ namespace Brady_s_Conversion_Program {
                 }
                 #endregion taxonomys
 
-                var ffpmOrig = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.RefProviderCode == referral.ReferralCode);
-                var ffpmOrigProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == referral.FirstName && p.LastName == referral.LastName && p.ProviderCode == referral.ReferralCode);
+                var ffpmOrig = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.RefProviderCode == referral.OldReferralCode);
+                var ffpmOrigProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == referral.FirstName && 
+                                    p.LastName == referral.LastName && p.ProviderCode == referral.OldReferralCode);
 
                 // First, check and update the existing provider if it exists
                 if (ffpmOrigProvider != null) {
@@ -2740,8 +2741,9 @@ namespace Brady_s_Conversion_Program {
                         ffpmOrig.FirstName = TruncateString(referral.FirstName, 50);
                         ffpmOrig.MiddleName = TruncateString(referral.MiddleName, 10);
                         ffpmOrig.LastName = TruncateString(referral.LastName, 50);
-                        ffpmOrig.RefProviderCode = TruncateString(referral.ReferralCode, 50);
+                        ffpmOrig.RefProviderCode = TruncateString(referral.OldReferralCode, 50);
                         ffpmOrig.Active = isActive;
+                        ffpmDbContext.SaveChanges();
                     }
                     else {
                         var newReferral1 = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
@@ -2749,7 +2751,7 @@ namespace Brady_s_Conversion_Program {
                             FirstName = TruncateString(referral.FirstName, 50),
                             MiddleName = TruncateString(referral.MiddleName, 10),
                             LastName = TruncateString(referral.LastName, 50),
-                            RefProviderCode = TruncateString(referral.ReferralCode, 50),
+                            RefProviderCode = TruncateString(referral.OldReferralCode, 50),
                             Active = isActive
                         };
                         ffpmDbContext.ReferringProviders.Add(newReferral1);
@@ -2763,7 +2765,7 @@ namespace Brady_s_Conversion_Program {
                     FirstName = TruncateString(referral.FirstName, 50),
                     MiddleName = TruncateString(referral.MiddleName, 10),
                     LastName = TruncateString(referral.LastName, 50),
-                    ProviderCode = TruncateString(referral.ReferralCode, 15),
+                    ProviderCode = TruncateString(referral.OldReferralCode, 15),
                     IsActive = isActive,
                     IsReferringProvider = true,
                     SignatureUrl = "", // Assuming empty as not given to truncate
@@ -2772,11 +2774,11 @@ namespace Brady_s_Conversion_Program {
                     ClExpiration = 0,
                     SpectacleExpirationTypeId = 0,
                     ClExpirationTypeId = 0,
-                    ProviderDeaNumber = TruncateString(referral.ReferralDeaNumber, 10),
+                    ProviderDeaNumber = TruncateString(referral.Deanumber, 10),
                     ProviderEin = TruncateString(einString, 15),
                     ProviderNpi = TruncateString(npiString, 10),
-                    ProviderLicenseNo = TruncateString(referral.ReferralLicenseNo, 15),
-                    ProviderMedicaidNumber = TruncateString(referral.ReferralMedicaidNumber, 15),
+                    ProviderLicenseNo = TruncateString(referral.LicenseNo, 15),
+                    ProviderMedicaidNumber = TruncateString(referral.MedicaidNumber, 15),
                     ProviderSsn = TruncateString(ssnString, 15),
                     ProviderUpin = TruncateString(upinString, 15),
                     ProviderExternalPmCode = "",
@@ -2799,7 +2801,7 @@ namespace Brady_s_Conversion_Program {
                     FirstName = TruncateString(referral.FirstName, 50),
                     MiddleName = TruncateString(referral.MiddleName, 10),
                     LastName = TruncateString(referral.LastName, 50),
-                    RefProviderCode = TruncateString(referral.ReferralCode, 50),
+                    RefProviderCode = TruncateString(referral.OldReferralCode, 50),
                     Active = isActive
                 };
                 ffpmDbContext.ReferringProviders.Add(newReferral);
@@ -2829,13 +2831,13 @@ namespace Brady_s_Conversion_Program {
                     description = schedtype.Description;
                 }
                 bool isActive = false;
-                if (schedtype.Active != null && schedtype.Active.ToLower() == "yes" || == "1") {
+                if (schedtype.Active != null && schedtype.Active.ToLower() == "yes" || schedtype.Active == "1") {
                     isActive = true;
                 }
                 int location = 0;
                 bool isDefault = false;
                 bool noShow = false;
-                if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes" || == "1") {
+                if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes" || schedtype.IsNoShow == "1") {
                     noShow = true;
                 }
 
