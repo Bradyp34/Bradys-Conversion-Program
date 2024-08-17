@@ -916,15 +916,71 @@ namespace Brady_s_Conversion_Program {
 
                             break;
                         case "ref":
-                            var ffpmReferrals = ffpmDbContext.ReferringProviders.ToList();
                             var convReferral = convDbContext.Referrals.Find(address.Id);
+                            if (convReferral == null) {
+                                logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
+                                return;
+                            }
+                            var ffpmReferrals = ffpmDbContext.ReferringProviders.ToList();
 
+                            var ffpmReferral = ffpmReferrals.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
+                                                            && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
+
+                            var newDmgOtherAddress3 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = address.Id,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                CountryId = country,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 1
+                            };
+                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress3);
+
+                            //if (ffpmReferral != null) {
+                                // doesn't have an address in referring providers to update
+                            //}
+
+                            ffpmDbContext.SaveChanges();
 
                             break;
                         case "emp":
+                            var convPatient = convDbContext.Patients.Find(address.Id);
+                            if (convPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
+                                return;
+                            }
+                            var ffpmPatient2 = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
+                                                p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName);
+                            var ffpmPatientAdditional2 = ffpmDbContext.DmgPatientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
+                            if (ffpmPatientAdditional2 == null) {
+                                logger.Log($"Conv: Conv Patient additional not found for address with ID: {address.Id}");
+                                return;
+                            }
+
+                            var newOtherAddress4 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = address.Id,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                CountryId = country,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 1
+                            };
+                            ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress4);
+
+                            ffpmPatientAdditional2.EmployerAddressId = newOtherAddress4.AddressId;
+
+                            ffpmDbContext.SaveChanges();
 
                             break;
-                        case "pol":
+                        case "pol": // Policy Holders / patient insurances
 
                             break;
                     };
