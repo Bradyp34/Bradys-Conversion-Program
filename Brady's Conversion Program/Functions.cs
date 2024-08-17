@@ -416,7 +416,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                     return;
                 }
-                else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
+                else if (patient.Active != null && patient.Active.ToUpper() == "NO" || patient.Active == "0") {
                     return;
                 }
                 string? ssn = patient.Ssn;
@@ -679,7 +679,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 short? country = null;
-                var countryXref = ffpmDbContext.MntCountries.FirstOrDefault(s => s.CountryCode == address.Country);
+                var countryXref = ffpmDbContext.MntCountries.FirstOrDefault(s => s.CountryName.ToUpper()== "US" || s.CountryName.ToUpper() == "USA");
                 if (countryXref != null) {
                     country = countryXref.CountryId;
                 }
@@ -690,7 +690,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool isActive = false;
-                if (address.Active != null && address.Active.ToLower() == "yes") {
+                if (address.Active != null && address.Active.ToLower() == "yes" || address.Active == "1") {
                     isActive = true;
                 }
 
@@ -955,6 +955,10 @@ namespace Brady_s_Conversion_Program {
                             }
                             var ffpmPatient2 = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
                                                 p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName);
+                            if (ffpmPatient2 == null) {
+                                logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
+                                return;
+                            }
                             var ffpmPatientAdditional2 = ffpmDbContext.DmgPatientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
                             if (ffpmPatientAdditional2 == null) {
                                 logger.Log($"Conv: Conv Patient additional not found for address with ID: {address.Id}");
@@ -999,28 +1003,23 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                long patientId = 0;
-                if (long.TryParse(appointment.PatientId, out long patientIdInt)) {
-                    patientId = patientIdInt;
-                } else {
-                    logger.Log($"Conv: Conv Patient ID is invalid for appointment with ID: {appointment.Id}");
-                    return;
-                }
                 var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find((int)patientId);
-                if (ConvPatient == null) {
+                var convPatient = convDbContext.Patients.Find(appointment.PatientId);
+                if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.PatientAccountNumber);
+                var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
+                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
                     return;
                 }
 
-                long resource = 0;
-                if (appointment.ResourceId != null) {
-                    resource = long.Parse(appointment.ResourceId);
+
+                long resource = -1;
+                if (appointment.OldResourceId != null) {
+                    long.TryParse(appointment.OldResourceId, out resource);
                 }
 
                 DateTime start = minDate;
@@ -1045,13 +1044,13 @@ namespace Brady_s_Conversion_Program {
                     created = isValidDate(created);
                 }
                 int billingLocId = 0;
-                if (appointment.BillingLocationId != null) {
-                    if (int.TryParse(appointment.BillingLocationId, out int billingLocIdInt)) {
+                if (appointment.OldBillingLocationId != null) {
+                    if (int.TryParse(appointment.OldBillingLocationId, out int billingLocIdInt)) {
                         billingLocId = billingLocIdInt;
                     }
                 }
                 bool confirmed = false;
-                if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes") {
+                if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1") {
                     confirmed = true;
                 }
                 int sequence = 0;
@@ -1118,11 +1117,10 @@ namespace Brady_s_Conversion_Program {
                 if (appointment.WaitingListId != null) {
                     waitlistId = long.Parse(appointment.WaitingListId);
                 }
-                int type = 0;
-                if (appointment.AppointmentTypeId != null) {
-                    if (int.TryParse(appointment.AppointmentTypeId, out int typeInt)) {
-                        type = typeInt;
-                    }
+                int type = -1;
+                var typeXref = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
+                if (typeXref != null) {
+                    type = (int)typeXref.AppointmentTypeId;
                 }
                 DateTime? updated = null;
                 if (appointment.DateTimeUpdated != null) {
@@ -1131,11 +1129,6 @@ namespace Brady_s_Conversion_Program {
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         updated = tempDateTime;
                     }
-                }
-
-                long appId = 0;
-                if (appointment.AppointmentId != null) {
-                    appId = long.Parse(appointment.AppointmentId);
                 }
 
                 var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.ResourceId == resource && p.StartDate == start);
@@ -1215,24 +1208,24 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool isActive = false;
-                if (appointmentType.Active != null && appointmentType.Active.ToLower() == "yes") {
+                if (appointmentType.Active != null && appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1") {
                     isActive = true;
                 }
                 bool schedule = false;
-                if (appointmentType.CanSchedule != null && appointmentType.CanSchedule.ToLower() == "yes") {
+                if (appointmentType.CanSchedule != null && appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1") {
                     schedule = true;
                 }
                 bool required = false;
-                if (appointmentType.PatientRequired != null && appointmentType.PatientRequired.ToLower() == "yes") {
+                if (appointmentType.PatientRequired != null && appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1") {
                     required = true;
                 }
                 bool examType = false;
-                if (appointmentType.IsExamType != null && appointmentType.IsExamType.ToLower() == "yes") {
+                if (appointmentType.IsExamType != null && appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1") {
                     examType = true;
                 }
                 string code = "";
-                if (appointmentType.Code != null) {
-                    code = appointmentType.Code;
+                if (appointmentType.OldAppointmentTypeCode != null) {
+                    code = appointmentType.OldAppointmentTypeCode;
                 }
                 string description = "";
                 if (appointmentType.Description != null) {
@@ -1287,21 +1280,21 @@ namespace Brady_s_Conversion_Program {
                 var insuranceCompanies = ffpmDbContext.InsInsuranceCompanies.ToList();
                 foreach (var company in insuranceCompanies) {
                     if (company.InsCompanyName == insurance.InsCompanyName) {
+                        logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
                         return;
                     }
                 }
 
-                int stateId = 0; // Default value for not found or null
-
-                if (insurance.InsCompanyState != null) {
-                    stateId = stateCodes.TryGetValue(insurance.InsCompanyState, out short stateIdShort) ? stateIdShort : -1;
+                int stateId = -1;
+                var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
+                if (stateXref != null) {
+                    stateId = stateXref.StateId;
                 }
 
                 string insZip = "";
                 if (insurance.InsCompanyZip != null) {
-                    Match match = zipRegex.Match(insurance.InsCompanyZip);
-                    if (match.Success) {
-                        insZip = match.Groups[1].Value;
+                    if (zipRegex.IsMatch(insurance.InsCompanyZip)) {
+                        insZip = insurance.InsCompanyZip;
                     }
                 }
 
@@ -1327,22 +1320,22 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 string payerId = "";
-                if (insurance.InsCompanyCode != null) {
-                    payerId = insurance.InsCompanyCode;
+                if (insurance.InsuranceCompanyCode != null) {
+                    payerId = insurance.InsuranceCompanyCode;
                 }
 
                 bool active = false;
-                if (insurance.IsActive != null && insurance.IsActive.ToLower() == "yes") {
+                if (insurance.Active != null && insurance.Active.ToLower() == "yes" || insurance.Active == "1") {
                     active = true;
                 }
 
                 bool collections = false;
-                if (insurance.IsCollections != null && insurance.IsCollections.ToLower() == "yes") {
+                if (insurance.IsCollections != null && insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1") {
                     collections = true;
                 }
 
                 bool dmerc = false;
-                if (insurance.IsDmerc != null && insurance.IsDmerc.ToLower() == "yes") {
+                if (insurance.IsDmerc != null && insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1") {
                     dmerc = true;
                 }
                 string companyName = "";
@@ -1350,12 +1343,12 @@ namespace Brady_s_Conversion_Program {
                     companyName = insurance.InsCompanyName;
                 }
                 string code = "";
-                if (insurance.InsCompanyCode != null) {
-                    code = insurance.InsCompanyCode;
+                if (insurance.InsuranceCompanyCode != null) {
+                    code = insurance.InsuranceCompanyCode;
                 }
                 int companyId = 0;
-                if (insurance.InsCompanyId != null) {
-                    if (int.TryParse(insurance.InsCompanyId, out int companyIdInt)) {
+                if (insurance.OldInsCompanyId != null) {
+                    if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
                         companyId = companyIdInt;
                     }
                 }
@@ -1550,11 +1543,11 @@ namespace Brady_s_Conversion_Program {
                 #endregion taxonomys
 
                 bool isBilling = false;
-                if (location.IsBilling != null && location.IsBilling.ToLower() == "yes") {
+                if (location.IsBilling != null && location.IsBilling.ToLower() == "yes" || location.IsBilling == "1") {
                     isBilling = true;
                 }
                 bool isSchedule = false;
-                if (location.IsScheduling != null && location.IsScheduling.ToLower() == "yes") {
+                if (location.IsScheduling != null && location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1") {
                     isSchedule = true;
                 }
 
@@ -1566,9 +1559,6 @@ namespace Brady_s_Conversion_Program {
                 var ffpmOrig = ffpmDbContext.BillingLocations.FirstOrDefault(x => x.Name == name);
 
                 if (ffpmOrig != null) {
-                    ffpmOrig.PrimaryTaxonomyId = primaryTaxId;
-                    // ... set other taxonomy IDs ...
-                    ffpmOrig.AlternateTaxonomy20Id = tax20Id;
                     ffpmOrig.Name = TruncateString(name, 500);
                     ffpmOrig.IsBillingLocation = isBilling;
                     ffpmOrig.CliaIdNo = TruncateString(location.Clia, 15);
@@ -1581,6 +1571,29 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.CaculateTaxOnEstimatedPatientBalance = false;
                     ffpmOrig.IsDefaultLocation = true;
                     ffpmOrig.CaculateTaxOnTotalFee = false;
+
+                    ffpmOrig.PrimaryTaxonomyId = primaryTaxId;
+                    ffpmOrig.AlternateTaxonomy1Id = tax1Id;
+                    ffpmOrig.AlternateTaxonomy2Id = tax2Id;
+                    ffpmOrig.AlternateTaxonomy3Id = tax3Id;
+                    ffpmOrig.AlternateTaxonomy4Id = tax4Id;
+                    ffpmOrig.AlternateTaxonomy5Id = tax5Id;
+                    ffpmOrig.AlternateTaxonomy6Id = tax6Id;
+                    ffpmOrig.AlternateTaxonomy7Id = tax7Id;
+                    ffpmOrig.AlternateTaxonomy8Id = tax8Id;
+                    ffpmOrig.AlternateTaxonomy9Id = tax9Id;
+                    ffpmOrig.AlternateTaxonomy10Id = tax10Id;
+                    ffpmOrig.AlternateTaxonomy11Id = tax11Id;
+                    ffpmOrig.AlternateTaxonomy12Id = tax12Id;
+                    ffpmOrig.AlternateTaxonomy13Id = tax13Id;
+                    ffpmOrig.AlternateTaxonomy14Id = tax14Id;
+                    ffpmOrig.AlternateTaxonomy15Id = tax15Id;
+                    ffpmOrig.AlternateTaxonomy16Id = tax16Id;
+                    ffpmOrig.AlternateTaxonomy17Id = tax17Id;
+                    ffpmOrig.AlternateTaxonomy18Id = tax18Id;
+                    ffpmOrig.AlternateTaxonomy19Id = tax19Id;
+                    ffpmOrig.AlternateTaxonomy20Id = tax20Id;
+
                     ffpmDbContext.SaveChanges();
                     return;
                 }
@@ -1616,6 +1629,9 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 
+            }
+            catch (Exception ex) {
+                logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
             }
         }
 
@@ -2151,7 +2167,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool? isActive = null;
-                if (provider.IsActive != null && provider.IsActive.ToLower() == "yes") {
+                if (provider.IsActive != null && provider.IsActive.ToLower() == "yes" || == "1") {
                     isActive = true;
                 }
 
@@ -2387,7 +2403,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool isActive = false;
-                if (recall.Active != null && recall.Active.ToLower() == "yes") {
+                if (recall.Active != null && recall.Active.ToLower() == "yes" || == "1") {
                     isActive = true;
                 }
 
@@ -2448,7 +2464,7 @@ namespace Brady_s_Conversion_Program {
                     defaultDuration = temp;
                 }
                 bool isActive = false;
-                if (recallType.Active != null && recallType.Active.ToLower() == "yes") {
+                if (recallType.Active != null && recallType.Active.ToLower() == "yes" || == "1") {
                     isActive = true;
                 }
                 string note = "";
@@ -2580,7 +2596,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool? isActive = null;
-                if (referral.IsActive != null && referral.IsActive.ToLower() == "yes") {
+                if (referral.IsActive != null && referral.IsActive.ToLower() == "yes" || == "1") {
                     isActive = true;
                 }
 
@@ -2829,13 +2845,13 @@ namespace Brady_s_Conversion_Program {
                     description = schedtype.Description;
                 }
                 bool isActive = false;
-                if (schedtype.Active != null && schedtype.Active.ToLower() == "yes") {
+                if (schedtype.Active != null && schedtype.Active.ToLower() == "yes" || == "1") {
                     isActive = true;
                 }
                 int location = 0;
                 bool isDefault = false;
                 bool noShow = false;
-                if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes") {
+                if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "yes" || == "1") {
                     noShow = true;
                 }
 
@@ -3179,7 +3195,7 @@ namespace Brady_s_Conversion_Program {
                 }
                 string insertGUID = Guid.NewGuid().ToString();
                 bool doNotReconcile = false;
-                if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes") {
+                if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes" || == "1") {
                     doNotReconcile = true;
                 }
                 DateTime? lastModified = null;
@@ -3662,7 +3678,7 @@ namespace Brady_s_Conversion_Program {
                 short? tabDrawing = null;
                 // no tabDrawing
                 bool reconciledCCDA = false;
-                if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes") {
+                if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes" || == "1") {
                     reconciledCCDA = true;
                 }
 
@@ -5314,7 +5330,7 @@ namespace Brady_s_Conversion_Program {
                     resolveType2 = diagCodePool.ResolveType2;
                 }
                 bool doNotReconcile = false;
-                if (diagCodePool.DoNotReconcile != null && diagCodePool.DoNotReconcile.ToLower() == "yes") {
+                if (diagCodePool.DoNotReconcile != null && diagCodePool.DoNotReconcile.ToLower() == "yes" || == "1") {
                     doNotReconcile = true;
                 }
                 int? conditionId = null;
@@ -7634,7 +7650,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool doNotReconcile = false;
-                if (rx.DoNotReconcile != null && rx.DoNotReconcile.ToLower() == "yes") {
+                if (rx.DoNotReconcile != null && rx.DoNotReconcile.ToLower() == "yes" || == "1") {
                     doNotReconcile = true;
                 }
                 DateTime? rxStartDate = null;
@@ -7968,7 +7984,7 @@ namespace Brady_s_Conversion_Program {
                 string insertGUID = Guid.NewGuid().ToString();
                 
                 bool doNotReconcile = false;
-                if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes") {
+                if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes" || == "1") {
                     doNotReconcile = true;
                 }
                 int? ptDeviceId = null;
@@ -8264,7 +8280,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool intakeReconciled = false;
-                if (tech.IntakeReconciled != null && tech.IntakeReconciled.ToLower() == "yes") {
+                if (tech.IntakeReconciled != null && tech.IntakeReconciled.ToLower() == "yes" || == "1") {
                     intakeReconciled = true;
                 }
                 DateTime? lastModified = null;
@@ -9307,7 +9323,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool active = false;
-                if (cptDept.Active != null && cptDept.Active.ToLower() == "yes") {
+                if (cptDept.Active != null && cptDept.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 string sortNumber = "";
@@ -9366,7 +9382,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? Active = null;
-                if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes") {
+                if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes" || == "1") {
                     Active = true;
                 }
                 else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
@@ -9409,7 +9425,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? active = null;
-                if (cpt.Active != null && cpt.Active.ToLower() == "yes") {
+                if (cpt.Active != null && cpt.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 else if (cpt.Active != null && cpt.Active.ToLower() == "no") {
@@ -9428,7 +9444,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool taxable = false;
-                if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes") {
+                if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes" || == "1") {
                     taxable = true;
                 }
                 int departmentId = -1;
@@ -9450,7 +9466,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool useCliaNumber = false;
-                if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes") {
+                if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes" || == "1") {
                     useCliaNumber = true;
                 }
                 int units = -1;
@@ -9460,7 +9476,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool ndcActive = false;
-                if (cpt.NdcActive != null && cpt.NdcActive.ToLower() == "yes") {
+                if (cpt.NdcActive != null && cpt.NdcActive.ToLower() == "yes" || == "1") {
                     ndcActive = true;
                 }
                 decimal? ndcCost = null;
@@ -9482,7 +9498,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool autoUpdateReferringProvider = false;
-                if (cpt.AutoUpdateReferringProvider != null && cpt.AutoUpdateReferringProvider.ToLower() == "yes") {
+                if (cpt.AutoUpdateReferringProvider != null && cpt.AutoUpdateReferringProvider.ToLower() == "yes" || == "1") {
                     autoUpdateReferringProvider = true;
                 }
                 string privateStatementDescription = "";
@@ -9561,7 +9577,7 @@ namespace Brady_s_Conversion_Program {
                     categoryName = frameCategory.CategoryName;
                 }
                 bool? active = null;
-                if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes") {
+                if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 else if (frameCategory.Active != null && frameCategory.Active.ToLower() == "no") {
@@ -9617,7 +9633,7 @@ namespace Brady_s_Conversion_Program {
                     collectionName = frameCollection.CollectionName;
                 }
                 bool active = false;
-                if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes") {
+                if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 long locationId = -1;
@@ -9656,7 +9672,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 bool active = false;
-                if (frameColor.Active != null && frameColor.Active.ToLower() == "yes") {
+                if (frameColor.Active != null && frameColor.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 long locationId = -1;
@@ -9700,7 +9716,7 @@ namespace Brady_s_Conversion_Program {
                     shape = frameShape.FrameShape1;
                 }
                 bool active = false;
-                if (frameShape.Active != null && frameShape.Active.ToLower() == "yes") {
+                if (frameShape.Active != null && frameShape.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 long sortOrder = -1;
@@ -9931,7 +9947,7 @@ namespace Brady_s_Conversion_Program {
                     materialName = frameMaterial.MaterialName;
                 }
                 bool active = false;
-                if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes") {
+                if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 long sortOrder = -1;
@@ -9983,7 +9999,7 @@ namespace Brady_s_Conversion_Program {
                     frameMount1 = frameMount.FrameMount1;
                 }
                 bool active = false;
-                if (frameMount.Active != null && frameMount.Active.ToLower() == "yes") {
+                if (frameMount.Active != null && frameMount.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 }
                 long sortOrder = -1;
@@ -10141,7 +10157,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool isLmsFrame = false;
-                if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes") {
+                if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes" || == "1") {
                     isLmsFrame = true;
                 }
 
@@ -10274,13 +10290,13 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? styleNew = null;
-                if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes") {
+                if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes" || == "1") {
                     styleNew = true;
                 } else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
                     styleNew = false;
                 }
                 bool? changedPrice = null;
-                if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes") {
+                if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes" || == "1") {
                     changedPrice = true;
                 } else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
                     changedPrice = false;
@@ -10376,7 +10392,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? active = null;
-                if (frame.Active != null && frame.Active.ToLower() == "yes") {
+                if (frame.Active != null && frame.Active.ToLower() == "yes" || == "1") {
                     active = true;
                 } else if (frame.Active != null && frame.Active.ToLower() == "no") {
                     active = false;
