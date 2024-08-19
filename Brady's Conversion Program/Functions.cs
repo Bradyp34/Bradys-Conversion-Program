@@ -4846,12 +4846,12 @@ namespace Brady_s_Conversion_Program {
                 bool sentToOptical = false;
                 // no sentToOptical
                 string upcOd = "";
-                if (contactLens.UpcOd != null) {
-                    upcOd = contactLens.UpcOd;
+                if (contactLens.Upcod != null) {
+                    upcOd = contactLens.Upcod;
                 }
                 string upcOs = "";
-                if (contactLens.UpcOs != null) {
-                    upcOs = contactLens.UpcOs;
+                if (contactLens.Upcos != null) {
+                    upcOs = contactLens.Upcos;
                 }
                 int? catalogSource = null;
                 if (contactLens.CatalogSource != null) {
@@ -4860,72 +4860,72 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 string catalogManufacturerIdOd = "";
-                if (contactLens.CatalogManufacturerIdOd != null) {
-                    catalogManufacturerIdOd = contactLens.CatalogManufacturerIdOd;
+                if (contactLens.CatalogManufacturerIdod != null) {
+                    catalogManufacturerIdOd = contactLens.CatalogManufacturerIdod;
                 }
                 string catalogManufacturerIdOs = "";
-                if (contactLens.CatalogManufacturerIdOs != null) {
-                    catalogManufacturerIdOs = contactLens.CatalogManufacturerIdOs;
+                if (contactLens.CatalogManufacturerIdos != null) {
+                    catalogManufacturerIdOs = contactLens.CatalogManufacturerIdos;
                 }
                 string catalogBrandIdOd = "";
-                if (contactLens.CatalogBrandIdOd != null) {
-                    catalogBrandIdOd = contactLens.CatalogBrandIdOd;
+                if (contactLens.CatalogBrandIdod != null) {
+                    catalogBrandIdOd = contactLens.CatalogBrandIdod;
                 }
                 string catalogBrandIdOs = "";
-                if (contactLens.CatalogBrandIdOs != null) {
-                    catalogBrandIdOs = contactLens.CatalogBrandIdOs;
+                if (contactLens.CatalogBrandIdos != null) {
+                    catalogBrandIdOs = contactLens.CatalogBrandIdos;
                 }
                 string catalogProductIdOd = "";
-                if (contactLens.CatalogProductIdOd != null) {
-                    catalogProductIdOd = contactLens.CatalogProductIdOd;
+                if (contactLens.CatalogProductIdod != null) {
+                    catalogProductIdOd = contactLens.CatalogProductIdod;
                 }
                 string catalogProductIdOs = "";
-                if (contactLens.CatalogProductIdOs != null) {
-                    catalogProductIdOs = contactLens.CatalogProductIdOs;
+                if (contactLens.CatalogProductIdos != null) {
+                    catalogProductIdOs = contactLens.CatalogProductIdos;
                 }
                 string trialNumber = "";
                 if (contactLens.TrialNumber != null) {
                     trialNumber = contactLens.TrialNumber;
                 }
                 string orSphereOd = "";
-                if (contactLens.OrSphereOd != null) {
-                    orSphereOd = contactLens.OrSphereOd;
+                if (contactLens.OrsphereOd != null) {
+                    orSphereOd = contactLens.OrsphereOd;
                 }
                 string orSphereOs = "";
-                if (contactLens.OrSphereOs != null) {
-                    orSphereOs = contactLens.OrSphereOs;
+                if (contactLens.OrsphereOs != null) {
+                    orSphereOs = contactLens.OrsphereOs;
                 }
                 string orCylinderOd = "";
-                if (contactLens.OrCylinderOd != null) {
-                    orCylinderOd = contactLens.OrCylinderOd;
+                if (contactLens.OrcylinderOd != null) {
+                    orCylinderOd = contactLens.OrcylinderOd;
                 }
                 string orCylinderOs = "";
-                if (contactLens.OrCylinderOs != null) {
-                    orCylinderOs = contactLens.OrCylinderOs;
+                if (contactLens.OrcylinderOs != null) {
+                    orCylinderOs = contactLens.OrcylinderOs;
                 }
                 string orAxisOd = "";
-                if (contactLens.OrAxisOd != null) {
-                    orAxisOd = contactLens.OrAxisOd;
+                if (contactLens.OraxisOd != null) {
+                    orAxisOd = contactLens.OraxisOd;
                 }
                 string orAxisOs = "";
-                if (contactLens.OrAxisOs != null) {
-                    orAxisOs = contactLens.OrAxisOs;
+                if (contactLens.OraxisOs != null) {
+                    orAxisOs = contactLens.OraxisOs;
                 }
                 string orVaDOd = "";
-                if (contactLens.OrVaDOd != null) {
-                    orVaDOd = contactLens.OrVaDOd;
+                if (contactLens.OrvaDod != null) {
+                    orVaDOd = contactLens.OrvaDod;
                 }
                 string orVaDOs = "";
-                if (contactLens.OrVaDOs != null) {
-                    orVaDOs = contactLens.OrVaDOs;
+                if (contactLens.OrvaDos != null) {
+                    orVaDOs = contactLens.OrvaDos;
                 }
                 string orVaNOd = "";
-                if (contactLens.OrVaNOd != null) {
-                    orVaNOd = contactLens.OrVaNOd;
+                if (contactLens.OrvaNod != null) {
+                    orVaNOd = contactLens.OrvaNod;
                 }
                 string orVaNOs = "";
-                if (contactLens.OrVaNOs != null) {
-                    orVaNOs = contactLens.OrVaNOs;
+                if (contactLens.OrvaNos != null) {
+                    orVaNOs = contactLens.OrvaNos;
                 }
                 string rotationDirectionOd = "";
                 if (contactLens.RotationDirectionOd != null) {
@@ -5274,7 +5274,7 @@ namespace Brady_s_Conversion_Program {
                     sourceField = diagCodePool.SourceField;
                 }
                 short isactive = -1;
-                if (short.TryParse(diagCodePool.IsActive, out short temp)) {
+                if (short.TryParse(diagCodePool.Active, out short temp)) {
                     isactive = temp;
                 }
                 string codeICD10 = "";
@@ -5600,172 +5600,172 @@ namespace Brady_s_Conversion_Program {
                     gonioComments = diagTest.GonioComments;
                 }
                 short mBalanceScOrtho = -1;
-                if (short.TryParse(diagTest.MbalanceScOrtho, out short temp)) {
+                if (short.TryParse(diagTest.MbalanceScortho, out short temp)) {
                     mBalanceScOrtho = temp;
                 }
                 string mBalanceHorizScPriGaze = "";
-                if (diagTest.MbalanceHorizScPriGaze != null) {
-                    mBalanceHorizScPriGaze = diagTest.MbalanceHorizScPriGaze;
+                if (diagTest.MbalanceHorizScpriGaze != null) {
+                    mBalanceHorizScPriGaze = diagTest.MbalanceHorizScpriGaze;
                 }
                 string mBalanceHorizTypeScPriGaze = "";
-                if (diagTest.MbalanceHorizTypeScPriGaze != null) {
-                    mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScPriGaze;
+                if (diagTest.MbalanceHorizTypeScpriGaze != null) {
+                    mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScpriGaze;
                 }
                 string mBalanceVertScPriGaze = "";
-                if (diagTest.MbalanceVertScPriGaze != null) {
-                    mBalanceVertScPriGaze = diagTest.MbalanceVertScPriGaze;
+                if (diagTest.MbalanceVertScpriGaze != null) {
+                    mBalanceVertScPriGaze = diagTest.MbalanceVertScpriGaze;
                 }
                 string mBalanceVertTypeScPriGaze = "";
-                if (diagTest.MbalanceVertTypeScPriGaze != null) {
-                    mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScPriGaze;
+                if (diagTest.MbalanceVertTypeScpriGaze != null) {
+                    mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScpriGaze;
                 }
-                string mBalanceHorizScUpGaze = "";
-                if (diagTest.MbalanceHorizScUpGaze != null) {
-                    mBalanceHorizScUpGaze = diagTest.MbalanceHorizScUpGaze;
+                string mBalanceHorizScupGaze = "";
+                if (diagTest.MbalanceHorizScupGaze != null) {
+                    mBalanceHorizScupGaze = diagTest.MbalanceHorizScupGaze;
                 }
-                string mBalanceHorizTypeScUpGaze = "";
-                if (diagTest.MbalanceHorizTypeScUpGaze != null) {
-                    mBalanceHorizTypeScUpGaze = diagTest.MbalanceHorizTypeScUpGaze;
+                string mBalanceHorizTypeScupGaze = "";
+                if (diagTest.MbalanceHorizTypeScupGaze != null) {
+                    mBalanceHorizTypeScupGaze = diagTest.MbalanceHorizTypeScupGaze;
                 }
-                string mBalanceVertScUpGaze = "";
-                if (diagTest.MbalanceVertScUpGaze != null) {
-                    mBalanceVertScUpGaze = diagTest.MbalanceVertScUpGaze;
+                string mBalanceVertScupGaze = "";
+                if (diagTest.MbalanceVertScupGaze != null) {
+                    mBalanceVertScupGaze = diagTest.MbalanceVertScupGaze;
                 }
-                string mBalanceVertTypeScUpGaze = "";
-                if (diagTest.MbalanceVertTypeScUpGaze != null) {
-                    mBalanceVertTypeScUpGaze = diagTest.MbalanceVertTypeScUpGaze;
+                string mBalanceVertTypeScupGaze = "";
+                if (diagTest.MbalanceVertTypeScupGaze != null) {
+                    mBalanceVertTypeScupGaze = diagTest.MbalanceVertTypeScupGaze;
                 }
-                string mBalanceHorizScDownGaze = "";
-                if (diagTest.MbalanceHorizScDownGaze != null) {
-                    mBalanceHorizScDownGaze = diagTest.MbalanceHorizScDownGaze;
+                string mBalanceHorizScdownGaze = "";
+                if (diagTest.MbalanceHorizScdownGaze != null) {
+                    mBalanceHorizScdownGaze = diagTest.MbalanceHorizScdownGaze;
                 }
-                string mBalanceHorizTypeScDownGaze = "";
-                if (diagTest.MbalanceHorizTypeScDownGaze != null) {
-                    mBalanceHorizTypeScDownGaze = diagTest.MbalanceHorizTypeScDownGaze;
+                string mBalanceHorizTypeScdownGaze = "";
+                if (diagTest.MbalanceHorizTypeScdownGaze != null) {
+                    mBalanceHorizTypeScdownGaze = diagTest.MbalanceHorizTypeScdownGaze;
                 }
-                string mBalanceVertScDownGaze = "";
-                if (diagTest.MbalanceVertScDownGaze != null) {
-                    mBalanceVertScDownGaze = diagTest.MbalanceVertScDownGaze;
+                string mBalanceVertScdownGaze = "";
+                if (diagTest.MbalanceVertScdownGaze != null) {
+                    mBalanceVertScdownGaze = diagTest.MbalanceVertScdownGaze;
                 }
-                string mBalanceVertTypeScDownGaze = "";
-                if (diagTest.MbalanceVertTypeScDownGaze != null) {
-                    mBalanceVertTypeScDownGaze = diagTest.MbalanceVertTypeScDownGaze;
+                string mBalanceVertTypeScdownGaze = "";
+                if (diagTest.MbalanceVertTypeScdownGaze != null) {
+                    mBalanceVertTypeScdownGaze = diagTest.MbalanceVertTypeScdownGaze;
                 }
                 string mBalanceHorizScRtGaze = "";
-                if (diagTest.MbalanceHorizScRtGaze != null) {
-                    mBalanceHorizScRtGaze = diagTest.MbalanceHorizScRtGaze;
+                if (diagTest.MbalanceHorizScrtGaze != null) {
+                    mBalanceHorizScRtGaze = diagTest.MbalanceHorizScrtGaze;
                 }
                 string mBalanceHorizTypeScRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScRtGaze != null) {
-                    mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScRtGaze;
+                if (diagTest.MbalanceHorizTypeScrtGaze != null) {
+                    mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScrtGaze;
                 }
                 string mBalanceVertScRtGaze = "";
-                if (diagTest.MbalanceVertScRtGaze != null) {
-                    mBalanceVertScRtGaze = diagTest.MbalanceVertScRtGaze;
+                if (diagTest.MbalanceVertScrtGaze != null) {
+                    mBalanceVertScRtGaze = diagTest.MbalanceVertScrtGaze;
                 }
                 string mBalanceVertTypeScRtGaze = "";    
-                if (diagTest.MbalanceVertTypeScRtGaze != null) {
-                    mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScRtGaze;
+                if (diagTest.MbalanceVertTypeScrtGaze != null) {
+                    mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScrtGaze;
                 }
                 string mBalanceHorizScLtGaze = "";
-                if (diagTest.MbalanceHorizScLtGaze != null) {
-                    mBalanceHorizScLtGaze = diagTest.MbalanceHorizScLtGaze;
+                if (diagTest.MbalanceHorizScltGaze != null) {
+                    mBalanceHorizScLtGaze = diagTest.MbalanceHorizScltGaze;
                 }
                 string mBalanceHorizTypeScLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScLtGaze != null) {
-                    mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScLtGaze;
+                if (diagTest.MbalanceHorizTypeScltGaze != null) {
+                    mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScltGaze;
                 }
                 string mBalanceVertScLtGaze = "";
-                if (diagTest.MbalanceVertScLtGaze != null) {
-                    mBalanceVertScLtGaze = diagTest.MbalanceVertScLtGaze;
+                if (diagTest.MbalanceVertScltGaze != null) {
+                    mBalanceVertScLtGaze = diagTest.MbalanceVertScltGaze;
                 }
                 string mBalanceVertTypeScLtGaze = "";
-                if (diagTest.MbalanceVertTypeScLtGaze != null) {
-                    mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScLtGaze;
+                if (diagTest.MbalanceVertTypeScltGaze != null) {
+                    mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScltGaze;
                 }
                 short mBalanceCCOrtho = -1;
-                if (short.TryParse(diagTest.MbalanceCcOrtho, out short temp3)) {
+                if (short.TryParse(diagTest.MbalanceCcortho, out short temp3)) {
                     mBalanceCCOrtho = temp3;
                 }
                 string mBalanceHorizCcPriGaze = "";
-                if (diagTest.MbalanceHorizCcPriGaze != null) {
-                    mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcPriGaze;
+                if (diagTest.MbalanceHorizCcpriGaze != null) {
+                    mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcpriGaze;
                 }
                 string mBalanceHorizTypeCcPriGaze = "";
-                if (diagTest.MbalanceHorizTypeCcPriGaze != null) {
-                    mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcPriGaze;
+                if (diagTest.MbalanceHorizTypeCcpriGaze != null) {
+                    mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcpriGaze;
                 }
                 string mBalanceVertCcPriGaze = "";
-                if (diagTest.MbalanceVertCcPriGaze != null) {
-                    mBalanceVertCcPriGaze = diagTest.MbalanceVertCcPriGaze;
+                if (diagTest.MbalanceVertCcpriGaze != null) {
+                    mBalanceVertCcPriGaze = diagTest.MbalanceVertCcpriGaze;
                 }
                 string mBalanceVertTypeCcPriGaze = "";
-                if (diagTest.MbalanceVertTypeCcPriGaze != null) {
-                    mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcPriGaze;
+                if (diagTest.MbalanceVertTypeCcpriGaze != null) {
+                    mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcpriGaze;
                 }
-                string mBalanceHorizCcUpGaze = "";
-                if (diagTest.MbalanceHorizCcUpGaze != null) {
-                    mBalanceHorizCcUpGaze = diagTest.MbalanceHorizCcUpGaze;
+                string mBalanceHorizCcupGaze = "";
+                if (diagTest.MbalanceHorizCcupGaze != null) {
+                    mBalanceHorizCcupGaze = diagTest.MbalanceHorizCcupGaze;
                 }
-                string mBalanceHorizTypeCcUpGaze = "";
-                if (diagTest.MbalanceHorizTypeCcUpGaze != null) {
-                    mBalanceHorizTypeCcUpGaze = diagTest.MbalanceHorizTypeCcUpGaze;
+                string mBalanceHorizTypeCcupGaze = "";
+                if (diagTest.MbalanceHorizTypeCcupGaze != null) {
+                    mBalanceHorizTypeCcupGaze = diagTest.MbalanceHorizTypeCcupGaze;
                 }
-                string mBalanceVertCcUpGaze = "";
-                if (diagTest.MbalanceVertCcUpGaze != null) {
-                    mBalanceVertCcUpGaze = diagTest.MbalanceVertCcUpGaze;
+                string mBalanceVertCcupGaze = "";
+                if (diagTest.MbalanceVertCcupGaze != null) {
+                    mBalanceVertCcupGaze = diagTest.MbalanceVertCcupGaze;
                 }
-                string mBalanceVertTypeCcUpGaze = "";
-                if (diagTest.MbalanceVertTypeCcUpGaze != null) {
-                    mBalanceVertTypeCcUpGaze = diagTest.MbalanceVertTypeCcUpGaze;
+                string mBalanceVertTypeCcupGaze = "";
+                if (diagTest.MbalanceVertTypeCcupGaze != null) {
+                    mBalanceVertTypeCcupGaze = diagTest.MbalanceVertTypeCcupGaze;
                 }
-                string mBalanceHorizCcDownGaze = "";
-                if (diagTest.MbalanceHorizCcDownGaze != null) {
-                    mBalanceHorizCcDownGaze = diagTest.MbalanceHorizCcDownGaze;
+                string mBalanceHorizCcdownGaze = "";
+                if (diagTest.MbalanceHorizCcdownGaze != null) {
+                    mBalanceHorizCcdownGaze = diagTest.MbalanceHorizCcdownGaze;
                 }
-                string mBalanceHorizTypeCcDownGaze = "";
-                if (diagTest.MbalanceHorizTypeCcDownGaze != null) {
-                    mBalanceHorizTypeCcDownGaze = diagTest.MbalanceHorizTypeCcDownGaze;
+                string mBalanceHorizTypeCcdownGaze = "";
+                if (diagTest.MbalanceHorizTypeCcdownGaze != null) {
+                    mBalanceHorizTypeCcdownGaze = diagTest.MbalanceHorizTypeCcdownGaze;
                 }
-                string mBalanceVertCcDownGaze = "";
-                if (diagTest.MbalanceVertCcDownGaze != null) {
-                    mBalanceVertCcDownGaze = diagTest.MbalanceVertCcDownGaze;
+                string mBalanceVertCcdownGaze = "";
+                if (diagTest.MbalanceVertCcdownGaze != null) {
+                    mBalanceVertCcdownGaze = diagTest.MbalanceVertCcdownGaze;
                 }
-                string mBalanceVertTypeCcDownGaze = "";
-                if (diagTest.MbalanceVertTypeCcDownGaze != null) {
-                    mBalanceVertTypeCcDownGaze = diagTest.MbalanceVertTypeCcDownGaze;
+                string mBalanceVertTypeCcdownGaze = "";
+                if (diagTest.MbalanceVertTypeCcdownGaze != null) {
+                    mBalanceVertTypeCcdownGaze = diagTest.MbalanceVertTypeCcdownGaze;
                 }
                 string mBalanceHorizCcRtGaze = "";
-                if (diagTest.MbalanceHorizCcRtGaze != null) {
-                    mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcRtGaze;
+                if (diagTest.MbalanceHorizCcrtGaze != null) {
+                    mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcrtGaze;
                 }
                 string mBalanceHorizTypeCcRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcRtGaze != null) {
-                    mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcRtGaze;
+                if (diagTest.MbalanceHorizTypeCcrtGaze != null) {
+                    mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcrtGaze;
                 }
                 string mBalanceVertCcRtGaze = "";
-                if (diagTest.MbalanceVertCcRtGaze != null) {
-                    mBalanceVertCcRtGaze = diagTest.MbalanceVertCcRtGaze;
+                if (diagTest.MbalanceVertCcrtGaze != null) {
+                    mBalanceVertCcRtGaze = diagTest.MbalanceVertCcrtGaze;
                 }
                 string mBalanceVertTypeCcRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcRtGaze != null) {
-                    mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcRtGaze;
+                if (diagTest.MbalanceVertTypeCcrtGaze != null) {
+                    mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcrtGaze;
                 }
                 string mBalanceHorizCcLtGaze = "";
-                if (diagTest.MbalanceHorizCcLtGaze != null) {
-                    mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcLtGaze;
+                if (diagTest.MbalanceHorizCcltGaze != null) {
+                    mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcltGaze;
                 }
                 string mBalanceHorizTypeCcLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcLtGaze != null) {
-                    mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcLtGaze;
+                if (diagTest.MbalanceHorizTypeCcltGaze != null) {
+                    mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcltGaze;
                 }
                 string mBalanceVertCcLtGaze = "";
-                if (diagTest.MbalanceVertCcLtGaze != null) {
-                    mBalanceVertCcLtGaze = diagTest.MbalanceVertCcLtGaze;
+                if (diagTest.MbalanceVertCcltGaze != null) {
+                    mBalanceVertCcLtGaze = diagTest.MbalanceVertCcltGaze;
                 }
                 string mBalanceVertTypeCcLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcLtGaze != null) {
-                    mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcLtGaze;
+                if (diagTest.MbalanceVertTypeCcltGaze != null) {
+                    mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze;
                 }
                 string mBalanceMethod = "";
                 if (diagTest.MbalanceMethod != null) {
@@ -5780,140 +5780,140 @@ namespace Brady_s_Conversion_Program {
                     gonioPigmentOs = diagTest.GonioPigmentOs;
                 }
                 string mBalanceScType = "";
-                if (diagTest.MbalanceScType != null) {
-                    mBalanceScType = diagTest.MbalanceScType;
+                if (diagTest.MbalanceSctype != null) {
+                    mBalanceScType = diagTest.MbalanceSctype;
                 }
                 string mBalanceCcType = "";
-                if (diagTest.MbalanceCcType != null) {
-                    mBalanceCcType = diagTest.MbalanceCcType;
+                if (diagTest.MbalanceCctype != null) {
+                    mBalanceCcType = diagTest.MbalanceCctype;
                 }
-                string mbalanceHorizScUpRtGaze = "";
-                if (diagTest.MbalanceHorizScUpRtGaze != null) {
-                    mbalanceHorizScUpRtGaze = diagTest.MbalanceHorizScUpRtGaze;
+                string mbalanceHorizScupRtGaze = "";
+                if (diagTest.MbalanceHorizScupRtGaze != null) {
+                    mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze;
                 }
-                string mBalancehorizTypeScUpRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScUpRtGaze != null) {
-                    mBalancehorizTypeScUpRtGaze = diagTest.MbalanceHorizTypeScUpRtGaze;
+                string mBalancehorizTypeScupRtGaze = "";
+                if (diagTest.MbalanceHorizTypeScupRtGaze != null) {
+                    mBalancehorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze;
                 }
-                string mBalanceVertScUpRtGaze = "";
-                if (diagTest.MbalanceVertScUpRtGaze != null) {
-                    mBalanceVertScUpRtGaze = diagTest.MbalanceVertScUpRtGaze;
+                string mBalanceVertScupRtGaze = "";
+                if (diagTest.MbalanceVertScupRtGaze != null) {
+                    mBalanceVertScupRtGaze = diagTest.MbalanceVertScupRtGaze;
                 }
-                string mBalanceVertTypeScUpRtGaze = "";
-                if (diagTest.MbalanceVertTypeScUpRtGaze != null) {
-                    mBalanceVertTypeScUpRtGaze = diagTest.MbalanceVertTypeScUpRtGaze;
+                string mBalanceVertTypeScupRtGaze = "";
+                if (diagTest.MbalanceVertTypeScupRtGaze != null) {
+                    mBalanceVertTypeScupRtGaze = diagTest.MbalanceVertTypeScupRtGaze;
                 }
-                string mBalanceHorizScUpLtGaze = "";
-                if (diagTest.MbalanceHorizScUpLtGaze != null) {
-                    mBalanceHorizScUpLtGaze = diagTest.MbalanceHorizScUpLtGaze;
+                string mBalanceHorizScupLtGaze = "";
+                if (diagTest.MbalanceHorizScupLtGaze != null) {
+                    mBalanceHorizScupLtGaze = diagTest.MbalanceHorizScupLtGaze;
                 }
-                string mBalanceHorizTypeScUpLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScUpLtGaze != null) {
-                    mBalanceHorizTypeScUpLtGaze = diagTest.MbalanceHorizTypeScUpLtGaze;
+                string mBalanceHorizTypeScupLtGaze = "";
+                if (diagTest.MbalanceHorizTypeScupLtGaze != null) {
+                    mBalanceHorizTypeScupLtGaze = diagTest.MbalanceHorizTypeScupLtGaze;
                 }
-                string mBalanceVertScUpLtGaze = "";
-                if (diagTest.MbalanceVertScUpLtGaze != null) {
-                    mBalanceVertScUpLtGaze = diagTest.MbalanceVertScUpLtGaze;
+                string mBalanceVertScupLtGaze = "";
+                if (diagTest.MbalanceVertScupLtGaze != null) {
+                    mBalanceVertScupLtGaze = diagTest.MbalanceVertScupLtGaze;
                 }
-                string mBalanceVertTypeScUpLtGaze = "";
-                if (diagTest.MbalanceVertTypeScUpLtGaze != null) {
-                    mBalanceVertTypeScUpLtGaze = diagTest.MbalanceVertTypeScUpLtGaze;
+                string mBalanceVertTypeScupLtGaze = "";
+                if (diagTest.MbalanceVertTypeScupLtGaze != null) {
+                    mBalanceVertTypeScupLtGaze = diagTest.MbalanceVertTypeScupLtGaze;
                 }
-                string mBalanceHorizScDownRtGaze = "";
-                if (diagTest.MbalanceHorizScDownRtGaze != null) {
-                    mBalanceHorizScDownRtGaze = diagTest.MbalanceHorizScDownRtGaze;
+                string mBalanceHorizScdownRtGaze = "";
+                if (diagTest.MbalanceHorizScdownRtGaze != null) {
+                    mBalanceHorizScdownRtGaze = diagTest.MbalanceHorizScdownRtGaze;
                 }
-                string mBalanceHorizTypeScDownRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScDownRtGaze != null) {
-                    mBalanceHorizTypeScDownRtGaze = diagTest.MbalanceHorizTypeScDownRtGaze;
+                string mBalanceHorizTypeScdownRtGaze = "";
+                if (diagTest.MbalanceHorizTypeScdownRtGaze != null) {
+                    mBalanceHorizTypeScdownRtGaze = diagTest.MbalanceHorizTypeScdownRtGaze;
                 }
-                string mBalanceVertScDownRtGaze = "";
-                if (diagTest.MbalanceVertScDownRtGaze != null) {
-                    mBalanceVertScDownRtGaze = diagTest.MbalanceVertScDownRtGaze;
+                string mBalanceVertScdownRtGaze = "";
+                if (diagTest.MbalanceVertScdownRtGaze != null) {
+                    mBalanceVertScdownRtGaze = diagTest.MbalanceVertScdownRtGaze;
                 }
-                string mBalanceVertTypeScDownRtGaze = "";
-                if (diagTest.MbalanceVertTypeScDownRtGaze != null) {
-                    mBalanceVertTypeScDownRtGaze = diagTest.MbalanceVertTypeScDownRtGaze;
+                string mBalanceVertTypeScdownRtGaze = "";
+                if (diagTest.MbalanceVertTypeScdownRtGaze != null) {
+                    mBalanceVertTypeScdownRtGaze = diagTest.MbalanceVertTypeScdownRtGaze;
                 }
-                string mBalanceHorizScDownLtGaze = "";
-                if (diagTest.MbalanceHorizScDownLtGaze != null) {
-                    mBalanceHorizScDownLtGaze = diagTest.MbalanceHorizScDownLtGaze;
+                string mBalanceHorizScdownLtGaze = "";
+                if (diagTest.MbalanceHorizScdownLtGaze != null) {
+                    mBalanceHorizScdownLtGaze = diagTest.MbalanceHorizScdownLtGaze;
                 }
-                string mBalanceHorizTypeScDownLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScDownLtGaze != null) {
-                    mBalanceHorizTypeScDownLtGaze = diagTest.MbalanceHorizTypeScDownLtGaze;
+                string mBalanceHorizTypeScdownLtGaze = "";
+                if (diagTest.MbalanceHorizTypeScdownLtGaze != null) {
+                    mBalanceHorizTypeScdownLtGaze = diagTest.MbalanceHorizTypeScdownLtGaze;
                 }
-                string mBalanceVertScDownLtGaze = "";
-                if (diagTest.MbalanceVertScDownLtGaze != null) {
-                    mBalanceVertScDownLtGaze = diagTest.MbalanceVertScDownLtGaze;
+                string mBalanceVertScdownLtGaze = "";
+                if (diagTest.MbalanceVertScdownLtGaze != null) {
+                    mBalanceVertScdownLtGaze = diagTest.MbalanceVertScdownLtGaze;
                 }
-                string mBalanceVertTypeScDownLtGaze = "";
-                if (diagTest.MbalanceVertTypeScDownLtGaze != null) {
-                    mBalanceVertTypeScDownLtGaze = diagTest.MbalanceVertTypeScDownLtGaze;
+                string mBalanceVertTypeScdownLtGaze = "";
+                if (diagTest.MbalanceVertTypeScdownLtGaze != null) {
+                    mBalanceVertTypeScdownLtGaze = diagTest.MbalanceVertTypeScdownLtGaze;
                 }
-                string mBalanceHorizCcUpRtGaze = "";
-                if (diagTest.MbalanceHorizCcUpRtGaze != null) {
-                    mBalanceHorizCcUpRtGaze = diagTest.MbalanceHorizCcUpRtGaze;
+                string mBalanceHorizCcupRtGaze = "";
+                if (diagTest.MbalanceHorizCcupRtGaze != null) {
+                    mBalanceHorizCcupRtGaze = diagTest.MbalanceHorizCcupRtGaze;
                 }
-                string mBalanceHorizTypeCcUpRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcUpRtGaze != null) {
-                    mBalanceHorizTypeCcUpRtGaze = diagTest.MbalanceHorizTypeCcUpRtGaze;
+                string mBalanceHorizTypeCcupRtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcupRtGaze != null) {
+                    mBalanceHorizTypeCcupRtGaze = diagTest.MbalanceHorizTypeCcupRtGaze;
                 }
-                string mBalanceVertCcUpRtGaze = "";
-                if (diagTest.MbalanceVertCcUpRtGaze != null) {
-                    mBalanceVertCcUpRtGaze = diagTest.MbalanceVertCcUpRtGaze;
+                string mBalanceVertCcupRtGaze = "";
+                if (diagTest.MbalanceVertCcupRtGaze != null) {
+                    mBalanceVertCcupRtGaze = diagTest.MbalanceVertCcupRtGaze;
                 }
-                string mBalanceVertTypeCcUpRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcUpRtGaze != null) {
-                    mBalanceVertTypeCcUpRtGaze = diagTest.MbalanceVertTypeCcUpRtGaze;
+                string mBalanceVertTypeCcupRtGaze = "";
+                if (diagTest.MbalanceVertTypeCcupRtGaze != null) {
+                    mBalanceVertTypeCcupRtGaze = diagTest.MbalanceVertTypeCcupRtGaze;
                 }
-                string mBalanceHorizCcUpLtGaze = "";
-                if (diagTest.MbalanceHorizCcUpLtGaze != null) {
-                    mBalanceHorizCcUpLtGaze = diagTest.MbalanceHorizCcUpLtGaze;
+                string mBalanceHorizCcupLtGaze = "";
+                if (diagTest.MbalanceHorizCcupLtGaze != null) {
+                    mBalanceHorizCcupLtGaze = diagTest.MbalanceHorizCcupLtGaze;
                 }
-                string mBalanceHorizTypeCcUpLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcUpLtGaze != null) {
-                    mBalanceHorizTypeCcUpLtGaze = diagTest.MbalanceHorizTypeCcUpLtGaze;
+                string mBalanceHorizTypeCcupLtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcupLtGaze != null) {
+                    mBalanceHorizTypeCcupLtGaze = diagTest.MbalanceHorizTypeCcupLtGaze;
                 }
-                string mBalanceVertCcUpLtGaze = "";
-                if (diagTest.MbalanceVertCcUpLtGaze != null) {
-                    mBalanceVertCcUpLtGaze = diagTest.MbalanceVertCcUpLtGaze;
+                string mBalanceVertCcupLtGaze = "";
+                if (diagTest.MbalanceVertCcupLtGaze != null) {
+                    mBalanceVertCcupLtGaze = diagTest.MbalanceVertCcupLtGaze;
                 }
-                string mBalanceVertTypeCcUpLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcUpLtGaze != null) {
-                    mBalanceVertTypeCcUpLtGaze = diagTest.MbalanceVertTypeCcUpLtGaze;
+                string mBalanceVertTypeCcupLtGaze = "";
+                if (diagTest.MbalanceVertTypeCcupLtGaze != null) {
+                    mBalanceVertTypeCcupLtGaze = diagTest.MbalanceVertTypeCcupLtGaze;
                 }
-                string mBalanceHorizCcDownRtGaze = "";
-                if (diagTest.MbalanceHorizCcDownRtGaze != null) {
-                    mBalanceHorizCcDownRtGaze = diagTest.MbalanceHorizCcDownRtGaze;
+                string mBalanceHorizCcdownRtGaze = "";
+                if (diagTest.MbalanceHorizCcdownRtGaze != null) {
+                    mBalanceHorizCcdownRtGaze = diagTest.MbalanceHorizCcdownRtGaze;
                 }
-                string mBalanceHorizTypeCcDownRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcDownRtGaze != null) {
-                    mBalanceHorizTypeCcDownRtGaze = diagTest.MbalanceHorizTypeCcDownRtGaze;
+                string mBalanceHorizTypeCcdownRtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcdownRtGaze != null) {
+                    mBalanceHorizTypeCcdownRtGaze = diagTest.MbalanceHorizTypeCcdownRtGaze;
                 }
-                string mBalanceVertCcDownRtGaze = "";
-                if (diagTest.MbalanceVertCcDownRtGaze != null) {
-                    mBalanceVertCcDownRtGaze = diagTest.MbalanceVertCcDownRtGaze;
+                string mBalanceVertCcdownRtGaze = "";
+                if (diagTest.MbalanceVertCcdownRtGaze != null) {
+                    mBalanceVertCcdownRtGaze = diagTest.MbalanceVertCcdownRtGaze;
                 }
-                string mBalanceVertTypeCcDownRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcDownRtGaze != null) {
-                    mBalanceVertTypeCcDownRtGaze = diagTest.MbalanceVertTypeCcDownRtGaze;
+                string mBalanceVertTypeCcdownRtGaze = "";
+                if (diagTest.MbalanceVertTypeCcdownRtGaze != null) {
+                    mBalanceVertTypeCcdownRtGaze = diagTest.MbalanceVertTypeCcdownRtGaze;
                 }
-                string mBalanceHorizCcDownLtGaze = "";
-                if (diagTest.MbalanceHorizCcDownLtGaze != null) {
-                    mBalanceHorizCcDownLtGaze = diagTest.MbalanceHorizCcDownLtGaze;
+                string mBalanceHorizCcdownLtGaze = "";
+                if (diagTest.MbalanceHorizCcdownLtGaze != null) {
+                    mBalanceHorizCcdownLtGaze = diagTest.MbalanceHorizCcdownLtGaze;
                 }
-                string mBalanceHorizTypeCcDownLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcDownLtGaze != null) {
-                    mBalanceHorizTypeCcDownLtGaze = diagTest.MbalanceHorizTypeCcDownLtGaze;
+                string mBalanceHorizTypeCcdownLtGaze = "";
+                if (diagTest.MbalanceHorizTypeCcdownLtGaze != null) {
+                    mBalanceHorizTypeCcdownLtGaze = diagTest.MbalanceHorizTypeCcdownLtGaze;
                 }
-                string mBalanceVertCcDownLtGaze = "";
-                if (diagTest.MbalanceVertCcDownLtGaze != null) {
-                    mBalanceVertCcDownLtGaze = diagTest.MbalanceVertCcDownLtGaze;
+                string mBalanceVertCcdownLtGaze = "";
+                if (diagTest.MbalanceVertCcdownLtGaze != null) {
+                    mBalanceVertCcdownLtGaze = diagTest.MbalanceVertCcdownLtGaze;
                 }
-                string mBalanceVertTypeCcDownLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcDownLtGaze != null) {
-                    mBalanceVertTypeCcDownLtGaze = diagTest.MbalanceVertTypeCcDownLtGaze;
+                string mBalanceVertTypeCcdownLtGaze = "";
+                if (diagTest.MbalanceVertTypeCcdownLtGaze != null) {
+                    mBalanceVertTypeCcdownLtGaze = diagTest.MbalanceVertTypeCcdownLtGaze;
                 }
                 string smotorFixPrefDist = "";
                 if (diagTest.SmotorFixPrefDist != null) {
@@ -6195,9 +6195,9 @@ namespace Brady_s_Conversion_Program {
                 if (diagTest.SmotorComments != null) {
                     smotorComments = diagTest.SmotorComments;
                 }
-                string mBalanceHorizTypeScUpRtGaze = ""; 
-                if (diagTest.MbalanceHorizTypeScUpRtGaze != null) {
-                    mBalanceHorizTypeScUpRtGaze = diagTest.MbalanceHorizTypeScUpRtGaze;
+                string mBalanceHorizTypeScupRtGaze = ""; 
+                if (diagTest.MbalanceHorizTypeScupRtGaze != null) {
+                    mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze;
                 }
                 string smotorHorizCcNear3Plus = "";
                 if (diagTest.SmotorHorizCcNear3Plus != null) {
