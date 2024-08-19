@@ -5975,37 +5975,37 @@ namespace Brady_s_Conversion_Program {
                 if (diagTest.SmotorNpc != null) {
                     smotorNPC = diagTest.SmotorNpc;
                 }
-                string smotorHorizVergBoBreak = "";
-                if (diagTest.SmotorHorizVergBoBreak != null) {
-                    smotorHorizVergBoBreak = diagTest.SmotorHorizVergBoBreak;
+                string smotorHorizVergBobreak = "";
+                if (diagTest.SmotorHorizVergBobreak != null) {
+                    smotorHorizVergBobreak = diagTest.SmotorHorizVergBobreak;
                 }
-                string smotorHorizVergBoRecover = "";
-                if (diagTest.SmotorHorizVergBoRecover != null) {
-                    smotorHorizVergBoRecover = diagTest.SmotorHorizVergBoRecover;
+                string smotorHorizVergBorecover = "";
+                if (diagTest.SmotorHorizVergBorecover != null) {
+                    smotorHorizVergBorecover = diagTest.SmotorHorizVergBorecover;
                 }
-                string smotorHorizVergBiBreak = "";
-                if (diagTest.SmotorHorizVergBiBreak != null) {
-                    smotorHorizVergBiBreak = diagTest.SmotorHorizVergBiBreak;
+                string smotorHorizVergBibreak = "";
+                if (diagTest.SmotorHorizVergBibreak != null) {
+                    smotorHorizVergBibreak = diagTest.SmotorHorizVergBibreak;
                 }
-                string smotorHorizVergBiRecover = "";
-                if (diagTest.SmotorHorizVergBiRecover != null) {
-                    smotorHorizVergBiRecover = diagTest.SmotorHorizVergBiRecover;
+                string smotorHorizVergBirecover = "";
+                if (diagTest.SmotorHorizVergBirecover != null) {
+                    smotorHorizVergBirecover = diagTest.SmotorHorizVergBirecover;
                 }
-                string smotorVertVergBuBreak = "";
-                if (diagTest.SmotorVertVergBuBreak != null) {
-                    smotorVertVergBuBreak = diagTest.SmotorVertVergBuBreak;
+                string smotorVertVergBubreak = "";
+                if (diagTest.SmotorVertVergBubreak != null) {
+                    smotorVertVergBubreak = diagTest.SmotorVertVergBubreak;
                 }
-                string smotorVertVergBuRecover = "";
-                if (diagTest.SmotorVertVergBuRecover != null) {
-                    smotorVertVergBuRecover = diagTest.SmotorVertVergBuRecover;
+                string smotorVertVergBurecover = "";
+                if (diagTest.SmotorVertVergBurecover != null) {
+                    smotorVertVergBurecover = diagTest.SmotorVertVergBurecover;
                 }
-                string smotorVertVergBdBreak = "";
-                if (diagTest.SmotorVertVergBdBreak != null) {
-                    smotorVertVergBdBreak = diagTest.SmotorVertVergBdBreak;
+                string smotorVertVergBdbreak = "";
+                if (diagTest.SmotorVertVergBdbreak != null) {
+                    smotorVertVergBdbreak = diagTest.SmotorVertVergBdbreak;
                 }
-                string smotorVertVergBdRecover = "";
-                if (diagTest.SmotorVertVergBdRecover != null) {
-                    smotorVertVergBdRecover = diagTest.SmotorVertVergBdRecover;
+                string smotorVertVergBdrecover = "";
+                if (diagTest.SmotorVertVergBdrecover != null) {
+                    smotorVertVergBdrecover = diagTest.SmotorVertVergBdrecover;
                 }
                 string smotorDMadRodOd = "";
                 if (diagTest.SmotorDmadRodOd != null) {
@@ -6039,133 +6039,133 @@ namespace Brady_s_Conversion_Program {
                 if (short.TryParse(diagTest.SmotorAbute, out short temp4)) {
                     smotorAbute = temp4;
                 }
-                string smotorHtRtHorizSc = "";
-                if (diagTest.SmotorHtRtHorizSc != null) {
-                    smotorHtRtHorizSc = diagTest.SmotorHtRtHorizSc;
+                string smotorHtrtHorizSc = "";
+                if (diagTest.SmotorHtrtHorizScF != null) {
+                    smotorHtrtHorizSc = diagTest.SmotorHtrtHorizSc;
                 }
-                string smotorHtRtHorizTypeSc = "";
-                if (diagTest.SmotorHtRtHorizTypeSc != null) {
-                    smotorHtRtHorizTypeSc = diagTest.SmotorHtRtHorizTypeSc;
+                string smotorHtrtHorizTypeSc = "";
+                if (diagTest.SmotorHtrtHorizTypeSc != null) {
+                    smotorHtrtHorizTypeSc = diagTest.SmotorHtrtHorizTypeSc;
                 }
-                string smotorHtRtVertSc = "";
-                if (diagTest.SmotorHtRtVertSc != null) {
-                    smotorHtRtVertSc = diagTest.SmotorHtRtVertSc;
+                string smotorHtrtVertSc = "";
+                if (diagTest.SmotorHtrtVertSc != null) {
+                    smotorHtrtVertSc = diagTest.SmotorHtrtVertSc;
                 }
-                string smotorHtRtVertTypeSc = "";
-                if (diagTest.SmotorHtRtVertTypeSc != null) {
-                    smotorHtRtVertTypeSc = diagTest.SmotorHtRtVertTypeSc;
+                string smotorHtrtVertTypeSc = "";
+                if (diagTest.SmotorHtrtVertTypeSc != null) {
+                    smotorHtrtVertTypeSc = diagTest.SmotorHtrtVertTypeSc;
                 }
-                string smotorHtLtHorizSc = "";
-                if (diagTest.SmotorHtLtHorizSc != null) {
-                    smotorHtLtHorizSc = diagTest.SmotorHtLtHorizSc;
+                string smotorHtltHorizSc = "";
+                if (diagTest.SmotorHtltHorizSc != null) {
+                    smotorHtltHorizSc = diagTest.SmotorHtltHorizSc;
                 }
-                string smotorHtLtHorizTypeSc = "";
-                if (diagTest.SmotorHtLtHorizTypeSc != null) {
-                    smotorHtLtHorizTypeSc = diagTest.SmotorHtLtHorizTypeSc;
+                string smotorHtltHorizTypeSc = "";
+                if (diagTest.SmotorHtltHorizTypeSc != null) {
+                    smotorHtltHorizTypeSc = diagTest.SmotorHtltHorizTypeSc;
                 }
-                string smotorHtLtVertSc = "";
-                if (diagTest.SmotorHtLtVertSc != null) {
-                    smotorHtLtVertSc = diagTest.SmotorHtLtVertSc;
+                string smotorHtltVertSc = "";
+                if (diagTest.SmotorHtltVertSc != null) {
+                    smotorHtltVertSc = diagTest.SmotorHtltVertSc;
                 }
-                string smotorHtLtVertTypeSc = "";
-                if (diagTest.SmotorHtLtVertTypeSc != null) {
-                    smotorHtLtVertTypeSc = diagTest.SmotorHtLtVertTypeSc;
+                string smotorHtltVertTypeSc = "";
+                if (diagTest.SmotorHtltVertTypeSc != null) {
+                    smotorHtltVertTypeSc = diagTest.SmotorHtltVertTypeSc;
                 }
-                string smotorHtRtHorizCc = "";
-                if (diagTest.SmotorHtRtHorizCc != null) {
-                    smotorHtRtHorizCc = diagTest.SmotorHtRtHorizCc;
+                string smotorHtrtHorizCc = "";
+                if (diagTest.SmotorHtrtHorizCc != null) {
+                    smotorHtrtHorizCc = diagTest.SmotorHtrtHorizCc;
                 }
-                string smotorHtRtHorizTypeCc = "";
-                if (diagTest.SmotorHtRtHorizTypeCc != null) {
-                    smotorHtRtHorizTypeCc = diagTest.SmotorHtRtHorizTypeCc;
+                string smotorHtrtHorizTypeCc = "";
+                if (diagTest.SmotorHtrtHorizTypeCc != null) {
+                    smotorHtrtHorizTypeCc = diagTest.SmotorHtrtHorizTypeCc;
                 }
-                string smotorHtRtVertCc = "";
-                if (diagTest.SmotorHtRtVertCc != null) {
-                    smotorHtRtVertCc = diagTest.SmotorHtRtVertCc;
+                string smotorHtrtVertCc = "";
+                if (diagTest.SmotorHtrtVertCc != null) {
+                    smotorHtrtVertCc = diagTest.SmotorHtrtVertCc;
                 }
-                string smotorHtRtVertTypeCc = "";
-                if (diagTest.SmotorHtRtVertTypeCc != null) {
-                    smotorHtRtVertTypeCc = diagTest.SmotorHtRtVertTypeCc;
+                string smotorHtrtVertTypeCc = "";
+                if (diagTest.SmotorHtrtVertTypeCc != null) {
+                    smotorHtrtVertTypeCc = diagTest.SmotorHtrtVertTypeCc;
                 }
-                string smotorHtLtHorizCc = "";
-                if (diagTest.SmotorHtLtHorizCc != null) {
-                    smotorHtLtHorizCc = diagTest.SmotorHtLtHorizCc;
+                string smotorHtltHorizCc = "";
+                if (diagTest.SmotorHtltHorizCc != null) {
+                    smotorHtltHorizCc = diagTest.SmotorHtltHorizCc;
                 }
-                string smotorHtLtHorizTypeCc = "";
-                if (diagTest.SmotorHtLtHorizTypeCc != null) {
-                    smotorHtLtHorizTypeCc = diagTest.SmotorHtLtHorizTypeCc;
+                string smotorHtltHorizTypeCc = "";
+                if (diagTest.SmotorHtltHorizTypeCc != null) {
+                    smotorHtltHorizTypeCc = diagTest.SmotorHtltHorizTypeCc;
                 }
-                string smotorHtLtVertCc = "";
-                if (diagTest.SmotorHtLtVertCc != null) {
-                    smotorHtLtVertCc = diagTest.SmotorHtLtVertCc;
+                string smotorHtltVertCc = "";
+                if (diagTest.SmotorHtltVertCc != null) {
+                    smotorHtltVertCc = diagTest.SmotorHtltVertCc;
                 }
-                string smotorHtLtVertTypeCc = "";
-                if (diagTest.SmotorHtLtVertTypeCc != null) {
-                    smotorHtLtVertTypeCc = diagTest.SmotorHtLtVertTypeCc;
+                string smotorHtltVertTypeCc = "";
+                if (diagTest.SmotorHtltVertTypeCc != null) {
+                    smotorHtltVertTypeCc = diagTest.SmotorHtltVertTypeCc;
                 }
-                string smotorHtRtHorizScNear = "";
-                if (diagTest.SmotorHtRtHorizSc != null) {
-                    smotorHtRtHorizScNear = diagTest.SmotorHtRtHorizSc;
+                string smotorHtrtHorizScnear = "";
+                if (diagTest.SmotorHtrtHorizSc != null) {
+                    smotorHtrtHorizScnear = diagTest.SmotorHtrtHorizSc;
                 }
-                string smotorHtRtHorizTypeScNear = "";
-                if (diagTest.SmotorHtRtHorizTypeSc != null) {
-                    smotorHtRtHorizTypeScNear = diagTest.SmotorHtRtHorizTypeSc;
+                string smotorHtrtHorizTypeScnear = "";
+                if (diagTest.SmotorHtrtHorizTypeSc != null) {
+                    smotorHtrtHorizTypeScnear = diagTest.SmotorHtrtHorizTypeSc;
                 }
-                string smotorVertScNear = "";   
-                if (diagTest.SmotorVertScNear != null) {
-                    smotorVertScNear = diagTest.SmotorVertScNear;
+                string smotorVertScnear = "";   
+                if (diagTest.SmotorVertScnear != null) {
+                    smotorVertScnear = diagTest.SmotorVertScnear;
                 }
-                string smotorVertTypeScNear = "";
-                if (diagTest.SmotorVertTypeScNear != null) {
-                    smotorVertTypeScNear = diagTest.SmotorVertTypeScNear;
+                string smotorVertTypeScnear = "";
+                if (diagTest.SmotorVertTypeScnear != null) {
+                    smotorVertTypeScnear = diagTest.SmotorVertTypeScnear;
                 }
-                string smotorHorizCcNear = "";
-                if (diagTest.SmotorHorizCcNear != null) {
-                    smotorHorizCcNear = diagTest.SmotorHorizCcNear;
+                string smotorHorizCcnear = "";
+                if (diagTest.SmotorHorizCcnear != null) {
+                    smotorHorizCcnear = diagTest.SmotorHorizCcnear;
                 }
-                string smotorHorizTypeCcNear = "";
-                if (diagTest.SmotorHorizTypeCcNear != null) {
-                    smotorHorizTypeCcNear = diagTest.SmotorHorizTypeCcNear;
+                string smotorHorizTypeCcnear = "";
+                if (diagTest.SmotorHorizTypeCcnear != null) {
+                    smotorHorizTypeCcnear = diagTest.SmotorHorizTypeCcnear;
                 }
-                string smotorVertCcNear = "";
-                if (diagTest.SmotorVertCcNear != null) {
-                    smotorVertCcNear = diagTest.SmotorVertCcNear;
+                string smotorVertCcnear = "";
+                if (diagTest.SmotorVertCcnear != null) {
+                    smotorVertCcnear = diagTest.SmotorVertCcnear;
                 }
-                string smotorVertTypeCcNear = "";
-                if (diagTest.SmotorVertTypeCcNear != null) {
-                    smotorVertTypeCcNear = diagTest.SmotorVertTypeCcNear;
+                string smotorVertTypeCcnear = "";
+                if (diagTest.SmotorVertTypeCcnear != null) {
+                    smotorVertTypeCcnear = diagTest.SmotorVertTypeCcnear;
                 }
-                string smotorHorizScDist = "";
-                if (diagTest.SmotorHorizScDist != null) {
-                    smotorHorizScDist = diagTest.SmotorHorizScDist;
+                string smotorHorizScdist = "";
+                if (diagTest.SmotorHorizScdist != null) {
+                    smotorHorizScdist = diagTest.SmotorHorizScdist;
                 }
-                string smotorHorizTypeScDist = "";
-                if (diagTest.SmotorHorizTypeScDist != null) {
-                    smotorHorizTypeScDist = diagTest.SmotorHorizTypeScDist;
+                string smotorHorizTypeScdist = "";
+                if (diagTest.SmotorHorizTypeScdist != null) {
+                    smotorHorizTypeScdist = diagTest.SmotorHorizTypeScdist;
                 }
-                string smotorVertScDist = "";
-                if (diagTest.SmotorVertScDist != null) {
-                    smotorVertScDist = diagTest.SmotorVertScDist;
+                string smotorVertScdist = "";
+                if (diagTest.SmotorVertScdist != null) {
+                    smotorVertScdist = diagTest.SmotorVertScdist;
                 }
-                string smotorVertTypeScDist = "";
-                if (diagTest.SmotorVertTypeScDist != null) {
-                    smotorVertTypeScDist = diagTest.SmotorVertTypeScDist;
+                string smotorVertTypeScdist = "";
+                if (diagTest.SmotorVertTypeScdist != null) {
+                    smotorVertTypeScdist = diagTest.SmotorVertTypeScdist;
                 }
-                string smotorHorizCcDist = "";
-                if (diagTest.SmotorHorizCcDist != null) {
-                    smotorHorizCcDist = diagTest.SmotorHorizCcDist;
+                string smotorHorizCcdist = "";
+                if (diagTest.SmotorHorizCcdist != null) {
+                    smotorHorizCcdist = diagTest.SmotorHorizCcdist;
                 }
-                string smotorHorizTypeCcDist = "";
-                if (diagTest.SmotorHorizTypeCcDist != null) {
-                    smotorHorizTypeCcDist = diagTest.SmotorHorizTypeCcDist;
+                string smotorHorizTypeCcdist = "";
+                if (diagTest.SmotorHorizTypeCcdist != null) {
+                    smotorHorizTypeCcdist = diagTest.SmotorHorizTypeCcdist;
                 }
-                string smotorVertCcDist = "";
-                if (diagTest.SmotorVertCcDist != null) {
-                    smotorVertCcDist = diagTest.SmotorVertCcDist;
+                string smotorVertCcdist = "";
+                if (diagTest.SmotorVertCcdist != null) {
+                    smotorVertCcdist = diagTest.SmotorVertCcdist;
                 }
-                string smotorVertTypeCcDist = "";
-                if (diagTest.SmotorVertTypeCcDist != null) {
-                    smotorVertTypeCcDist = diagTest.SmotorVertTypeCcDist;
+                string smotorVertTypeCcdist = "";
+                if (diagTest.SmotorVertTypeCcdist != null) {
+                    smotorVertTypeCcdist = diagTest.SmotorVertTypeCcdist;
                 }
                 string mbalanceMethodSc = "";
                 if (diagTest.MbalanceMethodSc != null) {
@@ -6199,25 +6199,25 @@ namespace Brady_s_Conversion_Program {
                 if (diagTest.MbalanceHorizTypeScupRtGaze != null) {
                     mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze;
                 }
-                string smotorHorizCcNear3Plus = "";
-                if (diagTest.SmotorHorizCcNear3Plus != null) {
-                    smotorHorizCcNear3Plus = diagTest.SmotorHorizCcNear3Plus;
+                string smotorHorizCcnear3Plus = "";
+                if (diagTest.SmotorHorizCcnear3Plus != null) {
+                    smotorHorizCcnear3Plus = diagTest.SmotorHorizCcnear3Plus;
                 }
-                string smotorHorizScNear = "";
-                if (diagTest.SmotorHorizScNear != null) {
-                    smotorHorizScNear = diagTest.SmotorHorizScNear;
+                string smotorHorizScnear = "";
+                if (diagTest.SmotorHorizScnear != null) {
+                    smotorHorizScnear = diagTest.SmotorHorizScnear;
                 }
-                string smotorHorizTypeScNear = "";
-                if (diagTest.SmotorHorizTypeScNear != null) {
-                    smotorHorizTypeScNear = diagTest.SmotorHorizTypeScNear;
+                string smotorHorizTypeScnear = "";
+                if (diagTest.SmotorHorizTypeScnear != null) {
+                    smotorHorizTypeScnear = diagTest.SmotorHorizTypeScnear;
                 }
-                string smotorVertCcNear3Plus = "";
-                if (diagTest.SmotorVertCcNear3Plus != null) {
-                    smotorVertCcNear3Plus = diagTest.SmotorVertCcNear3Plus;
+                string smotorVertCcnear3Plus = "";
+                if (diagTest.SmotorVertCcnear3Plus != null) {
+                    smotorVertCcnear3Plus = diagTest.SmotorVertCcnear3Plus;
                 }
-                string smotorVertTypeCcNear3Plus = "";
-                if (diagTest.SmotorVertTypeCcNear3Plus != null) {
-                    smotorVertTypeCcNear3Plus = diagTest.SmotorVertTypeCcNear3Plus;
+                string smotorVertTypeCcnear3Plus = "";
+                if (diagTest.SmotorVertTypeCcnear3Plus != null) {
+                    smotorVertTypeCcnear3Plus = diagTest.SmotorVertTypeCcnear3Plus;
                 }
                 #endregion diagTests
 
