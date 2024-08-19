@@ -3187,7 +3187,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for visit order with ID: {medicalHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 int? ptId = null;
                 if (medicalHistory.PtId! <= -1) {
                     ptId = medicalHistory.PtId;
@@ -3831,7 +3831,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosdate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
                     return;
@@ -4101,7 +4101,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosdate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
                 if (eyeMDVisit != null) {
                     ptId = eyeMDVisit.PtId;
                 }
@@ -4417,7 +4417,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosdate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                 }
@@ -5249,7 +5249,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with PTID: {diagCodePool.PtId}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with VisitID: {diagCodePool.VisitId}");
                 }
@@ -5529,7 +5529,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag test with ID: {diagTest.Id}");
                 }
@@ -6324,7 +6324,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for exam conditions with ID: {examCondition.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Exam Condition with ID: {examCondition.Id}");
                 }
@@ -6421,7 +6421,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for family history with ID: {familyHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Family History with ID: {familyHistory.Id}");
                 }
@@ -6533,7 +6533,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for iop with ID: {iop.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for IOP with ID: {iop.Id}");
                 }
@@ -6669,7 +6669,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.PtId);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.PtId);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Patient Note with ID: {patientNote.Id}");
                 }
@@ -6764,7 +6764,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for plan narrative with ID: {planNarrative.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Plan Narrative with ID: {planNarrative.Id}");
                     return;
@@ -6894,7 +6894,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for proc diag code pool with ID: {procDiagPool.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
                     return;
@@ -6993,7 +6993,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for proc pool with ID: {procPool.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Proc Pool with ID: {procPool.Id}");
                 }
@@ -7277,7 +7277,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for refraction with ID: {refraction.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Refraction with ID: {refraction.Id}");
                     return;
@@ -7592,7 +7592,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for Rx with ID: {rx.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Rx with ID: {rx.Id}");
                 }
@@ -7994,7 +7994,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for Surg History with ID: {surgHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Surg History with ID: {surgHistory.Id}");
                 }
@@ -8282,7 +8282,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for Tech with ID: {tech.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Tech with ID: {tech.Id}");
                 }
@@ -8611,12 +8611,12 @@ namespace Brady_s_Conversion_Program {
                     ehrOrig.VitalsBgl = TruncateString(tech.VitalsBgl, 50);
                     ehrOrig.VitalsBglunits = TruncateString(tech.VitalsBglunits, 50);
                     ehrOrig.PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100);
-                    ehrOrig.WuvaCcOu = TruncateString(tech.WuvaCcOu, 50);
-                    ehrOrig.WuvaScOu = TruncateString(tech.WuvaScOu, 50);
-                    ehrOrig.WunCcOu = TruncateString(tech.WunCcOu, 50);
-                    ehrOrig.WunScOu = TruncateString(tech.WunScOu, 50);
-                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvaTestUsed, 50);
-                    ehrOrig.WueomType = TruncateString(tech.WueomType, 255);
+                    ehrOrig.WuvaCcOu = TruncateString(tech.Wuvaccou, 50);
+                    ehrOrig.WuvaScOu = TruncateString(tech.Wuvascou, 50);
+                    ehrOrig.WunCcOu = TruncateString(tech.Wunccou, 50);
+                    ehrOrig.WunScOu = TruncateString(tech.Wunscou, 50);
+                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50);
+                    ehrOrig.WueomType = TruncateString(tech.Wueomtype, 255);
                     ehrOrig.HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue);
                     eyeMDDbContext.SaveChanges();
                     return;
@@ -8649,37 +8649,37 @@ namespace Brady_s_Conversion_Program {
                     HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
                     HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
                     Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
-                    WuvaCcOd = TruncateString(tech.WuvaCcOd, 50),
-                    WuvaCcOs = TruncateString(tech.WuvaCcOs, 50),
-                    WuvaCcOu = TruncateString(tech.WuvaCcOu, 50),
-                    WuvaPhOd = TruncateString(tech.WuvaPhOd, 50),
-                    WuvaPhOs = TruncateString(tech.WuvaPhOs, 50),
-                    WuvaScOd = TruncateString(tech.WuvaScOd, 50),
-                    WuvaScOs = TruncateString(tech.WuvaScOs, 50),
-                    WuvaScOu = TruncateString(tech.WuvaScOu, 50),
-                    WuvaTestUsed = TruncateString(tech.WuvaTestUsed, 50),
-                    WunCcOd = TruncateString(tech.WunCcOd, 50),
-                    WunCcOs = TruncateString(tech.WunCcOs, 50),
-                    WunCcOu = TruncateString(tech.WunCcOu, 50),
+                    WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
+                    WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
+                    WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
+                    WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
+                    WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
+                    WuvaScOd = TruncateString(tech.Wuvascod, 50),
+                    WuvaScOs = TruncateString(tech.Wuvascos, 50),
+                    WuvaScOu = TruncateString(tech.Wuvascou, 50),
+                    WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
+                    WunCcOd = TruncateString(tech.Wunccod, 50),
+                    WunCcOs = TruncateString(tech.Wunccos, 50),
+                    WunCcOu = TruncateString(tech.Wunccou, 50),
                     Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
-                    WunScOd = TruncateString(tech.WunScOd, 50),
-                    WunScOs = TruncateString(tech.WunScOs, 50),
-                    WunScOu = TruncateString(tech.WunScOu, 50),
+                    WunScOd = TruncateString(tech.Wunscod, 50),
+                    WunScOs = TruncateString(tech.Wunscos, 50),
+                    WunScOu = TruncateString(tech.Wunscou, 50),
                     WudomEye = TruncateString(tech.WudomEye, 50),
-                    WutcvfOd = TruncateString(tech.WutcvfOd, 50),
-                    WutcvfOs = TruncateString(tech.WutcvfOs, 50),
+                    WutcvfOd = TruncateString(tech.Wutcvfod, 50),
+                    WutcvfOs = TruncateString(tech.Wutcvfos, 50),
                     WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
                     WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
-                    WueomSuTmOd = TruncateString(tech.WueomSuTmOd, 50),
-                    WueomSuTmOs = TruncateString(tech.WueomSuTmOs, 50),
-                    WueomMedialOd = TruncateString(tech.WueomMedialOd, 50),
-                    WueomMedialOs = TruncateString(tech.WueomMedialOs, 50),
-                    WueomInNaOs = TruncateString(tech.WueomInNaOs, 50),
-                    WueomInNaOd = TruncateString(tech.WueomInNaOd, 50),
-                    WueomInTmOd = TruncateString(tech.WueomInTmOd, 50),
-                    WueomInTmOs = TruncateString(tech.WueomInTmOs, 50),
-                    WueomSuNaOd = TruncateString(tech.WueomSuNaOd, 50),
-                    WueomSuNaOs = TruncateString(tech.WueomSuNaOs, 50),
+                    WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
+                    WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
+                    WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
+                    WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
+                    WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
+                    WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
+                    WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
+                    WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
+                    WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
+                    WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
                     WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
                     WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
                     WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
@@ -8719,9 +8719,9 @@ namespace Brady_s_Conversion_Program {
                     WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
                     WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
                     WudilatedTime = wuDilatedTime,
-                    WueomTemporalOd = TruncateString(tech.WueomTemporalOd, 50),
-                    WueomTemporalOs = TruncateString(tech.WueomTemporalOs, 50),
-                    WueomType = TruncateString(tech.WueomType, 255),
+                    WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
+                    WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
+                    WueomType = TruncateString(tech.Wueomtype, 255),
                     Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
                     Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
                     PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
@@ -8729,8 +8729,8 @@ namespace Brady_s_Conversion_Program {
                     WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
                     WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
                     WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
-                    WupupilApdOd = TruncateString(tech.WupupilApdOd, 50),
-                    WupupilApdOs = TruncateString(tech.WupupilApdOs, 50),
+                    WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
+                    WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
                     WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
                     WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
                     HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
@@ -8760,35 +8760,45 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                int? ptId = null;
-                if (tech2.PtId != null) {
-                    if (int.TryParse(tech2.PtId, out int locum)) {
-                        ptId = locum;
-                    }
-                }
-                int? visitId = null;
-                if (tech2.VisitId != null) {
-                    if (int.TryParse(tech2.VisitId, out int locum)) {
-                        visitId = locum;
-                    }
-                }
-                if (ptId == null) {
-                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
-                    } else {
-                        logger.Log($"EHR: EHR PatientID not found for Tech2 with ID: {tech2.Id}");
-                    }
-                }
-
                 DateTime? dosDate = null;
                 if (tech2.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(tech2.Dosdate, dateFormats,
-                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dosDate = tempDateTime;
                     }
                 }
+                int? visitId = null;
+                if (tech2.VisitId != null) {
+                    visitId = tech2.VisitId;
+                }
+                var convVisit = eHRDbContext.Visits.Find(visitId);
+                if (convVisit == null) {
+                    logger.Log($"EHR: EHR Visit not found for Tech2 with ID: {tech2.Id}");
+                    return;
+                }
+                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                if (eyeMDVisit == null) {
+                    logger.Log($"EHR: EHR VisitID not found for Tech2 with ID: {tech2.Id}");
+                }
+                int ptId = -1;
+                if (tech2.PtId! <= -1) {
+                    ptId = tech2.PtId;
+                }
+                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                if (eyeMDPatient == null) {
+                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                        ptId = (int)eyeMDVisit.PtId;
+                    }
+                    else {
+                        logger.Log($"EHR: EHR PatientID not found for Tech2 with ID: {tech2.Id}");
+                    }
+                }
+                else {
+                    ptId = eyeMDPatient.PtId;
+                }
+
                 float? wu2kmaxOd = null;
                 if (tech2.Wu2kmaxOd != null) {
                     if (float.TryParse(tech2.Wu2kmaxOd, out float locum)) {
@@ -8850,8 +8860,8 @@ namespace Brady_s_Conversion_Program {
 
                 if (ehrOrig != null) {
                     ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Wu2vaOrxOd = tech2.Wu2vaOrxOd;
-                    ehrOrig.Wu2vaOrxOs = tech2.Wu2vaOrxOs;
+                    ehrOrig.Wu2vaOrxOd = tech2.Wu2vaorxOd;
+                    ehrOrig.Wu2vaOrxOs = tech2.Wu2vaorxOs;
                     ehrOrig.Wu2kmaxOd = wu2kmaxOd;
                     ehrOrig.Wu2kmaxOs = wu2kmaxOs;
                     ehrOrig.Wu2kminOd = wu2kminOd;
@@ -8908,24 +8918,24 @@ namespace Brady_s_Conversion_Program {
                     ehrOrig.Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50);
                     ehrOrig.Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue);
                     ehrOrig.Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50);
-                    ehrOrig.Wu2GlareHighOd = tech2.Wu2GlareHighOd;
-                    ehrOrig.Wu2GlareHighOs = tech2.Wu2GlareHighOs;
-                    ehrOrig.Wu2GlareLowOd = tech2.Wu2GlareLowOd;
-                    ehrOrig.Wu2GlareLowOs = tech2.Wu2GlareLowOs;
-                    ehrOrig.Wu2GlareMedOd = tech2.Wu2GlareMedOd;
-                    ehrOrig.Wu2GlareMedOs = tech2.Wu2GlareMedOs;
-                    ehrOrig.Wu2GlareType = TruncateString(tech2.Wu2GlareType, 50);
+                    ehrOrig.Wu2GlareHighOd = tech2.Wu2glareHighOd;
+                    ehrOrig.Wu2GlareHighOs = tech2.Wu2glareHighOs;
+                    ehrOrig.Wu2GlareLowOd = tech2.Wu2glareLowOd;
+                    ehrOrig.Wu2GlareLowOs = tech2.Wu2glareLowOs;
+                    ehrOrig.Wu2GlareMedOd = tech2.Wu2glareMedOd;
+                    ehrOrig.Wu2GlareMedOs = tech2.Wu2glareMedOs;
+                    ehrOrig.Wu2GlareType = TruncateString(tech2.Wu2glareType, 50);
                     ehrOrig.Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100);
                     ehrOrig.Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100);
                     ehrOrig.Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100);
                     ehrOrig.Wu2ktype = TruncateString(tech2.Wu2ktype, 255);
-                    ehrOrig.Wu2pachCctOd = TruncateString(tech2.Wu2pachCctOd, 50);
-                    ehrOrig.Wu2pachCctOs = TruncateString(tech2.Wu2pachCctOs, 50);
-                    ehrOrig.Wu2ttvOd = TruncateString(tech2.Wu2ttvOd, 50);
-                    ehrOrig.Wu2ttvOs = TruncateString(tech2.Wu2ttvOs, 50);
+                    ehrOrig.Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50);
+                    ehrOrig.Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50);
+                    ehrOrig.Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50);
+                    ehrOrig.Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50);
                     ehrOrig.Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue);
-                    ehrOrig.Wu2vaPamOd = TruncateString(tech2.Wu2vaPamOd, 50);
-                    ehrOrig.Wu2vaPamOs = TruncateString(tech2.Wu2vaPamOs, 50);
+                    ehrOrig.Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50);
+                    ehrOrig.Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50);
                     eyeMDDbContext.SaveChanges();
                     return;
                 }
