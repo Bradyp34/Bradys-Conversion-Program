@@ -428,7 +428,7 @@ namespace Brady_s_Conversion_Program {
 
                 DateTime dob = minDate;
 
-                if (patient.Dob != null) {
+                if (patient.Dob != null && patient.Dob != "") {
                     string dobString = patient.Dob.Trim(); // Remove any leading/trailing whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
@@ -487,27 +487,27 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? consentDate = null;
-                if (patient.ConsentDate != null) {
+                if (patient.ConsentDate != null && patient.ConsentDate != "") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        consentDate = tempDateTime;
+                        consentDate = isValidDate(tempDateTime);
                     }
                 }
                 DateOnly? deceasedDate = null;
-                if (patient.DateOfDeath != null) {
-                    DateOnly tempDateTime;
-                    if (!DateOnly.TryParseExact(patient.DateOfDeath, dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        deceasedDate = tempDateTime;
+                if (patient.DateOfDeath != null && patient.DateOfDeath != "") {
+                    DateTime tempDateTime;
+                    if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        deceasedDate = DateOnly.FromDateTime(isValidDate(tempDateTime));
                     }
                 }
                 DateTime lastExamDate = minDate;
-                if (patient.LastExamDate != null) {
+                if (patient.LastExamDate != null && patient.LastExamDate != "") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        lastExamDate = tempDateTime;
+                        lastExamDate = isValidDate(tempDateTime);
                     }
                 }
                 lastExamDate = isValidDate(lastExamDate);
@@ -647,7 +647,7 @@ namespace Brady_s_Conversion_Program {
 
                 // If no existing patient is found, create a new one
                 var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
-                    DateCreated = DateTime.Now,
+                    DateCreated = minDate,
                     AccountNumber = patient.Id.ToString(),
                     AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
                     LastName = TruncateString(patient.LastName, 50),
@@ -673,7 +673,9 @@ namespace Brady_s_Conversion_Program {
                     EmailStatements = emailStatements,
                     OpenEdgeCustomerId = TruncateString("", 100),
                     TextStatements = true,
-                    LocationId = 0
+                    LocationId = 0,
+                    LastModifiedDate = DateTime.Now,
+                    LastModifiedBy = -1
                 };
 
                 ffpmDbContext.DmgPatients.Add(newPatient);
@@ -8944,8 +8946,8 @@ namespace Brady_s_Conversion_Program {
                     PtId = ptId,
                     VisitId = visitId,
                     Dosdate = dosDate,
-                    Wu2vaOrxOd = tech2.Wu2vaOrxOd,
-                    Wu2vaOrxOs = tech2.Wu2vaOrxOs,
+                    Wu2vaOrxOd = tech2.Wu2vaorxOd,
+                    Wu2vaOrxOs = tech2.Wu2vaorxOs,
                     Wu2kmaxOd = wu2kmaxOd,
                     Wu2kmaxOs = wu2kmaxOs,
                     Wu2kminOd = wu2kminOd,
@@ -9002,24 +9004,24 @@ namespace Brady_s_Conversion_Program {
                     Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
                     Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
                     Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
-                    Wu2GlareHighOd = tech2.Wu2GlareHighOd,
-                    Wu2GlareHighOs = tech2.Wu2GlareHighOs,
-                    Wu2GlareLowOd = tech2.Wu2GlareLowOd,
-                    Wu2GlareLowOs = tech2.Wu2GlareLowOs,
-                    Wu2GlareMedOd = tech2.Wu2GlareMedOd,
-                    Wu2GlareMedOs = tech2.Wu2GlareMedOs,
-                    Wu2GlareType = TruncateString(tech2.Wu2GlareType, 50),
+                    Wu2GlareHighOd = tech2.Wu2glareHighOd,
+                    Wu2GlareHighOs = tech2.Wu2glareHighOs,
+                    Wu2GlareLowOd = tech2.Wu2glareLowOd,
+                    Wu2GlareLowOs = tech2.Wu2glareLowOs,
+                    Wu2GlareMedOd = tech2.Wu2glareMedOd,
+                    Wu2GlareMedOs = tech2.Wu2glareMedOs,
+                    Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
                     Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
                     Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
                     Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
                     Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
-                    Wu2pachCctOd = TruncateString(tech2.Wu2pachCctOd, 50),
-                    Wu2pachCctOs = TruncateString(tech2.Wu2pachCctOs, 50),
-                    Wu2ttvOd = TruncateString(tech2.Wu2ttvOd, 50),
-                    Wu2ttvOs = TruncateString(tech2.Wu2ttvOs, 50),
+                    Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
+                    Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
+                    Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
+                    Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
                     Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
-                    Wu2vaPamOd = TruncateString(tech2.Wu2vaPamOd, 50),
-                    Wu2vaPamOs = TruncateString(tech2.Wu2vaPamOs, 50)
+                    Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
+                    Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
                 };
                 eyeMDDbContext.EmrvisitTech2s.Add(newTech2);
 
@@ -9131,8 +9133,8 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? isActive = null;
-                if (clBrand.IsActive != null) {
-                    if (bool.TryParse(clBrand.IsActive, out bool locum)) {
+                if (clBrand.Active != null) {
+                    if (bool.TryParse(clBrand.Active, out bool locum)) {
                         isActive = locum;
                     }
                 }
@@ -9323,8 +9325,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 int clnsBrandId = -1;
-                if (clLense.ClnsBrandId != null) {
-                    if (int.TryParse(clLense.ClnsBrandId, out int locum)) {
+                if (clLense.ClndbrandId != null) {
+                    if (int.TryParse(clLense.ClndbrandId, out int locum)) {
                         clnsBrandId = locum;
                     }
                 }
@@ -9333,14 +9335,14 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
                 int? clnsManufacturerId = null;
-                if (clLense.ClnsManufacturerId != null) {
-                    if (int.TryParse(clLense.ClnsManufacturerId, out int locum)) {
+                if (clLense.ClnsmanufacturerId != null) {
+                    if (int.TryParse(clLense.ClnsmanufacturerId, out int locum)) {
                         clnsManufacturerId = locum;
                     }
                 }
                 int? clnsLensTypeId = null;
-                if (clLense.ClnsLensTypeId != null) {
-                    if (int.TryParse(clLense.ClnsLensTypeId, out int locum)) {
+                if (clLense.ClnslensTypeId != null) {
+                    if (int.TryParse(clLense.ClnslensTypeId, out int locum)) {
                         clnsLensTypeId = locum;
                     }
                 }
@@ -9385,8 +9387,8 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? isActive = null;
-                if (clLense.IsActive != null) {
-                    if (bool.TryParse(clLense.IsActive, out bool locum)) {
+                if (clLense.Active != null) {
+                    if (bool.TryParse(clLense.Active, out bool locum)) {
                         isActive = locum;
                     }
                 }
@@ -9403,8 +9405,8 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool? isLensFromClxCatalog = null;
-                if (clLense.IsLensFromClxCatalog != null) {
-                    if (bool.TryParse(clLense.IsLensFromClxCatalog, out bool locum)) {
+                if (clLense.IsLensFromClxcatalog != null) {
+                    if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
                         isLensFromClxCatalog = locum;
                     }
                 }
@@ -9697,7 +9699,7 @@ namespace Brady_s_Conversion_Program {
                     invList.Units = units;
                     invList.NdcActive = ndcActive;
                     invList.NdcCost = ndcCost;
-                    invList.NdcCode = TruncateString(cpt.NdcCode, 11);
+                    invList.NdcCode = TruncateString(cpt.Ndccode, 11);
                     invList.NdcUnitsMeasurementId = ndcUnitsMeasurementId;
                     invList.NdcQuantity = ndcQuantity;
                     invList.AutoUpdateReferringProvider = autoUpdateReferringProvider;
@@ -9722,7 +9724,7 @@ namespace Brady_s_Conversion_Program {
                     Units = units,
                     NdcActive = ndcActive,
                     NdcCost = ndcCost,
-                    NdcCode = TruncateString(cpt.NdcCode, 11),
+                    NdcCode = TruncateString(cpt.Ndccode, 11),
                     NdcUnitsMeasurementId = ndcUnitsMeasurementId,
                     NdcQuantity = ndcQuantity,
                     AutoUpdateReferringProvider = autoUpdateReferringProvider
@@ -9934,8 +9936,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 string status = "";
-                if (frameStatus.StatusId != null) {
-                    status = frameStatus.StatusId;
+                if (frameStatus.OldStatusId != null) {
+                    status = frameStatus.OldStatusId;
                 }
 
                 var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
@@ -9966,8 +9968,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 string temple = "";
-                if (frameTemple.TempleId != null) {
-                    temple = frameTemple.TempleId;
+                if (frameTemple.OldTempleId != null) {
+                    temple = frameTemple.OldTempleId;
                 }
 
                 var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
@@ -9998,8 +10000,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 string eType = "";
-                if (frameEType.EtypeId != null) {
-                    eType = frameEType.EtypeId;
+                if (frameEType.OldEtypeId != null) {
+                    eType = frameEType.OldEtypeId;
                 }
 
                 var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
@@ -10030,8 +10032,8 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 string fType = "";
-                if (frameFType.FtypeId != null) {
-                    fType = frameFType.FtypeId;
+                if (frameFType.OldFtypeId != null) {
+                    fType = frameFType.OldFtypeId;
                 }
 
                 var invList = ffpmDbContext.FrameFtypes.FirstOrDefault(x => x.Ftype == fType);
@@ -10568,13 +10570,15 @@ namespace Brady_s_Conversion_Program {
                 }
                 DateTime? dateAdded = null;
                 if (frame.DateAdded != null) {
-                    if (DateTime.TryParse(frame.DateAdded, out DateTime locum)) {
+                    if (DateTime.TryParseExact(frame.DateAdded, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
                         dateAdded = locum;
                     }
                 }
                 DateTime? lastUpdated = null;
                 if (frame.LastUpdated != null) {
-                    if (DateTime.TryParse(frame.LastUpdated, out DateTime locum)) {
+                    if (DateTime.TryParseExact(frame.LastUpdated, dateFormats, 
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
                         lastUpdated = locum;
                     }
                 }

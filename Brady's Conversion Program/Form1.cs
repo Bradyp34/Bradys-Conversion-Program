@@ -18,12 +18,24 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please select at least one database to convert.");
                 return;
             }
-            else if (ConvServerTextBox.Text == "") {
+            else if (ConvCheckBox.Checked == true && ConvServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for EyeMD database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for EyeMD database on FFPM Conversion.");
                 return;
             }
             else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
+                return;
+            }
+            else if (EHRCheckBox.Checked && EHRServerTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for EHR database on EyeMD Conversion.");
                 return;
             }
             else if (EHRCheckBox.Checked && EHRTextBox.Text == "") {
