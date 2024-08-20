@@ -161,6 +161,7 @@ namespace Brady_s_Conversion_Program {
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
+            string completeConnection = "";
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
@@ -405,7 +406,9 @@ namespace Brady_s_Conversion_Program {
             foreach (var patientNote in convDbContext.PatientNotes.ToList()) {
                 ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress);
             }
-                
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PatientNotes Converted\n";
+            });
 
             foreach (var phone in convDbContext.Phones.ToList()) {
                 ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress);
