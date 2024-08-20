@@ -27,6 +27,7 @@ using System.CodeDom;
 using Microsoft.Identity.Client.NativeInterop;
 using static Azure.Core.HttpHeader;
 using System.Windows.Forms;
+using System.Configuration;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -160,7 +161,6 @@ namespace Brady_s_Conversion_Program {
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
-            string completeConnection = "";
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
@@ -208,7 +208,7 @@ namespace Brady_s_Conversion_Program {
                                 });
 
                                 // Perform conversion for each table
-                                ConvertFFPM(convDbContext, ffpmDbContext, eyeMDDbContext, logger, progress);
+                                ConvertFFPM(convDbContext, ffpmDbContext, eyeMDDbContext, logger, progress, resultsBox);
 
                                 // Save changes to databases
                                 ffpmDbContext.SaveChanges();
@@ -217,7 +217,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     resultsBox.Invoke((MethodInvoker)delegate {
-                        resultsBox.Text = "Foxfire Conversion Successful\n";
+                        resultsBox.Text += "Foxfire Conversion Successful\n";
                     });
                 }
                 if (ehr == true) { // not positive what this will entail yet
@@ -265,7 +265,7 @@ namespace Brady_s_Conversion_Program {
 
 
                             eyeMDDbContext.Database.OpenConnection();
-                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress);
+                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox);
                             eyeMDDbContext.SaveChanges();
                         }
                     }
@@ -307,14 +307,14 @@ namespace Brady_s_Conversion_Program {
 
 
                             ffpmDbContext.Database.OpenConnection();
-                            ConvertInv(invDbContext, ffpmDbContext, logger, progress); // need to find out where inv data goes
+                            ConvertInv(invDbContext, ffpmDbContext, logger, progress, resultsBox); // need to find out where inv data goes
                             ffpmDbContext.SaveChanges();
                         }
                     }
                     resultsBox.Invoke((MethodInvoker)delegate {
                         resultsBox.Text += "Inv Conversion Successful\n";
                     });
-                    return completeConnection + "\nProgram run completed.\n";
+                    return completeConnection = "Program run completed.\n";
                 }
             }
             catch (Exception e) {
@@ -324,78 +324,130 @@ namespace Brady_s_Conversion_Program {
         }
 
         #region FFPMConversion
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Patients Converted\n";
+            });
 
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "AccountXrefs Converted\n";
+            });
 
             foreach (var address in convDbContext.Addresses.ToList()) {
                 ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Addresses Converted\n";
+            });
 
             foreach (var appointment in convDbContext.Appointments.ToList()) {
                 ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Appointments Converted\n";
+            });
 
             foreach (var appointmentType in convDbContext.AppointmentTypes.ToList()) {
                 ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "AppointmentTypes Converted\n";
+            });
 
             foreach (var insurance in convDbContext.Insurances.ToList()) {
                 ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Insurances Converted\n";
+            });
 
             foreach (var location in convDbContext.Locations.ToList()) {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Locations Converted\n";
+            });
 
             foreach (var guarantor in convDbContext.Guarantors.ToList()) {
                 ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Guarantors Converted\n";
+            });
 
             foreach (var patientAlert in convDbContext.PatientAlerts.ToList()) {
                 ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PatientAlerts Converted\n";
+            });
 
             foreach (var patientDocument in convDbContext.PatientDocuments.ToList()) {
                 ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PatientDocuments Converted\n";
+            });
 
             foreach (var patientInsurance in convDbContext.PatientInsurances.ToList()) {
                 ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PatientInsurances Converted\n";
+            });
 
             foreach (var patientNote in convDbContext.PatientNotes.ToList()) {
                 ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress);
             }
+                
 
             foreach (var phone in convDbContext.Phones.ToList()) {
                 ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Phones Converted\n";
+            });
 
             foreach (var provider in convDbContext.Providers.ToList()) {
                 ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Providers Converted\n";
+            });
 
             foreach (var recall in convDbContext.Recalls.ToList()) {
                 ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Recalls Converted\n";
+            });
 
             foreach (var recallType in convDbContext.RecallTypes.ToList()) {
                 ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "RecallTypes Converted\n";
+            });
 
             foreach (var referral in convDbContext.Referrals.ToList()) {
                 ConvertReferral(referral, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Referrals Converted\n";
+            });
 
             foreach (var schedCode in convDbContext.SchedCodes.ToList()) {
                 ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "SchedCodes Converted\n";
+            });
         }
 
         public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
@@ -427,8 +479,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime dob = minDate;
-
-                if (patient.Dob != null && patient.Dob != "") {
+                if (patient.Dob != null && patient.Dob != "" || patient.Dob == "0") {
                     string dobString = patient.Dob.Trim(); // Remove any leading/trailing whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
@@ -473,21 +524,21 @@ namespace Brady_s_Conversion_Program {
 
                 bool? patientIsActive = null;
                 if (patient.Active != null) {
-                    patientIsActive = patient.Active.ToUpper() == "YES" ? true : false;
+                    patientIsActive = patient.Active.ToUpper() == "NO" ? false : true;
                 }
 
                 bool? deceased = null;
                 if (patient.Deceased != null) {
-                    deceased = patient.Deceased.ToUpper() == "YES" ? true : false;
+                    deceased = patient.Deceased.ToUpper() == "NO" ? false : true;
                 }
 
                 bool? consent = null;
                 if (patient.Consent != null) {
-                    consent = patient.Consent.ToUpper() == "YES" ? true : false;
+                    consent = patient.Consent.ToUpper() == "NO" ? false : true;
                 }
 
                 DateTime? consentDate = null;
-                if (patient.ConsentDate != null && patient.ConsentDate != "") {
+                if (patient.ConsentDate != null && patient.ConsentDate != "" || patient.ConsentDate == "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -495,7 +546,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly? deceasedDate = null;
-                if (patient.DateOfDeath != null && patient.DateOfDeath != "") {
+                if (patient.DateOfDeath != null && patient.DateOfDeath != "" || patient.DateOfDeath == "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -503,7 +554,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime lastExamDate = minDate;
-                if (patient.LastExamDate != null && patient.LastExamDate != "") {
+                if (patient.LastExamDate != null && patient.LastExamDate != "" || patient.LastExamDate == "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -750,7 +801,7 @@ namespace Brady_s_Conversion_Program {
                     isActive = true;
                 }
 
-                if (address.PrimaryFile != null && address.PrimaryFile.ToLower() == "pat") {
+                if (address.PrimaryFile != null && address.PrimaryFile.ToLower() == "pat" || address.PrimaryFile == "" || address.PrimaryFile == null) {
                     switch (address.PrimaryFile) {
                         case "pat":
                             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
@@ -811,7 +862,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
 
-                            var ffpmOrig = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => isPrimary == true && (p.PatientId == ffpmPatient.PatientId &&
+                            var ffpmOrig = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId &&
                                     p.IsPrimary == true)); // new address will be alternate if found
 
                             if (ffpmOrig != null) {
@@ -1079,14 +1130,18 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime start = minDate;
-                if (DateTime.TryParseExact(appointment.StartDate, dateFormats,
+                if (appointment.StartDate != null || appointment.StartDate != "" || appointment.StartDate != "0") {
+                    if (DateTime.TryParseExact(appointment.StartDate, dateFormats,
                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
-                    start = isValidDate(start);
+                        start = isValidDate(start);
+                    }
                 }
                 DateTime end = minDate;
-                if (DateTime.TryParseExact(appointment.EndDate, dateFormats,
-                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
-                     end = isValidDate(end);
+                if (appointment.EndDate != null || appointment.EndDate != "" || appointment.EndDate != "0") {
+                    if (DateTime.TryParseExact(appointment.EndDate, dateFormats,
+                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
+                        end = isValidDate(end);
+                    }
                 }
                 int duration = 0;
                 if (appointment.Duration != null) {
@@ -1095,9 +1150,11 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime created = minDate;
-                if (DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
-                                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
-                    created = isValidDate(created);
+                if (appointment.DateTimeCreated != null) {
+                    if (DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
+                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
+                        created = isValidDate(created);
+                    }
                 }
                 int billingLocId = 0;
                 if (appointment.OldBillingLocationId != null) {
@@ -1128,7 +1185,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkIn = null;
-                if (appointment.CheckInDateTime != null) {
+                if (appointment.CheckInDateTime != null && appointment.CheckInDateTime != "" && appointment.CheckInDateTime != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckInDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1136,7 +1193,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? takeback = null;
-                if (appointment.TakeBackDateTime != null) {
+                if (appointment.TakeBackDateTime != null && appointment.TakeBackDateTime != "" && appointment.TakeBackDateTime != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.TakeBackDateTime, dateFormats,
                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1144,7 +1201,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkOut = null;
-                if (appointment.CheckOutDateTime != null) {
+                if (appointment.CheckOutDateTime != null && appointment.TakeBackDateTime != "" && appointment.TakeBackDateTime != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckOutDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1179,7 +1236,7 @@ namespace Brady_s_Conversion_Program {
                     type = (int)typeXref.AppointmentTypeId;
                 }
                 DateTime? updated = null;
-                if (appointment.DateTimeUpdated != null) {
+                if (appointment.DateTimeUpdated != null && appointment.DateTimeUpdated != "" && appointment.DateTimeUpdated != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.DateTimeUpdated, dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1703,9 +1760,11 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime dob = minDate;
-                if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
-                                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                    dob = isValidDate(dob);
+                if (guarantor.Dob != null && guarantor.Dob != "" && guarantor.Dob != "0") {
+                    if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
+                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
+                        dob = isValidDate(dob);
+                    }
                 }
                 short? relationID = null;
                 var relationXref = ffpmDbContext.MntRelationships.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
@@ -1809,7 +1868,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? alertDate = null;
-                if (patientAlert.AlertCreatedDate != null) {
+                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != ""&& patientAlert.AlertCreatedDate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1817,7 +1876,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? alertEndDate = null;
-                if (patientAlert.AlertExpiryDate != null) {
+                if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && patientAlert.AlertExpiryDate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1901,7 +1960,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? dateDocument = null;
-                if (patientDocument.Date != null) {
+                if (patientDocument.Date != null && patientDocument.Date != "" && patientDocument.Date != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1964,7 +2023,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? startDate = null;
-                if (patientInsurance.StartDate != null) {
+                if (patientInsurance.StartDate != null && patientInsurance.StartDate != "" && patientInsurance.StartDate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientInsurance.StartDate, dateFormats,
                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1972,7 +2031,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly? endDate = null;
-                if (patientInsurance.EndDate != null) {
+                if (patientInsurance.EndDate != null && patientInsurance.EndDate != "" && patientInsurance.EndDate != "0") {
                     DateOnly tempDateTime;
                     if (!DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats,
                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2094,7 +2153,7 @@ namespace Brady_s_Conversion_Program {
 
 
                 DateTime? created = null;
-                if (patientNote.CreatedDate != null) {
+                if (patientNote.CreatedDate != null && patientNote.CreatedDate != "" && patientNote.CreatedDate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientNote.CreatedDate, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2108,7 +2167,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? lastUpdated = null;
-                if (patientNote.LastUpdated != null) {
+                if (patientNote.LastUpdated != null && patientNote.LastUpdated != "" && patientNote.LastUpdated != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientNote.LastUpdated, dateFormats,
                                                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2217,10 +2276,10 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? dobDate = null;
-                if (provider.Dob != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParse(provider.Dob, out tempDateTime)) {
-                        dobDate = tempDateTime;
+                if (provider.Dob != null && provider.Dob != "" && provider.Dob != "0") {
+                    if (DateTime.TryParseExact(provider.Dob, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
+                        dobDate = isValidDate(dob);
                     }
                 }
 
@@ -2474,7 +2533,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly recallDate = new DateOnly();
-                if (recall.RecallDate != null) {
+                if (recall.RecallDate != null && recall.RecallDate != "" && recall.RecallDate != "0") {
                     DateOnly tempDate;
                     if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
@@ -2617,10 +2676,10 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? dobDate = null;
-                if (referral.Dob != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParse(referral.Dob, out tempDateTime)) {
-                        dobDate = tempDateTime;
+                if (referral.Dob != null && referral.Dob != "" && referral.Dob != "") {
+                    if (DateTime.TryParseExact(referral.Dob, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
+                        dobDate = isValidDate(dob);
                     }
                 }
 
@@ -2936,7 +2995,7 @@ namespace Brady_s_Conversion_Program {
 
         #region EyeMDConversion
 
-        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             if (eyeMDDbContext.Emrpatients.Count() == 0) {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
                 return;
@@ -2944,98 +3003,170 @@ namespace Brady_s_Conversion_Program {
             foreach (var patient in eHRDbContext.Patients.ToList()) {
                 PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Patients converted.\n");
+            });
 
             foreach (var visit in eHRDbContext.Visits.ToList()) {
                 VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Visits converted.\n");
+            });
 
             foreach (var visitOrders in eHRDbContext.VisitOrders.ToList()) {
                 VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Visit orders converted.\n");
+            });
 
             foreach (var visitDoctor in eHRDbContext.VisitDoctors.ToList()) {
                 VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Visit doctors converted.\n");
+            });
 
             foreach (var medicalHistory in eHRDbContext.MedicalHistories.ToList()) {
                 MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Medical histories converted.\n");
+            });
 
             foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
                 AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Allergies converted.\n");
+            });
 
             foreach (var appointments in eHRDbContext.Appointments.ToList()) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Appointments converted.\n");
+            });
 
             foreach (var contactLens in eHRDbContext.ContactLens.ToList()) {
                 ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Contact lenses converted.\n");
+            });
 
             foreach (var diagCodePool in eHRDbContext.DiagCodePools.ToList()) {
                 DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Diag code pools converted.\n");
+            });
 
             foreach (var diagTest in eHRDbContext.DiagTests.ToList()) {
                 DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Diag tests converted.\n");
+            });
 
             foreach (var examCondition in eHRDbContext.ExamConditions.ToList()) {
                 ExamConditionsConvert(examCondition, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Exam conditions converted.\n");
+            });
 
             foreach (var familyHistory in eHRDbContext.FamilyHistories.ToList()) {
                 FamilyHistoriesConvert(familyHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Family histories converted.\n");
+            });
 
             foreach (var iop in eHRDbContext.Iops.ToList()) {
                 IopsConvert(iop, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("IOPs converted.\n");
+            });
 
             foreach (var patientDocument in eHRDbContext.PatientDocuments.ToList()) {
                 PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Patient documents converted.\n");
+            });
 
             foreach (var patientNote in eHRDbContext.PatientNotes.ToList()) {
                 PatientNotesConvert(patientNote, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Patient notes converted.\n");
+            });
 
             foreach (var planNarrative in eHRDbContext.PlanNarratives.ToList()) {
                 PlanNarrativesConvert(planNarrative, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Plan narratives converted.\n");
+            });
 
             foreach (var procDiagPool in eHRDbContext.ProcDiagPools.ToList()) {
                 ProcDiagPoolsConvert(procDiagPool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Proc diag pools converted.\n");
+            });
 
             foreach (var procPool in eHRDbContext.ProcPools.ToList()) {
                 ProcPoolsConvert(procPool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Proc pools converted.\n");
+            });
 
             foreach (var refraction in eHRDbContext.Refractions.ToList()) {
                 RefractionsConvert(refraction, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Refractions converted.\n");
+            });
 
             foreach (var ros in eHRDbContext.Ros.ToList()) {
                 RosConvert(ros, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("ROS converted.\n");
+            });
 
             foreach (var rx in eHRDbContext.RxMedications.ToList()) {
                 RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Rx medications converted.\n");
+            });
 
             foreach (var surgHistory in eHRDbContext.SurgHistories.ToList()) {
                 SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Surg histories converted.\n");
+            });
 
             foreach (var tech in eHRDbContext.Teches.ToList()) {
                 TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Techs converted.\n");
+            });
 
             foreach (var tech2 in eHRDbContext.Tech2s.ToList()) {
                 Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Tech2s converted.\n");
+            });
         }
 
         public static void PatientsConvert(ModelsC.Patient patient, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
@@ -3086,7 +3217,7 @@ namespace Brady_s_Conversion_Program {
                 ptId = eyeMDPatient.PtId;
 
                 DateTime? dosDate = null;
-                if (allergy.Dosdate != null) {
+                if (allergy.Dosdate != null && allergy.Dosdate != "" && allergy.Dosdate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(allergy.Dosdate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -3100,7 +3231,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? created = null;
-                if (allergy.Created != null) {
+                if (allergy.Created != null && allergy.Created != "" && allergy.Created != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(allergy.Created, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         created = tempDateTime;
@@ -3173,7 +3304,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 DateTime? dosDate = null;
-                if (medicalHistory.Dosdate != null) {
+                if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && medicalHistory.Dosdate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(medicalHistory.Dosdate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -3227,7 +3358,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? origDosDate = null;
-                if (medicalHistory.OrigDosdate != null) {
+                if (medicalHistory.OrigDosdate != null && medicalHistory.Dosdate != "" && medicalHistory.Dosdate != "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(medicalHistory.OrigDosdate, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -9033,78 +9164,132 @@ namespace Brady_s_Conversion_Program {
         #endregion EyeMDConversion
 
         #region InvConversion
-        public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             foreach (var clBrand in invDbContext.Clbrands) {
                 CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CL Brands converted\n");
+            });
 
             foreach (var clInventory in invDbContext.Clinventories) {
                 clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CL Inventory converted\n");
+            });
 
             foreach (var clLense in invDbContext.Cllenses) {
                 CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CL Lenses converted\n");
+            });
 
             foreach (var cptDept in invDbContext.Cptdepts) {
                 CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CPT Depts converted\n");
+            });
 
             foreach (var cptMapping in invDbContext.Cptmappings) {
                 CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CPT Mappings converted\n");
+            });
 
             foreach (var cpt in invDbContext.Cpts) {
                 CPTConvert(cpt, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CPTs converted\n");
+            });
 
             foreach (var frameCategory in invDbContext.FrameCategories) {
                 FrameCategoryConvert(frameCategory, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Categories converted\n");
+            });
 
             foreach (var frameCollection in invDbContext.FrameCollections) {
                 FrameCollectionConvert(frameCollection, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Collections converted\n");
+            });
 
             foreach (var frameColor in invDbContext.FrameColors) {
                 FrameColorConvert(frameColor, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Colors converted\n");
+            });
 
             foreach (var frameShape in invDbContext.FrameShapes) {
                 FrameShapeConvert(frameShape, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Shapes converted\n");
+            });
 
             foreach (var frameStatus in invDbContext.FrameStatuses) {
                 FrameStatusConvert(frameStatus, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Statuses converted\n");
+            });
 
             foreach (var frameTemple in invDbContext.FrameTemples) {
                 FrameTempleConvert(frameTemple, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Temples converted\n");
+            });
 
             foreach (var frameEtype in invDbContext.FrameEtypes) {
                 FrameETypeConvert(frameEtype, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame ETypes converted\n");
+            });
 
             foreach (var frameFtype in invDbContext.FrameFtypes) {
                 FrameFTypeConvert(frameFtype, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame FTypes converted\n");
+            });
 
             foreach (var frameLensColor in invDbContext.FrameLensColors) {
                 FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Lens Colors converted\n");
+            });
 
             foreach (var frameMaterial in invDbContext.FrameMaterials) {
                 FrameMaterialConvert(frameMaterial, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Materials converted\n");
+            });
 
             foreach (var frameOrder in invDbContext.FrameOrders) {
                 FrameOrderConvert(frameOrder, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Orders converted\n");
+            });
 
             foreach (var frames in invDbContext.Frames) {
                 FrameConvert(frames, invDbContext, ffpmDbContext, logger, progress);
             }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frames converted\n");
+            });
         }
 
         public static void CLBrandsConvert(Clbrand clBrand, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
