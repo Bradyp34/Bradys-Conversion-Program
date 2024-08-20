@@ -3149,7 +3149,6 @@ namespace Brady_s_Conversion_Program {
         #endregion FFPMConversion
 
         #region EyeMDConversion
-
         public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             if (eyeMDDbContext.Emrpatients.Count() == 0) {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
@@ -9327,18 +9326,18 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("CL Brands converted\n");
             });
 
-            foreach (var clInventory in invDbContext.Clinventories) {
-                clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
-            }
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.AppendText("CL Inventory converted\n");
-            });
-
             foreach (var clLense in invDbContext.Cllenses) {
                 CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Lenses converted\n");
+            });
+
+            foreach (var clInventory in invDbContext.Clinventories) {
+                clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
+            }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("CL Inventory converted\n");
             });
 
             foreach (var cptDept in invDbContext.Cptdepts) {
@@ -9445,6 +9444,8 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
+
+
         }
 
         public static void CLBrandsConvert(Clbrand clBrand, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
