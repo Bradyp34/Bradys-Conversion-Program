@@ -9417,6 +9417,13 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
+            foreach (var frameInventory in invDbContext.FrameInventories) {
+                FrameInventoryConvert(frameInventory, invDbContext, ffpmDbContext, logger, progress);
+            }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Inventories converted\n");
+            });
+
             foreach (var frameLensColor in invDbContext.FrameLensColors) {
                 FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
             }
@@ -10396,6 +10403,175 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
+            }
+        }
+
+        public static void FrameInventoryConvert(ModelsD.FrameInventory frameInventory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                var convFrame = invDbContext.Frames.Find(frameInventory.OldFrameId);
+                if (convFrame == null) {
+                    logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                    return;
+                }
+                var ffpmFrame = ffpmDbContext.Frames.FirstOrDefault(x => x.Upc == convFrame.Upc);
+                if (ffpmFrame == null) {
+                    logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                    return;
+                }
+                long locationID = -1;
+                if (frameInventory.OldLocationId != null) {
+                    if (long.TryParse(frameInventory.OldLocationId, out long locum)) {
+                        locationID = locum;
+                    }
+                }
+                int? quantityOrdered = null;
+                if (frameInventory.QuantityOrdered != null) {
+                    if (int.TryParse(frameInventory.QuantityOrdered, out int locum)) {
+                        quantityOrdered = locum;
+                    }
+                }
+                decimal? cost = null;
+                if (frameInventory.Cost != null) {
+                    if (decimal.TryParse(frameInventory.Cost, out decimal locum)) {
+                        cost = locum;
+                    }
+                }
+                decimal? wholesale = null;
+                if (frameInventory.WholeSale != null) {
+                    if (decimal.TryParse(frameInventory.WholeSale, out decimal locum)) {
+                        wholesale = locum;
+                    }
+                }
+                decimal? retail = null;
+                if (frameInventory.Retail != null) {
+                    if (decimal.TryParse(frameInventory.Retail, out decimal locum)) {
+                        retail = locum;
+                    }
+                }
+                int? received = null;
+                if (frameInventory.Received != null) {
+                    if (int.TryParse(frameInventory.Received, out int locum)) {
+                        received = locum;
+                    }
+                }
+                int? onHand = null;
+                if (frameInventory.OnHand != null) {
+                    if (int.TryParse(frameInventory.OnHand, out int locum)) {
+                        onHand = locum;
+                    }
+                }
+                int? dispensed = null;
+                if (frameInventory.Dispensed != null) {
+                    if (int.TryParse(frameInventory.Dispensed, out int locum)) {
+                        dispensed = locum;
+                    }
+                }
+                int? returnedToVendor = null;
+                if (frameInventory.ReturnedToVendor != null) {
+                    if (int.TryParse(frameInventory.ReturnedToVendor, out int locum)) {
+                        returnedToVendor = locum;
+                    }
+                }
+                int? scrapped = null;
+                if (frameInventory.Scrapped != null) {
+                    if (int.TryParse(frameInventory.Scrapped, out int locum)) {
+                        scrapped = locum;
+                    }
+                }
+                int? returnedByCustomer = null;
+                if (frameInventory.ReturnedByCustomer != null) {
+                    if (int.TryParse(frameInventory.ReturnedByCustomer, out int locum)) {
+                        returnedByCustomer = locum;
+                    }
+                }
+                int? lost = null;
+                if (frameInventory.Lost != null) {
+                    if (int.TryParse(frameInventory.Lost, out int locum)) {
+                        lost = locum;
+                    }
+                }
+                int? donation = null;
+                if (frameInventory.Donation != null) {
+                    if (int.TryParse(frameInventory.Donation, out int locum)) {
+                        donation = locum;
+                    }
+                }
+                bool? consignment = null;
+                if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "yes" || frameInventory.Consignment == "1") {
+                    consignment = true;
+                }
+                else if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "no" || frameInventory.Consignment == "0") {
+                    consignment = false;
+                }
+                int? transferredIn = null;
+                if (frameInventory.TransferredIn != null) {
+                    if (int.TryParse(frameInventory.TransferredIn, out int locum)) {
+                        transferredIn = locum;
+                    }
+                }
+                int? transferredOut = null;
+                if (frameInventory.TransferredOut != null) {
+                    if (int.TryParse(frameInventory.TransferredOut, out int locum)) {
+                        transferredOut = locum;
+                    }
+                }
+                DateTime? invoiceDate = null;
+                if (frameInventory.InvoiceDate != null) {
+                    if (DateTime.TryParseExact(frameInventory.InvoiceDate, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                        invoiceDate = locum;
+                    }
+                }
+                bool? validInventory = null;
+                if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "yes" || frameInventory.ValidInventory == "1") {
+                    validInventory = true;
+                }
+                else if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "no" || frameInventory.ValidInventory == "0") {
+                    validInventory = false;
+                }
+                DateTime? dateAdded = null;
+                if (frameInventory.DateAdded != null) {
+                    if (DateTime.TryParseExact(frameInventory.DateAdded, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                        dateAdded = locum;
+                    }
+                }
+
+
+
+                var newInventory = new Brady_s_Conversion_Program.ModelsA.Inventory {
+                    FrameId = ffpmFrame.FrameId,
+                    LocationId = locationID,
+                    InvoiceNumber = TruncateString(frameInventory.InvoiceNumber, 20),
+                    QuantityOrdered = quantityOrdered,
+                    Cost = cost,
+                    WholeSale = wholesale,
+                    Retail = retail,
+                    Received = received,
+                    OnHand = onHand,
+                    Dispensed = dispensed,
+                    ReturnedToVendor = returnedToVendor,
+                    Scrapped = scrapped,
+                    ReturnedByCustomer = returnedByCustomer,
+                    Lost = lost,
+                    Donation = donation,
+                    Consignment = consignment,
+                    TransferredIn = transferredIn,
+                    TransferredOut = transferredOut,
+                    Note = frameInventory.Note,
+                    InvoiceDate = invoiceDate,
+                    ValidInventory = validInventory,
+                    DateAdded = dateAdded
+                };
+                ffpmDbContext.Inventories.Add(newInventory);
+
+                ffpmDbContext.SaveChanges();
+            }
+            catch (Exception e) {
+                logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID {frameInventory.Id}. Error: {e.Message}");
             }
         }
 

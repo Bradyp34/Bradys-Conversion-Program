@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brady_s_Conversion_Program.ModelsD;
 
-public partial class InvDbContext : DbContext
-{
+public partial class InvDbContext : DbContext {
     private readonly string _connectionString;
 
     public InvDbContext(string connectionString) {
@@ -42,6 +41,8 @@ public partial class InvDbContext : DbContext
 
     public virtual DbSet<FrameFtype> FrameFtypes { get; set; }
 
+    public virtual DbSet<FrameInventory> FrameInventories { get; set; }
+
     public virtual DbSet<FrameLensColor> FrameLensColors { get; set; }
 
     public virtual DbSet<FrameMaterial> FrameMaterials { get; set; }
@@ -59,100 +60,80 @@ public partial class InvDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(_connectionString);
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Clbrand>(entity =>
-        {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        modelBuilder.Entity<Clbrand>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CL Brand__3214EC27135F657C");
         });
 
-        modelBuilder.Entity<Clinventory>(entity =>
-        {
+        modelBuilder.Entity<Clinventory>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CL Inven__3214EC2737241797");
         });
 
-        modelBuilder.Entity<Cllense>(entity =>
-        {
+        modelBuilder.Entity<Cllense>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CL Lense__3214EC2758F913D4");
         });
 
-        modelBuilder.Entity<Cpt>(entity =>
-        {
+        modelBuilder.Entity<Cpt>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CPTs__3214EC270DCDCDAD");
         });
 
-        modelBuilder.Entity<Cptdept>(entity =>
-        {
+        modelBuilder.Entity<Cptdept>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CPT Dept__3214EC275E27AEF6");
         });
 
-        modelBuilder.Entity<Cptmapping>(entity =>
-        {
+        modelBuilder.Entity<Cptmapping>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__CPT Mapp__3214EC271E548074");
         });
 
-        modelBuilder.Entity<Frame>(entity =>
-        {
+        modelBuilder.Entity<Frame>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frames__3214EC275587845C");
         });
 
-        modelBuilder.Entity<FrameCategory>(entity =>
-        {
+        modelBuilder.Entity<FrameCategory>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame Ca__3214EC2768763AEA");
         });
 
-        modelBuilder.Entity<FrameCollection>(entity =>
-        {
+        modelBuilder.Entity<FrameCollection>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame Co__3214EC27BEAFFFB2");
         });
 
-        modelBuilder.Entity<FrameColor>(entity =>
-        {
+        modelBuilder.Entity<FrameColor>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame Co__3214EC2721C54F85");
         });
 
-        modelBuilder.Entity<FrameEtype>(entity =>
-        {
+        modelBuilder.Entity<FrameEtype>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameETy__3214EC27D2B41AE4");
         });
 
-        modelBuilder.Entity<FrameFtype>(entity =>
-        {
+        modelBuilder.Entity<FrameFtype>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameFTy__3214EC279363411F");
         });
 
-        modelBuilder.Entity<FrameLensColor>(entity =>
-        {
+        modelBuilder.Entity<FrameLensColor>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameLen__3214EC2721B8551A");
         });
 
-        modelBuilder.Entity<FrameMaterial>(entity =>
-        {
+        modelBuilder.Entity<FrameMaterial>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameMat__3214EC27A01B8FA6");
         });
 
-        modelBuilder.Entity<FrameMount>(entity =>
-        {
+        modelBuilder.Entity<FrameMount>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameMou__3214EC277B1B6CED");
         });
 
-        modelBuilder.Entity<FrameOrder>(entity =>
-        {
+        modelBuilder.Entity<FrameOrder>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__FrameOrd__3214EC270ADB0589");
         });
 
-        modelBuilder.Entity<FrameShape>(entity =>
-        {
+        modelBuilder.Entity<FrameShape>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame Sh__3214EC27F1C2EE64");
         });
 
-        modelBuilder.Entity<FrameStatus>(entity =>
-        {
+        modelBuilder.Entity<FrameStatus>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame St__3214EC27182C7233");
         });
 
-        modelBuilder.Entity<FrameTemple>(entity =>
-        {
+        modelBuilder.Entity<FrameTemple>(entity => {
             entity.HasKey(e => e.Id).HasName("PK__Frame Te__3214EC27B51FE5E6");
         });
 
