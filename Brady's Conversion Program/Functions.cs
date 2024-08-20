@@ -326,6 +326,7 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
+            
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
@@ -338,13 +339,6 @@ namespace Brady_s_Conversion_Program {
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AccountXrefs Converted\n";
-            });
-
-            foreach (var address in convDbContext.Addresses.ToList()) {
-                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress);
-            }
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Addresses Converted\n";
             });
 
             foreach (var appointment in convDbContext.Appointments.ToList()) {
@@ -417,11 +411,25 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Phones Converted\n";
             });
 
+            foreach (var policyHolder in convDbContext.PolicyHolders.ToList()) {
+                ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress);
+            }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PolicyHolders Converted\n";
+            });
+
             foreach (var provider in convDbContext.Providers.ToList()) {
                 ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
+            });
+
+            foreach (var address in convDbContext.Addresses.ToList()) {
+                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress);
+            }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Addresses Converted\n";
             });
 
             foreach (var recall in convDbContext.Recalls.ToList()) {
@@ -849,8 +857,8 @@ namespace Brady_s_Conversion_Program {
                         bool isPreferred = false;
 
                         string zipExt = "";
-                        if (zipCode != null && zipCode.Count() > 5) {
-                            zipExt = zipCode.Substring(6, zipCode.Count() - 1);
+                        if (zipCode != null && zipCode.Length > 5) {
+                            zipExt = zipCode.Substring(5); // Extracts the substring starting at index 5 to the end of the string
                         }
 
                         if (address.TypeOfAddress != null) {
@@ -1054,10 +1062,6 @@ namespace Brady_s_Conversion_Program {
                             OwnerType = 1
                         };
                         ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress3);
-
-                        //if (ffpmReferral != null) {
-                            // doesn't have an address in referring providers to update
-                        //}
 
                         ffpmDbContext.SaveChanges();
 
@@ -2093,6 +2097,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+
                 var ffpmOrig = ffpmDbContext.DmgPatientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
 
                 if (ffpmOrig != null) {
@@ -2125,7 +2130,8 @@ namespace Brady_s_Conversion_Program {
                     IsAdditionalInsurance = isAdditional,
                     InsuranceCompanyId = insCompId,
                     PolicyNumber = TruncateString(patientInsurance.Cert, 50),
-                    GroupId = TruncateString(patientInsurance.Group, 50)
+                    GroupId = TruncateString(patientInsurance.Group, 50),
+                    
                 };
                 ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
                 ffpmDbContext.SaveChanges();
@@ -2209,12 +2215,129 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
-                var ffpmPatientInsurance = ffpmcontext.DmgPatientInsurances.FirstOrDefault(p => p.PolicyNumber == convPatientInsurance.Cert);
+                int policyHolderID = -1;
+                if (policyHolder.OldPolicyHolderId != null) {
+                    if (int.TryParse(policyHolder.OldPolicyHolderId, out int temp)) {
+                        policyHolderID = temp;
+                    }
+                } else {
+                    logger.Log($"Conv: Policy holder ID is null for policy holder with ID: {policyHolder.Id}");
+                    return;
+                }
+                var convInsurance = convDbContext.Insurances.Find(convPatientInsurance.Id);
+                if (convInsurance == null) {
+                    logger.Log($"Conv: Conv Insurance not found for policy holder with ID: {policyHolder.Id}");
+                    return;
+                }
+                var ffpmInsuranceCompany = ffpmcontext.InsInsuranceCompanies.FirstOrDefault(i => i.InsCompanyCode == convInsurance.InsuranceCompanyCode);
+                if (ffpmInsuranceCompany == null) {
+                    logger.Log($"Conv: FFPM Insurance not found for policy holder with ID: {policyHolder.Id}");
+                    return;
+                }
+                var ffpmPatientInsurance = ffpmcontext.DmgPatientInsurances.FirstOrDefault(p => p.PatientId == policyHolderID 
+                    && p.IsActive == true && p.InsuranceCompanyId == ffpmInsuranceCompany.InsCompanyId);
                 if (ffpmPatientInsurance == null) {
                     logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
+                var convPolicyPatient = convDbContext.Patients.Find(policyHolder.OldPolicyHolderId);
+                if (convPolicyPatient == null) {
+                    logger.Log($"Conv: Conv Policy holder not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
+                    return;
+                }
+                var FFPMPolicyPatient = ffpmcontext.DmgPatients.FirstOrDefault(p => p.AccountNumber == convPolicyPatient.Id.ToString());
+                if (FFPMPolicyPatient == null) {
+                    logger.Log($"Conv: FFPM Policy holder not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
+                    return;
+                }
                 int? patientInsuranceID = (int)ffpmPatientInsurance.PatientInsuranceId;
+                if (ffpmPatientInsurance.IsSubscriberExistingPatient == true) {
+                    ffpmPatientInsurance.SubscriberId = FFPMPolicyPatient.PatientId;
+                    return;
+                } else {
+                    long patientId = FFPMPolicyPatient.PatientId;
+                    string? ssn = null;
+                    if (convPolicyPatient.Ssn != null) {
+                        if (ssnRegex.IsMatch(convPolicyPatient.Ssn)) {
+                            ssn = convPolicyPatient.Ssn;
+                        }
+                    }
+                    DateTime? dob = null;
+                    if (convPolicyPatient.Dob != null && convPolicyPatient.Dob != "" && convPolicyPatient.Dob != "0") {
+                        if (DateTime.TryParseExact(convPolicyPatient.Dob, dateFormats,
+                                                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dobDate)) {
+                            dob = isValidDate(dobDate);
+                        }
+                    }
+                    short? titleID = null;
+                    var titleXref = ffpmcontext.MntTitles.FirstOrDefault(t => t.Title == convPolicyPatient.Title);
+                    if (titleXref != null) {
+                        titleID = titleXref.TitleId;
+                    }
+                    short? suffixID = null;
+                    var suffixXref = ffpmcontext.MntSuffixes.FirstOrDefault(s => s.Suffix == convPolicyPatient.Suffix);
+                    if (suffixXref != null) {
+                        suffixID = suffixXref.SuffixId;
+                    }
+                    short? relationshipID = null;
+                    var relationshipXref = ffpmcontext.MntRelationships.FirstOrDefault(r => r.Relationship == policyHolder.Relationship);
+                    if (relationshipXref != null) {
+                        relationshipID = relationshipXref.RelationshipId;
+                    }
+                    short? genderID = null;
+                    // no genderID in incoming tables
+                    short? employmentStatusID = null;
+                    // no employmentStatusID in incoming tables
+                    long? addressID = null;
+                    // no addressID in incoming tables
+                    string ssn1 = "";
+                    if (convPolicyPatient.Ssn != null) {
+                        if (ssnRegex.IsMatch(convPolicyPatient.Ssn)) {
+                            ssn1 = convPolicyPatient.Ssn;
+                        }
+                    }
+                    DateTime? addedDate = null;
+                    // no addedDate in incoming tables
+                    DateTime? removedDate = null;
+                    // no removedDate in incoming tables
+                    DateTime? lastModifiedDate = null;
+                    // no lastModifiedDate in incoming tables
+                    int? lastModifiedBy = null;
+                    // no lastModifiedBy in incoming tables
+                    bool? active = null;
+                    if (convPolicyPatient.Active != null && convPolicyPatient.Active.ToLower() == "yes" || convPolicyPatient.Active == "1") {
+                        active = true;
+                    }
+
+
+
+                    var newSubscriber = new Brady_s_Conversion_Program.ModelsA.DmgSubscriber {
+                        PatientId = patientId,
+                        FirstName = TruncateString(convPolicyPatient.FirstName, 50),
+                        LastName = TruncateString(convPolicyPatient.LastName, 50),
+                        MiddleName = TruncateString(convPolicyPatient.MiddleName, 50),
+                        Ssn = TruncateString(ssn1, 15),
+                        Dob = dob,
+                        TitleId = titleID,
+                        SuffixId = suffixID,
+                        RelationshipId = relationshipID,
+                        GenderId = genderID,
+                        EmploymentStatusId = employmentStatusID,
+                        AddressId = addressID,
+                        AddedDate = addedDate,
+                        RemovedDate = removedDate,
+                        LastModifiedDate = lastModifiedDate,
+                        LastModifiedBy = lastModifiedBy,
+                        IsActive = active
+                    };
+                    ffpmcontext.DmgSubscribers.Add(newSubscriber);
+
+                    ffpmcontext.SaveChanges();
+
+                    ffpmPatientInsurance.SubscriberId = newSubscriber.SubscriberId;
+
+                    ffpmcontext.SaveChanges();
+                }
 
                 // need to finish implementing this
             }
