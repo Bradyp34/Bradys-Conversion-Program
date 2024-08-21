@@ -65,86 +65,97 @@ namespace Brady_s_Conversion_Program {
             return date;
         }
 
+        public static string CleanUpDateString(string input) {
+            // Trim leading and trailing spaces
+            input = input.Trim();
+
+            // Replace multiple spaces with a single space
+            input = Regex.Replace(input, @"\s+", " ");
+
+            return input;
+        }
 
         public static readonly string[] dateFormats = new string[] {
-            // Date-only formats with numeric and abbreviated months
-            "yyyy/MM/dd", "MM/dd/yyyy", "dd/MM/yyyy", "yyyy/dd/MM",
-            "yyyy/M/d", "M/d/yyyy", "d/M/yyyy", "yyyy/d/M",
-            "yyyy-MM-dd", "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-dd-MM",
-            "yyyy-M-d", "M-d-yyyy", "d-M-yyyy", "yyyy-d-M",
-            "yyyy MM dd", "MM dd yyyy", "dd MM yyyy", "yyyy dd MM",
-            "yyyy M d", "M d yyyy", "d M yyyy", "yyyy d M",
-            "yyyy MMM dd", "MMM dd, yyyy", "dd MMM, yyyy",
+            // Date-only formats with numeric months
+            "MM/dd/yyyy", "yyyy/MM/dd", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd",
+            "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-dd-MM", "yyyy-dd-MM",
+            "M/d/yyyy", "yyyy-M-d", "d-M-yyyy", "yyyy-d-M",
+            "M-d-yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "dd/MM/yyyy",
+            "MM/dd/yyyy", "dd-MM-yyyy", "yyyy-dd-MM", "yyyy-dd-MM",
+    
+            // Date-only formats with abbreviated months
+            "MMM dd, yyyy", "dd MMM, yyyy", "yyyy MMM dd",
+            "MMM dd yyyy", "dd MMM yyyy", "yyyy MMM d",
+            "yyyy MMM dd", "dd MMM, yyyy", "dd/MMM/yyyy",
 
             // Date-only formats with full month names
-            "yyyy MMMM dd", "MMMM dd, yyyy", "dd MMMM, yyyy",
-            "yyyy MMMM-d", "MMMM-d-yyyy", "d-MMMM-yyyy",
-            "yyyy MMMM/dd", "MMMM/dd/yyyy", "dd/MMMM/yyyy",
-            "yyyy MMMM dd", "MMMM dd yyyy", "dd MMMM yyyy",
-            "yyyy MMMM d", "MMMM d, yyyy", "d MMMM, yyyy",
+            "MMMM dd, yyyy", "dd MMMM, yyyy", "yyyy MMMM dd",
+            "MMMM-dd-yyyy", "dd-MMMM-yyyy", "yyyy MMMM d",
+            "yyyy MMMM dd", "dd MMMM yyyy", "dd/MMMM/yyyy",
 
-            // Date-only formats with concatenated month and day names
-            "yyyMMdd", "MMMddyyyy", "ddMMMyyyy",
+            // Date with 12-hour time formats (AM/PM) with numeric months
+            "MM/dd/yyyy hh:mm:ss tt", "yyyy/MM/dd hh:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "yyyy-MM-dd hh:mm:ss tt",
+            "MM-dd-yyyy hh:mm:ss tt", "dd-MM-yyyy hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
+            "M/d/yyyy hh:mm:ss tt", "yyyy-M-d hh:mm:ss tt", "d-M-yyyy hh:mm:ss tt",
+            "MM/dd/yyyy h:mm:ss tt", "yyyy/MM/dd h:mm:ss tt", "dd/MM/yyyy h:mm:ss tt", "yyyy-MM-dd h:mm:ss tt",
+            "M/d/yyyy h:mm:ss tt", "yyyy-M-d h:mm:ss tt", "d-M-yyyy h:mm:ss tt",
 
-            // Date with 24-hour time formats with numeric and abbreviated months
-            "yyyy/MM/dd HH:mm:ss", "MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss", "yyyy/dd/MM HH:mm:ss",
-            "yyyy/M/d HH:mm:ss", "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss", "yyyy/d/M HH:mm:ss",
-            "yyyy-MM-dd HH:mm:ss", "MM-dd-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
-            "yyyy MM dd HH:mm:ss", "MM dd yyyy HH:mm:ss", "dd MM yyyy HH:mm:ss",
-            "yyyy M d HH:mm:ss", "M d yyyy HH:mm:ss", "d M yyyy HH:mm:ss",
-            "yyyyMMMdd HH:mm:ss", "MMMddyyyy HH:mm:ss", "ddMMMyyyy HH:mm:ss",
-            "yyyy MMM dd HH:mm:ss", "MMM dd, yyyy HH:mm:ss", "dd MMM, yyyy HH:mm:ss",
-
-            // Date with 24-hour time formats with full month names
-            "yyyy MMMM/dd HH:mm:ss", "MMMM/dd/yyyy HH:mm:ss", "dd/MMMM/yyyy HH:mm:ss",
-            "yyyy MMMM-dd HH:mm:ss", "MMMM-dd-yyyy HH:mm:ss", "dd-MMMM-yyyy HH:mm:ss",
-            "yyyy MMMM dd HH:mm:ss", "MMMM dd, yyyy HH:mm:ss", "dd MMMM, yyyy HH:mm:ss",
-            "yyyy MMMM d HH:mm:ss", "MMMM d, yyyy HH:mm:ss", "d MMMM, yyyy HH:mm:ss",
-
-            // Date with 12-hour time formats (AM/PM) with numeric and abbreviated months
-            "yyyy/MM/dd hh:mm:ss tt", "MM/dd/yyyy hh:mm:ss tt", "dd/MM/yyyy hh:mm:ss tt", "yyyy/dd/MM hh:mm:ss tt",
-            "yyyy/M/d hh:mm:ss tt", "M/d/yyyy hh:mm:ss tt", "d/M/yyyy hh:mm:ss tt", "yyyy/d/M hh:mm:ss tt",
-            "yyyy-MM-dd hh:mm:ss tt", "MM-dd-yyyy hh:mm:ss tt", "dd-MM-yyyy hh:mm:ss tt", "yyyy-dd-MM hh:mm:ss tt",
-            "yyyy MM dd hh:mm:ss tt", "MM dd yyyy hh:mm:ss tt", "dd MM yyyy hh:mm:ss tt",
-            "yyyy M d hh:mm:ss tt", "M d yyyy hh:mm:ss tt", "d M yyyy hh:mm:ss tt",
-            "yyyyMMMdd hh:mm:ss tt", "MMMddyyyy hh:mm:ss tt", "ddMMMyyyy hh:mm:ss tt",
-            "yyyy MMM dd hh:mm:ss tt", "MMM dd, yyyy hh:mm:ss tt", "dd MMM, yyyy hh:mm:ss tt",
+            // Date with 12-hour time formats (AM/PM) with abbreviated months
+            "MMM dd yyyy hh:mm:ss tt", "yyyy MMM dd hh:mm:ss tt", "dd MMM yyyy hh:mm:ss tt",
+            "MMM dd, yyyy hh:mm:ss tt", "dd MMM, yyyy hh:mm:ss tt", "yyyy MMM d hh:mm:ss tt",
+            "MMM dd yyyy h:mm:ss tt", "yyyy MMM dd h:mm:ss tt", "dd MMM yyyy h:mm:ss tt",
+            "MMM dd, yyyy h:mm:ss tt", "dd MMM, yyyy h:mm:ss tt", "yyyy MMM d h:mm:ss tt",
 
             // Date with 12-hour time formats (AM/PM) with full month names
-            "yyyy MMMM/dd hh:mm:ss tt", "MMMM/dd/yyyy hh:mm:ss tt", "dd/MMMM/yyyy hh:mm:ss tt",
-            "yyyy MMMM-dd hh:mm:ss tt", "MMMM-dd-yyyy hh:mm:ss tt", "dd-MMMM-yyyy hh:mm:ss tt",
-            "yyyy MMMM dd hh:mm:ss tt", "MMMM dd, yyyy hh:mm:ss tt", "dd MMMM, yyyy hh:mm:ss tt",
-            "yyyy MMMM d hh:mm:ss tt", "MMMM d, yyyy hh:mm:ss tt", "d MMMM, yyyy hh:mm:ss tt",
+            "MMMM dd yyyy hh:mm:ss tt", "yyyy MMMM dd hh:mm:ss tt", "dd MMMM yyyy hh:mm:ss tt",
+            "MMMM dd, yyyy hh:mm:ss tt", "yyyy MMMM d hh:mm:ss tt", "dd MMMM yyyy hh:mm:ss tt",
+            "MMMM dd yyyy h:mm:ss tt", "yyyy MMMM dd h:mm:ss tt", "dd MMMM yyyy h:mm:ss tt",
+            "MMMM dd, yyyy h:mm:ss tt", "yyyy MMMM d h:mm:ss tt", "dd MMMM yyyy h:mm:ss tt",
 
-            // Date with 24-hour time formats (without seconds) with numeric and abbreviated months
-            "yyyy/MM/dd HH:mm", "MM/dd/yyyy HH:mm", "dd/MM/yyyy HH:mm", "yyyy/dd/MM HH:mm",
-            "yyyy/M/d HH:mm", "M/d/yyyy HH:mm", "d/M/yyyy HH:mm", "yyyy/d/M HH:mm",
-            "yyyy-MM-dd HH:mm", "MM-dd-yyyy HH:mm", "dd-MM-yyyy HH:mm", "yyyy-dd-MM HH:mm",
-            "yyyy MM dd HH:mm", "MM dd yyyy HH:mm", "dd MM yyyy HH:mm",
-            "yyyy M d HH:mm", "M d yyyy HH:mm", "d M yyyy HH:mm",
-            "yyyyMMMdd HH:mm", "MMMddyyyy HH:mm", "ddMMMyyyy HH:mm",
-            "yyyy MMM dd HH:mm", "MMM dd, yyyy HH:mm", "dd MMM, yyyy HH:mm",
+            // Date with 24-hour time formats with numeric months
+            "MM/dd/yyyy HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss",
+            "MM-dd-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-dd-MM HH:mm:ss",
+            "M/d/yyyy HH:mm:ss", "yyyy-M-d HH:mm:ss", "d-M-yyyy HH:mm:ss",
+    
+            // Date with 24-hour time formats with abbreviated months
+            "MMM dd yyyy HH:mm:ss", "yyyy MMM dd HH:mm:ss", "dd MMM yyyy HH:mm:ss",
+            "MMM dd, yyyy HH:mm:ss", "dd MMM, yyyy HH:mm:ss", "yyyy MMM d HH:mm:ss",
+
+            // Date with 24-hour time formats with full month names
+            "MMMM dd yyyy HH:mm:ss", "yyyy MMMM dd HH:mm:ss", "dd MMMM yyyy HH:mm:ss",
+            "MMMM dd, yyyy HH:mm:ss", "yyyy MMMM d HH:mm:ss", "dd MMMM yyyy HH:mm:ss",
+
+            // Date with 24-hour time formats (without seconds) with numeric months
+            "MM/dd/yyyy HH:mm", "yyyy/MM/dd HH:mm", "dd/MM/yyyy HH:mm", "yyyy-MM-dd HH:mm",
+            "MM-dd-yyyy HH:mm", "dd-MM-yyyy HH:mm", "yyyy-dd-MM HH:mm",
+            "M/d/yyyy HH:mm", "yyyy-M-d HH:mm", "d-M-yyyy HH:mm",
+
+            // Date with 24-hour time formats (without seconds) with abbreviated months
+            "MMM dd yyyy HH:mm", "yyyy MMM dd HH:mm", "dd MMM yyyy HH:mm",
+            "MMM dd, yyyy HH:mm", "dd MMM, yyyy HH:mm", "yyyy MMM d HH:mm",
 
             // Date with 24-hour time formats (without seconds) with full month names
-            "yyyy MMMM/dd HH:mm", "MMMM/dd/yyyy HH:mm", "dd/MMMM/yyyy HH:mm",
-            "yyyy MMMM-dd HH:mm", "MMMM-dd-yyyy HH:mm", "dd-MMMM-yyyy HH:mm",
-            "yyyy MMMM dd HH:mm", "MMMM dd, yyyy HH:mm", "dd MMMM, yyyy HH:mm",
-            "yyyy MMMM d HH:mm", "MMMM d, yyyy HH:mm", "d MMMM, yyyy HH:mm",
+            "MMMM dd yyyy HH:mm", "yyyy MMMM dd HH:mm", "dd MMMM yyyy HH:mm",
+            "MMMM dd, yyyy HH:mm", "yyyy MMMM d HH:mm", "dd MMMM yyyy HH:mm",
 
-            // Date with 12-hour time formats (AM/PM) without seconds with numeric and abbreviated months
-            "yyyy/MM/dd hh:mm tt", "MM/dd/yyyy hh:mm tt", "dd/MM/yyyy hh:mm tt", "yyyy/dd/MM hh:mm tt",
-            "yyyy/M/d hh:mm tt", "M/d/yyyy hh:mm tt", "d/M/yyyy hh:mm tt", "yyyy/d/M hh:mm tt",
-            "yyyy-MM-dd hh:mm tt", "MM-dd-yyyy hh:mm tt", "dd-MM-yyyy hh:mm tt", "yyyy-dd-MM hh:mm tt",
-            "yyyy MM dd hh:mm tt", "MM dd yyyy hh:mm tt", "dd MM yyyy hh:mm tt",
-            "yyyy M d hh:mm tt", "M d yyyy hh:mm tt", "d M yyyy hh:mm tt",
-            "yyyyMMMdd hh:mm tt", "MMMddyyyy hh:mm tt", "ddMMMyyyy hh:mm tt",
-            "yyyy MMM dd hh:mm tt", "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt",
+            // Date with 12-hour time formats (AM/PM) without seconds with numeric months
+            "MM/dd/yyyy hh:mm tt", "yyyy/MM/dd hh:mm tt", "dd/MM/yyyy hh:mm tt", "yyyy-MM-dd hh:mm tt",
+            "MM-dd-yyyy hh:mm tt", "dd-MM-yyyy hh:mm tt", "yyyy-dd-MM hh:mm tt",
+            "M/d/yyyy hh:mm tt", "yyyy-M-d hh:mm tt", "d-M-yyyy hh:mm tt",
+            "MM/dd/yyyy h:mm tt", "yyyy/MM/dd h:mm tt", "dd/MM/yyyy h:mm tt", "yyyy-MM-dd h:mm tt",
+            "M/d/yyyy h:mm tt", "yyyy-M-d h:mm tt", "d-M-yyyy h:mm tt",
+
+            // Date with 12-hour time formats (AM/PM) without seconds with abbreviated months
+            "MMM dd yyyy hh:mm tt", "yyyy MMM dd hh:mm tt", "dd MMM yyyy hh:mm tt",
+            "MMM dd, yyyy hh:mm tt", "dd MMM, yyyy hh:mm tt", "yyyy MMM d hh:mm tt",
+            "MMM dd yyyy h:mm tt", "yyyy MMM dd h:mm tt", "dd MMM yyyy h:mm tt",
+            "MMM dd, yyyy h:mm tt", "dd MMM, yyyy h:mm tt", "yyyy MMM d h:mm tt",
 
             // Date with 12-hour time formats (AM/PM) without seconds with full month names
-            "yyyy MMMM/dd hh:mm tt", "MMMM/dd/yyyy hh:mm tt", "dd/MMMM/yyyy hh:mm tt",
-            "yyyy MMMM-dd hh:mm tt", "MMMM-dd-yyyy hh:mm tt", "dd-MMMM-yyyy hh:mm tt",
-            "yyyy MMMM dd hh:mm tt", "MMMM dd, yyyy hh:mm tt", "dd MMMM, yyyy hh:mm tt",
-            "yyyy MMMM d hh:mm tt", "MMMM d, yyyy hh:mm tt", "d MMMM, yyyy hh:mm tt"
+            "MMMM dd yyyy hh:mm tt", "yyyy MMMM dd hh:mm tt", "dd MMMM yyyy hh:mm tt",
+            "MMMM dd, yyyy hh:mm tt", "yyyy MMMM d hh:mm tt", "dd MMMM yyyy hh:mm tt",
+            "MMMM dd yyyy h:mm tt", "yyyy MMMM dd h:mm tt", "dd MMMM yyyy h:mm tt",
+            "MMMM dd, yyyy h:mm tt", "yyyy MMMM d h:mm tt", "dd MMMM yyyy h:mm tt",
         };
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
@@ -323,14 +334,14 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            /*
+            
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Patients Converted\n";
             });
-            */
+            
 
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
@@ -1144,20 +1155,17 @@ namespace Brady_s_Conversion_Program {
 
                 DateTime start = minAcceptableDate;
                 if (appointment.StartDate != null && appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare)) {
-                    if (DateTime.TryParseExact(appointment.StartDate, dateFormats,
-                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
-                        start = isValidDate(start);
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats,
+                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                        start = isValidDate(temp);
                     }
                 }
                 DateTime end = minAcceptableDate;
                 if (appointment.EndDate != null && appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare)) {
-                    if (DateTime.TryParseExact(appointment.EndDate, dateFormats,
-                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
-                        logger.Log($"{appointment.Id}: end date parsed: {end}");
-                        end = isValidDate(end);
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats,
+                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                        end = isValidDate(temp);
                     }
-                } else {
-                    end = minAcceptableDate;
                 }
                 int duration = -1;
                 if (appointment.Duration != null) {
@@ -1167,7 +1175,7 @@ namespace Brady_s_Conversion_Program {
                 }
                 DateTime created = minAcceptableDate;
                 if (appointment.DateTimeCreated != null && appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare)) {
-                    if (DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                         created = isValidDate(created);
                     }
@@ -1203,7 +1211,7 @@ namespace Brady_s_Conversion_Program {
                 DateTime? checkIn = null;
                 if (appointment.CheckInDateTime != null && appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare)) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParseExact(appointment.CheckInDateTime, dateFormats,
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         checkIn = isValidDate(tempDateTime);
                     }
@@ -1211,7 +1219,7 @@ namespace Brady_s_Conversion_Program {
                 DateTime? takeback = null;
                 if (appointment.TakeBackDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare)) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParseExact(appointment.TakeBackDateTime, dateFormats,
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats,
                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         takeback = isValidDate(tempDateTime);
                     }
@@ -1219,7 +1227,7 @@ namespace Brady_s_Conversion_Program {
                 DateTime? checkOut = null;
                 if (appointment.CheckOutDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare)) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParseExact(appointment.CheckOutDateTime, dateFormats,
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         checkOut = isValidDate(tempDateTime);
                     }
@@ -1254,13 +1262,11 @@ namespace Brady_s_Conversion_Program {
                 DateTime? updated = null;
                 if (appointment.DateTimeUpdated != null && appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare)) {
                     DateTime tempDateTime;
-                    if (DateTime.TryParseExact(appointment.DateTimeUpdated, dateFormats,
+                    if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         updated = isValidDate(tempDateTime);
                     }
                 }
-
-                logger.Log($"ID: {appointment.Id}; \nStart: {start}; end: {end}; check in: {checkIn}; take back: {takeback}; checkout: {checkOut}; created: {created}; updated: {updated}\n");
 
                 var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
 
