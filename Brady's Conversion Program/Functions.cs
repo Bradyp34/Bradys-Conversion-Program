@@ -56,17 +56,18 @@ namespace Brady_s_Conversion_Program {
             return input.Length <= maxLength ? input : input.Substring(0, maxLength);
         }
 
+        public static readonly DateTime overFlowDate = DateTime.Parse("12/31/2100");
         public static DateTime isValidDate(DateTime date) {
-            if (date < minDate) {
+            if (date <= minDate) {
                 return minDate;
             }
-            if (date > DateTime.Parse("12/31/9999")) {
+            if (date >= overFlowDate) {
                 return minDate;
             }
             return date;
         }
 
-        public static readonly DateTime minDate = DateTime.Parse("1/1/1900");
+        public static readonly DateTime minDate = DateTime.Parse("1/2/1900");
 
         public static readonly string[] dateFormats = new string[] {
             // Date-only formats with numeric and abbreviated months
@@ -161,7 +162,6 @@ namespace Brady_s_Conversion_Program {
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
-            string completeConnection = "";
             try {
                 ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
 
@@ -315,7 +315,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Invoke((MethodInvoker)delegate {
                         resultsBox.Text += "Inv Conversion Successful\n";
                     });
-                    return completeConnection = "Program run completed.\n";
+                    return "Program run completed.\n";
                 }
             }
             catch (Exception e) {
@@ -333,6 +333,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Patients Converted\n";
             });
+            
 
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
@@ -778,7 +779,6 @@ namespace Brady_s_Conversion_Program {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
             }
         }
-        
 
         public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
@@ -1121,47 +1121,52 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var convPatient = convDbContext.Patients.Find(appointment.PatientId);
-                if (convPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
-                    return;
+                int locationId = -1;
+                int patientId = -1;
+                if (appointment.PatientId > 0) {
+                    var convPatient = convDbContext.Patients.Find(appointment.PatientId);
+                    if (convPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
+                    }
+                    else {
+                        var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) &&
+                            (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                        if (ffpmPatient == null) {
+                            logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
+                        } else {
+                            patientId = (int)ffpmPatient.PatientId;
+                            locationId = ffpmPatient.LocationId;
+                        }
+                    }
                 }
-                var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
-                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
-                    return;
-                }
-
-
+                
                 long resource = -1;
                 if (appointment.OldResourceId != null) {
                     long.TryParse(appointment.OldResourceId, out resource);
                 }
 
                 DateTime start = minDate;
-                if (appointment.StartDate != null || appointment.StartDate != "" || appointment.StartDate != "0") {
+                if (appointment.StartDate != null && appointment.StartDate != "" && appointment.StartDate != "0") {
                     if (DateTime.TryParseExact(appointment.StartDate, dateFormats,
                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
                         start = isValidDate(start);
                     }
                 }
                 DateTime end = minDate;
-                if (appointment.EndDate != null || appointment.EndDate != "" || appointment.EndDate != "0") {
+                if (appointment.EndDate != null && appointment.EndDate != "" && appointment.EndDate != "0") {
                     if (DateTime.TryParseExact(appointment.EndDate, dateFormats,
                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
                         end = isValidDate(end);
                     }
                 }
-                int duration = 0;
+                int duration = -1;
                 if (appointment.Duration != null) {
                     if (int.TryParse(appointment.Duration, out int durationInt)) {
                         duration = durationInt;
                     }
                 }
                 DateTime created = minDate;
-                if (appointment.DateTimeCreated != null) {
+                if (appointment.DateTimeCreated != null && appointment.DateTimeCreated != "" && appointment.DateTimeCreated != "0") {
                     if (DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                         created = isValidDate(created);
@@ -1200,7 +1205,7 @@ namespace Brady_s_Conversion_Program {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckInDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        checkIn = tempDateTime;
+                        checkIn = isValidDate(tempDateTime);
                     }
                 }
                 DateTime? takeback = null;
@@ -1208,7 +1213,7 @@ namespace Brady_s_Conversion_Program {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.TakeBackDateTime, dateFormats,
                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        takeback = tempDateTime;
+                        takeback = isValidDate(tempDateTime);
                     }
                 }
                 DateTime? checkOut = null;
@@ -1216,7 +1221,7 @@ namespace Brady_s_Conversion_Program {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckOutDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        checkOut = tempDateTime;
+                        checkOut = isValidDate(tempDateTime);
                     }
                 }
                 long? prior = null;
@@ -1251,11 +1256,11 @@ namespace Brady_s_Conversion_Program {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.DateTimeUpdated, dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        updated = tempDateTime;
+                        updated = isValidDate(tempDateTime);
                     }
                 }
 
-                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.ResourceId == resource && p.StartDate == start);
+                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource);
 
                 if (ffpmOrig != null) {
                     ffpmOrig.BillingLocationId = billingLocId;
@@ -1264,7 +1269,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.Notes = TruncateString(appointment.Notes, 2000);
                     ffpmOrig.Duration = duration;
                     ffpmOrig.DateTimeCreated = created;
-                    ffpmOrig.LocationId = ffpmPatient.LocationId;
+                    ffpmOrig.LocationId = locationId;
                     ffpmOrig.Confirmed = confirmed;
                     ffpmOrig.Sequence = sequence;
                     ffpmOrig.RequestId = requestId;
@@ -1286,7 +1291,7 @@ namespace Brady_s_Conversion_Program {
 
 
                 var newAppointment = new SchedulingAppointment {
-                    PatientId = ffpmPatient.PatientId,
+                    PatientId = patientId,
                     ResourceId = resource,
                     BillingLocationId = billingLocId,
                     StartDate = start,
@@ -1294,7 +1299,7 @@ namespace Brady_s_Conversion_Program {
                     Notes = TruncateString(appointment.Notes, 2000),
                     Duration = duration,
                     DateTimeCreated = created,
-                    LocationId = ffpmPatient.LocationId,
+                    LocationId = locationId,
                     Confirmed = confirmed,
                     Sequence = sequence,
                     RequestId = requestId,
