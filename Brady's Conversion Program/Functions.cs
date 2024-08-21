@@ -334,8 +334,8 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            
-            foreach (var patient in convDbContext.Patients.ToList()) {
+            /*
+            foreach (var patient in convDbContext.Patients) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -343,126 +343,126 @@ namespace Brady_s_Conversion_Program {
             });
             
 
-            foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
+            foreach (var accountXref in convDbContext.AccountXrefs) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AccountXrefs Converted\n";
             });
 
-            foreach (var appointment in convDbContext.Appointments.ToList()) {
+            foreach (var appointment in convDbContext.Appointments) {
                 ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
 
-            foreach (var appointmentType in convDbContext.AppointmentTypes.ToList()) {
+            foreach (var appointmentType in convDbContext.AppointmentTypes) {
                 ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
 
-            foreach (var insurance in convDbContext.Insurances.ToList()) {
+            foreach (var insurance in convDbContext.Insurances) {
                 ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
-
-            foreach (var location in convDbContext.Locations.ToList()) {
+            
+            foreach (var location in convDbContext.Locations) {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
             });
 
-            foreach (var guarantor in convDbContext.Guarantors.ToList()) {
+            foreach (var guarantor in convDbContext.Guarantors) {
                 ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
-
-            foreach (var patientAlert in convDbContext.PatientAlerts.ToList()) {
+            
+            foreach (var patientAlert in convDbContext.PatientAlerts) {
                 ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
-
-            foreach (var patientDocument in convDbContext.PatientDocuments.ToList()) {
+            
+            foreach (var patientDocument in convDbContext.PatientDocuments) {
                 ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
-
-            foreach (var patientInsurance in convDbContext.PatientInsurances.ToList()) {
+            */
+            foreach (var patientInsurance in convDbContext.PatientInsurances) {
                 ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
             });
 
-            foreach (var patientNote in convDbContext.PatientNotes.ToList()) {
+            foreach (var patientNote in convDbContext.PatientNotes) {
                 ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
 
-            foreach (var phone in convDbContext.Phones.ToList()) {
+            foreach (var phone in convDbContext.Phones) {
                 ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Phones Converted\n";
             });
 
-            foreach (var policyHolder in convDbContext.PolicyHolders.ToList()) {
+            foreach (var policyHolder in convDbContext.PolicyHolders) {
                 ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PolicyHolders Converted\n";
             });
 
-            foreach (var provider in convDbContext.Providers.ToList()) {
+            foreach (var provider in convDbContext.Providers) {
                 ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
 
-            foreach (var address in convDbContext.Addresses.ToList()) {
+            foreach (var address in convDbContext.Addresses) {
                 ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Addresses Converted\n";
             });
 
-            foreach (var recall in convDbContext.Recalls.ToList()) {
+            foreach (var recall in convDbContext.Recalls) {
                 ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
 
-            foreach (var recallType in convDbContext.RecallTypes.ToList()) {
+            foreach (var recallType in convDbContext.RecallTypes) {
                 ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
-            foreach (var referral in convDbContext.Referrals.ToList()) {
+            foreach (var referral in convDbContext.Referrals) {
                 ConvertReferral(referral, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Referrals Converted\n";
             });
 
-            foreach (var schedCode in convDbContext.SchedCodes.ToList()) {
+            foreach (var schedCode in convDbContext.SchedCodes) {
                 ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -542,7 +542,7 @@ namespace Brady_s_Conversion_Program {
                     ethnicity = ethnicityXref.EthnicityId;
                 }
 
-                bool? patientIsActive = null;
+                bool? patientIsActive = true;
                 if (patient.Active != null) {
                     patientIsActive = patient.Active.ToUpper() == "NO" ? false : true;
                 }
@@ -828,7 +828,7 @@ namespace Brady_s_Conversion_Program {
                 switch (primaryFile) {
                     case "pat":
                     case "":
-                        var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+                        var ffpmPatients = ffpmDbContext.DmgPatients;
                         var ConvPatient = convDbContext.Patients.Find(address.Id);
                         if (ConvPatient == null) {
                             logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
@@ -841,15 +841,15 @@ namespace Brady_s_Conversion_Program {
                             tempSuffixID = suffixXref.SuffixId;
                         }
 
-                        var ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
-                        (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.SuffixId == tempSuffixID));
+                        var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
+                            (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.SuffixId == tempSuffixID));
                         if (ffpmPatient == null) {
                             logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                             return;
                         }
 
                         DmgPatientAdditionalDetail? ffpmPatientAdditional = null;
-                        foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails.ToList()) {
+                        foreach (var details in ffpmDbContext.DmgPatientAdditionalDetails) {
                             if (details.PatientId == ffpmPatient.PatientId) {
                                 ffpmPatientAdditional = details;
                             }
@@ -921,13 +921,12 @@ namespace Brady_s_Conversion_Program {
                         ffpmDbContext.SaveChanges();
                         break;
                     case "guar":
-                        var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
                         var convGuarantor = convDbContext.Guarantors.Find(address.Id);
                         if (convGuarantor == null) {
                             logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
                             return;
                         }
-                        var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.FirstName == convGuarantor.FirstName && p.LastName == convGuarantor.LastName
+                        var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(p => p.FirstName == convGuarantor.FirstName && p.LastName == convGuarantor.LastName
                             && p.MiddleName == convGuarantor.MiddleName);
 
                         var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1002,7 +1001,6 @@ namespace Brady_s_Conversion_Program {
 
                         break;
                     case "prov":
-                        var ffpmProviders = ffpmDbContext.DmgProviders.ToList();
                         var convProvider = convDbContext.Providers.Find(address.Id);
 
                         if (convProvider == null) {
@@ -1010,7 +1008,7 @@ namespace Brady_s_Conversion_Program {
                             return;
                         }
 
-                        var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.FirstName == convProvider.FirstName && p.LastName == convProvider.LastName
+                        var ffpmProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == convProvider.FirstName && p.LastName == convProvider.LastName
                                                         && p.MiddleName == convProvider.MiddleName);
 
                         var newDmgOtherAddress2 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1052,9 +1050,8 @@ namespace Brady_s_Conversion_Program {
                             logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
                             return;
                         }
-                        var ffpmReferrals = ffpmDbContext.ReferringProviders.ToList();
 
-                        var ffpmReferral = ffpmReferrals.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
+                        var ffpmReferral = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
                                                         && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
 
                         var newDmgOtherAddress3 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1412,8 +1409,7 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var insuranceCompanies = ffpmDbContext.InsInsuranceCompanies.ToList();
-                foreach (var company in insuranceCompanies) {
+                foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
                     if (company.InsCompanyName == insurance.InsCompanyName) {
                         logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
                         return;
@@ -1585,11 +1581,8 @@ namespace Brady_s_Conversion_Program {
 
                 #region taxonomys
                 int primaryTaxId = 0;
-                if (int.TryParse(name, out primaryTaxId)) {
-                    primaryTaxId = int.Parse(name);
-                }
-                if (location.PrimaryTaxonomyId != null) {
-                    primaryTaxId = int.Parse(location.PrimaryTaxonomyId);
+                if (int.TryParse(name, out int dontCare)) {
+                    primaryTaxId = dontCare;
                 }
                 else {
                     logger.Log($"Conv: Conv Primary taxonomy ID not found for location with ID: {location.Id}");
@@ -1597,83 +1590,123 @@ namespace Brady_s_Conversion_Program {
 
                 int tax1Id = 0;
                 if (location.AlternateTaxonomy1Id != null) {
-                    tax1Id = int.Parse(location.AlternateTaxonomy1Id);
+                    if (int.TryParse(location.AlternateTaxonomy1Id, out dontCare)) {
+                        tax1Id = dontCare;
+                    }
                 }
                 int tax2Id = 0;
                 if (location.AlternateTaxonomy2Id != null) {
-                    tax2Id = int.Parse(location.AlternateTaxonomy2Id);
+                    if (int.TryParse(location.AlternateTaxonomy2Id, out dontCare)) {
+                        tax2Id = dontCare;
+                    }
                 }
                 int tax3Id = 0;
                 if (location.AlternateTaxonomy3Id != null) {
-                    tax3Id = int.Parse(location.AlternateTaxonomy3Id);
+                    if (int.TryParse(location.AlternateTaxonomy3Id, out dontCare)) {
+                        tax3Id = dontCare;
+                    }
                 }
                 int tax4Id = 0;
                 if (location.AlternateTaxonomy4Id != null) {
-                    tax4Id = int.Parse(location.AlternateTaxonomy4Id);
+                    if (int.TryParse(location.AlternateTaxonomy4Id, out dontCare)) {
+                        tax4Id = dontCare;
+                    }
                 }
                 int tax5Id = 0;
                 if (location.AlternateTaxonomy5Id != null) {
-                    tax5Id = int.Parse(location.AlternateTaxonomy5Id);
+                    if (int.TryParse(location.AlternateTaxonomy5Id, out dontCare)) {
+                        tax5Id = dontCare;
+                    }
                 }
                 int tax6Id = 0;
                 if (location.AlternateTaxonomy6Id != null) {
-                    tax6Id = int.Parse(location.AlternateTaxonomy6Id);
+                    if (int.TryParse(location.AlternateTaxonomy6Id, out dontCare)) {
+                        tax6Id = dontCare;
+                    }
                 }
                 int tax7Id = 0;
                 if (location.AlternateTaxonomy7Id != null) {
-                    tax7Id = int.Parse(location.AlternateTaxonomy7Id);
+                    if (int.TryParse(location.AlternateTaxonomy7Id, out dontCare)) {
+                        tax7Id = dontCare;
+                    }
                 }
                 int tax8Id = 0;
                 if (location.AlternateTaxonomy8Id != null) {
-                    tax8Id = int.Parse(location.AlternateTaxonomy8Id);
+                    if (int.TryParse(location.AlternateTaxonomy8Id, out dontCare)) {
+                        tax8Id = dontCare;
+                    }
                 }
                 int tax9Id = 0;
                 if (location.AlternateTaxonomy9Id != null) {
-                    tax9Id = int.Parse(location.AlternateTaxonomy9Id);
+                    if (int.TryParse(location.AlternateTaxonomy9Id, out dontCare)) {
+                        tax9Id = dontCare;
+                    }
                 }
                 int tax10Id = 0;
                 if (location.AlternateTaxonomy10Id != null) {
-                    tax10Id = int.Parse(location.AlternateTaxonomy10Id);
+                    if (int.TryParse(location.AlternateTaxonomy10Id, out dontCare)) {
+                        tax10Id = dontCare;
+                    }
                 }
                 int tax11Id = 0;
                 if (location.AlternateTaxonomy11Id != null) {
-                    tax11Id = int.Parse(location.AlternateTaxonomy11Id);
+                    if (int.TryParse(location.AlternateTaxonomy11Id, out dontCare)) {
+                        tax11Id = dontCare;
+                    }
                 }
                 int tax12Id = 0;
                 if (location.AlternateTaxonomy12Id != null) {
-                    tax12Id = int.Parse(location.AlternateTaxonomy12Id);
+                    if (int.TryParse(location.AlternateTaxonomy12Id, out dontCare)) {
+                        tax12Id = dontCare;
+                    }
                 }
                 int tax13Id = 0;
                 if (location.AlternateTaxonomy13Id != null) {
-                    tax13Id = int.Parse(location.AlternateTaxonomy13Id);
+                    if (int.TryParse(location.AlternateTaxonomy13Id, out dontCare)) {
+                        tax13Id = dontCare;
+                    }
                 }
                 int tax14Id = 0;
                 if (location.AlternateTaxonomy14Id != null) {
-                    tax14Id = int.Parse(location.AlternateTaxonomy14Id);
+                    if (int.TryParse(location.AlternateTaxonomy14Id, out dontCare)) {
+                        tax14Id = dontCare;
+                    }
                 }
                 int tax15Id = 0;
                 if (location.AlternateTaxonomy15Id != null) {
-                    tax15Id = int.Parse(location.AlternateTaxonomy15Id);
+                    if (int.TryParse(location.AlternateTaxonomy15Id, out dontCare)) {
+                        tax15Id = dontCare;
+                    }
                 }
                 int tax16Id = 0;
                 if (location.AlternateTaxonomy16Id != null) {
-                    tax16Id = int.Parse(location.AlternateTaxonomy16Id);
+                    if (int.TryParse(location.AlternateTaxonomy16Id, out dontCare)) {
+                        tax16Id = dontCare;
+                    }
                 }
                 int tax17Id = 0;
                 if (location.AlternateTaxonomy17Id != null) {
-                    tax17Id = int.Parse(location.AlternateTaxonomy17Id);
+                    if (int.TryParse(location.AlternateTaxonomy17Id, out dontCare)) {
+                        tax17Id = dontCare;
+                    }
                 }
                 int tax18Id = 0;
                 if (location.AlternateTaxonomy18Id != null) {
-                    tax18Id = int.Parse(location.AlternateTaxonomy18Id);
+                    if (int.TryParse(location.AlternateTaxonomy18Id, out dontCare)) {
+                        tax18Id = dontCare;
+                    }
                 }
                 int tax19Id = 0;
                 if (location.AlternateTaxonomy19Id != null) {
-                    tax19Id = int.Parse(location.AlternateTaxonomy19Id);
+                    if (int.TryParse(location.AlternateTaxonomy19Id, out dontCare)) {
+                        tax19Id = dontCare;
+                    }
                 }
                 int tax20Id = 0;
                 if (location.AlternateTaxonomy20Id != null) {
-                    tax20Id = int.Parse(location.AlternateTaxonomy20Id);
+                    if (int.TryParse(location.AlternateTaxonomy20Id, out dontCare)) {
+                        tax20Id = dontCare;
+                    }
                 }
                 #endregion taxonomys
 
@@ -1763,7 +1796,6 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
                 var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
                 if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
@@ -1808,9 +1840,14 @@ namespace Brady_s_Conversion_Program {
                     isActive = true;
                 }
                 bool? guarantorIsPatient = null;
-                // no guarantorIsPatient in incoming tables
                 long? guarantorIsPatientID = null;
-                // no guarantorIsPatientID in incoming tables
+                if (guarantor.OldGuarantorAccount != null && guarantor.OldGuarantorAccount != "") {
+                    guarantorIsPatient = true;
+                    if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
+                        guarantorIsPatientID = id;
+                    }
+                }
+                
                 short? employmentStatusID = null;
                 // no employmentStatusID in incoming tables
                 DateTime? addedDate = null;
@@ -1822,7 +1859,7 @@ namespace Brady_s_Conversion_Program {
                 
 
 
-                var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
                 if (ffpmGuarantor != null) {
                     ffpmGuarantor.FirstName = TruncateString(guarantor.FirstName, 50);
@@ -1833,6 +1870,8 @@ namespace Brady_s_Conversion_Program {
                     ffpmGuarantor.RelationId = relationID;
                     ffpmGuarantor.TitleId = titleID;
                     ffpmGuarantor.SuffixId = suffixID;
+                    ffpmGuarantor.IsGuarantorExistingPatient = guarantorIsPatient;
+                    ffpmGuarantor.GuarantorExistingPatientId = guarantorIsPatientID;
                 }
 
                 var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
@@ -1872,13 +1911,19 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(patientAlert.PatientId);
+                int patientId = 0;
+                if (int.TryParse(patientAlert.PatientId, out int temp)) {
+                    patientId = temp;
+                } else {
+                    logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
+                    return;
+                }
+                var ConvPatient = convDbContext.Patients.Find(patientId);
                 if (ConvPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                     return;
                 }
-                DmgPatient?ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
+                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
                     (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
@@ -1912,10 +1957,10 @@ namespace Brady_s_Conversion_Program {
                         alertCreatedBy = createdBy;
                     }
                 }
-                bool? isActive = null;
+                bool? isActive = true;
                 if (patientAlert.Active != null) {
-                    if (bool.TryParse(patientAlert.Active, out bool active)) {
-                        isActive = active;
+                    if (patientAlert.Active.ToLower() == "no" || patientAlert.Active == "0") {
+                        isActive = false;
                     }
                 }
                 bool? alertFlash = null;
@@ -1963,13 +2008,12 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(patientDocument.PatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
@@ -1981,13 +2025,18 @@ namespace Brady_s_Conversion_Program {
                         imageType = type;
                     }
                 }
-
                 DateTime? dateDocument = null;
                 if (patientDocument.Date != null && patientDocument.Date != "" && !int.TryParse(patientDocument.Date, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dateDocument = tempDateTime;
+                    }
+                }
+                bool? isActive = true;
+                if (patientDocument.Active != null) {
+                    if (patientDocument.Active.ToLower() == "no" || patientDocument.Active == "0") {
+                        isActive = false;
                     }
                 }
 
@@ -1999,6 +2048,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.AddedDate = dateDocument;
                     ffpmOrig.DocumentName = TruncateString(patientDocument.DocumentDescription, 250);
                     ffpmOrig.DocumentLocation = TruncateString(patientDocument.FilePathName, 250);
+                    ffpmOrig.IsActive = isActive;
                     ffpmDbContext.SaveChanges();
                     return;
                 }
@@ -2012,6 +2062,7 @@ namespace Brady_s_Conversion_Program {
                     AddedDate = dateDocument,
                     DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
                     DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
+                    IsActive = isActive
                 };
                 ffpmDbContext.ImgPatientDocuments.Add(newPatientDocument);
                 ffpmDbContext.SaveChanges();
@@ -2027,13 +2078,19 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-                var ConvPatient = convDbContext.Patients.Find(patientInsurance.OldPatientId);
+                int oldpatientId = 0;
+                if (int.TryParse(patientInsurance.OldPatientId, out int temp)) {
+                    oldpatientId = temp;
+                } else {
+                    logger.Log($"Conv: Conv Patient ID not found for patient insurance with ID: {patientInsurance.Id}");
+                    return;
+                }
+                var ConvPatient = convDbContext.Patients.Find(oldpatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
@@ -2163,13 +2220,12 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient ID is null for patient note with ID: {patientNote.Id}");
                     return;
                 }
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var convPatient = convDbContext.Patients.Find(patientNote.PatientId);
                 if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                 (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
@@ -2363,28 +2419,18 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var ConvPatient = convDbContext.Patients.Find(phone.Id);
-                var ffpmAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
                 if (ConvPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
-                if (ffpmPatients == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
-                    return;
-                }
-                if (ffpmAddresses == null) {
-                    logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
-                    return;
-                }
-                DmgPatient? ffpmPatient = ffpmPatients.Find(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
                 }
-                DmgPatientAddress? address = ffpmAddresses.Find(p => p.PatientId == ffpmPatient.PatientId);
+                DmgPatientAddress? address = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                 if (address == null) {
                     logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                     return;
@@ -2668,7 +2714,6 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
                 var convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == recall.PatientId);
                 if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
@@ -2813,8 +2858,6 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                var providersList = ffpmDbContext.DmgProviders.ToList();
-
                 long providerID = 0;
                 if (long.TryParse(referral.OldReferralCode, out providerID)) {
                     providerID = long.Parse(referral.OldReferralCode);
@@ -3166,168 +3209,168 @@ namespace Brady_s_Conversion_Program {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
                 return;
             }
-            foreach (var patient in eHRDbContext.Patients.ToList()) {
+            foreach (var patient in eHRDbContext.Patients) {
                 PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patients converted.\n");
             });
 
-            foreach (var visit in eHRDbContext.Visits.ToList()) {
+            foreach (var visit in eHRDbContext.Visits) {
                 VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
-            foreach (var visitOrders in eHRDbContext.VisitOrders.ToList()) {
+            foreach (var visitOrders in eHRDbContext.VisitOrders) {
                 VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit orders converted.\n");
             });
 
-            foreach (var visitDoctor in eHRDbContext.VisitDoctors.ToList()) {
+            foreach (var visitDoctor in eHRDbContext.VisitDoctors) {
                 VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit doctors converted.\n");
             });
 
-            foreach (var medicalHistory in eHRDbContext.MedicalHistories.ToList()) {
+            foreach (var medicalHistory in eHRDbContext.MedicalHistories) {
                 MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
-            foreach (Allergy allergy in eHRDbContext.Allergies.ToList()) {
+            foreach (Allergy allergy in eHRDbContext.Allergies) {
                 AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
             });
 
-            foreach (var appointments in eHRDbContext.Appointments.ToList()) {
+            foreach (var appointments in eHRDbContext.Appointments) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
             });
 
-            foreach (var contactLens in eHRDbContext.ContactLens.ToList()) {
+            foreach (var contactLens in eHRDbContext.ContactLens) {
                 ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
 
-            foreach (var diagCodePool in eHRDbContext.DiagCodePools.ToList()) {
+            foreach (var diagCodePool in eHRDbContext.DiagCodePools) {
                 DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag code pools converted.\n");
             });
 
-            foreach (var diagTest in eHRDbContext.DiagTests.ToList()) {
+            foreach (var diagTest in eHRDbContext.DiagTests) {
                 DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag tests converted.\n");
             });
 
-            foreach (var examCondition in eHRDbContext.ExamConditions.ToList()) {
+            foreach (var examCondition in eHRDbContext.ExamConditions) {
                 ExamConditionsConvert(examCondition, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Exam conditions converted.\n");
             });
 
-            foreach (var familyHistory in eHRDbContext.FamilyHistories.ToList()) {
+            foreach (var familyHistory in eHRDbContext.FamilyHistories) {
                 FamilyHistoriesConvert(familyHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Family histories converted.\n");
             });
 
-            foreach (var iop in eHRDbContext.Iops.ToList()) {
+            foreach (var iop in eHRDbContext.Iops) {
                 IopsConvert(iop, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("IOPs converted.\n");
             });
 
-            foreach (var patientDocument in eHRDbContext.PatientDocuments.ToList()) {
+            foreach (var patientDocument in eHRDbContext.PatientDocuments) {
                 PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient documents converted.\n");
             });
 
-            foreach (var patientNote in eHRDbContext.PatientNotes.ToList()) {
+            foreach (var patientNote in eHRDbContext.PatientNotes) {
                 PatientNotesConvert(patientNote, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient notes converted.\n");
             });
 
-            foreach (var planNarrative in eHRDbContext.PlanNarratives.ToList()) {
+            foreach (var planNarrative in eHRDbContext.PlanNarratives) {
                 PlanNarrativesConvert(planNarrative, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Plan narratives converted.\n");
             });
 
-            foreach (var procDiagPool in eHRDbContext.ProcDiagPools.ToList()) {
+            foreach (var procDiagPool in eHRDbContext.ProcDiagPools) {
                 ProcDiagPoolsConvert(procDiagPool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc diag pools converted.\n");
             });
 
-            foreach (var procPool in eHRDbContext.ProcPools.ToList()) {
+            foreach (var procPool in eHRDbContext.ProcPools) {
                 ProcPoolsConvert(procPool, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc pools converted.\n");
             });
 
-            foreach (var refraction in eHRDbContext.Refractions.ToList()) {
+            foreach (var refraction in eHRDbContext.Refractions) {
                 RefractionsConvert(refraction, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Refractions converted.\n");
             });
 
-            foreach (var ros in eHRDbContext.Ros.ToList()) {
+            foreach (var ros in eHRDbContext.Ros) {
                 RosConvert(ros, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("ROS converted.\n");
             });
 
-            foreach (var rx in eHRDbContext.RxMedications.ToList()) {
+            foreach (var rx in eHRDbContext.RxMedications) {
                 RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Rx medications converted.\n");
             });
 
-            foreach (var surgHistory in eHRDbContext.SurgHistories.ToList()) {
+            foreach (var surgHistory in eHRDbContext.SurgHistories) {
                 SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Surg histories converted.\n");
             });
 
-            foreach (var tech in eHRDbContext.Teches.ToList()) {
+            foreach (var tech in eHRDbContext.Teches) {
                 TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Techs converted.\n");
             });
 
-            foreach (var tech2 in eHRDbContext.Tech2s.ToList()) {
+            foreach (var tech2 in eHRDbContext.Tech2s) {
                 Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
