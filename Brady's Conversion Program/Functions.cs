@@ -56,18 +56,15 @@ namespace Brady_s_Conversion_Program {
             return input.Length <= maxLength ? input : input.Substring(0, maxLength);
         }
 
+        public static readonly DateTime minAcceptableDate = DateTime.Parse("1/2/1900");
         public static readonly DateTime overFlowDate = DateTime.Parse("12/31/2100");
         public static DateTime isValidDate(DateTime date) {
-            if (date <= minDate) {
-                return minDate;
-            }
-            if (date >= overFlowDate) {
-                return minDate;
+            if (!(date >= minAcceptableDate && date <= overFlowDate)) {
+                return minAcceptableDate;
             }
             return date;
         }
 
-        public static readonly DateTime minDate = DateTime.Parse("1/2/1900");
 
         public static readonly string[] dateFormats = new string[] {
             // Date-only formats with numeric and abbreviated months
@@ -326,14 +323,14 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            
+            /*
             foreach (var patient in convDbContext.Patients.ToList()) {
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Patients Converted\n";
             });
-            
+            */
 
             foreach (var accountXref in convDbContext.AccountXrefs.ToList()) {
                 ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
@@ -490,7 +487,7 @@ namespace Brady_s_Conversion_Program {
                     licenseShort = stateXref.StateId;
                 }
 
-                DateTime dob = minDate;
+                DateTime dob = minAcceptableDate;
                 if (patient.Dob != null && patient.Dob != "" || patient.Dob == "0") {
                     string dobString = patient.Dob.Trim(); // Remove any leading/trailing whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
@@ -565,7 +562,7 @@ namespace Brady_s_Conversion_Program {
                         deceasedDate = DateOnly.FromDateTime(isValidDate(tempDateTime));
                     }
                 }
-                DateTime lastExamDate = minDate;
+                DateTime lastExamDate = minAcceptableDate;
                 if (patient.LastExamDate != null && patient.LastExamDate != "" || patient.LastExamDate == "0") {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
@@ -636,7 +633,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.OtherBalance = 0;
                     ffpmOrig.GenderId = genderInt;
                     ffpmOrig.SuffixId = suffixInt;
-                    ffpmOrig.BalanceLastUpdatedDateTime = minDate;
+                    ffpmOrig.BalanceLastUpdatedDateTime = minAcceptableDate;
                     ffpmOrig.EmailNotApplicable = isEmailValid;
                     ffpmOrig.DoNotSendStatements = dontSendStatements;
                     ffpmOrig.EmailStatements = emailStatements;
@@ -710,7 +707,7 @@ namespace Brady_s_Conversion_Program {
 
                 // If no existing patient is found, create a new one
                 var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
-                    DateCreated = minDate,
+                    DateCreated = minAcceptableDate,
                     AccountNumber = patient.Id.ToString(),
                     AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
                     LastName = TruncateString(patient.LastName, 50),
@@ -730,7 +727,7 @@ namespace Brady_s_Conversion_Program {
                     OtherBalance = 0,
                     GenderId = genderInt,
                     SuffixId = suffixInt,
-                    BalanceLastUpdatedDateTime = minDate,
+                    BalanceLastUpdatedDateTime = minAcceptableDate,
                     EmailNotApplicable = isEmailValid,
                     DoNotSendStatements = dontSendStatements,
                     EmailStatements = emailStatements,
@@ -1145,19 +1142,22 @@ namespace Brady_s_Conversion_Program {
                     long.TryParse(appointment.OldResourceId, out resource);
                 }
 
-                DateTime start = minDate;
-                if (appointment.StartDate != null && appointment.StartDate != "" && appointment.StartDate != "0") {
+                DateTime start = minAcceptableDate;
+                if (appointment.StartDate != null && appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare)) {
                     if (DateTime.TryParseExact(appointment.StartDate, dateFormats,
                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out start)) {
                         start = isValidDate(start);
                     }
                 }
-                DateTime end = minDate;
-                if (appointment.EndDate != null && appointment.EndDate != "" && appointment.EndDate != "0") {
+                DateTime end = minAcceptableDate;
+                if (appointment.EndDate != null && appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare)) {
                     if (DateTime.TryParseExact(appointment.EndDate, dateFormats,
                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out end)) {
+                        logger.Log($"{appointment.Id}: end date parsed: {end}");
                         end = isValidDate(end);
                     }
+                } else {
+                    end = minAcceptableDate;
                 }
                 int duration = -1;
                 if (appointment.Duration != null) {
@@ -1165,8 +1165,8 @@ namespace Brady_s_Conversion_Program {
                         duration = durationInt;
                     }
                 }
-                DateTime created = minDate;
-                if (appointment.DateTimeCreated != null && appointment.DateTimeCreated != "" && appointment.DateTimeCreated != "0") {
+                DateTime created = minAcceptableDate;
+                if (appointment.DateTimeCreated != null && appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare)) {
                     if (DateTime.TryParseExact(appointment.DateTimeCreated, dateFormats,
                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                         created = isValidDate(created);
@@ -1201,7 +1201,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkIn = null;
-                if (appointment.CheckInDateTime != null && appointment.CheckInDateTime != "" && appointment.CheckInDateTime != "0") {
+                if (appointment.CheckInDateTime != null && appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckInDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1209,7 +1209,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? takeback = null;
-                if (appointment.TakeBackDateTime != null && appointment.TakeBackDateTime != "" && appointment.TakeBackDateTime != "0") {
+                if (appointment.TakeBackDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.TakeBackDateTime, dateFormats,
                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1217,7 +1217,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkOut = null;
-                if (appointment.CheckOutDateTime != null && appointment.TakeBackDateTime != "" && appointment.TakeBackDateTime != "0") {
+                if (appointment.CheckOutDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.CheckOutDateTime, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1252,7 +1252,7 @@ namespace Brady_s_Conversion_Program {
                     type = (int)typeXref.AppointmentTypeId;
                 }
                 DateTime? updated = null;
-                if (appointment.DateTimeUpdated != null && appointment.DateTimeUpdated != "" && appointment.DateTimeUpdated != "0") {
+                if (appointment.DateTimeUpdated != null && appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(appointment.DateTimeUpdated, dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1260,7 +1260,9 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource);
+                logger.Log($"ID: {appointment.Id}; \nStart: {start}; end: {end}; check in: {checkIn}; take back: {takeback}; checkout: {checkOut}; created: {created}; updated: {updated}\n");
+
+                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
 
                 if (ffpmOrig != null) {
                     ffpmOrig.BillingLocationId = billingLocId;
@@ -1274,7 +1276,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmOrig.Sequence = sequence;
                     ffpmOrig.RequestId = requestId;
                     ffpmOrig.Status = status;
-                    ffpmOrig.CheckInDateTime = minDate;
+                    ffpmOrig.CheckInDateTime = minAcceptableDate;
                     ffpmOrig.TakeBackDateTime = takeback;
                     ffpmOrig.CheckOutDateTime = checkOut;
                     ffpmOrig.Description = TruncateString(appointment.Description, 2000);
@@ -1288,8 +1290,7 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-
-
+                
                 var newAppointment = new SchedulingAppointment {
                     PatientId = patientId,
                     ResourceId = resource,
@@ -1304,7 +1305,7 @@ namespace Brady_s_Conversion_Program {
                     Sequence = sequence,
                     RequestId = requestId,
                     Status = status,
-                    CheckInDateTime = minDate,
+                    CheckInDateTime = minAcceptableDate,
                     TakeBackDateTime = takeback,
                     CheckOutDateTime = checkOut,
                     Description = TruncateString(appointment.Description, 2000),
@@ -1313,7 +1314,7 @@ namespace Brady_s_Conversion_Program {
                     SchedulingCodeId = schedulingCode,
                     SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000),
                     AppointmentTypeId = type,
-                    DateTimeUpdated = minDate
+                    DateTimeUpdated = minAcceptableDate
                 };
                 ffpmDbContext.SchedulingAppointments.Add(newAppointment);
                 ffpmDbContext.SaveChanges();
@@ -1775,8 +1776,8 @@ namespace Brady_s_Conversion_Program {
                         ssn = guarantor.Ssn;
                     }
                 }
-                DateTime dob = minDate;
-                if (guarantor.Dob != null && guarantor.Dob != "" && guarantor.Dob != "0") {
+                DateTime dob = minAcceptableDate;
+                if (guarantor.Dob != null && guarantor.Dob != "" && !int.TryParse(guarantor.Dob, out int dontCare)) {
                     if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
                         dob = isValidDate(dob);
@@ -1884,7 +1885,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? alertDate = null;
-                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != ""&& patientAlert.AlertCreatedDate != "0") {
+                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != ""&& !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1892,7 +1893,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? alertEndDate = null;
-                if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && patientAlert.AlertExpiryDate != "0") {
+                if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && !int.TryParse(patientAlert.AlertExpiryDate, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -1976,7 +1977,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? dateDocument = null;
-                if (patientDocument.Date != null && patientDocument.Date != "" && patientDocument.Date != "0") {
+                if (patientDocument.Date != null && patientDocument.Date != "" && !int.TryParse(patientDocument.Date, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2039,7 +2040,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? startDate = null;
-                if (patientInsurance.StartDate != null && patientInsurance.StartDate != "" && patientInsurance.StartDate != "0") {
+                if (patientInsurance.StartDate != null && patientInsurance.StartDate != "" && !int.TryParse(patientInsurance.StartDate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientInsurance.StartDate, dateFormats,
                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2047,7 +2048,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly? endDate = null;
-                if (patientInsurance.EndDate != null && patientInsurance.EndDate != "" && patientInsurance.EndDate != "0") {
+                if (patientInsurance.EndDate != null && patientInsurance.EndDate != "" && !int.TryParse(patientInsurance.EndDate, out dontCare)) {
                     DateOnly tempDateTime;
                     if (!DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats,
                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2171,7 +2172,7 @@ namespace Brady_s_Conversion_Program {
 
 
                 DateTime? created = null;
-                if (patientNote.CreatedDate != null && patientNote.CreatedDate != "" && patientNote.CreatedDate != "0") {
+                if (patientNote.CreatedDate != null && patientNote.CreatedDate != "" && !int.TryParse(patientNote.CreatedDate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientNote.CreatedDate, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2185,7 +2186,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? lastUpdated = null;
-                if (patientNote.LastUpdated != null && patientNote.LastUpdated != "" && patientNote.LastUpdated != "0") {
+                if (patientNote.LastUpdated != null && patientNote.LastUpdated != "" && !int.TryParse(patientNote.LastUpdated, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientNote.LastUpdated, dateFormats,
                                                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2268,7 +2269,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     DateTime? dob = null;
-                    if (convPolicyPatient.Dob != null && convPolicyPatient.Dob != "" && convPolicyPatient.Dob != "0") {
+                    if (convPolicyPatient.Dob != null && convPolicyPatient.Dob != "" && !int.TryParse(convPolicyPatient.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(convPolicyPatient.Dob, dateFormats,
                                                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dobDate)) {
                             dob = isValidDate(dobDate);
@@ -2436,7 +2437,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? dobDate = null;
-                if (provider.Dob != null && provider.Dob != "" && provider.Dob != "0") {
+                if (provider.Dob != null && provider.Dob != "" && !int.TryParse(provider.Dob, out int dontCare)) {
                     if (DateTime.TryParseExact(provider.Dob, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
                         dobDate = isValidDate(dob);
@@ -2693,7 +2694,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly recallDate = new DateOnly();
-                if (recall.RecallDate != null && recall.RecallDate != "" && recall.RecallDate != "0") {
+                if (recall.RecallDate != null && recall.RecallDate != "" && !int.TryParse(recall.RecallDate, out int dontCare)) {
                     DateOnly tempDate;
                     if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
@@ -3376,7 +3377,7 @@ namespace Brady_s_Conversion_Program {
                 ptId = eyeMDPatient.PtId;
 
                 DateTime? dosDate = null;
-                if (allergy.Dosdate != null && allergy.Dosdate != "" && allergy.Dosdate != "0") {
+                if (allergy.Dosdate != null && allergy.Dosdate != "" && !int.TryParse(allergy.Dosdate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(allergy.Dosdate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -3390,7 +3391,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? created = null;
-                if (allergy.Created != null && allergy.Created != "" && allergy.Created != "0") {
+                if (allergy.Created != null && allergy.Created != "" && !int.TryParse(allergy.Created, out dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(allergy.Created, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         created = tempDateTime;
@@ -3463,7 +3464,7 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 DateTime? dosDate = null;
-                if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && medicalHistory.Dosdate != "0") {
+                if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && !int.TryParse(medicalHistory.Dosdate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(medicalHistory.Dosdate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -3517,13 +3518,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? origDosDate = null;
-                if (medicalHistory.OrigDosdate != null && medicalHistory.Dosdate != "" && medicalHistory.Dosdate != "0") {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.OrigDosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        origDosDate = tempDateTime;
-                    }
-                }
+                // No origDosDate
                 string description = "";
                 if (medicalHistory.Description != null) {
                     description = medicalHistory.Description;
@@ -4692,7 +4687,7 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                DateTime dosdate = minDate;
+                DateTime dosdate = minAcceptableDate;
                 if (contactLens.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(contactLens.Dosdate, dateFormats,
@@ -6599,7 +6594,7 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                DateTime dosDate = minDate;
+                DateTime dosDate = minAcceptableDate;
                 if (examCondition.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(examCondition.Dosdate, dateFormats,
@@ -7552,7 +7547,7 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                DateTime dosDate = minDate;
+                DateTime dosDate = minAcceptableDate;
                 if (refraction.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(refraction.Dosdate, dateFormats,

@@ -1,0 +1,40 @@
+1: end date parsed: 5/27/2005 10:30:00 AM
+ID: 1; 
+Start: 5/27/2005 10:00:00 AM; end: 5/27/2005 10:30:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+2: end date parsed: 5/28/2005 12:00:00 PM
+ID: 2; 
+Start: 5/28/2005 11:30:00 AM; end: 5/28/2005 12:00:00 PM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+3: end date parsed: 5/28/2005 10:30:00 AM
+ID: 3; 
+Start: 5/28/2005 10:00:00 AM; end: 5/28/2005 10:30:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+4: end date parsed: 5/28/2005 10:30:00 AM
+ID: 4; 
+Start: 5/28/2005 10:00:00 AM; end: 5/28/2005 10:30:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+5: end date parsed: 5/28/2005 10:30:00 AM
+ID: 5; 
+Start: 5/28/2005 10:00:00 AM; end: 5/28/2005 10:30:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+ID: 6; 
+Start: 1/1/0001 12:00:00 AM; end: 1/1/0001 12:00:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+Conv: Conv An error occurred while converting the appointment with ID: 6. Error: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM.
+ID: 7; 
+Start: 1/1/0001 12:00:00 AM; end: 1/1/0001 12:00:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+Conv: Conv An error occurred while converting the appointment with ID: 7. Error: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM.
+8: end date parsed: 6/4/2005 12:00:00 PM
+ID: 8; 
+Start: 6/4/2005 11:30:00 AM; end: 6/4/2005 12:00:00 PM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+9: end date parsed: 6/4/2005 12:15:00 PM
+ID: 9; 
+Start: 6/4/2005 12:00:00 PM; end: 6/4/2005 12:15:00 PM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+ID: 10; 
+Start: 6/4/2005 12:30:00 PM; end: 1/1/0001 12:00:00 AM; check in: ; take back: ; checkout: ; created: 1/2/1900 12:00:00 AM; updated: 
+
+Conv: Conv An error occurred while converting the appointment with ID: 10. Error: An error occurred while saving the entity changes. See the inner exception for details.
