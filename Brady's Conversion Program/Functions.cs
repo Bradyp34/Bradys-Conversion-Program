@@ -149,6 +149,7 @@ namespace Brady_s_Conversion_Program {
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$"); // Regex for US SSN
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
+        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"); // Regex for email addresses
         private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$"); // Regex for phone numbers
 
         public static string FFPMString = "";
@@ -329,7 +330,7 @@ namespace Brady_s_Conversion_Program {
             return "Operation Successful";
         }
 
-        #region FFPMConversion
+        #region FFPMConversion // conversion functions for ffpm
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
@@ -540,12 +541,7 @@ namespace Brady_s_Conversion_Program {
 
                 bool? deceased = null;
                 if (patient.Deceased != null) {
-                    if (patient.Deceased.ToUpper() == "YES" || patient.Deceased == "1") {
-                        deceased = true;
-                    }
-                    else if (patient.Deceased.ToUpper() == "NO" || patient.Deceased == "0") {
-                        deceased = false;
-                    }
+                    deceased = patient.Deceased.ToUpper() == "NO" ? false : true;
                 }
 
                 bool? consent = null;
@@ -582,7 +578,8 @@ namespace Brady_s_Conversion_Program {
                         lastExamDate = isValidDate(tempDateTime);
                     }
                 }
-                if (patient.Email != null) {
+                lastExamDate = isValidDate(lastExamDate);
+                if (patient.Email != null && emailRegex.IsMatch(patient.Email)) {
                     string email = patient.Email;
                 }
                 bool isEmailValid = new EmailAddressAttribute().IsValid(patient.Email);
@@ -785,6 +782,13 @@ namespace Brady_s_Conversion_Program {
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
+                string errorMessage = $"An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}";
+
+                if (ex.InnerException != null) {
+                    errorMessage += $" Inner Exception: {ex.InnerException.Message}";
+                }
+
+                MessageBox.Show(errorMessage);
             }
         }
 
@@ -1099,7 +1103,9 @@ namespace Brady_s_Conversion_Program {
 
                 string insEmail = "";
                 if (insurance.InsCompanyEmail != null) {
-                    insEmail = insurance.InsCompanyEmail;
+                    if (emailRegex.IsMatch(insurance.InsCompanyEmail)) {
+                        insEmail = insurance.InsCompanyEmail;
+                    }
                 }
 
                 string insFax = "";
@@ -3913,10 +3919,11 @@ namespace Brady_s_Conversion_Program {
                 progress.PerformStep();
             });
             try {
-                int ptId = -1;
-                if (visit.PtId > 0) {
+                int ptId = 0;
+                if (visit.PtId !<= -1) {
                     ptId = visit.PtId;
-                } else {
+                }
+                if (ptId == 0) {
                     logger.Log($"EHR: EHR Patient ID not found for visit with ID: {visit.Id}");
                     return;
                 }
@@ -4504,8 +4511,8 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 int? visitId = null;
-                if (visitDoctor.OldVisitId != null) {
-                    visitId = visitDoctor.OldVisitId;
+                if (visitDoctor.VisitId != null) {
+                    visitId = visitDoctor.VisitId;
                 }
                 int? ptId = null;
                 if (visitDoctor.PtId !<= -1) {
