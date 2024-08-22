@@ -75,35 +75,77 @@ namespace Brady_s_Conversion_Program {
             return input;
         }
 
-        public static readonly string[] dateFormats = new string[] { // in an attempt to control the time this takes, I have limited the date formats
+        public static readonly string[] dateFormats = new string[] {
+            // Date-only formats with numeric months
+            "MM/dd/yyyy",
+            "yyyy/MM/dd",
+            "MM-dd-yyyy",
+            "yyyy-MM-dd",
+            "M/d/yyyy",
+            "yyyy-M-d",
+            "M-d-yyyy",
+
             // Date with 12-hour time formats (AM/PM) with numeric months
-            "MM/dd/yyyy h:mm tt",
-            "MM/dd/yyyy hh:mm tt",
-            "MM/dd/yyyy h:mm:ss tt",
             "MM/dd/yyyy hh:mm:ss tt",
+            "yyyy/MM/dd hh:mm:ss tt",
+            "MM-dd-yyyy hh:mm:ss tt",
+            "yyyy-MM-dd hh:mm:ss tt",
+            "M/d/yyyy hh:mm:ss tt",
+            "yyyy-M-d hh:mm:ss tt",
+            "MM/dd/yyyy h:mm:ss tt",
+            "yyyy/MM/dd h:mm:ss tt",
+            "MM-dd-yyyy h:mm:ss tt",
+            "yyyy-MM-dd h:mm:ss tt",
+            "M/d/yyyy h:mm:ss tt",
+            "yyyy-M-d h:mm:ss tt",
 
             // Date with 12-hour time formats (AM/PM) with abbreviated months
-            "MMM dd yyyy h:mm tt",
-            "MMM dd yyyy hh:mm tt",
-            "MMM dd yyyy h:mm:ss tt",
-            "MMM dd yyyy hh:mm:ss tt",
-            "MMM dd, yyyy h:mm tt",
-            "MMM dd, yyyy hh:mm tt",
-            "MMM dd, yyyy h:mm:ss tt",
             "MMM dd, yyyy hh:mm:ss tt",
+            "MMM dd yyyy hh:mm:ss tt",
+            "yyyy MMM dd hh:mm:ss tt",
+            "MMM dd, yyyy h:mm:ss tt",
+            "MMM dd yyyy h:mm:ss tt",
+            "yyyy MMM dd h:mm:ss tt",
 
-            // Date with 24-hour time formats with numeric months and day first
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
-            "yyyy/MM/dd HH:mm:ss",
-            "yyyy/MM/dd HH:mm",
+            // Date with 12-hour time formats (AM/PM) with full month names
+            "MMMM dd, yyyy hh:mm:ss tt",
+            "MMMM dd yyyy hh:mm:ss tt",
+            "yyyy MMMM dd hh:mm:ss tt",
+            "MMMM dd, yyyy h:mm:ss tt",
+            "MMMM dd yyyy h:mm:ss tt",
+            "yyyy MMMM dd h:mm:ss tt",
 
-            // Date-only formats
-            "MM/dd/yyyy",
-            "yyyy-MM-dd",
-            "MMM dd yyyy",
-            "MMM dd, yyyy"
+            // Date with 12-hour time formats (AM/PM) without seconds with numeric months
+            "MM/dd/yyyy hh:mm tt",
+            "yyyy/MM/dd hh:mm tt",
+            "MM-dd-yyyy hh:mm tt",
+            "yyyy-MM-dd hh:mm tt",
+            "M/d/yyyy hh:mm tt",
+            "yyyy-M-d hh:mm tt",
+            "MM/dd/yyyy h:mm tt",
+            "yyyy/MM/dd h:mm tt",
+            "MM-dd-yyyy h:mm tt",
+            "yyyy-MM-dd h:mm tt",
+            "M/d/yyyy h:mm tt",
+            "yyyy-M-d h:mm tt",
+
+            // Date with 12-hour time formats (AM/PM) without seconds with abbreviated months
+            "MMM dd, yyyy hh:mm tt",
+            "MMM dd yyyy hh:mm tt",
+            "yyyy MMM dd hh:mm tt",
+            "MMM dd, yyyy h:mm tt",
+            "MMM dd yyyy h:mm tt",
+            "yyyy MMM dd h:mm tt",
+
+            // Date with 12-hour time formats (AM/PM) without seconds with full month names
+            "MMMM dd, yyyy hh:mm tt",
+            "MMMM dd yyyy hh:mm tt",
+            "yyyy MMMM dd hh:mm tt",
+            "MMMM dd, yyyy h:mm tt",
+            "MMMM dd yyyy h:mm tt",
+            "yyyy MMMM dd h:mm tt",
         };
+
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$"); // Regex for US SSN
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
@@ -132,6 +174,9 @@ namespace Brady_s_Conversion_Program {
                         }
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                             using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) { // need to include to connect the 2, eyemd gets names and numbers in emrpatients
+                                resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
+                                    resultsBox.Text += "Foxfire Conversion Started\n";
+                                });
                                 ffpmDbContext.Database.OpenConnection();
                                 eyeMDDbContext.Database.OpenConnection();
 
@@ -182,6 +227,9 @@ namespace Brady_s_Conversion_Program {
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            resultsBox.Invoke((MethodInvoker)delegate { // change results box text
+                                resultsBox.Text += "EHR Conversion Started\n";
+                            });
                             totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
                                             eHRDbContext.Visits.Count() +
                                             eHRDbContext.VisitOrders.Count() +
@@ -232,6 +280,9 @@ namespace Brady_s_Conversion_Program {
                 if (inv == true) { // if it is an inv conversion
                     using (var invDbContext = new InvDbContext(invConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                            resultsBox.Invoke((MethodInvoker)delegate { // change results box text
+                                resultsBox.Text += "Inv Conversion Started\n";
+                            });
                             totalEntries = invDbContext.Clbrands.Count() + // count total entries for progress bar
                                             invDbContext.Clinventories.Count() +
                                             invDbContext.Cllenses.Count() +
@@ -423,7 +474,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                     return;
                 }
-                else if (patient.Active != null && patient.Active.ToUpper() == "NO" || patient.Active == "0") {
+                else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
                     return;
                 }
                 string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
@@ -438,7 +489,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime dob = minAcceptableDate;
-                if (patient.Dob != null && (patient.Dob != "" || patient.Dob == "0")) {
+                if (patient.Dob != null && (patient.Dob != "")) {
                     string dobString = CleanUpDateString(patient.Dob.Trim()); // Remove any extra whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
@@ -483,7 +534,9 @@ namespace Brady_s_Conversion_Program {
 
                 bool? patientIsActive = true; // default is active, has to be explicitely no to be inactive
                 if (patient.Active != null) {
-                    patientIsActive = patient.Active.ToUpper() == "NO" ? false : true; // little fancy for my taste but i can read it
+                    if (patient.Active.ToUpper() == "NO" || patient.Active == "0") {
+                        patientIsActive = false;
+                    }
                 }
 
                 bool? deceased = null;
@@ -493,11 +546,16 @@ namespace Brady_s_Conversion_Program {
 
                 bool? consent = null;
                 if (patient.Consent != null) {
-                    consent = patient.Consent.ToUpper() == "NO" ? false : true;
+                    if (patient.Consent.ToUpper() == "YES" || patient.Consent == "1") {
+                        consent = true;
+                    }
+                    else if (patient.Consent.ToUpper() == "NO" || patient.Consent == "0") {
+                        consent = false;
+                    }
                 }
 
                 DateTime? consentDate = null;
-                if (patient.ConsentDate != null && (patient.ConsentDate != "" || patient.ConsentDate == "0")) { 
+                if (patient.ConsentDate != null && (patient.ConsentDate != "")) { 
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -505,7 +563,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly? deceasedDate = null;
-                if (patient.DateOfDeath != null && (patient.DateOfDeath != "" || patient.DateOfDeath == "0")) {
+                if (patient.DateOfDeath != null && (patient.DateOfDeath != "")) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -513,7 +571,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime lastExamDate = minAcceptableDate;
-                if (patient.LastExamDate != null && (patient.LastExamDate != "" || patient.LastExamDate == "0")) {
+                if (patient.LastExamDate != null && (patient.LastExamDate != "")) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -724,6 +782,13 @@ namespace Brady_s_Conversion_Program {
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
+                string errorMessage = $"An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}";
+
+                if (ex.InnerException != null) {
+                    errorMessage += $" Inner Exception: {ex.InnerException.Message}";
+                }
+
+                MessageBox.Show(errorMessage);
             }
         }
 
