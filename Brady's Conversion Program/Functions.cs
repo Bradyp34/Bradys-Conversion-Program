@@ -330,9 +330,19 @@ namespace Brady_s_Conversion_Program {
             return "Operation Successful";
         }
 
-        #region FFPMConversion // conversion functions for ffpm
+        #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            
+            var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var raceXrefs = ffpmDbContext.MntRaces.ToList();
+            var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
+            var titleXrefs = ffpmDbContext.MntTitles.ToList();
+            var suffixXrefs = ffpmDbContext.MntSuffixes.ToList();
+            var maritalStatusXrefs = ffpmDbContext.MntMaritalStatuses.ToList();
+            var stateXrefs = ffpmDbContext.MntStates.ToList();
+            var additionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
+            var medicareSecondarys = ffpmDbContext.MntMedicareSecondaries.ToList();
+            var emrPatients = eyemdDbContext.Emrpatients.ToList();
+
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
@@ -749,36 +759,42 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.DmgPatients.Add(newPatient);
                 ffpmDbContext.SaveChanges();
 
-                // Create related entities for the new patient
-                var newAdditionalDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                    PatientId = newPatient.PatientId,
-                    DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                    DriversLicenseStateId = licenseShort,
-                    RaceId = race,
-                    EthnicityId = ethnicity,
-                    MedicareSecondaryId = medicareSecondaryId,
-                    MedicareSecondaryNotes = medicareSecondaryNotes,
-                    HippaConsent = consent,
-                    HippaConsentDate = consentDate,
-                    PreferredContactFirstId = prefContact1,
-                    PreferredContactSecondId = prefContact2,
-                    PreferredContactThirdId = prefContact3,
-                    PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                    DefaultLocationId = newPatient.LocationId
-                };
 
-                ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionalDetails);
-                ffpmDbContext.SaveChanges();
-
-                var newEMRPatient1 = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                    ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
-                    PatientNameFirst = TruncateString(newPatient.FirstName, 50),
-                    PatientNameLast = TruncateString(newPatient.LastName, 50),
-                    PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
-                };
-
-                eyeMdDbContext.Emrpatients.Add(newEMRPatient1);
-                eyeMdDbContext.SaveChanges();
+                    // Ensure related entities are updated or created
+                    var additionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
+                    if (additionalDetail == null) {
+                        var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                            PatientId = newPatient.PatientId,
+                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
+                            DriversLicenseStateId = licenseShort,
+                            RaceId = race,
+                            EthnicityId = ethnicity,
+                            MedicareSecondaryId = medicareSecondaryId,
+                            MedicareSecondaryNotes = medicareSecondaryNotes,
+                            HippaConsent = consent,
+                            HippaConsentDate = consentDate,
+                            PreferredContactFirstId = prefContact1,
+                            PreferredContactSecondId = prefContact2,
+                            PreferredContactThirdId = prefContact3,
+                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
+                            DefaultLocationId = newPatient.LocationId
+                        };
+                        ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
+                        patientAdditionals.Add(newAdditionDetails);
+                    }
+                    // create EMRPatient
+                    var emrPatient = emrPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == newPatient.PatientId.ToString());
+                    if (emrPatient == null) {
+                        var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                            ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
+                            PatientNameFirst = TruncateString(newPatient.FirstName, 50),
+                            PatientNameLast = TruncateString(newPatient.LastName, 50),
+                            PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
+                        };
+                        eyeMdDbContext.Emrpatients.Add(newEMRPatient);
+                        emrPatients.Add(newEMRPatient);
+                    }
+                }
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
@@ -965,6 +981,34 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
+                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.BillingLocationId = billingLocId;
+                    ffpmOrig.StartDate = start;
+                    ffpmOrig.EndDate = end;
+                    ffpmOrig.Notes = TruncateString(appointment.Notes, 2000);
+                    ffpmOrig.Duration = duration;
+                    ffpmOrig.DateTimeCreated = created;
+                    ffpmOrig.LocationId = locationId;
+                    ffpmOrig.Confirmed = confirmed;
+                    ffpmOrig.Sequence = sequence;
+                    ffpmOrig.RequestId = requestId;
+                    ffpmOrig.Status = status;
+                    ffpmOrig.CheckInDateTime = minAcceptableDate;
+                    ffpmOrig.TakeBackDateTime = takeback;
+                    ffpmOrig.CheckOutDateTime = checkOut;
+                    ffpmOrig.Description = TruncateString(appointment.Description, 2000);
+                    ffpmOrig.PriorAppointmentId = prior;
+                    ffpmOrig.LinkedAppointmentId = linked;
+                    ffpmOrig.SchedulingCodeId = schedulingCode;
+                    ffpmOrig.SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000);
+                    ffpmOrig.AppointmentTypeId = type;
+                    ffpmOrig.DateTimeUpdated = updated;
+                    
+                    return;
+                }
+
                 
                 var newAppointment = new SchedulingAppointment {
                     PatientId = patientId,
@@ -992,7 +1036,7 @@ namespace Brady_s_Conversion_Program {
                     DateTimeUpdated = minAcceptableDate
                 };
                 ffpmDbContext.SchedulingAppointments.Add(newAppointment);
-                ffpmDbContext.SaveChanges();
+                
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
