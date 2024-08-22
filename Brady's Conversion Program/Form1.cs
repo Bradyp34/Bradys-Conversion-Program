@@ -64,7 +64,7 @@ namespace Brady_s_Conversion_Program
             DBBeginButton.Enabled = false;
         }
 
-        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) {
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
             string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
@@ -72,11 +72,11 @@ namespace Brady_s_Conversion_Program
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
-                ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox);
+                ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result;
             });
-            progressBar1.Invoke((MethodInvoker)delegate {
+            progressBar1.Invoke((MethodInvoker)delegate { 
                 progressBar1.Hide();
                 progressBar1.Value = 0;
             });

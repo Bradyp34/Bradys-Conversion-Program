@@ -35,7 +35,7 @@ namespace Brady_s_Conversion_Program {
             void Log(string message);
         }
 
-        public class FileLogger : ILogger {
+        public class FileLogger : ILogger { // the log file is a txt file in the filepath in convertodb function
             private readonly string _filePath;
 
             public FileLogger(string filePath) {
@@ -49,7 +49,7 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static string TruncateString(string? input, int maxLength) {
+        public static string TruncateString(string? input, int maxLength) { // make sure strings are of proper length, this did happen in my tests
             if (string.IsNullOrEmpty(input))
                 return "";
 
@@ -58,7 +58,7 @@ namespace Brady_s_Conversion_Program {
 
         public static readonly DateTime minAcceptableDate = DateTime.Parse("1/2/1900");
         public static readonly DateTime overFlowDate = DateTime.Parse("12/31/2100");
-        public static DateTime isValidDate(DateTime date) {
+        public static DateTime isValidDate(DateTime date) { // in an attempt to easily regulated unruly dates
             if (!(date >= minAcceptableDate && date <= overFlowDate)) {
                 return minAcceptableDate;
             }
@@ -75,7 +75,7 @@ namespace Brady_s_Conversion_Program {
             return input;
         }
 
-        public static readonly string[] dateFormats = new string[] {
+        public static readonly string[] dateFormats = new string[] { // in an attempt to control the time this takes, I have limited the date formats
             // Date with 12-hour time formats (AM/PM) with numeric months
             "MM/dd/yyyy h:mm tt",
             "MM/dd/yyyy hh:mm tt",
@@ -105,10 +105,10 @@ namespace Brady_s_Conversion_Program {
             "MMM dd, yyyy"
         };
 
-        private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
+        private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$"); // Regex for US SSN
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
-        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-        private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$");
+        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"); // Regex for email addresses
+        private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$"); // Regex for phone numbers
 
         public static string FFPMString = "";
         public static string EyeMDString = "";
@@ -118,28 +118,28 @@ namespace Brady_s_Conversion_Program {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             try {
-                ILogger logger = new FileLogger("../../../../LogFiles/log.txt");
+                ILogger logger = new FileLogger("../../../../LogFiles/log.txt"); // Log file path
 
                 // Using block for convDbContext conversion
                 int totalEntries = 0;
 
-                if (conv == true) { // Essentially, this appears to just be the foxfire_conv database
-                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                if (conv == true) { // if it is an ffpm conversion
+                    using (var convDbContext = new FoxfireConvContext(convConnection)) { 
                         convDbContext.Database.OpenConnection();
-                        if (newFfpm) {
+                        if (newFfpm) { // if it is a new ffpm database
                             new FfpmContext(FFPMConnection).Database.EnsureCreated();
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) { // need to include to connect the 2, eyemd gets names and numbers in emrpatients
                                 ffpmDbContext.Database.OpenConnection();
                                 eyeMDDbContext.Database.OpenConnection();
 
                                 // Calculate total number of entries for progress tracking
                                 totalEntries = //convDbContext.Patients.Count() +
                                                 convDbContext.Addresses.Count() +
-                                                convDbContext.Appointments.Count() +
-                                                convDbContext.AppointmentTypes.Count() +
+                                                //convDbContext.Appointments.Count() +
+                                                //convDbContext.AppointmentTypes.Count() +
                                                 convDbContext.Insurances.Count() +
                                                 convDbContext.Locations.Count() +
                                                 convDbContext.Guarantors.Count() +
@@ -172,17 +172,17 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
-                    resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
                         resultsBox.Text += "Foxfire Conversion Successful\n";
                     });
                 }
-                if (ehr == true) { // not positive what this will entail yet
+                if (ehr == true) { // if it is also eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
-                        if (newEyemd) {
+                        if (newEyemd) { // if it is a new eyemd database
                             new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                            totalEntries = eHRDbContext.MedicalHistories.Count() +
+                            totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
                                             eHRDbContext.Visits.Count() +
                                             eHRDbContext.VisitOrders.Count() +
                                             eHRDbContext.VisitDoctors.Count() +
@@ -212,7 +212,7 @@ namespace Brady_s_Conversion_Program {
 
 
                             // Set progress bar properties on UI thread
-                            progress.Invoke((MethodInvoker)delegate {
+                            progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
                                 progress.Maximum = totalEntries;
                                 progress.Step = 1;
                                 progress.Value = 0;
@@ -220,19 +220,19 @@ namespace Brady_s_Conversion_Program {
 
 
 
-                            eyeMDDbContext.Database.OpenConnection();
-                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox);
+                            eyeMDDbContext.Database.OpenConnection(); 
+                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox); // convert eyemd data
                             eyeMDDbContext.SaveChanges();
                         }
                     }
-                    resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Invoke((MethodInvoker)delegate { // change results box text
                         resultsBox.Text += "EHR Conversion Successful\n";
                     });
                 }
-                if (inv == true) {
+                if (inv == true) { // if it is an inv conversion
                     using (var invDbContext = new InvDbContext(invConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            totalEntries = invDbContext.Clbrands.Count() +
+                            totalEntries = invDbContext.Clbrands.Count() + // count total entries for progress bar
                                             invDbContext.Clinventories.Count() +
                                             invDbContext.Cllenses.Count() +
                                             invDbContext.Cptdepts.Count() +
@@ -254,7 +254,7 @@ namespace Brady_s_Conversion_Program {
 
 
                             // Set progress bar properties on UI thread
-                            progress.Invoke((MethodInvoker)delegate {
+                            progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
                                 progress.Maximum = totalEntries;
                                 progress.Step = 1;
                                 progress.Value = 0;
@@ -263,39 +263,32 @@ namespace Brady_s_Conversion_Program {
 
 
                             ffpmDbContext.Database.OpenConnection();
-                            ConvertInv(invDbContext, ffpmDbContext, logger, progress, resultsBox); // need to find out where inv data goes
+                            ConvertInv(invDbContext, ffpmDbContext, logger, progress, resultsBox); // convert inv data
                             ffpmDbContext.SaveChanges();
                         }
                     }
-                    resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Invoke((MethodInvoker)delegate { // change results box text
                         resultsBox.Text += "Inv Conversion Successful\n";
                     });
                     return "Program run completed.\n";
                 }
             }
-            catch (Exception e) {
+            catch (Exception e) { // if there is an error, log it
                 return "Database Upload Failed.\n" + e + "\n";
             }
             return "Operation Successful";
         }
 
-        #region FFPMConversion
+        #region FFPMConversion // conversion functions for ffpm
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            /*
-            foreach (var patient in convDbContext.Patients) {
+            
+            foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
             }
-            resultsBox.Invoke((MethodInvoker)delegate {
+            resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
-            */
-            foreach (var accountXref in convDbContext.AccountXrefs) {
-                ConvertAccountXref(accountXref, convDbContext, ffpmDbContext, logger, progress);
-            }
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "AccountXrefs Converted\n";
-            });
-
+            
             foreach (var appointmentType in convDbContext.AppointmentTypes) {
                 ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress);
             }
@@ -309,7 +302,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
-
+            
             foreach (var insurance in convDbContext.Insurances) {
                 ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress);
             }
@@ -421,8 +414,8 @@ namespace Brady_s_Conversion_Program {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
-            try {
-                if (patient.LastName == null) {
+            try { // all patients need first and last name and for active to be yes or null (not no)
+                if (patient.LastName == null) { 
                     logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
                     return;
                 }
@@ -433,23 +426,23 @@ namespace Brady_s_Conversion_Program {
                 else if (patient.Active != null && patient.Active.ToUpper() == "NO" || patient.Active == "0") {
                     return;
                 }
-                string? ssn = patient.Ssn;
+                string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
                 if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
                     ssn = "";
                 }
 
-                short? licenseShort = null;
+                short? licenseShort = null; // dave spoke to me about xrefs, so if you see this, its an xref table. will be changing the rest to match
                 var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == patient.LicenseState);
                 if (stateXref != null) {
                     licenseShort = stateXref.StateId;
                 }
 
                 DateTime dob = minAcceptableDate;
-                if (patient.Dob != null && patient.Dob != "" || patient.Dob == "0") {
-                    string dobString = patient.Dob.Trim(); // Remove any leading/trailing whitespaces
+                if (patient.Dob != null && (patient.Dob != "" || patient.Dob == "0")) {
+                    string dobString = CleanUpDateString(patient.Dob.Trim()); // Remove any extra whitespaces
                     if (DateTime.TryParseExact(dobString, dateFormats,
                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                        dob = isValidDate(dob);
+                        dob = isValidDate(dob); // make sure the date is valid
                     }
                 }
                 short? maritalStatusInt = null;
@@ -471,7 +464,7 @@ namespace Brady_s_Conversion_Program {
                     suffixInt = suffixXref.SuffixId;
                 }
 
-                short? genderInt = null;
+                short? genderInt = null; // im not gonna bother with an xref here
                 if (patient.Sex != null) {
                     genderInt = patient.Sex.ToLower() == "m" ? (short)1 : (short)2;
                 }
@@ -488,9 +481,9 @@ namespace Brady_s_Conversion_Program {
                     ethnicity = ethnicityXref.EthnicityId;
                 }
 
-                bool? patientIsActive = true;
+                bool? patientIsActive = true; // default is active, has to be explicitely no to be inactive
                 if (patient.Active != null) {
-                    patientIsActive = patient.Active.ToUpper() == "NO" ? false : true;
+                    patientIsActive = patient.Active.ToUpper() == "NO" ? false : true; // little fancy for my taste but i can read it
                 }
 
                 bool? deceased = null;
@@ -504,7 +497,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? consentDate = null;
-                if (patient.ConsentDate != null && patient.ConsentDate != "" || patient.ConsentDate == "0") {
+                if (patient.ConsentDate != null && (patient.ConsentDate != "" || patient.ConsentDate == "0")) { 
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -512,7 +505,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateOnly? deceasedDate = null;
-                if (patient.DateOfDeath != null && patient.DateOfDeath != "" || patient.DateOfDeath == "0") {
+                if (patient.DateOfDeath != null && (patient.DateOfDeath != "" || patient.DateOfDeath == "0")) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -520,7 +513,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime lastExamDate = minAcceptableDate;
-                if (patient.LastExamDate != null && patient.LastExamDate != "" || patient.LastExamDate == "0") {
+                if (patient.LastExamDate != null && (patient.LastExamDate != "" || patient.LastExamDate == "0")) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -765,14 +758,14 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime start = minAcceptableDate;
-                if (appointment.StartDate != null && appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare)) {
+                if (appointment.StartDate != null && (appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare))) {
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats,
                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
                         start = isValidDate(temp);
                     }
                 }
                 DateTime end = minAcceptableDate;
-                if (appointment.EndDate != null && appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare)) {
+                if (appointment.EndDate != null && (appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare))) {
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats,
                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
                         end = isValidDate(temp);
@@ -785,7 +778,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime created = minAcceptableDate;
-                if (appointment.DateTimeCreated != null && appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare)) {
+                if (appointment.DateTimeCreated != null && (appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare))) {
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
                                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                         created = isValidDate(created);
@@ -820,7 +813,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkIn = null;
-                if (appointment.CheckInDateTime != null && appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare)) {
+                if (appointment.CheckInDateTime != null && (appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare))) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -828,7 +821,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? takeback = null;
-                if (appointment.TakeBackDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare)) {
+                if (appointment.TakeBackDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare))) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats,
                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -836,7 +829,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 DateTime? checkOut = null;
-                if (appointment.CheckOutDateTime != null && appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare)) {
+                if (appointment.CheckOutDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare))) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -871,7 +864,7 @@ namespace Brady_s_Conversion_Program {
                     type = (int)typeXref.AppointmentTypeId;
                 }
                 DateTime? updated = null;
-                if (appointment.DateTimeUpdated != null && appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare)) {
+                if (appointment.DateTimeUpdated != null && (appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare))) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
                                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -954,19 +947,19 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool isActive = false;
-                if (appointmentType.Active != null && appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1") {
+                if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
                     isActive = true;
                 }
                 bool schedule = false;
-                if (appointmentType.CanSchedule != null && appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1") {
+                if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
                     schedule = true;
                 }
                 bool required = false;
-                if (appointmentType.PatientRequired != null && appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1") {
+                if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
                     required = true;
                 }
                 bool examType = false;
-                if (appointmentType.IsExamType != null && appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1") {
+                if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
                     examType = true;
                 }
                 string code = "";
@@ -1070,17 +1063,17 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool active = false;
-                if (insurance.Active != null && insurance.Active.ToLower() == "yes" || insurance.Active == "1") {
+                if (insurance.Active != null && (insurance.Active.ToLower() == "yes" || insurance.Active == "1")) {
                     active = true;
                 }
 
                 bool collections = false;
-                if (insurance.IsCollections != null && insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1") {
+                if (insurance.IsCollections != null && (insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1")) {
                     collections = true;
                 }
 
                 bool dmerc = false;
-                if (insurance.IsDmerc != null && insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1") {
+                if (insurance.IsDmerc != null && (insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1")) {
                     dmerc = true;
                 }
                 string companyName = "";
@@ -1325,11 +1318,11 @@ namespace Brady_s_Conversion_Program {
                 #endregion taxonomys
 
                 bool isBilling = false;
-                if (location.IsBilling != null && location.IsBilling.ToLower() == "yes" || location.IsBilling == "1") {
+                if (location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1")) {
                     isBilling = true;
                 }
                 bool isSchedule = false;
-                if (location.IsScheduling != null && location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1") {
+                if (location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1")) {
                     isSchedule = true;
                 }
 
@@ -1884,7 +1877,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 DateTime? alertDate = null;
-                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != ""&& !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
+                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != "" && !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
@@ -2433,7 +2426,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool? isActive = null;
-                if (provider.Active != null && provider.Active.ToLower() == "yes" || provider.Active == "1") {
+                if (provider.Active != null && (provider.Active.ToLower() == "yes" || provider.Active == "1")) {
                     isActive = true;
                 }
 
@@ -2732,7 +2725,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool isActive = true;
-                if (recall.Active != null && recall.Active.ToLower() == "no" || recall.Active == "0") {
+                if (recall.Active != null && (recall.Active.ToLower() == "no" || recall.Active == "0")) {
                     isActive = false;
                 }
 
@@ -2792,7 +2785,7 @@ namespace Brady_s_Conversion_Program {
                     defaultDuration = temp;
                 }
                 bool isActive = false;
-                if (recallType.Active != null && recallType.Active.ToLower() == "yes" || recallType.Active == "1") {
+                if (recallType.Active != null && (recallType.Active.ToLower() == "yes" || recallType.Active == "1")) {
                     isActive = true;
                 }
                 string note = "";
@@ -2887,7 +2880,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 bool? isActive = null;
-                if (referral.Active != null && referral.Active.ToLower() == "yes" || referral.Active == "1") {
+                if (referral.Active != null && (referral.Active.ToLower() == "yes" || referral.Active == "1")) {
                     isActive = true;
                 }
 
@@ -3138,13 +3131,13 @@ namespace Brady_s_Conversion_Program {
                     description = schedtype.Description;
                 }
                 bool isActive = true;
-                if (schedtype.Active != null && schedtype.Active.ToLower() == "no" || schedtype.Active == "0") {
+                if (schedtype.Active != null && (schedtype.Active.ToLower() == "no" || schedtype.Active == "0")) {
                     isActive = true;
                 }
                 int location = 0;
                 bool isDefault = false;
                 bool noShow = false;
-                if (schedtype.IsNoShow != null && schedtype.IsNoShow.ToLower() == "no" || schedtype.IsNoShow == "0") {
+                if (schedtype.IsNoShow != null && (schedtype.IsNoShow.ToLower() == "no" || schedtype.IsNoShow == "0")) {
                     noShow = false;
                 }
 
