@@ -344,6 +344,7 @@ namespace Brady_s_Conversion_Program {
             var convPatients = convDbContext.Patients.ToList();
             var appointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
             var appointments = ffpmDbContext.SchedulingAppointments.ToList();
+            var locations = ffpmDbContext.BillingLocations.ToList();
 
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
@@ -375,7 +376,7 @@ namespace Brady_s_Conversion_Program {
             });
             
             foreach (var location in convDbContext.Locations) {
-                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress);
+                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
@@ -714,6 +715,73 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
+        public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
+            progress.Invoke((MethodInvoker)delegate {
+                progress.PerformStep();
+            });
+            try {
+                int? duration = null;
+                if (appointmentType.DefaultDuration != null) {
+                    if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
+                        duration = durationInt;
+                    }
+                }
+                bool isActive = false;
+                if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
+                    isActive = true;
+                }
+                bool schedule = false;
+                if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
+                    schedule = true;
+                }
+                bool required = false;
+                if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
+                    required = true;
+                }
+                bool examType = false;
+                if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
+                    examType = true;
+                }
+                string code = "";
+                if (appointmentType.OldAppointmentTypeCode != null) {
+                    code = appointmentType.OldAppointmentTypeCode;
+                }
+                string description = "";
+                if (appointmentType.Description != null) {
+                    description = appointmentType.Description;
+                }
+                string notes = "";
+                if (appointmentType.Notes != null) {
+                    notes = appointmentType.Notes;
+                }
+
+                var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
+
+                if (ffpmOrig != null) {
+                    var newAppointmentType = new SchedulingAppointmentType {
+                        Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
+                        Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
+                        LocationId = 0,
+                        PatientRequired = required,
+                        Notes = TruncateString(notes, 5000),  // Truncating to the specified max length of 5000
+                        IsExamType = examType,
+                        IsAppointmentType = true,
+                        IsRecallType = false, // Will set this to true for recall types
+                        DefaultDuration = duration,
+                        Active = isActive,
+                        CanSchedule = schedule
+                    };
+                    ffpmDbContext.SchedulingAppointmentTypes.Add(newAppointmentType);
+                    appointmentTypes.Add(newAppointmentType);
+                    ffpmDbContext.SaveChanges();
+                }
+            }
+            catch (Exception ex) {
+                logger.Log($"Conv: Conv An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
+            }
+        }
+
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes, 
                 List<SchedulingAppointment> appointments) {
@@ -894,73 +962,6 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int? duration = null;
-                if (appointmentType.DefaultDuration != null) {
-                    if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
-                        duration = durationInt;
-                    }
-                }
-                bool isActive = false;
-                if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
-                    isActive = true;
-                }
-                bool schedule = false;
-                if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
-                    schedule = true;
-                }
-                bool required = false;
-                if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
-                    required = true;
-                }
-                bool examType = false;
-                if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
-                    examType = true;
-                }
-                string code = "";
-                if (appointmentType.OldAppointmentTypeCode != null) {
-                    code = appointmentType.OldAppointmentTypeCode;
-                }
-                string description = "";
-                if (appointmentType.Description != null) {
-                    description = appointmentType.Description;
-                }
-                string notes = "";
-                if (appointmentType.Notes != null) {
-                    notes = appointmentType.Notes;
-                }
-
-                var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
-
-                if (ffpmOrig != null) {
-                    var newAppointmentType = new SchedulingAppointmentType {
-                        Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
-                        Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
-                        LocationId = 0,
-                        PatientRequired = required,
-                        Notes = TruncateString(notes, 5000),  // Truncating to the specified max length of 5000
-                        IsExamType = examType,
-                        IsAppointmentType = true,
-                        IsRecallType = false, // Will set this to true for recall types
-                        DefaultDuration = duration,
-                        Active = isActive,
-                        CanSchedule = schedule
-                    };
-                    ffpmDbContext.SchedulingAppointmentTypes.Add(newAppointmentType);
-                    appointmentTypes.Add(newAppointmentType);
-                    ffpmDbContext.SaveChanges();
-                }
-            }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
-            }
-        }
-
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
@@ -1124,14 +1125,17 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, List<BillingLocation> locations) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
                 string? name = null;
-                if (location.LocationName != null) {
+                if (location.LocationName != null && location.LocationName != "") {
                     name = location.LocationName;
+                } else {
+                    logger.Log($"Conv: Conv Location Name is null for location with ID: {location.Id}");
+                    return;
                 }
 
                 #region taxonomys
@@ -1279,67 +1283,49 @@ namespace Brady_s_Conversion_Program {
                     treatmentPlaceId = temp;
                 }
 
-                var ffpmOrig = ffpmDbContext.BillingLocations.FirstOrDefault(x => x.Name == name);
+                var ffpmOrig = ffpmDbContext.BillingLocations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.Name = TruncateString(name, 500);
-                    ffpmOrig.IsBillingLocation = isBilling;
-                    ffpmOrig.CliaIdNo = TruncateString(location.Clia, 15);
-                    ffpmOrig.Npi = TruncateString(location.Npi, 10);
-                    ffpmOrig.FederalIdNo = TruncateString(location.FederalEin, 15);
-                    ffpmOrig.IsSchedulingLocation = isSchedule;
-                    ffpmOrig.PlaceOfTreatmentId = treatmentPlaceId;
-                    ffpmOrig.LocationId = 0;  // Assuming this should be reset or handled specifically
-                    ffpmOrig.IsActive = true;
-                    ffpmOrig.CaculateTaxOnEstimatedPatientBalance = false;
-                    ffpmOrig.IsDefaultLocation = true;
-                    ffpmOrig.CaculateTaxOnTotalFee = false;
+                if (ffpmOrig == null) {
+                    var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
+                        PrimaryTaxonomyId = primaryTaxId,
+                        AlternateTaxonomy1Id = tax1Id,
+                        AlternateTaxonomy2Id = tax2Id,
+                        AlternateTaxonomy3Id = tax3Id,
+                        AlternateTaxonomy4Id = tax4Id,
+                        AlternateTaxonomy5Id = tax5Id,
+                        AlternateTaxonomy6Id = tax6Id,
+                        AlternateTaxonomy7Id = tax7Id,
+                        AlternateTaxonomy8Id = tax8Id,
+                        AlternateTaxonomy9Id = tax9Id,
+                        AlternateTaxonomy10Id = tax10Id,
+                        AlternateTaxonomy11Id = tax11Id,
+                        AlternateTaxonomy12Id = tax12Id,
+                        AlternateTaxonomy13Id = tax13Id,
+                        AlternateTaxonomy14Id = tax14Id,
+                        AlternateTaxonomy15Id = tax15Id,    
+                        AlternateTaxonomy16Id = tax16Id,
+                        AlternateTaxonomy17Id = tax17Id,
+                        AlternateTaxonomy18Id = tax18Id,
+                        AlternateTaxonomy19Id = tax19Id,                        
+                        AlternateTaxonomy20Id = tax20Id,
 
-                    ffpmOrig.PrimaryTaxonomyId = primaryTaxId;
-                    ffpmOrig.AlternateTaxonomy1Id = tax1Id;
-                    ffpmOrig.AlternateTaxonomy2Id = tax2Id;
-                    ffpmOrig.AlternateTaxonomy3Id = tax3Id;
-                    ffpmOrig.AlternateTaxonomy4Id = tax4Id;
-                    ffpmOrig.AlternateTaxonomy5Id = tax5Id;
-                    ffpmOrig.AlternateTaxonomy6Id = tax6Id;
-                    ffpmOrig.AlternateTaxonomy7Id = tax7Id;
-                    ffpmOrig.AlternateTaxonomy8Id = tax8Id;
-                    ffpmOrig.AlternateTaxonomy9Id = tax9Id;
-                    ffpmOrig.AlternateTaxonomy10Id = tax10Id;
-                    ffpmOrig.AlternateTaxonomy11Id = tax11Id;
-                    ffpmOrig.AlternateTaxonomy12Id = tax12Id;
-                    ffpmOrig.AlternateTaxonomy13Id = tax13Id;
-                    ffpmOrig.AlternateTaxonomy14Id = tax14Id;
-                    ffpmOrig.AlternateTaxonomy15Id = tax15Id;
-                    ffpmOrig.AlternateTaxonomy16Id = tax16Id;
-                    ffpmOrig.AlternateTaxonomy17Id = tax17Id;
-                    ffpmOrig.AlternateTaxonomy18Id = tax18Id;
-                    ffpmOrig.AlternateTaxonomy19Id = tax19Id;
-                    ffpmOrig.AlternateTaxonomy20Id = tax20Id;
-
+                        Name = TruncateString(name, 500),
+                        IsBillingLocation = isBilling,
+                        CliaIdNo = TruncateString(location.Clia, 15),
+                        Npi = TruncateString(location.Npi, 10),
+                        FederalIdNo = TruncateString(location.FederalEin, 15),
+                        IsSchedulingLocation = isSchedule,
+                        PlaceOfTreatmentId = treatmentPlaceId,
+                        LocationId = 0,
+                        IsActive = true,
+                        CaculateTaxOnEstimatedPatientBalance = false,
+                        IsDefaultLocation = true,
+                        CaculateTaxOnTotalFee = false
+                    };
+                    ffpmDbContext.BillingLocations.Add(newLocation);
+                    locations.Add(newLocation);
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
-
-                var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
-                    PrimaryTaxonomyId = primaryTaxId,
-                    // ... set other taxonomy IDs ...
-                    AlternateTaxonomy20Id = tax20Id,
-                    Name = TruncateString(name, 500),
-                    IsBillingLocation = isBilling,
-                    CliaIdNo = TruncateString(location.Clia, 15),
-                    Npi = TruncateString(location.Npi, 10),
-                    FederalIdNo = TruncateString(location.FederalEin, 15),
-                    IsSchedulingLocation = isSchedule,
-                    PlaceOfTreatmentId = treatmentPlaceId,
-                    LocationId = 0,
-                    IsActive = true,
-                    CaculateTaxOnEstimatedPatientBalance = false,
-                    IsDefaultLocation = true,
-                    CaculateTaxOnTotalFee = false
-                };
-                ffpmDbContext.BillingLocations.Add(newLocation);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
