@@ -149,7 +149,6 @@ namespace Brady_s_Conversion_Program {
 
         private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$"); // Regex for US SSN
         private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
-        private static Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"); // Regex for email addresses
         private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$"); // Regex for phone numbers
 
         public static string FFPMString = "";
@@ -339,12 +338,13 @@ namespace Brady_s_Conversion_Program {
             var suffixXrefs = ffpmDbContext.MntSuffixes.ToList();
             var maritalStatusXrefs = ffpmDbContext.MntMaritalStatuses.ToList();
             var stateXrefs = ffpmDbContext.MntStates.ToList();
-            var additionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
+            var patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             var medicareSecondarys = ffpmDbContext.MntMedicareSecondaries.ToList();
             var emrPatients = eyemdDbContext.Emrpatients.ToList();
 
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
-                PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress);
+                PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
+                    raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
             }
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
@@ -471,7 +471,10 @@ namespace Brady_s_Conversion_Program {
         }
                 
         public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
-            ILogger logger, ProgressBar progress) {
+            ILogger logger, ProgressBar progress, List<DmgPatient> ffpmPatients, List<Emrpatient> emrPatients, List<DmgPatientAdditionalDetail> patientAdditionals, 
+                List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, 
+                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
+
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -588,9 +591,8 @@ namespace Brady_s_Conversion_Program {
                         lastExamDate = isValidDate(tempDateTime);
                     }
                 }
-                lastExamDate = isValidDate(lastExamDate);
-                if (patient.Email != null && emailRegex.IsMatch(patient.Email)) {
-                    string email = patient.Email;
+                if (patient.Email != null) {
+                    string email = TruncateString(patient.Email, 50);
                 }
                 bool isEmailValid = new EmailAddressAttribute().IsValid(patient.Email);
                 bool dontSendStatements = false;
@@ -626,143 +628,49 @@ namespace Brady_s_Conversion_Program {
                 }
                 
 
-                var ffpmOrig = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == patient.Id.ToString()
+                var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.Id.ToString()
                     && p.FirstName == patient.FirstName && p.LastName == patient.LastName);
 
-                if (ffpmOrig != null) {
-                    // Update existing DmgPatient
-                    ffpmOrig.DateCreated = DateTime.Now;
-                    ffpmOrig.AccountNumber = patient.Id.ToString();
-                    ffpmOrig.AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10);
-                    ffpmOrig.LastName = TruncateString(patient.LastName, 50);
-                    ffpmOrig.MiddleName = TruncateString(patient.MiddleName, 50);
-                    ffpmOrig.FirstName = TruncateString(patient.FirstName, 50);
-                    ffpmOrig.PreferredName = TruncateString(patient.PreferredName, 50);
-                    ffpmOrig.Ssn = TruncateString(ssn, 15);
-                    ffpmOrig.DateOfBirth = dob;
-                    ffpmOrig.MaritialStatusId = maritalStatusInt;
-                    ffpmOrig.TitleId = titleInt;
-                    ffpmOrig.IsActive = patientIsActive;
-                    ffpmOrig.IsDeceased = deceased;
-                    ffpmOrig.DeceasedDate = deceasedDate;
-                    ffpmOrig.LastExamDate = lastExamDate;
-                    ffpmOrig.PatientBalance = 0;
-                    ffpmOrig.InsuranceBalance = 0;
-                    ffpmOrig.OtherBalance = 0;
-                    ffpmOrig.GenderId = genderInt;
-                    ffpmOrig.SuffixId = suffixInt;
-                    ffpmOrig.BalanceLastUpdatedDateTime = minAcceptableDate;
-                    ffpmOrig.EmailNotApplicable = isEmailValid;
-                    ffpmOrig.DoNotSendStatements = dontSendStatements;
-                    ffpmOrig.EmailStatements = emailStatements;
-                    ffpmOrig.OpenEdgeCustomerId = TruncateString("", 100);
-                    ffpmOrig.TextStatements = true;
-                    ffpmOrig.LocationId = 0;
-                    ffpmDbContext.SaveChanges();
+                if (ffpmOrig == null) {
+                    var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
+                        DateCreated = minAcceptableDate,
+                        AccountNumber = patient.Id.ToString(),
+                        AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                        LastName = TruncateString(patient.LastName, 50),
+                        MiddleName = TruncateString(patient.MiddleName, 50),
+                        FirstName = TruncateString(patient.FirstName, 50),
+                        PreferredName = TruncateString(patient.PreferredName, 50),
+                        Ssn = TruncateString(patient.Ssn, 15),
+                        DateOfBirth = dob,
+                        MaritialStatusId = maritalStatusInt,
+                        TitleId = titleInt,
+                        IsActive = patientIsActive,
+                        IsDeceased = deceased,
+                        DeceasedDate = deceasedDate,
+                        LastExamDate = lastExamDate,
+                        PatientBalance = 0,
+                        InsuranceBalance = 0,
+                        OtherBalance = 0,
+                        GenderId = genderInt,
+                        SuffixId = suffixInt,
+                        BalanceLastUpdatedDateTime = minAcceptableDate,
+                        EmailNotApplicable = isEmailValid,
+                        DoNotSendStatements = dontSendStatements,
+                        EmailStatements = emailStatements,
+                        OpenEdgeCustomerId = TruncateString("", 100),
+                        TextStatements = true,
+                        LocationId = 0,
+                        LastModifiedDate = DateTime.Now,
+                        LastModifiedBy = -1
+                    };
 
-                    // Ensure related entities are updated or created
-                    var additionalDetail = ffpmDbContext.DmgPatientAdditionalDetails.FirstOrDefault(ad => ad.PatientId == ffpmOrig.PatientId);
-                    if (additionalDetail != null) {
-                        // Update existing AdditionalDetail
-                        additionalDetail.DriversLicenseNumber = TruncateString(patient.LicenseNo, 25);
-                        additionalDetail.DriversLicenseStateId = licenseShort;
-                        additionalDetail.RaceId = race;
-                        additionalDetail.EthnicityId = ethnicity;
-                        additionalDetail.MedicareSecondaryId = medicareSecondaryId;
-                        additionalDetail.MedicareSecondaryNotes = medicareSecondaryNotes;
-                        additionalDetail.HippaConsent = consent;
-                        additionalDetail.HippaConsentDate = consentDate;
-                        additionalDetail.PreferredContactFirstId = prefContact1;
-                        additionalDetail.PreferredContactSecondId = prefContact2;
-                        additionalDetail.PreferredContactThirdId = prefContact3;
-                        additionalDetail.PreferredContactNotes = TruncateString(preferredContactsNotes, 500);
-                        additionalDetail.DefaultLocationId = ffpmOrig.LocationId;
-                        ffpmDbContext.SaveChanges();
-                    }
-                    else {
-                        // Create new AdditionalDetail if not exists
-                        var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                            PatientId = ffpmOrig.PatientId,
-                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                            DriversLicenseStateId = licenseShort,
-                            RaceId = race,
-                            EthnicityId = ethnicity,
-                            MedicareSecondaryId = medicareSecondaryId,
-                            MedicareSecondaryNotes = medicareSecondaryNotes,
-                            HippaConsent = consent,
-                            HippaConsentDate = consentDate,
-                            PreferredContactFirstId = prefContact1,
-                            PreferredContactSecondId = prefContact2,
-                            PreferredContactThirdId = prefContact3,
-                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                            DefaultLocationId = ffpmOrig.LocationId
-                        };
-                        ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
-                        ffpmDbContext.SaveChanges();
-                    }
-
-                    // Update or create EMRPatient
-                    var existingEmrPatient = eyeMdDbContext.Emrpatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == ffpmOrig.PatientId.ToString());
-                    if (existingEmrPatient != null) {
-                        existingEmrPatient.PatientNameFirst = TruncateString(ffpmOrig.FirstName, 50);
-                        existingEmrPatient.PatientNameLast = TruncateString(ffpmOrig.LastName, 50);
-                        existingEmrPatient.PatientNameMiddle = TruncateString(ffpmOrig.MiddleName, 50);
-                        eyeMdDbContext.SaveChanges();
-                    }
-                    else {
-                        var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                            ClientSoftwarePtId = TruncateString(ffpmOrig.PatientId.ToString(), 50),
-                            PatientNameFirst = TruncateString(ffpmOrig.FirstName, 50),
-                            PatientNameLast = TruncateString(ffpmOrig.LastName, 50),
-                            PatientNameMiddle = TruncateString(ffpmOrig.MiddleName, 50)
-                        };
-                        eyeMdDbContext.Emrpatients.Add(newEMRPatient);
-                        eyeMdDbContext.SaveChanges();
-                    }
-
-                    return;
-                }
-
-                // If no existing patient is found, create a new one
-                var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
-                    DateCreated = minAcceptableDate,
-                    AccountNumber = patient.Id.ToString(),
-                    AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
-                    LastName = TruncateString(patient.LastName, 50),
-                    MiddleName = TruncateString(patient.MiddleName, 50),
-                    FirstName = TruncateString(patient.FirstName, 50),
-                    PreferredName = TruncateString(patient.PreferredName, 50),
-                    Ssn = TruncateString(patient.Ssn, 15),
-                    DateOfBirth = dob,
-                    MaritialStatusId = maritalStatusInt,
-                    TitleId = titleInt,
-                    IsActive = patientIsActive,
-                    IsDeceased = deceased,
-                    DeceasedDate = deceasedDate,
-                    LastExamDate = lastExamDate,
-                    PatientBalance = 0,
-                    InsuranceBalance = 0,
-                    OtherBalance = 0,
-                    GenderId = genderInt,
-                    SuffixId = suffixInt,
-                    BalanceLastUpdatedDateTime = minAcceptableDate,
-                    EmailNotApplicable = isEmailValid,
-                    DoNotSendStatements = dontSendStatements,
-                    EmailStatements = emailStatements,
-                    OpenEdgeCustomerId = TruncateString("", 100),
-                    TextStatements = true,
-                    LocationId = 0,
-                    LastModifiedDate = DateTime.Now,
-                    LastModifiedBy = -1
-                };
-
-                ffpmDbContext.DmgPatients.Add(newPatient);
-                ffpmDbContext.SaveChanges();
+                    ffpmDbContext.DmgPatients.Add(newPatient);
+                    ffpmPatients.Add(newPatient);
 
 
-                    // Ensure related entities are updated or created
-                    var additionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
-                    if (additionalDetail == null) {
+                    var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
+                    if (patientAdditionalDetail == null) {
+                        // If no existing patient is found, create a new one
                         var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
                             PatientId = newPatient.PatientId,
                             DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
@@ -780,11 +688,11 @@ namespace Brady_s_Conversion_Program {
                             DefaultLocationId = newPatient.LocationId
                         };
                         ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
-                        patientAdditionals.Add(newAdditionDetails);
                     }
-                    // create EMRPatient
-                    var emrPatient = emrPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == newPatient.PatientId.ToString());
-                    if (emrPatient == null) {
+
+                    // Update or create EMRPatient
+                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
+                    if (existingEmrPatient != null) {
                         var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
                             ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
                             PatientNameFirst = TruncateString(newPatient.FirstName, 50),
@@ -793,18 +701,13 @@ namespace Brady_s_Conversion_Program {
                         };
                         eyeMdDbContext.Emrpatients.Add(newEMRPatient);
                         emrPatients.Add(newEMRPatient);
+                        eyeMdDbContext.SaveChanges();
                     }
+                    ffpmDbContext.SaveChanges();
                 }
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
-                string errorMessage = $"An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}";
-
-                if (ex.InnerException != null) {
-                    errorMessage += $" Inner Exception: {ex.InnerException.Message}";
-                }
-
-                MessageBox.Show(errorMessage);
             }
         }
 
@@ -981,7 +884,7 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
 
-                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
+                var OrigAppt = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
 
                 if (ffpmOrig != null) {
                     ffpmOrig.BillingLocationId = billingLocId;
@@ -1147,9 +1050,7 @@ namespace Brady_s_Conversion_Program {
 
                 string insEmail = "";
                 if (insurance.InsCompanyEmail != null) {
-                    if (emailRegex.IsMatch(insurance.InsCompanyEmail)) {
-                        insEmail = insurance.InsCompanyEmail;
-                    }
+                    insEmail = TruncateString(insurance.InsCompanyEmail, 50);
                 }
 
                 string insFax = "";
