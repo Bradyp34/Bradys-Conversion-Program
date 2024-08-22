@@ -330,8 +330,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         #region FFPMConversion
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, 
-            ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyemdDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -342,8 +341,6 @@ namespace Brady_s_Conversion_Program {
             var additionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             var medicareSecondarys = ffpmDbContext.MntMedicareSecondaries.ToList();
             var emrPatients = eyemdDbContext.Emrpatients.ToList();
-            var convPatients = convDbContext.Patients.ToList();
-            var appointmentTypeXrefs = ffpmDbContext.SchedulingAppointmentTypes.ToList();
 
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, raceXrefs, ethnicityXrefs, 
@@ -364,7 +361,7 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
 
             foreach (var appointment in convDbContext.Appointments) {
-                ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypeXrefs);
+                ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
@@ -715,8 +712,7 @@ namespace Brady_s_Conversion_Program {
                         patientAdditionals.Add(newAdditionDetails);
                     }
                     // create EMRPatient
-                    var emrPatient = emrPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == newPatient.PatientId.ToString() && 
-                        patient.FirstName == ep.PatientNameFirst && patient.LastName == ep.PatientNameLast);
+                    var emrPatient = emrPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == newPatient.PatientId.ToString());
                     if (emrPatient == null) {
                         var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
                             ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
@@ -726,10 +722,8 @@ namespace Brady_s_Conversion_Program {
                         };
                         eyeMdDbContext.Emrpatients.Add(newEMRPatient);
                         emrPatients.Add(newEMRPatient);
-                        eyeMdDbContext.SaveChanges();
                     }
                 }
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
@@ -737,7 +731,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypeXrefs) {
+            ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -745,12 +739,12 @@ namespace Brady_s_Conversion_Program {
                 int locationId = -1;
                 int patientId = -1;
                 if (appointment.PatientId > 0) {
-                    var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
+                    var convPatient = convDbContext.Patients.Find(appointment.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
                     }
                     else {
-                        var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) &&
+                        var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) &&
                             (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                         if (ffpmPatient == null) {
                             logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
@@ -868,7 +862,7 @@ namespace Brady_s_Conversion_Program {
                     waitlistId = long.Parse(appointment.WaitingListId);
                 }
                 int type = -1;
-                var typeXref = appointmentTypeXrefs.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
+                var typeXref = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
                 if (typeXref != null) {
                     type = (int)typeXref.AppointmentTypeId;
                 }
@@ -881,6 +875,35 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
+                var ffpmOrig = ffpmDbContext.SchedulingAppointments.FirstOrDefault(p => p.PatientId == patientId && p.ResourceId == resource && p.StartDate == start);
+
+                if (ffpmOrig != null) {
+                    ffpmOrig.BillingLocationId = billingLocId;
+                    ffpmOrig.StartDate = start;
+                    ffpmOrig.EndDate = end;
+                    ffpmOrig.Notes = TruncateString(appointment.Notes, 2000);
+                    ffpmOrig.Duration = duration;
+                    ffpmOrig.DateTimeCreated = created;
+                    ffpmOrig.LocationId = locationId;
+                    ffpmOrig.Confirmed = confirmed;
+                    ffpmOrig.Sequence = sequence;
+                    ffpmOrig.RequestId = requestId;
+                    ffpmOrig.Status = status;
+                    ffpmOrig.CheckInDateTime = minAcceptableDate;
+                    ffpmOrig.TakeBackDateTime = takeback;
+                    ffpmOrig.CheckOutDateTime = checkOut;
+                    ffpmOrig.Description = TruncateString(appointment.Description, 2000);
+                    ffpmOrig.PriorAppointmentId = prior;
+                    ffpmOrig.LinkedAppointmentId = linked;
+                    ffpmOrig.SchedulingCodeId = schedulingCode;
+                    ffpmOrig.SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000);
+                    ffpmOrig.AppointmentTypeId = type;
+                    ffpmOrig.DateTimeUpdated = updated;
+                    
+                    return;
+                }
+
+                
                 var newAppointment = new SchedulingAppointment {
                     PatientId = patientId,
                     ResourceId = resource,
@@ -907,7 +930,7 @@ namespace Brady_s_Conversion_Program {
                     DateTimeUpdated = minAcceptableDate
                 };
                 ffpmDbContext.SchedulingAppointments.Add(newAppointment);
-            }
+                
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
