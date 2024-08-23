@@ -441,6 +441,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var patientInsurance in convDbContext.PatientInsurances) {
                 ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances);
             }
+            ffpmDbContext.DmgPatientInsurances.AddRange(patientInsurances);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
             });
