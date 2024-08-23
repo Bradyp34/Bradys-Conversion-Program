@@ -56,6 +56,7 @@ namespace Brady_s_Conversion_Program {
             return input.Length <= maxLength ? input : input.Substring(0, maxLength);
         }
 
+
         public static readonly DateTime minAcceptableDate = DateTime.Parse("1/2/1900");
         public static readonly DateTime overFlowDate = DateTime.Parse("12/31/2100");
         public static DateTime isValidDate(DateTime date) { // in an attempt to easily regulated unruly dates
@@ -86,6 +87,7 @@ namespace Brady_s_Conversion_Program {
             "M-d-yyyy",
 
             // Date with 12-hour time formats (AM/PM) with numeric months
+            "MM/dd/yyyy hh:mmtt",
             "MM/dd/yyyy hh:mm:ss tt",
             "yyyy/MM/dd hh:mm:ss tt",
             "MM-dd-yyyy hh:mm:ss tt",
@@ -182,10 +184,10 @@ namespace Brady_s_Conversion_Program {
                                 // Calculate total number of entries for progress tracking
                                 totalEntries = //convDbContext.Patients.Count() +
                                                 convDbContext.Addresses.Count() +
-                                                //convDbContext.Appointments.Count() +
+                                                convDbContext.Appointments.Count() +
                                                 //convDbContext.AppointmentTypes.Count() +
                                                 convDbContext.Insurances.Count() +
-                                                convDbContext.Locations.Count() +
+                                                //convDbContext.Locations.Count() +
                                                 convDbContext.Guarantors.Count() +
                                                 convDbContext.PolicyHolders.Count() +
                                                 convDbContext.PatientAlerts.Count() +
@@ -372,147 +374,165 @@ namespace Brady_s_Conversion_Program {
             var schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
 
 
+
+            var newLocations = new List<BillingLocation>();
+            var newAdditionalDetails = new List<DmgPatientAdditionalDetail>();
+            var newEmrPatients = new List<Emrpatient>();
+            var newAppointmentTypes = new List<SchedulingAppointmentType>();
+            var newGuarantors = new List<DmgGuarantor>();
+            var newProviders = new List<DmgProvider>();
+            var newInsuranceCompanies = new List<InsInsuranceCompany>();
+            var newAppointments = new List<SchedulingAppointment>();
+            var newPatientAlerts = new List<DmgPatientAlert>();
+            var newPatientDocuments = new List<ImgPatientDocument>();
+            var newPatientInsurances = new List<DmgPatientInsurance>();
+            var newPatientNotes = new List<DmgPatientRemark>();
+            var newSchedulingAppointmentTypes = new List<SchedulingAppointmentType>();
+            var newPatientRecallLists = new List<SchedulingPatientRecallList>();
+            var newReferringProviders = new List<ReferringProvider>();
+            var newOtherAddresses = new List<DmgOtherAddress>();
+            var newSchedulingCodes = new List<SchedulingCode>();
+
+            /*
             foreach (var location in convDbContext.Locations) {
-                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations);
+                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
             }
-            ffpmDbContext.BillingLocations.AddRange(locations);
+            ffpmDbContext.BillingLocations.AddRange(newLocations);
             ffpmDbContext.SaveChanges();
+            newLocations.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
             });
 
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
-                    raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
+                    raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
             }
-            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(patientAdditionalDetails);
-            eyemdDbContext.Emrpatients.AddRange(emrPatients);
+            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(newAdditionalDetails);
+            eyemdDbContext.Emrpatients.AddRange(newEmrPatients);
             ffpmDbContext.SaveChanges();
             eyemdDbContext.SaveChanges();
+            newAdditionalDetails.Clear();
+            newEmrPatients.Clear();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
             
             foreach (var appointmentType in convDbContext.AppointmentTypes) {
-                ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress, appointmentTypes);
+                ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress, appointmentTypes, newAppointmentTypes);
             }
-            ffpmDbContext.SchedulingAppointmentTypes.AddRange(appointmentTypes);
+            ffpmDbContext.SchedulingAppointmentTypes.AddRange(newAppointmentTypes);
             ffpmDbContext.SaveChanges();
+            newAppointmentTypes.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
-
+            */
             foreach (var appointment in convDbContext.Appointments) {
-                ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
+                ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
             }
-            ffpmDbContext.SchedulingAppointments.AddRange(appointments);
+            ffpmDbContext.SchedulingAppointments.AddRange(newAppointments);
             ffpmDbContext.SaveChanges();
+            newAppointments.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
             
             foreach (var insurance in convDbContext.Insurances) {
-                ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress, insurances);
-            } // done, did not use a local list
+                ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress, insurances, stateXrefs, newInsuranceCompanies);
+            } 
+            ffpmDbContext.InsInsuranceCompanies.AddRange(newInsuranceCompanies);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
-            
-            foreach (var guarantor in convDbContext.Guarantors) {
-                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors);
+
+            foreach (var provider in convDbContext.Providers) {
+                ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders, newProviders);
             }
-            ffpmDbContext.DmgGuarantors.AddRange(guarantors);
+            ffpmDbContext.DmgProviders.AddRange(newProviders);
+            ffpmDbContext.SaveChanges();
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Providers Converted\n";
+            });
+
+            foreach (var guarantor in convDbContext.Guarantors) {
+                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, newGuarantors);
+            }
+            ffpmDbContext.DmgGuarantors.AddRange(newGuarantors);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
             
             foreach (var patientAlert in convDbContext.PatientAlerts) {
-                ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
+                ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
             }
-            ffpmDbContext.DmgPatientAlerts.AddRange(patientAlerts);
+            ffpmDbContext.DmgPatientAlerts.AddRange(newPatientAlerts);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
             
             foreach (var patientDocument in convDbContext.PatientDocuments) {
-                ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments);
+                ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments, newPatientDocuments);
             }
-            ffpmDbContext.ImgPatientDocuments.AddRange(patientDocuments);
+            ffpmDbContext.ImgPatientDocuments.AddRange(newPatientDocuments);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
             
             foreach (var patientInsurance in convDbContext.PatientInsurances) {
-                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances);
+                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances, 
+                    newPatientInsurances);
             }
-            ffpmDbContext.DmgPatientInsurances.AddRange(patientInsurances);
+            ffpmDbContext.DmgPatientInsurances.AddRange(newPatientInsurances);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
             });
            
             foreach (var patientNote in convDbContext.PatientNotes) {
-                ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientNotes);
+                ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientNotes, newPatientNotes);
             }
-            ffpmDbContext.DmgPatientRemarks.AddRange(patientNotes);
+            ffpmDbContext.DmgPatientRemarks.AddRange(newPatientNotes);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
 
-            foreach (var address in convDbContext.Addresses) {
-                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
-                    otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors, suffixXrefs, patientAdditionalDetails, convLocations, locations);
-            }
-            ffpmDbContext.DmgOtherAddresses.AddRange(otherAddresses);
-            ffpmDbContext.SaveChanges();
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Addresses Converted\n";
-            });
-
             foreach (var policyHolder in convDbContext.PolicyHolders) {
-                ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convInsurances, convPatients, ffpmPatients, patientInsurances,
-                    titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
+                ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convInsurances, convPatients, ffpmPatients, 
+                    patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
             }
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PolicyHolders Converted\n";
             });
 
-            foreach (var provider in convDbContext.Providers) {
-                ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders);
-            }
-            ffpmProviders.AddRange(ffpmProviders);
-            ffpmDbContext.SaveChanges();
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Providers Converted\n";
-            });
-
             foreach (var recallType in convDbContext.RecallTypes) {
-                ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress, schedulingAppointmentTypes);
+                ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress, schedulingAppointmentTypes, newSchedulingAppointmentTypes);
             }
-            ffpmDbContext.SchedulingAppointmentTypes.AddRange(schedulingAppointmentTypes);
+            ffpmDbContext.SchedulingAppointmentTypes.AddRange(newSchedulingAppointmentTypes);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
             foreach (var recall in convDbContext.Recalls) {
-                ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
+                ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists, newPatientRecallLists);
             }
-            ffpmDbContext.SchedulingPatientRecallLists.AddRange(patientRecallLists);
+            ffpmDbContext.SchedulingPatientRecallLists.AddRange(newPatientRecallLists);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
 
             foreach (var referral in convDbContext.Referrals) {
-                ConvertReferral(referral, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
+                ConvertReferral(referral, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders, newReferringProviders);
             }
-            ffpmDbContext.ReferringProviders.AddRange(referringProviders);
+            ffpmDbContext.ReferringProviders.AddRange(newReferringProviders);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Referrals Converted\n";
@@ -527,19 +547,30 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var schedCode in convDbContext.SchedCodes) {
-                ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress, schedulingCodes);
+                ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress, schedulingCodes, newSchedulingCodes);
             }
-            ffpmDbContext.SchedulingCodes.AddRange(schedulingCodes);
+            ffpmDbContext.SchedulingCodes.AddRange(newSchedulingCodes);
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "SchedCodes Converted\n";
+            });
+
+            foreach (var address in convDbContext.Addresses) {
+                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
+                    otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors, suffixXrefs, patientAdditionalDetails, convLocations, 
+                    locations);
+            }
+            ffpmDbContext.SaveChanges();
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Addresses Converted\n";
             });
         }
                 
         public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
             ILogger logger, ProgressBar progress, List<DmgPatient> ffpmPatients, List<Emrpatient> emrPatients, List<DmgPatientAdditionalDetail> patientAdditionals, 
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, 
-                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
+                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, List<DmgPatientAdditionalDetail> newAdditionalDetails,
+                        List<Emrpatient> newEmrPatients) {
 
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
@@ -755,6 +786,7 @@ namespace Brady_s_Conversion_Program {
                             DefaultLocationId = newPatient.LocationId
                         };
                         patientAdditionals.Add(newAdditionDetails);
+                        newAdditionalDetails.Add(newAdditionDetails);
                     }
 
                     // Update or create EMRPatient
@@ -767,6 +799,7 @@ namespace Brady_s_Conversion_Program {
                             PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
                         };
                         emrPatients.Add(newEMRPatient);
+                        newEmrPatients.Add(newEMRPatient);
                     }
                 }
             }
@@ -776,7 +809,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
+           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes, List<SchedulingAppointmentType> newAppointmentTypes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -832,6 +865,7 @@ namespace Brady_s_Conversion_Program {
                         Active = isActive,
                         CanSchedule = schedule
                     };
+                    newAppointmentTypes.Add(newAppointmentType);
                     appointmentTypes.Add(newAppointmentType);
                 }
             }
@@ -842,7 +876,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes, 
-                List<SchedulingAppointment> appointments) {
+                List<SchedulingAppointment> appointments, List<SchedulingAppointment> newAppointments) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -985,6 +1019,32 @@ namespace Brady_s_Conversion_Program {
                         updated = isValidDate(tempDateTime);
                     }
                 }
+                if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    updated = null;
+                }
+                if (checkIn == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    checkIn = null;
+                }
+                if (takeback == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    takeback = null;
+                }
+                if (checkOut == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    checkOut = null;
+                }
+                if (start == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    start = minAcceptableDate;
+                }
+                if (end == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    end = minAcceptableDate;
+                }
+                if (created == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    created = minAcceptableDate;
+                }
+                if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                    updated = null;
+                }
+
+                
                                 
                 var newAppointment = new SchedulingAppointment {
                     PatientId = patientId,
@@ -1011,6 +1071,7 @@ namespace Brady_s_Conversion_Program {
                     AppointmentTypeId = type,
                     DateTimeUpdated = minAcceptableDate
                 };
+                newAppointments.Add(newAppointment);
                 appointments.Add(newAppointment);
             }
             catch (Exception ex) {
@@ -1019,7 +1080,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
-            List<InsInsuranceCompany> insuranceCompanies) {
+            List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs, List<InsInsuranceCompany> newInsuranceCompanies) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1032,7 +1093,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 int stateId = -1;
-                var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
+                var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
                 if (stateXref != null) {
                     stateId = stateXref.StateId;
                 }
@@ -1119,7 +1180,7 @@ namespace Brady_s_Conversion_Program {
                     carrierTypeId = 2;
                 }
 
-                var ffpmOrig = ffpmDbContext.InsInsuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
+                var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
 
                 if (ffpmOrig == null) {
                     var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
@@ -1152,6 +1213,7 @@ namespace Brady_s_Conversion_Program {
                         InsCompanyPolicyTypeId = policyTypeId,
                         InsCompanyCarrierTypeId = carrierTypeId
                     };
+                    newInsuranceCompanies.Add(newInsuranceCompany);
                     insuranceCompanies.Add(newInsuranceCompany);
                 }
             }
@@ -1161,7 +1223,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
-            List<BillingLocation> locations) {
+            List<BillingLocation> locations, List<BillingLocation> newLocations) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1319,7 +1381,7 @@ namespace Brady_s_Conversion_Program {
                     treatmentPlaceId = temp;
                 }
 
-                var ffpmOrig = ffpmDbContext.BillingLocations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
+                var ffpmOrig = locations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
 
                 if (ffpmOrig == null) {
                     var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
@@ -1359,6 +1421,7 @@ namespace Brady_s_Conversion_Program {
                         CaculateTaxOnTotalFee = false
                     };
                     locations.Add(newLocation);
+                    newLocations.Add(newLocation);
                 }
             }
             catch (Exception ex) {
@@ -1367,7 +1430,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors) {
+            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgGuarantor> newGuarantors) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1435,7 +1498,7 @@ namespace Brady_s_Conversion_Program {
                 
 
 
-                var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                var ffpmGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
                 if (ffpmGuarantor == null) {
                     var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
@@ -1459,7 +1522,8 @@ namespace Brady_s_Conversion_Program {
                         IsGuarantorExistingPatient = guarantorIsPatient,
                         LastModifiedBy = null
                     };
-                    guarantors.Add(newGuarantor);
+                    newGuarantors.Add(newGuarantor);
+                    guarantors.AddRange(newGuarantors);
                 }
             }
             catch (Exception ex) {
@@ -1608,7 +1672,7 @@ namespace Brady_s_Conversion_Program {
                         }
                         var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
                         if (ffpmGuarantor == null) {
-                            logger.Log($"Conv: FFPM Guarantor not found for guarantor with ID: {address.Id}");
+                            logger.Log($"Conv: FFPM Guarantor not found for address with ID: {address.Id}");
                             return;
                         }
 
@@ -1776,7 +1840,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs, List<DmgPatientAlert> patientAlerts) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs, 
+                List<DmgPatientAlert> patientAlerts, List<DmgPatientAlert> newPatientAlerts) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1862,7 +1927,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient>ffpmPatients, List<ImgPatientDocument> patientDocuments) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient>ffpmPatients, List<ImgPatientDocument> patientDocuments, 
+                List<ImgPatientDocument> newPatientDocuments) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1912,6 +1978,7 @@ namespace Brady_s_Conversion_Program {
                         IsActive = isActive
                     };
                     patientDocuments.Add(newPatientDocument);
+                    newPatientDocuments.Add(newPatientDocument);
                 }
             }
             catch (Exception ex) {
@@ -1921,7 +1988,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
-                List<DmgPatientInsurance> patientInsurances) {
+                List<DmgPatientInsurance> patientInsurances, List<DmgPatientInsurance> newPatientInsurances) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2041,6 +2108,7 @@ namespace Brady_s_Conversion_Program {
                         GroupId = TruncateString(patientInsurance.Group, 50)
                     };
                     patientInsurances.Add(newPatientInsurance);
+                    newPatientInsurances.Add(newPatientInsurance);
                 }
             }
             catch (Exception ex) {
@@ -2049,7 +2117,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientNote(Models.PatientNote patientNote, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes, 
+                List<DmgPatientRemark> newPatientNotes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2118,6 +2187,7 @@ namespace Brady_s_Conversion_Program {
                     IsActive = active
                 };
                 patientNotes.Add(newPatientRemarks);
+                newPatientNotes.Add(newPatientRemarks);
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {ex.Message}");
@@ -2265,7 +2335,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders, List<DmgProvider> newProviders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2511,6 +2581,7 @@ namespace Brady_s_Conversion_Program {
                         AlternateTaxonomy19Id = taxId19,
                         AlternateTaxonomy20Id = taxId20
                     };
+                    newProviders.Add(newPatientProvider);
                     ffpmProviders.Add(newPatientProvider);
                 }
             }
@@ -2521,7 +2592,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations, 
-                List<SchedulingPatientRecallList> patientRecallLists) {
+                List<SchedulingPatientRecallList> patientRecallLists, List<SchedulingPatientRecallList> newPatientRecallLists) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2590,6 +2661,7 @@ namespace Brady_s_Conversion_Program {
                         LocationId = location,
                         NumberOfRecallSent = number
                     };
+                    newPatientRecallLists.Add(newRecallList);
                     patientRecallLists.Add(newRecallList);
                 }
             }
@@ -2599,7 +2671,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<SchedulingAppointmentType> schedulingAppointmentTypes) {
+            List<SchedulingAppointmentType> schedulingAppointmentTypes, List<SchedulingAppointmentType> newSchedulingAppointmentTypes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2641,6 +2713,7 @@ namespace Brady_s_Conversion_Program {
                         PatientRequired = false
                     };
                     schedulingAppointmentTypes.Add(newRecallType);
+                    newSchedulingAppointmentTypes.Add(newRecallType);
                 }
             } catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
@@ -2648,7 +2721,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertReferral(Models.Referral referral, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders) {
+            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders, List<ReferringProvider> newReferringProviders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2903,6 +2976,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.DmgProviders.Add(newProvider); // may slow the program, but this seems like the most sensible way to upload only the new
                                                                     // entries to the database
                     ffpmProviders.Add(newProvider);
+                    ffpmDbContext.SaveChanges();
 
                     // Handling the existing referring provider
                     if (ffpmOrig == null) {
@@ -2914,6 +2988,7 @@ namespace Brady_s_Conversion_Program {
                             RefProviderCode = TruncateString(referral.OldReferralCode, 50),
                             Active = isActive
                         };
+                        newReferringProviders.Add(newReferral1);
                         referringProviders.Add(newReferral1);
                     }
                 }
@@ -2924,7 +2999,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertSchedCode(Models.SchedCode schedtype, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<SchedulingCode> schedulingCodes) {
+            List<SchedulingCode> schedulingCodes, List<SchedulingCode> newSchedulingCodes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2964,6 +3039,7 @@ namespace Brady_s_Conversion_Program {
                         IsDefaultCode = isDefault,
                         IsNoShow = noShow
                     };
+                    newSchedulingCodes.Add(newSchedulingCode);
                     schedulingCodes.Add(newSchedulingCode);
                 }
             } catch (Exception ex) {
