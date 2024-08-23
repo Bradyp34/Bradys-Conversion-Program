@@ -363,6 +363,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var location in convDbContext.Locations) {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations);
             }
+            ffpmDbContext.BillingLocations.AddRange(locations);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
             });
@@ -399,7 +401,7 @@ namespace Brady_s_Conversion_Program {
             
             foreach (var insurance in convDbContext.Insurances) {
                 ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress);
-            }
+            } // done, did not use a local list
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
@@ -407,6 +409,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var guarantor in convDbContext.Guarantors) {
                 ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors);
             }
+            ffpmDbContext.DmgGuarantors.AddRange(guarantors);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
@@ -1133,7 +1137,7 @@ namespace Brady_s_Conversion_Program {
                     InsCompanyPolicyTypeId = policyTypeId,
                     InsCompanyCarrierTypeId = carrierTypeId
                 };
-
+                // there are so few insurance companies that I think this method is better suited
                 ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
                 ffpmDbContext.SaveChanges();
             }
@@ -1340,9 +1344,7 @@ namespace Brady_s_Conversion_Program {
                         IsDefaultLocation = true,
                         CaculateTaxOnTotalFee = false
                     };
-                    ffpmDbContext.BillingLocations.Add(newLocation);
                     locations.Add(newLocation);
-                    ffpmDbContext.SaveChanges();
                 }
             }
             catch (Exception ex) {
@@ -1443,9 +1445,7 @@ namespace Brady_s_Conversion_Program {
                         IsGuarantorExistingPatient = guarantorIsPatient,
                         LastModifiedBy = null
                     };
-                    ffpmDbContext.DmgGuarantors.Add(newGuarantor);
                     guarantors.Add(newGuarantor);
-                    ffpmDbContext.SaveChanges();
                 }
             }
             catch (Exception ex) {
