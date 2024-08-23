@@ -456,7 +456,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
-*/
+
             foreach (var guarantor in convDbContext.Guarantors) {
                 ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, newGuarantors);
             }
@@ -507,10 +507,10 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-
+            */
             foreach (var policyHolder in convDbContext.PolicyHolders) {
                 ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convInsurances, convPatients, ffpmPatients, 
-                    patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
+                    patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers, insurances);
             }
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -2207,8 +2207,8 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPolicyHolder(Models.PolicyHolder policyHolder, FoxfireConvContext convDbContext, FfpmContext ffpmcontext,
             ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Insurance> convInsurances, List<Models.Patient> convPatients, 
-                List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, List<MntRelationship> relationshipXrefs,
-                    List<DmgSubscriber> subscribers) {
+                List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, 
+                    List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers, List<InsInsuranceCompany> insurances) {
                 progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2227,14 +2227,14 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Policy holder ID is null for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
-                var convInsurance = convInsurances.FirstOrDefault(ci => ci.Id == convPatientInsurance.Id);
+                var convInsurance = convInsurances.FirstOrDefault(ci => ci.InsuranceCompanyCode == convPatientInsurance.InsuranceCompanyCode);
                 if (convInsurance == null) {
-                    logger.Log($"Conv: Conv Insurance not found for policy holder with ID: {policyHolder.Id}");
+                    logger.Log($"Conv: Conv Insurance company not found for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
-                var ffpmInsuranceCompany = ffpmcontext.InsInsuranceCompanies.FirstOrDefault(i => i.InsCompanyCode == convInsurance.InsuranceCompanyCode);
+                var ffpmInsuranceCompany = insurances.FirstOrDefault(i => i.InsCompanyCode == convInsurance.InsuranceCompanyCode);
                 if (ffpmInsuranceCompany == null) {
-                    logger.Log($"Conv: FFPM Insurance not found for policy holder with ID: {policyHolder.Id}");
+                    logger.Log($"Conv: FFPM Insurance company not found for policy holder with ID: {policyHolder.Id}");
                     return;
                 }
                 var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
