@@ -74,7 +74,7 @@ namespace Brady_s_Conversion_Program
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
-                ResultsBox.Text += "\n" + result;
+                ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
             progressBar1.Invoke((MethodInvoker)delegate { 
                 progressBar1.Hide();

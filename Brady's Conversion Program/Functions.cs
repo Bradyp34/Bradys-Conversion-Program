@@ -367,6 +367,8 @@ namespace Brady_s_Conversion_Program {
             var convPatientInsurances = convDbContext.PatientInsurances.ToList();
             var convInsurances = convDbContext.Insurances.ToList();
             var subscribers = ffpmDbContext.DmgSubscribers.ToList();
+            var patientRecallLists = ffpmDbContext.SchedulingPatientRecallLists.ToList();
+            var schedulingAppointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
 
 
             foreach (var location in convDbContext.Locations) {
@@ -489,15 +491,19 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var recallType in convDbContext.RecallTypes) {
-                ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress);
+                ConvertRecallType(recallType, convDbContext, ffpmDbContext, logger, progress, schedulingAppointmentTypes);
             }
+            ffpmDbContext.SchedulingAppointmentTypes.AddRange(schedulingAppointmentTypes);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
             foreach (var recall in convDbContext.Recalls) {
-                ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress);
+                ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
             }
+            ffpmDbContext.SchedulingPatientRecallLists.AddRange(patientRecallLists);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
@@ -2507,17 +2513,19 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations, 
+                List<SchedulingPatientRecallList> patientRecallLists) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
-                var convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == recall.PatientId);
+                var convPatient = convPatients.FirstOrDefault(p => p.Id == recall.PatientId);
                 if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
                     return;
                 }
-                var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
+                var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
@@ -2535,9 +2543,9 @@ namespace Brady_s_Conversion_Program {
                     resource = temp;
                 }
                 int billingLocation = -1;
-                var convLocation = convDbContext.Locations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
+                var convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
                 if (convLocation != null) {
-                    var ffpmLocation = ffpmDbContext.BillingLocations.FirstOrDefault(l => l.Name == convLocation.LocationName);
+                    var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.Name == convLocation.LocationName);
                     if (ffpmLocation != null) {
                         billingLocation = ffpmLocation.LocationId;
                     }
@@ -2562,38 +2570,30 @@ namespace Brady_s_Conversion_Program {
                     note = recall.Notes;
                 }
 
-                var ffpmOrig = ffpmDbContext.SchedulingPatientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType && p.RecallListDate == recallDate);
+                var ffpmOrig = patientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType && p.RecallListDate == recallDate);
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.ResourceId = resource;
-                    ffpmOrig.BillingLocationId = billingLocation;
-                    ffpmOrig.Active = isActive;
-                    ffpmOrig.LocationId = location;
-                    ffpmOrig.NumberOfRecallSent = number;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                if (ffpmOrig == null) {
+                    var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
+                        PatientId = ffpmPatient.PatientId,
+                        AppointmentTypeId = appointmentType,
+                        Notes = note,
+                        ResourceId = resource,
+                        BillingLocationId = billingLocation,
+                        RecallListDate = recallDate,
+                        Active = isActive,
+                        LocationId = location,
+                        NumberOfRecallSent = number
+                    };
+                    patientRecallLists.Add(newRecallList);
                 }
-
-                var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
-                    PatientId = ffpmPatient.PatientId,
-                    AppointmentTypeId = appointmentType,
-                    Notes = note, 
-                    ResourceId = resource,
-                    BillingLocationId = billingLocation,
-                    RecallListDate = recallDate,
-                    Active = isActive,
-                    LocationId = location,
-                    NumberOfRecallSent = number
-                };
-                ffpmDbContext.SchedulingPatientRecallLists.Add(newRecallList);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
             }
         }
 
-        public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertRecallType(Models.RecallType recallType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<SchedulingAppointmentType> schedulingAppointmentTypes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2619,32 +2619,23 @@ namespace Brady_s_Conversion_Program {
                     note = recallType.Notes;
                 }
 
-                var ffpmOrig = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(p => p.Code == code);
+                var ffpmOrig = schedulingAppointmentTypes.FirstOrDefault(p => p.Code == code);
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.Description = TruncateString(description, 1000);
-                    ffpmOrig.DefaultDuration = defaultDuration;
-                    ffpmOrig.Active = isActive;
-                    ffpmOrig.Notes = TruncateString(note, 5000); // Assuming large text but truncating as a safeguard
-                    ffpmDbContext.SaveChanges();
-                    return;
+                if (ffpmOrig == null) {
+                    var newRecallType = new Brady_s_Conversion_Program.ModelsA.SchedulingAppointmentType {
+                        IsRecallType = true,
+                        IsAppointmentType = false,
+                        IsExamType = false,
+                        Code = TruncateString(code, 200),  // Truncating to meet VARCHAR(200) limit
+                        Description = TruncateString(description, 1000),  // Truncating to meet VARCHAR(1000) limit
+                        DefaultDuration = defaultDuration,
+                        Active = isActive,
+                        Notes = TruncateString(note, 5000),  // Assuming large text but truncating as a safeguard
+                        LocationId = 0,
+                        PatientRequired = false
+                    };
+                    schedulingAppointmentTypes.Add(newRecallType);
                 }
-
-                var newRecallType = new Brady_s_Conversion_Program.ModelsA.SchedulingAppointmentType {
-                    IsRecallType = true,
-                    IsAppointmentType = false,
-                    IsExamType = false,
-                    Code = TruncateString(code, 200),  // Truncating to meet VARCHAR(200) limit
-                    Description = TruncateString(description, 1000),  // Truncating to meet VARCHAR(1000) limit
-                    DefaultDuration = defaultDuration,
-                    Active = isActive,
-                    Notes = TruncateString(note, 5000),  // Assuming large text but truncating as a safeguard
-                    LocationId = 0,
-                    PatientRequired = false
-                };
-                ffpmDbContext.SchedulingAppointmentTypes.Add(newRecallType);
-
-                ffpmDbContext.SaveChanges();
             } catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
             }
