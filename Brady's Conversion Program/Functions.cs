@@ -345,11 +345,36 @@ namespace Brady_s_Conversion_Program {
             var appointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
             var appointments = ffpmDbContext.SchedulingAppointments.ToList();
             var locations = ffpmDbContext.BillingLocations.ToList();
+            var guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            var insurances = ffpmDbContext.InsInsuranceCompanies.ToList();
+            var relationshipXrefs = ffpmDbContext.MntRelationships.ToList();
+            var genderXrefs = ffpmDbContext.MntGenders.ToList();
+            var countryXrefs = ffpmDbContext.MntCountries.ToList();
+            var addressTypes = ffpmDbContext.MntAddressTypes.ToList();
+            var otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
+            var referringProviders = ffpmDbContext.ReferringProviders.ToList();
+            var ffpmPatientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
+            var convProviders = convDbContext.Providers.ToList();
+            var ffpmProviders = ffpmDbContext.DmgProviders.ToList();
+            var convGuarantors = convDbContext.Guarantors.ToList();
+            var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
+
+
+            foreach (var location in convDbContext.Locations) {
+                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations);
+            }
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Locations Converted\n";
+            });
 
             foreach (var patient in convDbContext.Patients) { // convert each patient in the table
                 PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
                     raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
             }
+            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(patientAdditionalDetails);
+            eyemdDbContext.Emrpatients.AddRange(emrPatients);
+            ffpmDbContext.SaveChanges();
+            eyemdDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
@@ -357,6 +382,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var appointmentType in convDbContext.AppointmentTypes) {
                 ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress, appointmentTypes);
             }
+            ffpmDbContext.SchedulingAppointmentTypes.AddRange(appointmentTypes);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
@@ -375,15 +402,8 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Insurances Converted\n";
             });
             
-            foreach (var location in convDbContext.Locations) {
-                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations);
-            }
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Locations Converted\n";
-            });
-            
             foreach (var guarantor in convDbContext.Guarantors) {
-                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress);
+                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
@@ -416,9 +436,10 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-            
+
             foreach (var address in convDbContext.Addresses) {
-                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress);
+                ConvertAddress(address, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
+                    otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Addresses Converted\n";
@@ -669,6 +690,7 @@ namespace Brady_s_Conversion_Program {
                     };
 
                     ffpmDbContext.DmgPatients.Add(newPatient);
+                    ffpmDbContext.SaveChanges();
                     ffpmPatients.Add(newPatient);
 
 
@@ -691,7 +713,7 @@ namespace Brady_s_Conversion_Program {
                             PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
                             DefaultLocationId = newPatient.LocationId
                         };
-                        ffpmDbContext.DmgPatientAdditionalDetails.Add(newAdditionDetails);
+                        patientAdditionals.Add(newAdditionDetails);
                     }
 
                     // Update or create EMRPatient
@@ -703,11 +725,8 @@ namespace Brady_s_Conversion_Program {
                             PatientNameLast = TruncateString(newPatient.LastName, 50),
                             PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
                         };
-                        eyeMdDbContext.Emrpatients.Add(newEMRPatient);
                         emrPatients.Add(newEMRPatient);
-                        eyeMdDbContext.SaveChanges();
                     }
-                    ffpmDbContext.SaveChanges();
                 }
             }
             catch (Exception ex) {
@@ -772,9 +791,7 @@ namespace Brady_s_Conversion_Program {
                         Active = isActive,
                         CanSchedule = schedule
                     };
-                    ffpmDbContext.SchedulingAppointmentTypes.Add(newAppointmentType);
                     appointmentTypes.Add(newAppointmentType);
-                    ffpmDbContext.SaveChanges();
                 }
             }
             catch (Exception ex) {
@@ -1125,7 +1142,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, List<BillingLocation> locations) {
+        public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+            List<BillingLocation> locations) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1332,7 +1350,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1363,7 +1382,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 short? relationID = null;
-                var relationXref = ffpmDbContext.MntRelationships.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
+                var relationXref = relationshipXrefs.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
                 if (relationXref != null) {
                     relationID = relationXref.RelationshipId;
                 }
@@ -1372,7 +1391,7 @@ namespace Brady_s_Conversion_Program {
                 short? suffixID = null;
                 // no suffixID in incoming tables
                 short? genderID = null;
-                var genderXref = ffpmDbContext.MntGenders.FirstOrDefault(g => g.Gender == guarantor.Sex);
+                var genderXref = genderXrefs.FirstOrDefault(g => g.Gender == guarantor.Sex);
                 if (genderXref != null) {
                     genderID = genderXref.GenderId;
                 }
@@ -1402,69 +1421,60 @@ namespace Brady_s_Conversion_Program {
 
                 var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
-                if (ffpmGuarantor != null) {
-                    ffpmGuarantor.FirstName = TruncateString(guarantor.FirstName, 50);
-                    ffpmGuarantor.LastName = TruncateString(guarantor.LastName, 50);
-                    ffpmGuarantor.MiddleName = TruncateString(guarantor.MiddleName, 50);
-                    ffpmGuarantor.Ssn = TruncateString(ssn, 15);
-                    ffpmGuarantor.Dob = dob;
-                    ffpmGuarantor.RelationId = relationID;
-                    ffpmGuarantor.TitleId = titleID;
-                    ffpmGuarantor.SuffixId = suffixID;
-                    ffpmGuarantor.IsGuarantorExistingPatient = guarantorIsPatient;
-                    ffpmGuarantor.GuarantorExistingPatientId = guarantorIsPatientID;
+                if (ffpmGuarantor == null) {
+                    var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
+                        PatientId = ffpmPatient.PatientId,
+                        FirstName = TruncateString(guarantor.FirstName, 50),
+                        LastName = TruncateString(guarantor.LastName, 50),
+                        MiddleName = TruncateString(guarantor.MiddleName, 50),
+                        Ssn = TruncateString(ssn, 15),
+                        Dob = dob,
+                        RelationId = relationID,
+                        TitleId = titleID,
+                        SuffixId = suffixID,
+                        GenderId = genderID,
+                        IsActive = isActive,
+                        EmploymentStatusId = employmentStatusID,
+                        AddedDate = addedDate,
+                        RemovedDate = removedDate,
+                        LastModifiedDate = lastModified,
+                        GuarantorExistingPatientId = guarantorIsPatientID,
+                        AddressId = null,
+                        IsGuarantorExistingPatient = guarantorIsPatient,
+                        LastModifiedBy = null
+                    };
+                    ffpmDbContext.DmgGuarantors.Add(newGuarantor);
+                    guarantors.Add(newGuarantor);
+                    ffpmDbContext.SaveChanges();
                 }
-
-                var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
-                    PatientId = ffpmPatient.PatientId,
-                    FirstName = TruncateString(guarantor.FirstName, 50),
-                    LastName = TruncateString(guarantor.LastName, 50),
-                    MiddleName = TruncateString(guarantor.MiddleName, 50),
-                    Ssn = TruncateString(ssn, 15),
-                    Dob = dob,
-                    RelationId = relationID,
-                    TitleId = titleID,
-                    SuffixId = suffixID,
-                    GenderId = genderID,
-                    IsActive = isActive,
-                    EmploymentStatusId = employmentStatusID,
-                    AddedDate = addedDate,
-                    RemovedDate = removedDate,
-                    LastModifiedDate = lastModified,
-                    GuarantorExistingPatientId = guarantorIsPatientID,
-                    AddressId = null,
-                    IsGuarantorExistingPatient = guarantorIsPatient,
-                    LastModifiedBy = null
-                };
-                ffpmDbContext.DmgGuarantors.Add(newGuarantor);
-
-                ffpmDbContext.SaveChanges();
-
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
             }
         }
 
-        public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
+                List<DmgPatientAddress> ffpmPatientAddresses, List<DmgOtherAddress> otherAddresses, List<ReferringProvider> referringProviders, List<Provider> convProviders,
+                    List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> ffpmGuarantors) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
                 short? addressType = null;
-                var addressTypeXref = ffpmDbContext.MntAddressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive);
+                var addressTypeXref = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive);
                 if (addressTypeXref != null) {
                     addressType = addressTypeXref.AddressTypeId;
                 }
 
                 short? state = null;
-                var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == address.State);
+                var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == address.State);
                 if (stateXref != null) {
                     state = stateXref.StateId;
                 }
 
                 short? country = null;
-                var countryXref = ffpmDbContext.MntCountries.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA");
+                var countryXref = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA");
                 if (countryXref != null) {
                     country = countryXref.CountryId;
                 }
@@ -1486,8 +1496,7 @@ namespace Brady_s_Conversion_Program {
                 switch (primaryFile.ToLower()) {
                     case "pat":
                     case "":
-                        var ffpmPatients = ffpmDbContext.DmgPatients;
-                        var ConvPatient = convDbContext.Patients.Find(address.Id);
+                        var ConvPatient = convPatients.FirstOrDefault(p => p.Id == address.Id);
                         if (ConvPatient == null) {
                             logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                             return;
@@ -1544,90 +1553,89 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
 
-                        var ffpmOrig = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId &&
+                        var ffpmOrig = ffpmPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId &&
                                 p.IsPrimary == true)); // new address will be alternate if found
 
-                        if (ffpmOrig != null) {
-                            logger.Log($"Conv: Conv duplicate primary address for patient with FFPM ID: {ffpmPatient.PatientId}\nAddressIDs: {address.Id}, {ffpmOrig.PatientId}");
-                            isPrimary = false;
-                            isAlternate = true;
+                        if (ffpmOrig == null) {
+                            var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
+                                PatientId = ffpmPatient.PatientId,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                Zip = TruncateString(zipCode, 10),
+                                Email = TruncateString(ConvPatient.Email, 50),
+                                Notes = TruncateString(address.Note, 1000),
+                                IsPrimary = isPrimary,
+                                IsActive = isActive,
+                                IsPreferred = isPreferred,
+                                IsEmergencyContactAddress = isEmergency,
+                                IsAlternateAddress = isAlternate,
+                                AddressType = addressType
+                            };
+                            ffpmDbContext.DmgPatientAddresses.Add(newAddress);
+
+                            ffpmPatient.AddressId = newAddress.PatientAddressId;
+
+                            
                         }
-
-
-                        var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
-                            PatientId = ffpmPatient.PatientId,
-                            Address1 = TruncateString(address.Address1, 50),
-                            Address2 = TruncateString(address.Address2, 50),
-                            City = TruncateString(address.City, 50),
-                            StateId = state,
-                            Zip = TruncateString(zipCode, 10),
-                            Email = TruncateString(ConvPatient.Email, 50),
-                            Notes = TruncateString(address.Note, 1000),
-                            IsPrimary = isPrimary,
-                            IsActive = isActive,
-                            IsPreferred = isPreferred,
-                            IsEmergencyContactAddress = isEmergency,
-                            IsAlternateAddress = isAlternate,
-                            AddressType = addressType
-                        };
-                        ffpmDbContext.DmgPatientAddresses.Add(newAddress);
-
-                        ffpmDbContext.SaveChanges();
-
-                        ffpmPatient.AddressId = newAddress.PatientAddressId;
-
-                        ffpmDbContext.SaveChanges();
                         break;
                     case "guar":
                     case "guarantor":
-                        var convGuarantor = convDbContext.Guarantors.Find(address.Id);
+                        var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == address.Id);
                         if (convGuarantor == null) {
                             logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
                             return;
                         }
-                        var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(p => p.FirstName == convGuarantor.FirstName && p.LastName == convGuarantor.LastName
-                            && p.MiddleName == convGuarantor.MiddleName);
-
-                        var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
-                            OwnerId = address.Id,
-                            Address1 = TruncateString(address.Address1, 50),
-                            Address2 = TruncateString(address.Address2, 50),
-                            City = TruncateString(address.City, 50),
-                            CountryId = country,
-                            StateId = state,
-                            Zip = TruncateString(zipCode, 10),
-                            IsActive = isActive,
-                            AddressType = addressType,
-                            OwnerType = 0
-                        };
-                        ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress);
-                        ffpmDbContext.SaveChanges();
-
-                        if (ffpmGuarantor != null) {
-                            ffpmGuarantor.AddressId = newOtherAddress.AddressId;
-                            ffpmDbContext.SaveChanges();
+                        var convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
+                        if (convPatient == null) {
+                            logger.Log($"Conv: Conv Patient not found for guarantor with ID: {address.Id}");
+                            return;
+                        }
+                        var ffpmPatient2 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                        if (ffpmPatient2 == null) {
+                            logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
+                            return;
+                        }
+                        var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
+                        if (ffpmGuarantor == null) {
+                            logger.Log($"Conv: FFPM Guarantor not found for guarantor with ID: {address.Id}");
                             return;
                         }
 
-                        var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
-                            FirstName = convGuarantor.FirstName,
-                            LastName = convGuarantor.LastName,
-                            MiddleName = convGuarantor.MiddleName,
-                            AddressId = newOtherAddress.AddressId
-                        };
-                        ffpmDbContext.DmgGuarantors.Add(newGuarantor);
+                        var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId);
+                        if (otherAddress != null) {
+                            logger.Log($"Conv: Conv duplicate guarantor address with ID: {address.Id}");
+                            return;
+                        }
 
-                        ffpmDbContext.SaveChanges();
+                        if (otherAddress == null) {
+                            var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = address.Id,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                CountryId = country,
+                                StateId = state,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 0
+                            };
+                            ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress);
+                            otherAddresses.Add(newOtherAddress);
+                            ffpmGuarantor.AddressId = newOtherAddress.AddressId;
+                        }
                         break;
                     case "loc":
-                        var billingLocation = ffpmDbContext.BillingLocations.FirstOrDefault(l => l.LocationId == address.Id);
-                        if (billingLocation != null) {
-                            logger.Log($"Conv: Conv duplicate location for address with ID: {address.Id}");
+                        var billingLocation = convDbContext.Locations.FirstOrDefault(l => l.OldLocationId == address.Id.ToString());
+                        if (billingLocation == null) {
+                            logger.Log($"Conv: Conv no billing location for location for address with ID: {address.Id}");
                             return;
                         }
-                        var convLocation = convDbContext.Locations.Find(address.Id);
-                        if (convLocation == null) {
-                            logger.Log($"Conv: Conv Location not found for address with ID: {address.Id}");
+                        var ffpmLocation = ffpmDbContext.BillingLocations.FirstOrDefault(l => l.Name == billingLocation.LocationName);
+                        if (ffpmLocation == null) {
+                            logger.Log($"Conv: Conv no FFPM billing location for location for address with ID: {address.Id}");
                             return;
                         }
 
@@ -1645,31 +1653,23 @@ namespace Brady_s_Conversion_Program {
                             OwnerType = 1
                         };
                         ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
-
-
-                        if (billingLocation == null) {
-                            var newBillingLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
-                                AddressId = newDmgOtherAddress.AddressId,
-                                Name = TruncateString(convLocation.LocationName, 50)
-                            };
-                            ffpmDbContext.BillingLocations.Add(newBillingLocation);
-
-                            newDmgOtherAddress.OwnerId = newBillingLocation.LocationId;
-
-                            ffpmDbContext.SaveChanges();
-                        }
+                        otherAddresses.Add(newDmgOtherAddress);
+                        ffpmLocation.AddressId = newDmgOtherAddress.AddressId;
 
                         break;
                     case "prov":
-                        var convProvider = convDbContext.Providers.Find(address.Id);
+                        var convProvider = convProviders.FirstOrDefault(cp => cp.Id == address.Id);
 
                         if (convProvider == null) {
                             logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
                             return;
                         }
 
-                        var ffpmProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.FirstName == convProvider.FirstName && p.LastName == convProvider.LastName
-                                                        && p.MiddleName == convProvider.MiddleName);
+                        var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode);
+                        if (ffpmProvider == null) {
+                            logger.Log($"Conv: FFPM Provider not found for address with ID: {address.Id}");
+                            return;
+                        }
 
                         var newDmgOtherAddress2 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
                             OwnerId = address.Id,
@@ -1684,24 +1684,10 @@ namespace Brady_s_Conversion_Program {
                             OwnerType = 1
                         };
                         ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress2);
+                        otherAddresses.Add(newDmgOtherAddress2);
 
-                        if (ffpmProvider != null) {
-                            ffpmProvider.ProviderAddressId = newDmgOtherAddress2.AddressId;
-                            return;
-                        }
-
-                        var newProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
-                            FirstName = convProvider.FirstName,
-                            LastName = convProvider.LastName,
-                            MiddleName = convProvider.MiddleName,
-                            ProviderCode = TruncateString(convProvider.OldProviderCode, 10),
-                            ProviderAddressId = newDmgOtherAddress2.AddressId
-                        };
-                        ffpmDbContext.DmgProviders.Add(newProvider);
-
-                        newDmgOtherAddress2.OwnerId = newProvider.ProviderId;
-
-                        ffpmDbContext.SaveChanges();
+                        ffpmProvider.ProviderAddressId = newDmgOtherAddress2.AddressId;
+                        newDmgOtherAddress2.OwnerId = ffpmProvider.ProviderId;
 
                         break;
                     case "ref":
@@ -1711,7 +1697,7 @@ namespace Brady_s_Conversion_Program {
                             return;
                         }
 
-                        var ffpmReferral = ffpmDbContext.ReferringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
+                        var ffpmReferral = referringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
                                                         && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
 
                         var newDmgOtherAddress3 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1727,23 +1713,22 @@ namespace Brady_s_Conversion_Program {
                             OwnerType = 1
                         };
                         ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress3);
-
-                        ffpmDbContext.SaveChanges();
+                        otherAddresses.Add(newDmgOtherAddress3);
 
                         break;
                     case "emp":
-                        var convPatient = convDbContext.Patients.Find(address.Id);
-                        if (convPatient == null) {
+                        var localConvPatient = convDbContext.Patients.Find(address.Id);
+                        if (localConvPatient == null) {
                             logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                             return;
                         }
-                        var ffpmPatient2 = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
-                                            p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName);
-                        if (ffpmPatient2 == null) {
+                        var ffpmPatient3 = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == localConvPatient.OldPatientAccountNumber) ||
+                                            p.FirstName == localConvPatient.FirstName && p.LastName == localConvPatient.LastName && p.MiddleName == localConvPatient.MiddleName);
+                        if (ffpmPatient3 == null) {
                             logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
                             return;
                         }
-                        var ffpmPatientAdditional2 = ffpmDbContext.DmgPatientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
+                        var ffpmPatientAdditional2 = ffpmDbContext.DmgPatientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient3.PatientId);
                         if (ffpmPatientAdditional2 == null) {
                             logger.Log($"Conv: Conv Patient additional not found for address with ID: {address.Id}");
                             return;
@@ -1764,8 +1749,6 @@ namespace Brady_s_Conversion_Program {
                         ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress4);
 
                         ffpmPatientAdditional2.EmployerAddressId = newOtherAddress4.AddressId;
-
-                        ffpmDbContext.SaveChanges();
 
                         break;
                     case "pol": // Policy Holders / patient insurances
