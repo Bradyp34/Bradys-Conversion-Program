@@ -1534,6 +1534,7 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedBy = null
                     };
                     newGuarantors.Add(newGuarantor);
+                    guarantors.Add(newGuarantor);
                 }
             }
             catch (Exception ex) {
