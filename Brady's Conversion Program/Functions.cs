@@ -443,6 +443,7 @@ namespace Brady_s_Conversion_Program {
             } 
             ffpmDbContext.InsInsuranceCompanies.AddRange(newInsuranceCompanies);
             ffpmDbContext.SaveChanges();
+            newInsuranceCompanies.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
@@ -452,6 +453,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgProviders.AddRange(newProviders);
             ffpmDbContext.SaveChanges();
+            newProviders.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
@@ -461,6 +463,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgGuarantors.AddRange(newGuarantors);
             ffpmDbContext.SaveChanges();
+            newGuarantors.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
@@ -470,6 +473,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientAlerts.AddRange(newPatientAlerts);
             ffpmDbContext.SaveChanges();
+            newPatientAlerts.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
@@ -479,6 +483,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.ImgPatientDocuments.AddRange(newPatientDocuments);
             ffpmDbContext.SaveChanges();
+            newPatientDocuments.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
@@ -489,6 +494,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientInsurances.AddRange(newPatientInsurances);
             ffpmDbContext.SaveChanges();
+            newPatientInsurances.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
             });
@@ -498,6 +504,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientRemarks.AddRange(newPatientNotes);
             ffpmDbContext.SaveChanges();
+            newPatientNotes.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
@@ -516,6 +523,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingAppointmentTypes.AddRange(newSchedulingAppointmentTypes);
             ffpmDbContext.SaveChanges();
+            newSchedulingAppointmentTypes.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
@@ -525,6 +533,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingPatientRecallLists.AddRange(newPatientRecallLists);
             ffpmDbContext.SaveChanges();
+            newPatientRecallLists.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
@@ -534,6 +543,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.ReferringProviders.AddRange(newReferringProviders);
             ffpmDbContext.SaveChanges();
+            newReferringProviders.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Referrals Converted\n";
             });
@@ -551,6 +561,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingCodes.AddRange(newSchedulingCodes);
             ffpmDbContext.SaveChanges();
+            newSchedulingCodes.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
