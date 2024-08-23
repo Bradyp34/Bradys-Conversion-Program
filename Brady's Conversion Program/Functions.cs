@@ -363,6 +363,7 @@ namespace Brady_s_Conversion_Program {
             var patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
             var patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
             var patientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
+            var patientNotes = ffpmDbContext.DmgPatientNotes.ToList();
 
 
             foreach (var location in convDbContext.Locations) {
@@ -448,8 +449,10 @@ namespace Brady_s_Conversion_Program {
             });
            
             foreach (var patientNote in convDbContext.PatientNotes) {
-                ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress);
+                ConvertPatientNote(patientNote, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientNotes);
             }
+            ffpmDbContext.DmgPatientNotes.AddRange(patientNotes);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
@@ -2023,7 +2026,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientNote(Models.PatientNote patientNote, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -2040,12 +2043,12 @@ namespace Brady_s_Conversion_Program {
                         return;
                     }
                 }
-                var convPatient = convDbContext.Patients.Find(patientId);
+                var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
                 if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                 (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
@@ -2091,8 +2094,7 @@ namespace Brady_s_Conversion_Program {
                     LastUpdated = lastUpdated,
                     IsActive = active
                 };
-                ffpmDbContext.DmgPatientRemarks.Add(newPatientRemarks);
-                ffpmDbContext.SaveChanges();
+                patientNotes.Add(newPatientRemarks);
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {ex.Message}");
