@@ -391,6 +391,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var appointment in convDbContext.Appointments) {
                 ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
             }
+            ffpmDbContext.SchedulingAppointments.AddRange(appointments);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
@@ -970,9 +972,7 @@ namespace Brady_s_Conversion_Program {
                     AppointmentTypeId = type,
                     DateTimeUpdated = minAcceptableDate
                 };
-                ffpmDbContext.SchedulingAppointments.Add(newAppointment);
                 appointments.Add(newAppointment);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
