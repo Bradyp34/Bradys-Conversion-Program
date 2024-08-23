@@ -182,12 +182,12 @@ namespace Brady_s_Conversion_Program {
                                 eyeMDDbContext.Database.OpenConnection();
 
                                 // Calculate total number of entries for progress tracking
-                                totalEntries = //convDbContext.Patients.Count() +
-                                               //convDbContext.Locations.Count() +
-                                               //convDbContext.Appointments.Count() +
-                                               //convDbContext.AppointmentTypes.Count() +
-                                               //convDbContext.Insurances.Count() +
-                                               //convDbContext.Providers.Count() +
+                                totalEntries =  convDbContext.Patients.Count() +
+                                                convDbContext.Locations.Count() +
+                                                convDbContext.Appointments.Count() +
+                                                convDbContext.AppointmentTypes.Count() +
+                                                convDbContext.Insurances.Count() +
+                                                convDbContext.Providers.Count() +
                                                 convDbContext.Guarantors.Count() +
                                                 convDbContext.PolicyHolders.Count() +
                                                 convDbContext.PatientAlerts.Count() +
@@ -394,7 +394,7 @@ namespace Brady_s_Conversion_Program {
             var newSchedulingCodes = new List<SchedulingCode>();
 
             
-            /*foreach (var location in convDbContext.Locations) {
+            foreach (var location in convDbContext.Locations) {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
             }
             ffpmDbContext.BillingLocations.AddRange(newLocations);
@@ -507,7 +507,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-            */
+            
             foreach (var policyHolder in convDbContext.PolicyHolders) {
                 ConvertPolicyHolder(policyHolder, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convInsurances, convPatients, ffpmPatients, 
                     patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers, insurances);
