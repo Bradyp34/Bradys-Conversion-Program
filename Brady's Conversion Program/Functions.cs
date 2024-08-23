@@ -3125,11 +3125,15 @@ namespace Brady_s_Conversion_Program {
             var eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
             var visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
             var medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
+            var allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
+            var contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
 
             var newVisits = new List<Emrvisit>();
             var newVisitOrders = new List<EmrvisitOrder>();
             var newVisitDoctors = new List<EmrvisitDoctor>();
             var newMedicalHistories = new List<EmrvisitMedicalHistory>();
+            var newAllergies = new List<EmrvisitAllergy>();
+            var newContactLenses = new List<EmrvisitContactLense>();
 
 
             /*// not even using this
@@ -3176,28 +3180,35 @@ namespace Brady_s_Conversion_Program {
             }
             eyeMDDbContext.AddRange(newMedicalHistories);
             eyeMDDbContext.SaveChanges();
-            eyeMDDbContext.SaveChanges();
+            newMedicalHistories.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
             foreach (Allergy allergy in eHRDbContext.Allergies) {
-                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress);
+                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies, newAllergies);
             }
+            eyeMDDbContext.AddRange(newAllergies);
+            eyeMDDbContext.SaveChanges();
+            newAllergies.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
             });
 
+            /*// only for in in case we need it, we shouldnt
             foreach (var appointments in eHRDbContext.Appointments) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
-            });
+            });*/
 
             foreach (var contactLens in eHRDbContext.ContactLens) {
-                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress);
+                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses, newContactLenses);
             }
+            eyeMDDbContext.AddRange(newContactLenses);
+            eyeMDDbContext.SaveChanges();
+            newContactLenses.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
@@ -3327,7 +3338,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void AllergiesConvert(ModelsC.Allergy allergy, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void AllergiesConvert(ModelsC.Allergy allergy, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<EmrvisitAllergy> allergies, List<EmrvisitAllergy> newAllergies) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -3390,55 +3402,33 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitAllergies.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = allergies.FirstOrDefault(a => a.PtId == ptId && a.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.PtId = ptId;
-                    ehrOrig.VisitId = visitId;
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Inactive = inactive;
-                    ehrOrig.StartDate = allergy.StartDate;
-                    ehrOrig.Created = created;
-                    ehrOrig.CreatedEmpId = empId;
-                    ehrOrig.Severity = TruncateString(allergy.Severity, 100);
-                    ehrOrig.Reaction = TruncateString(allergy.Reaction, 100);
-                    ehrOrig.AllergyName = TruncateString(allergy.AllergyName, 255);
-                    // Set other fields to null where appropriate as specified
-                    ehrOrig.Snomedtype = null;
-                    ehrOrig.AllergyConceptId = null;
-                    ehrOrig.AllergyMappingId = null;
-                    ehrOrig.InsertGuid = null;
-                    ehrOrig.LastModified = null;
-                    ehrOrig.Rxcui = null;
-                    ehrOrig.Snomed = null;
-                    ehrOrig.LastModifiedEmpId = null;
-                    // No save as per instruction
+                    var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
+                        AllergyName = TruncateString(allergy.AllergyName, 255),
+                        VisitId = visitId,
+                        PtId = ptId,
+                        Dosdate = dosDate,
+                        Severity = TruncateString(allergy.Severity, 100),
+                        Reaction = TruncateString(allergy.Reaction, 100),
+                        Inactive = inactive,
+                        StartDate = allergy.StartDate,
+                        Created = created,
+                        CreatedEmpId = empId,
+                        Snomedtype = null,
+                        AllergyConceptId = null,
+                        AllergyMappingId = null,
+                        InsertGuid = null,
+                        LastModified = null,
+                        Rxcui = null,
+                        Snomed = null,
+                        LastModifiedEmpId = null
+                        // No add and save as per instruction
+                    };
+                    allergies.Add(newVisitAllergy);
+                    newAllergies.Add(newVisitAllergy);
                 }
-
-                var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
-                    AllergyName = TruncateString(allergy.AllergyName, 255),
-                    VisitId = visitId,
-                    PtId = ptId,
-                    Dosdate = dosDate,
-                    Severity = TruncateString(allergy.Severity, 100),
-                    Reaction = TruncateString(allergy.Reaction, 100),
-                    Inactive = inactive,
-                    StartDate = allergy.StartDate,
-                    Created = created,
-                    CreatedEmpId = empId,
-                    Snomedtype = null,
-                    AllergyConceptId = null,
-                    AllergyMappingId = null,
-                    InsertGuid = null,
-                    LastModified = null,
-                    Rxcui = null,
-                    Snomed = null,
-                    LastModifiedEmpId = null
-                    // No add and save as per instruction
-                };
-                eyeMDDbContext.EmrvisitAllergies.Add(newVisitAllergy);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
             }
@@ -4560,7 +4550,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses, List<EmrvisitContactLense> newContactLenses) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4577,12 +4568,12 @@ namespace Brady_s_Conversion_Program {
                 if (contactLens.VisitId != null) {
                     visitId = contactLens.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                 }
@@ -4590,7 +4581,7 @@ namespace Brady_s_Conversion_Program {
                 if (contactLens.PtId !<= -1) {
                     ptId = contactLens.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (ptId == -1) {
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
@@ -5112,281 +5103,145 @@ namespace Brady_s_Conversion_Program {
                     rotationDirectionOs = contactLens.RotationDirectionOs;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitContactLenses.FirstOrDefault(x => x.PtId == ptId);
+                var ehrOrig = contactLenses.FirstOrDefault(x => x.PtId == ptId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.VisitId = visitId;
-                    ehrOrig.PtId = ptId;
-                    ehrOrig.Dosdate = dosdate;
-                    ehrOrig.RxId = rxId;
-                    ehrOrig.ContactClass = TruncateString(contactClass, 50);
-                    ehrOrig.LensType = TruncateString(lensType, 50);
-                    ehrOrig.PowerOd = TruncateString(powerOd, 50);
-                    ehrOrig.PowerOs = TruncateString(powerOs, 50);
-                    ehrOrig.CylinderOd = TruncateString(cylinderOd, 50);
-                    ehrOrig.CylinderOs = TruncateString(cylinderOs, 50);
-                    ehrOrig.AxisOd = TruncateString(axisOd, 50);
-                    ehrOrig.AxisOs = TruncateString(axisOs, 50);
-                    ehrOrig.BcOd = TruncateString(bcOd, 50);
-                    ehrOrig.BcOs = TruncateString(bcOs, 50);
-                    ehrOrig.AddOd = TruncateString(addOd, 50);
-                    ehrOrig.AddOs = TruncateString(addOs, 50);
-                    ehrOrig.ColorOd = TruncateString(colorOd, 50);
-                    ehrOrig.ColorOs = TruncateString(colorOs, 50);
-                    ehrOrig.PupilOd = TruncateString(pupilOd, 50);
-                    ehrOrig.PupilOs = TruncateString(pupilOs, 50);
-                    ehrOrig.VaDOd = TruncateString(vaDOd, 50);
-                    ehrOrig.VaDOs = TruncateString(vaDOs, 50);
-                    ehrOrig.VaDOu = TruncateString(vaDOu, 50);
-                    ehrOrig.VaNOd = TruncateString(VaNOd, 50);
-                    ehrOrig.VaNOs = TruncateString(VaNOs, 50);
-                    ehrOrig.VaNOu = TruncateString(VaNOu, 50);
-                    ehrOrig.VaIOd = TruncateString(vaIOd, 50);
-                    ehrOrig.VaIOs = TruncateString(vaIOs, 50);
-                    ehrOrig.VaIOu = TruncateString(vaIOu, 50);
-                    ehrOrig.ComfortOd = TruncateString(comfortOd, 50);
-                    ehrOrig.ComfortOs = TruncateString(comfortOs, 50);
-                    ehrOrig.CentrationOd = TruncateString(centrationOd, 50);
-                    ehrOrig.CentrationOs = TruncateString(centrationOs, 50);
-                    ehrOrig.CoverageOd = TruncateString(coverageOd, 50);
-                    ehrOrig.CoverageOs = TruncateString(coverageOs, 50);
-                    ehrOrig.MovementOd = TruncateString(movementOd, 50);
-                    ehrOrig.MovementOs = TruncateString(movementOs, 50);
-                    ehrOrig.DiameterOd = TruncateString(diameterOd, 50);
-                    ehrOrig.DiameterOs = TruncateString(diameterOs, 50);
-                    ehrOrig.RotationDegOd = TruncateString(rotationDegOd, 20);
-                    ehrOrig.RotationDegOs = TruncateString(rotationDegOs, 20);
-                    ehrOrig.RotationDirectionOd = TruncateString(rotationDirectionOd, 50);
-                    ehrOrig.RotationDirectionOs = TruncateString(rotationDirectionOs, 50);
-                    ehrOrig.KOd = TruncateString(kOd, 50);
-                    ehrOrig.KOs = TruncateString(kOs, 50);
-                    ehrOrig.EdgeLiftOd = TruncateString(edgeLiftOd, 50);
-                    ehrOrig.EdgeLiftOs = TruncateString(edgeLiftOs, 50);
-                    ehrOrig.DistNearOd = TruncateString(distNearOd, 10);
-                    ehrOrig.DistNearOs = TruncateString(distNearOs, 10);
-                    ehrOrig.PtInsertedRemoved = ptInsertedRemoved; // smallint, no truncation needed
-                    ehrOrig.WAgeOd = TruncateString(wAgeOd, 50);
-                    ehrOrig.WAgeOs = TruncateString(wAgeOs, 50);
-                    ehrOrig.WTimeTodayOd = TruncateString(wTimeTodayOd, 50);
-                    ehrOrig.WTimeTodayOs = TruncateString(wTimeTodayOs, 50);
-                    ehrOrig.WAvgWearTimeOd = TruncateString(wAvgWearTimeOd, 50);
-                    ehrOrig.WAvgWearTimeOs = TruncateString(wAvgWearTimeOs, 50);
-                    ehrOrig.Solution = TruncateString(solution, 50);
-                    ehrOrig.ProductOd = TruncateString(productOd, 255);
-                    ehrOrig.ProductOs = TruncateString(productOs, 255);
-                    ehrOrig.LensDesignOd = TruncateString(lensDesignOd, 50);
-                    ehrOrig.LensDesignOs = TruncateString(lensDesignOs, 50);
-                    ehrOrig.MaterialOd = TruncateString(materialOd, 50);
-                    ehrOrig.MaterialOs = TruncateString(materialOs, 50);
-                    ehrOrig.ReplacementSchedule = TruncateString(replacementSchedule, 50);
-                    ehrOrig.WearingInstructions = TruncateString(wearingInstructions, 255);
-                    ehrOrig.Expires = TruncateString(expires, 50);
-                    ehrOrig.RgpLayoutOd = rgpLayoutOd; // int, no truncation needed
-                    ehrOrig.RgpLayoutOs = rgpLayoutOs; // int, no truncation needed
-                    ehrOrig.Power2Od = TruncateString(power2Od, 50);
-                    ehrOrig.Power2Os = TruncateString(power2Os, 50);
-                    ehrOrig.Cylinder2Od = TruncateString(cylinder2Od, 50);
-                    ehrOrig.Cylinder2Os = TruncateString(cylinder2Os, 50);
-                    ehrOrig.Axis2Od = TruncateString(axis2Od, 50);
-                    ehrOrig.Axis2Os = TruncateString(axis2Os, 50);
-                    ehrOrig.Bc2Od = TruncateString(bc2Od, 50);
-                    ehrOrig.Bc2Os = TruncateString(bc2Os, 50);
-                    ehrOrig.Diameter2Od = TruncateString(diameter2Od, 50);
-                    ehrOrig.Diameter2Os = TruncateString(diameter2Os, 50);
-                    ehrOrig.PeriphCurveOd = TruncateString(periphCurveOd, 50);
-                    ehrOrig.PeriphCurveOs = TruncateString(periphCurveOs, 50);
-                    ehrOrig.PeriphCurve2Od = TruncateString(peripheralCurve2Od, 50);
-                    ehrOrig.PeriphCurve2Os = TruncateString(peripheralCurve2Os, 50);
-                    ehrOrig.SecondaryCurveOd = TruncateString(secondaryCurveOd, 20);
-                    ehrOrig.SecondaryCurveOs = TruncateString(secondaryCurveOs, 20);
-                    ehrOrig.EquivalentCurveOd = TruncateString(equivalentCurveOd, 50);
-                    ehrOrig.EquivalentCurveOs = TruncateString(equivalentCurveOs, 50);
-                    ehrOrig.CenterThicknessOd = TruncateString(centerThicknessOd, 50);
-                    ehrOrig.CenterThicknessOs = TruncateString(centerThicknessOs, 50);
-                    ehrOrig.OpticalZoneDiaOd = TruncateString(opticalZoneDiaOd, 50);
-                    ehrOrig.OpticalZoneDiaOs = TruncateString(opticalZoneDiaOs, 50);
-                    ehrOrig.EdgeOd = TruncateString(edgeOd, 50);
-                    ehrOrig.EdgeOs = TruncateString(edgeOs, 50);
-                    ehrOrig.BlendOd = TruncateString(blendOd, 50);
-                    ehrOrig.BlendOs = TruncateString(blendOs, 50);
-                    ehrOrig.NaFlPatternOd = TruncateString(naFlPatternOd, 50);
-                    ehrOrig.NaFlPatternOs = TruncateString(naFlPatternOs, 50);
-                    ehrOrig.SurfaceWettingOd = TruncateString(surfaceWettingOd, 50);
-                    ehrOrig.SurfaceWettingOs = TruncateString(surfaceWettingOs, 50);
-                    ehrOrig.DkOd = TruncateString(dkOd, 50);
-                    ehrOrig.DkOs = TruncateString(dkOs, 50);
-                    ehrOrig.SegHeightOd = TruncateString(segHeightOd, 50);
-                    ehrOrig.SegHeightOs = TruncateString(segHeightOs, 50);
-                    ehrOrig.SpecialInstructionsOd = TruncateString(specialInstructionsOd, 100);
-                    ehrOrig.SpecialInstructionsOs = TruncateString(specialInstructionsOs, 100);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.TreeviewTableIdOd = treeviewTableIdOd; // int, no truncation needed
-                    ehrOrig.TreeviewTableIdOs = treeviewTableIdOs; // int, no truncation needed
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.Remarks = TruncateString(remarks, int.MaxValue);
-                    ehrOrig.Printed = printed; // bit, no truncation needed
-                    ehrOrig.SentToOptical = sentToOptical; // bit, no truncation needed
-                    ehrOrig.UpcOd = TruncateString(upcOd, 50);
-                    ehrOrig.UpcOs = TruncateString(upcOs, 50);
-                    ehrOrig.CatalogSource = catalogSource; // int, no truncation needed
-                    ehrOrig.CatalogManufacturerIdOd = TruncateString(catalogManufacturerIdOd, 50);
-                    ehrOrig.CatalogManufacturerIdOs = TruncateString(catalogManufacturerIdOs, 50);
-                    ehrOrig.CatalogBrandIdOd = TruncateString(catalogBrandIdOd, 50);
-                    ehrOrig.CatalogBrandIdOs = TruncateString(catalogBrandIdOs, 50);
-                    ehrOrig.CatalogProductIdOd = TruncateString(catalogProductIdOd, 50);
-                    ehrOrig.CatalogProductIdOs = TruncateString(catalogProductIdOs, 50);
-                    ehrOrig.TrialNumber = TruncateString(trialNumber, 100);
-                    ehrOrig.OrSphereOd = TruncateString(orSphereOd, 50);
-                    ehrOrig.OrSphereOs = TruncateString(orSphereOs, 50);
-                    ehrOrig.OrCylinderOd = TruncateString(orCylinderOd, 50);
-                    ehrOrig.OrCylinderOs = TruncateString(orCylinderOs, 50);
-                    ehrOrig.OrAxisOd = TruncateString(orAxisOd, 50);
-                    ehrOrig.OrAxisOs = TruncateString(orAxisOs, 50);
-                    ehrOrig.OrVaDOd = TruncateString(orVaDOd, 50);
-                    ehrOrig.OrVaDOs = TruncateString(orVaDOs, 50);
-                    ehrOrig.OrVaNOd = TruncateString(orVaNOd, 50);
-                    ehrOrig.OrVaNOs = TruncateString(orVaNOs, 50);
-                    ehrOrig.RotationDirectionOd = TruncateString(rotationDirectionOd, 50);
-                    ehrOrig.RotationDirectionOs = TruncateString(rotationDirectionOs, 50);
-                    eyeMDDbContext.SaveChanges();
+                    var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
+                        VisitId = visitId,
+                        PtId = ptId,
+                        Dosdate = dosdate,
+                        RxId = rxId,
+                        ContactClass = TruncateString(contactClass, 50),
+                        LensType = TruncateString(lensType, 50),
+                        PowerOd = TruncateString(powerOd, 50),
+                        PowerOs = TruncateString(powerOs, 50),
+                        CylinderOd = TruncateString(cylinderOd, 50),
+                        CylinderOs = TruncateString(cylinderOs, 50),
+                        AxisOd = TruncateString(axisOd, 50),
+                        AxisOs = TruncateString(axisOs, 50),
+                        BcOd = TruncateString(bcOd, 50),
+                        BcOs = TruncateString(bcOs, 50),
+                        AddOd = TruncateString(addOd, 50),
+                        AddOs = TruncateString(addOs, 50),
+                        ColorOd = TruncateString(colorOd, 50),
+                        ColorOs = TruncateString(colorOs, 50),
+                        PupilOd = TruncateString(pupilOd, 50),
+                        PupilOs = TruncateString(pupilOs, 50),
+                        VaDOd = TruncateString(vaDOd, 50),
+                        VaDOs = TruncateString(vaDOs, 50),
+                        VaDOu = TruncateString(vaDOu, 50),
+                        VaNOd = TruncateString(VaNOd, 50),
+                        VaNOs = TruncateString(VaNOs, 50),
+                        VaNOu = TruncateString(VaNOu, 50),
+                        VaIOd = TruncateString(vaIOd, 50),
+                        VaIOs = TruncateString(vaIOs, 50),
+                        VaIOu = TruncateString(vaIOu, 50),
+                        ComfortOd = TruncateString(comfortOd, 50),
+                        ComfortOs = TruncateString(comfortOs, 50),
+                        CentrationOd = TruncateString(centrationOd, 50),
+                        CentrationOs = TruncateString(centrationOs, 50),
+                        CoverageOd = TruncateString(coverageOd, 50),
+                        CoverageOs = TruncateString(coverageOs, 50),
+                        MovementOd = TruncateString(movementOd, 50),
+                        MovementOs = TruncateString(movementOs, 50),
+                        DiameterOd = TruncateString(diameterOd, 50),
+                        DiameterOs = TruncateString(diameterOs, 50),
+                        RotationDegOd = TruncateString(rotationDegOd, 20),
+                        RotationDegOs = TruncateString(rotationDegOs, 20),
+                        RotationDirectionOd = TruncateString(rotationDirectionOd, 50),
+                        RotationDirectionOs = TruncateString(rotationDirectionOs, 50),
+                        KOd = TruncateString(kOd, 50),
+                        KOs = TruncateString(kOs, 50),
+                        EdgeLiftOd = TruncateString(edgeLiftOd, 50),
+                        EdgeLiftOs = TruncateString(edgeLiftOs, 50),
+                        DistNearOd = TruncateString(distNearOd, 10),
+                        DistNearOs = TruncateString(distNearOs, 10),
+                        PtInsertedRemoved = ptInsertedRemoved, // smallint, no truncation needed
+                        WAgeOd = TruncateString(wAgeOd, 50),
+                        WAgeOs = TruncateString(wAgeOs, 50),
+                        WTimeTodayOd = TruncateString(wTimeTodayOd, 50),
+                        WTimeTodayOs = TruncateString(wTimeTodayOs, 50),
+                        WAvgWearTimeOd = TruncateString(wAvgWearTimeOd, 50),
+                        WAvgWearTimeOs = TruncateString(wAvgWearTimeOs, 50),
+                        Solution = TruncateString(solution, 50),
+                        ProductOd = TruncateString(productOd, 255),
+                        ProductOs = TruncateString(productOs, 255),
+                        LensDesignOd = TruncateString(lensDesignOd, 50),
+                        LensDesignOs = TruncateString(lensDesignOs, 50),
+                        MaterialOd = TruncateString(materialOd, 50),
+                        MaterialOs = TruncateString(materialOs, 50),
+                        ReplacementSchedule = TruncateString(replacementSchedule, 50),
+                        WearingInstructions = TruncateString(wearingInstructions, 255),
+                        Expires = TruncateString(expires, 50),
+                        RgpLayoutOd = rgpLayoutOd, // int, no truncation needed
+                        RgpLayoutOs = rgpLayoutOs, // int, no truncation needed
+                        Power2Od = TruncateString(power2Od, 50),
+                        Power2Os = TruncateString(power2Os, 50),
+                        Cylinder2Od = TruncateString(cylinder2Od, 50),
+                        Cylinder2Os = TruncateString(cylinder2Os, 50),
+                        Axis2Od = TruncateString(axis2Od, 50),
+                        Axis2Os = TruncateString(axis2Os, 50),
+                        Bc2Od = TruncateString(bc2Od, 50),
+                        Bc2Os = TruncateString(bc2Os, 50),
+                        Diameter2Od = TruncateString(diameter2Od, 50),
+                        Diameter2Os = TruncateString(diameter2Os, 50),
+                        PeriphCurveOd = TruncateString(periphCurveOd, 50),
+                        PeriphCurveOs = TruncateString(periphCurveOs, 50),
+                        PeriphCurve2Od = TruncateString(peripheralCurve2Od, 50),
+                        PeriphCurve2Os = TruncateString(peripheralCurve2Os, 50),
+                        SecondaryCurveOd = TruncateString(secondaryCurveOd, 20),
+                        SecondaryCurveOs = TruncateString(secondaryCurveOs, 20),
+                        EquivalentCurveOd = TruncateString(equivalentCurveOd, 50),
+                        EquivalentCurveOs = TruncateString(equivalentCurveOs, 50),
+                        CenterThicknessOd = TruncateString(centerThicknessOd, 50),
+                        CenterThicknessOs = TruncateString(centerThicknessOs, 50),
+                        OpticalZoneDiaOd = TruncateString(opticalZoneDiaOd, 50),
+                        OpticalZoneDiaOs = TruncateString(opticalZoneDiaOs, 50),
+                        EdgeOd = TruncateString(edgeOd, 50),
+                        EdgeOs = TruncateString(edgeOs, 50),
+                        BlendOd = TruncateString(blendOd, 50),
+                        BlendOs = TruncateString(blendOs, 50),
+                        NaFlPatternOd = TruncateString(naFlPatternOd, 50),
+                        NaFlPatternOs = TruncateString(naFlPatternOs, 50),
+                        SurfaceWettingOd = TruncateString(surfaceWettingOd, 50),
+                        SurfaceWettingOs = TruncateString(surfaceWettingOs, 50),
+                        DkOd = TruncateString(dkOd, 50),
+                        DkOs = TruncateString(dkOs, 50),
+                        SegHeightOd = TruncateString(segHeightOd, 50),
+                        SegHeightOs = TruncateString(segHeightOs, 50),
+                        SpecialInstructionsOd = TruncateString(specialInstructionsOd, 100),
+                        SpecialInstructionsOs = TruncateString(specialInstructionsOs, 100),
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        TreeviewTableIdOd = treeviewTableIdOd, // int, no truncation needed
+                        TreeviewTableIdOs = treeviewTableIdOs, // int, no truncation needed
+                        Notes = TruncateString(notes, int.MaxValue),
+                        Remarks = TruncateString(remarks, int.MaxValue),
+                        Printed = printed, // bit, no truncation needed
+                        SentToOptical = sentToOptical, // bit, no truncation needed
+                        UpcOd = TruncateString(upcOd, 50),
+                        UpcOs = TruncateString(upcOs, 50),
+                        CatalogSource = catalogSource, // int, no truncation needed
+                        CatalogManufacturerIdOd = TruncateString(catalogManufacturerIdOd, 50),
+                        CatalogManufacturerIdOs = TruncateString(catalogManufacturerIdOs, 50),
+                        CatalogBrandIdOd = TruncateString(catalogBrandIdOd, 50),
+                        CatalogBrandIdOs = TruncateString(catalogBrandIdOs, 50),
+                        CatalogProductIdOd = TruncateString(catalogProductIdOd, 50),
+                        CatalogProductIdOs = TruncateString(catalogProductIdOs, 50),
+                        TrialNumber = TruncateString(trialNumber, 100),
+                        OrSphereOd = TruncateString(orSphereOd, 50),
+                        OrSphereOs = TruncateString(orSphereOs, 50),
+                        OrCylinderOd = TruncateString(orCylinderOd, 50),
+                        OrCylinderOs = TruncateString(orCylinderOs, 50),
+                        OrAxisOd = TruncateString(orAxisOd, 50),
+                        OrAxisOs = TruncateString(orAxisOs, 50),
+                        OrVaDOd = TruncateString(orVaDOd, 50),
+                        OrVaDOs = TruncateString(orVaDOs, 50),
+                        OrVaNOd = TruncateString(orVaNOd, 50),
+                        OrVaNOs = TruncateString(orVaNOs, 50)
+                    };
+                    contactLenses.Add(newContactLens);
+                    newContactLenses.Add(newContactLens);
                 }
-
-                var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
-                    VisitId = visitId,
-                    PtId = ptId,
-                    Dosdate = dosdate,
-                    RxId = rxId,
-                    ContactClass = TruncateString(contactClass, 50),
-                    LensType = TruncateString(lensType, 50),
-                    PowerOd = TruncateString(powerOd, 50),
-                    PowerOs = TruncateString(powerOs, 50),
-                    CylinderOd = TruncateString(cylinderOd, 50),
-                    CylinderOs = TruncateString(cylinderOs, 50),
-                    AxisOd = TruncateString(axisOd, 50),
-                    AxisOs = TruncateString(axisOs, 50),
-                    BcOd = TruncateString(bcOd, 50),
-                    BcOs = TruncateString(bcOs, 50),
-                    AddOd = TruncateString(addOd, 50),
-                    AddOs = TruncateString(addOs, 50),
-                    ColorOd = TruncateString(colorOd, 50),
-                    ColorOs = TruncateString(colorOs, 50),
-                    PupilOd = TruncateString(pupilOd, 50),
-                    PupilOs = TruncateString(pupilOs, 50),
-                    VaDOd = TruncateString(vaDOd, 50),
-                    VaDOs = TruncateString(vaDOs, 50),
-                    VaDOu = TruncateString(vaDOu, 50),
-                    VaNOd = TruncateString(VaNOd, 50),
-                    VaNOs = TruncateString(VaNOs, 50),
-                    VaNOu = TruncateString(VaNOu, 50),
-                    VaIOd = TruncateString(vaIOd, 50),
-                    VaIOs = TruncateString(vaIOs, 50),
-                    VaIOu = TruncateString(vaIOu, 50),
-                    ComfortOd = TruncateString(comfortOd, 50),
-                    ComfortOs = TruncateString(comfortOs, 50),
-                    CentrationOd = TruncateString(centrationOd, 50),
-                    CentrationOs = TruncateString(centrationOs, 50),
-                    CoverageOd = TruncateString(coverageOd, 50),
-                    CoverageOs = TruncateString(coverageOs, 50),
-                    MovementOd = TruncateString(movementOd, 50),
-                    MovementOs = TruncateString(movementOs, 50),
-                    DiameterOd = TruncateString(diameterOd, 50),
-                    DiameterOs = TruncateString(diameterOs, 50),
-                    RotationDegOd = TruncateString(rotationDegOd, 20),
-                    RotationDegOs = TruncateString(rotationDegOs, 20),
-                    RotationDirectionOd = TruncateString(rotationDirectionOd, 50),
-                    RotationDirectionOs = TruncateString(rotationDirectionOs, 50),
-                    KOd = TruncateString(kOd, 50),
-                    KOs = TruncateString(kOs, 50),
-                    EdgeLiftOd = TruncateString(edgeLiftOd, 50),
-                    EdgeLiftOs = TruncateString(edgeLiftOs, 50),
-                    DistNearOd = TruncateString(distNearOd, 10),
-                    DistNearOs = TruncateString(distNearOs, 10),
-                    PtInsertedRemoved = ptInsertedRemoved, // smallint, no truncation needed
-                    WAgeOd = TruncateString(wAgeOd, 50),
-                    WAgeOs = TruncateString(wAgeOs, 50),
-                    WTimeTodayOd = TruncateString(wTimeTodayOd, 50),
-                    WTimeTodayOs = TruncateString(wTimeTodayOs, 50),
-                    WAvgWearTimeOd = TruncateString(wAvgWearTimeOd, 50),
-                    WAvgWearTimeOs = TruncateString(wAvgWearTimeOs, 50),
-                    Solution = TruncateString(solution, 50),
-                    ProductOd = TruncateString(productOd, 255),
-                    ProductOs = TruncateString(productOs, 255),
-                    LensDesignOd = TruncateString(lensDesignOd, 50),
-                    LensDesignOs = TruncateString(lensDesignOs, 50),
-                    MaterialOd = TruncateString(materialOd, 50),
-                    MaterialOs = TruncateString(materialOs, 50),
-                    ReplacementSchedule = TruncateString(replacementSchedule, 50),
-                    WearingInstructions = TruncateString(wearingInstructions, 255),
-                    Expires = TruncateString(expires, 50),
-                    RgpLayoutOd = rgpLayoutOd, // int, no truncation needed
-                    RgpLayoutOs = rgpLayoutOs, // int, no truncation needed
-                    Power2Od = TruncateString(power2Od, 50),
-                    Power2Os = TruncateString(power2Os, 50),
-                    Cylinder2Od = TruncateString(cylinder2Od, 50),
-                    Cylinder2Os = TruncateString(cylinder2Os, 50),
-                    Axis2Od = TruncateString(axis2Od, 50),
-                    Axis2Os = TruncateString(axis2Os, 50),
-                    Bc2Od = TruncateString(bc2Od, 50),
-                    Bc2Os = TruncateString(bc2Os, 50),
-                    Diameter2Od = TruncateString(diameter2Od, 50),
-                    Diameter2Os = TruncateString(diameter2Os, 50),
-                    PeriphCurveOd = TruncateString(periphCurveOd, 50),
-                    PeriphCurveOs = TruncateString(periphCurveOs, 50),
-                    PeriphCurve2Od = TruncateString(peripheralCurve2Od, 50),
-                    PeriphCurve2Os = TruncateString(peripheralCurve2Os, 50),
-                    SecondaryCurveOd = TruncateString(secondaryCurveOd, 20),
-                    SecondaryCurveOs = TruncateString(secondaryCurveOs, 20),
-                    EquivalentCurveOd = TruncateString(equivalentCurveOd, 50),
-                    EquivalentCurveOs = TruncateString(equivalentCurveOs, 50),
-                    CenterThicknessOd = TruncateString(centerThicknessOd, 50),
-                    CenterThicknessOs = TruncateString(centerThicknessOs, 50),
-                    OpticalZoneDiaOd = TruncateString(opticalZoneDiaOd, 50),
-                    OpticalZoneDiaOs = TruncateString(opticalZoneDiaOs, 50),
-                    EdgeOd = TruncateString(edgeOd, 50),
-                    EdgeOs = TruncateString(edgeOs, 50),
-                    BlendOd = TruncateString(blendOd, 50),
-                    BlendOs = TruncateString(blendOs, 50),
-                    NaFlPatternOd = TruncateString(naFlPatternOd, 50),
-                    NaFlPatternOs = TruncateString(naFlPatternOs, 50),
-                    SurfaceWettingOd = TruncateString(surfaceWettingOd, 50),
-                    SurfaceWettingOs = TruncateString(surfaceWettingOs, 50),
-                    DkOd = TruncateString(dkOd, 50),
-                    DkOs = TruncateString(dkOs, 50),
-                    SegHeightOd = TruncateString(segHeightOd, 50),
-                    SegHeightOs = TruncateString(segHeightOs, 50),
-                    SpecialInstructionsOd = TruncateString(specialInstructionsOd, 100),
-                    SpecialInstructionsOs = TruncateString(specialInstructionsOs, 100),
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    TreeviewTableIdOd = treeviewTableIdOd, // int, no truncation needed
-                    TreeviewTableIdOs = treeviewTableIdOs, // int, no truncation needed
-                    Notes = TruncateString(notes, int.MaxValue),
-                    Remarks = TruncateString(remarks, int.MaxValue),
-                    Printed = printed, // bit, no truncation needed
-                    SentToOptical = sentToOptical, // bit, no truncation needed
-                    UpcOd = TruncateString(upcOd, 50),
-                    UpcOs = TruncateString(upcOs, 50),
-                    CatalogSource = catalogSource, // int, no truncation needed
-                    CatalogManufacturerIdOd = TruncateString(catalogManufacturerIdOd, 50),
-                    CatalogManufacturerIdOs = TruncateString(catalogManufacturerIdOs, 50),
-                    CatalogBrandIdOd = TruncateString(catalogBrandIdOd, 50),
-                    CatalogBrandIdOs = TruncateString(catalogBrandIdOs, 50),
-                    CatalogProductIdOd = TruncateString(catalogProductIdOd, 50),
-                    CatalogProductIdOs = TruncateString(catalogProductIdOs, 50),
-                    TrialNumber = TruncateString(trialNumber, 100),
-                    OrSphereOd = TruncateString(orSphereOd, 50),
-                    OrSphereOs = TruncateString(orSphereOs, 50),
-                    OrCylinderOd = TruncateString(orCylinderOd, 50),
-                    OrCylinderOs = TruncateString(orCylinderOs, 50),
-                    OrAxisOd = TruncateString(orAxisOd, 50),
-                    OrAxisOs = TruncateString(orAxisOs, 50),
-                    OrVaDOd = TruncateString(orVaDOd, 50),
-                    OrVaDOs = TruncateString(orVaDOs, 50),
-                    OrVaNOd = TruncateString(orVaNOd, 50),
-                    OrVaNOs = TruncateString(orVaNOs, 50)
-                };
-                eyeMDDbContext.EmrvisitContactLenses.Add(newContactLens);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
             }
