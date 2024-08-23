@@ -361,6 +361,7 @@ namespace Brady_s_Conversion_Program {
             var convLocations = convDbContext.Locations.ToList();
             var priorityXrefs = ffpmDbContext.MntPriorities.ToList();
             var patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
+            var patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
 
 
             foreach (var location in convDbContext.Locations) {
@@ -428,8 +429,10 @@ namespace Brady_s_Conversion_Program {
             });
             
             foreach (var patientDocument in convDbContext.PatientDocuments) {
-                ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress);
+                ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments);
             }
+            ffpmDbContext.ImgPatientDocuments.AddRange(patientDocuments);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
@@ -1851,18 +1854,18 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient>ffpmPatients, List<ImgPatientDocument> patientDocuments) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
-                var ConvPatient = convDbContext.Patients.Find(patientDocument.PatientId);
-                if (ConvPatient == null) {
+                var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
+                if (convPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
-                (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
+                DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
                     return;
@@ -1888,32 +1891,20 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ffpmOrig = ffpmDbContext.ImgPatientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
+                var ffpmOrig = patientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.DocumentType = imageType;
-                    ffpmOrig.DocumentRemarks = patientDocument.DocumentNotes;  // No need to truncate due to VARCHAR(MAX)
-                    ffpmOrig.AddedDate = dateDocument;
-                    ffpmOrig.DocumentName = TruncateString(patientDocument.DocumentDescription, 250);
-                    ffpmOrig.DocumentLocation = TruncateString(patientDocument.FilePathName, 250);
-                    ffpmOrig.IsActive = isActive;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                if (ffpmOrig == null) {
+                    var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
+                        PatientId = ffpmPatient.PatientId,
+                        DocumentType = imageType,
+                        DocumentRemarks = patientDocument.DocumentNotes,  // No need to truncate due to VARCHAR(MAX)
+                        AddedDate = dateDocument,
+                        DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
+                        DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
+                        IsActive = isActive
+                    };
+                    patientDocuments.Add(newPatientDocument);
                 }
-
-
-
-                var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
-                    PatientId = ffpmPatient.PatientId,
-                    DocumentType = imageType,
-                    DocumentRemarks = patientDocument.DocumentNotes,  // No need to truncate due to VARCHAR(MAX)
-                    AddedDate = dateDocument,
-                    DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
-                    DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
-                    IsActive = isActive
-                };
-                ffpmDbContext.ImgPatientDocuments.Add(newPatientDocument);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
