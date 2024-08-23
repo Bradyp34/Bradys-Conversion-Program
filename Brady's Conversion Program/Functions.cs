@@ -183,27 +183,27 @@ namespace Brady_s_Conversion_Program {
 
                                 // Calculate total number of entries for progress tracking
                                 totalEntries = //convDbContext.Patients.Count() +
-                                                convDbContext.Addresses.Count() +
-                                                convDbContext.Appointments.Count() +
-                                                //convDbContext.AppointmentTypes.Count() +
-                                                convDbContext.Insurances.Count() +
-                                                //convDbContext.Locations.Count() +
+                                               //convDbContext.Locations.Count() +
+                                               //convDbContext.Appointments.Count() +
+                                               //convDbContext.AppointmentTypes.Count() +
+                                               //convDbContext.Insurances.Count() +
+                                               //convDbContext.Providers.Count() +
                                                 convDbContext.Guarantors.Count() +
                                                 convDbContext.PolicyHolders.Count() +
                                                 convDbContext.PatientAlerts.Count() +
                                                 convDbContext.PatientDocuments.Count() +
                                                 convDbContext.PatientInsurances.Count() +
                                                 convDbContext.PatientNotes.Count() +
-                                                convDbContext.Phones.Count() +
-                                                convDbContext.Providers.Count() +
                                                 convDbContext.Recalls.Count() +
                                                 convDbContext.RecallTypes.Count() +
                                                 convDbContext.Referrals.Count() +
-                                                convDbContext.SchedCodes.Count();
+                                                convDbContext.SchedCodes.Count() +
+                                                convDbContext.Addresses.Count() +
+                                                convDbContext.Phones.Count();
 
 
-                                // Set progress bar properties on UI thread
-                                progress.Invoke((MethodInvoker)delegate {
+                // Set progress bar properties on UI thread
+                progress.Invoke((MethodInvoker)delegate {
                                     progress.Maximum = totalEntries;
                                     progress.Step = 1;
                                     progress.Value = 0;
@@ -393,8 +393,8 @@ namespace Brady_s_Conversion_Program {
             var newOtherAddresses = new List<DmgOtherAddress>();
             var newSchedulingCodes = new List<SchedulingCode>();
 
-            /*
-            foreach (var location in convDbContext.Locations) {
+            
+            /*foreach (var location in convDbContext.Locations) {
                 ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
             }
             ffpmDbContext.BillingLocations.AddRange(newLocations);
@@ -427,7 +427,6 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
-            */
             foreach (var appointment in convDbContext.Appointments) {
                 ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
             }
@@ -457,7 +456,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
-
+*/
             foreach (var guarantor in convDbContext.Guarantors) {
                 ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, newGuarantors);
             }
@@ -548,14 +547,6 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Referrals Converted\n";
             });
 
-            foreach (var phone in convDbContext.Phones) {
-                ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses);
-            }
-            ffpmDbContext.SaveChanges();
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Phones Converted\n";
-            });
-
             foreach (var schedCode in convDbContext.SchedCodes) {
                 ConvertSchedCode(schedCode, convDbContext, ffpmDbContext, logger, progress, schedulingCodes, newSchedulingCodes);
             }
@@ -574,6 +565,14 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Addresses Converted\n";
+            });
+
+            foreach (var phone in convDbContext.Phones) {
+                ConvertPhone(phone, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses);
+            }
+            ffpmDbContext.SaveChanges();
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "Phones Converted\n";
             });
         }
                 
@@ -796,7 +795,8 @@ namespace Brady_s_Conversion_Program {
                             PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
                             DefaultLocationId = newPatient.LocationId
                         };
-                        patientAdditionals.Add(newAdditionDetails);
+                        patientAdditionals.Add(newAdditionDetails); // Id like to move this up so I can add all new at once, but that
+                                                                    // will not allow to check for duplicates if theyre both new
                         newAdditionalDetails.Add(newAdditionDetails);
                     }
 
@@ -1534,7 +1534,6 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedBy = null
                     };
                     newGuarantors.Add(newGuarantor);
-                    guarantors.AddRange(newGuarantors);
                 }
             }
             catch (Exception ex) {
@@ -3119,23 +3118,42 @@ namespace Brady_s_Conversion_Program {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
                 return;
             }
+            var visits = eyeMDDbContext.Emrvisits.ToList();
+            var eyeMDPatients = eyeMDDbContext.Emrpatients.ToList();
+            var convVisits = eHRDbContext.Visits.ToList();
+            var eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
+
+            var newVisits = new List<Emrvisit>();
+            var newVisitOrders = new List<EmrvisitOrder>();
+
+
+            /*// not even using this
             foreach (var patient in eHRDbContext.Patients) {
                 PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patients converted.\n");
-            });
+            });*/
 
             foreach (var visit in eHRDbContext.Visits) {
-                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress);
+                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, newVisits, eyeMDVisitOrders, newVisitOrders);
             }
+            eyeMDDbContext.AddRange(newVisits);
+            eyeMDDbContext.SaveChanges();
+            visits.AddRange(newVisits);
+            newVisits.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
             foreach (var visitOrders in eHRDbContext.VisitOrders) {
-                VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress);
+                VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress, convVisits, visits, eyeMDPatients, 
+                    eyeMDVisitOrders, newVisitOrders);
             }
+            eyeMDDbContext.AddRange(newVisitOrders);
+            eyeMDDbContext.SaveChanges();
+            eyeMDVisitOrders.AddRange(newVisitOrders);
+            newVisitOrders.Clear();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit orders converted.\n");
             });
@@ -3737,7 +3755,9 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, 
+            ProgressBar progress, List<Emrvisit> visits, List<Emrvisit> newVisits, List<EmrvisitOrder> eyeMDVisitOrders, 
+                List<EmrvisitOrder> newVisitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4048,15 +4068,16 @@ namespace Brady_s_Conversion_Program {
                     TabDrawing = tabDrawing,
                     Wu2visitTypeId = null
                 };
-                eyeMDDbContext.Emrvisits.Add(newVisit);
-
-                eyeMDDbContext.SaveChanges();
+                newVisits.Add(newVisit);
+                visits.Add(newVisit);
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
             }
         }
 
-        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, 
+            ILogger logger, ProgressBar progress, List<Visit> convVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
+                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> newVisitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4072,12 +4093,12 @@ namespace Brady_s_Conversion_Program {
                 if (visitOrder.VisitId != null) {
                     visitId = visitOrder.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = convVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
                     return;
@@ -4086,9 +4107,9 @@ namespace Brady_s_Conversion_Program {
                 if (visitOrder.PtId !<= -1) {
                     ptId = visitOrder.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
@@ -4235,86 +4256,47 @@ namespace Brady_s_Conversion_Program {
                     refProvOrgName = visitOrder.RefProviderOrganizationName;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitOrders.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = eyeMDVisitOrders.FirstOrDefault(vo => vo.PtId == ptId && vo.VisitId == visitId);
 
                 if (ehrOrig != null) {
-                    ehrOrig.VisitId = visitId;
-                    ehrOrig.PtId = ptId;
-                    ehrOrig.Dosdate = dosdate;
-                    ehrOrig.OrderDescription = description; // Assuming NVARCHAR(MAX), no truncation needed
-                    ehrOrig.OrderWhen = TruncateString(orderWhen, 255);
-                    ehrOrig.OrderScheduledDate = orderScheduledDate; // Assuming the date is stored as string
-                    ehrOrig.DoNotPrintRx = doNotPrintRx;
-                    ehrOrig.AddedbyFastPlanId = addedbyFastPlanId;
-                    ehrOrig.OrderTypeId = orderTypeId;
-                    ehrOrig.OrderHasSpecimen = orderHasSpecimen;
-                    ehrOrig.OrderSpecimenType = orderSpecimenType; // Assuming NVARCHAR(MAX), no truncation needed
-                    ehrOrig.OrderSpecimenId = orderSpecimenId; // Assuming NVARCHAR(MAX), no truncation needed
-                    ehrOrig.OrderLabResultFulfilledDate = orderLabResultFulfilledDate;
-                    ehrOrig.OrderLabResultId = orderLabResultId;
-                    ehrOrig.OrderNeedsFollowup = orderNeedsFollowUp;
-                    ehrOrig.OrderWasFollowedup = orderWasFollowedUp;
-                    ehrOrig.OrderNotes = orderNotes; // Assuming NVARCHAR(MAX), no truncation needed
-                    ehrOrig.SummarySent = summarySent;
-                    ehrOrig.OrderRemarks = TruncateString(orderRemarks, 255);
-                    ehrOrig.InsertGuid = insertGUID;
-                    ehrOrig.StudyInstanceUid = studyInstanceUID;
-                    ehrOrig.DicomrequestedProcedureId = dicomRequestedProc;
-                    ehrOrig.DicomscheduledProcedureStepId = dicomScheduledProcStepId;
-                    ehrOrig.OrderModalityId = orderModality;
-                    ehrOrig.ScheduledAe = scheduledAE;
-                    ehrOrig.CodeCpt = CodeCPT;
-                    ehrOrig.CodeSnomed = CodeSNOMED;
-                    ehrOrig.RecordedEmpRole = recordedEmpRole;
-                    ehrOrig.SummaryTransmitted = summaryTransmitted;
-                    ehrOrig.CodeLoinc = codeLOINC;
-                    ehrOrig.RefProviderFirstName = RefProvFirst;
-                    ehrOrig.RefProviderLastName = RefProvLast;
-                    ehrOrig.RefProviderId = refProvId;
-                    ehrOrig.RefProviderOrganizationName = refProvOrgName;
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
+                        VisitId = visitId,
+                        PtId = ptId,
+                        Dosdate = dosdate,
+                        OrderDescription = description, // Assuming NVARCHAR(MAX), no truncation needed
+                        OrderWhen = TruncateString(orderWhen, 255),
+                        OrderScheduledDate = orderScheduledDate, // Assuming the date is stored as string
+                        DoNotPrintRx = doNotPrintRx,
+                        AddedbyFastPlanId = addedbyFastPlanId,
+                        OrderTypeId = orderTypeId,
+                        OrderHasSpecimen = orderHasSpecimen,
+                        OrderSpecimenType = orderSpecimenType, // Assuming NVARCHAR(MAX), no truncation needed
+                        OrderSpecimenId = orderSpecimenId, // Assuming NVARCHAR(MAX), no truncation needed
+                        OrderLabResultFulfilledDate = orderLabResultFulfilledDate,
+                        OrderLabResultId = orderLabResultId,
+                        OrderNeedsFollowup = orderNeedsFollowUp,
+                        OrderWasFollowedup = orderWasFollowedUp,
+                        OrderNotes = orderNotes, // Assuming NVARCHAR(MAX), no truncation needed
+                        SummarySent = summarySent,
+                        OrderRemarks = TruncateString(orderRemarks, 255),
+                        InsertGuid = insertGUID,
+                        StudyInstanceUid = studyInstanceUID,
+                        DicomrequestedProcedureId = dicomRequestedProc,
+                        DicomscheduledProcedureStepId = dicomScheduledProcStepId,
+                        OrderModalityId = orderModality,
+                        ScheduledAe = scheduledAE,
+                        CodeCpt = CodeCPT,
+                        CodeSnomed = CodeSNOMED,
+                        RecordedEmpRole = recordedEmpRole,
+                        SummaryTransmitted = summaryTransmitted,
+                        CodeLoinc = codeLOINC,
+                        RefProviderFirstName = RefProvFirst,
+                        RefProviderLastName = RefProvLast,
+                        RefProviderId = refProvId,
+                        RefProviderOrganizationName = refProvOrgName
+                    };
+                    newVisitOrders.Add(newVisitOrder);
                 }
-
-                var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
-                    VisitId = visitId,
-                    PtId = ptId,
-                    Dosdate = dosdate,
-                    OrderDescription = description, // Assuming NVARCHAR(MAX), no truncation needed
-                    OrderWhen = TruncateString(orderWhen, 255),
-                    OrderScheduledDate = orderScheduledDate, // Assuming the date is stored as string
-                    DoNotPrintRx = doNotPrintRx,
-                    AddedbyFastPlanId = addedbyFastPlanId,
-                    OrderTypeId = orderTypeId,
-                    OrderHasSpecimen = orderHasSpecimen,
-                    OrderSpecimenType = orderSpecimenType, // Assuming NVARCHAR(MAX), no truncation needed
-                    OrderSpecimenId = orderSpecimenId, // Assuming NVARCHAR(MAX), no truncation needed
-                    OrderLabResultFulfilledDate = orderLabResultFulfilledDate,
-                    OrderLabResultId = orderLabResultId,
-                    OrderNeedsFollowup = orderNeedsFollowUp,
-                    OrderWasFollowedup = orderWasFollowedUp,
-                    OrderNotes = orderNotes, // Assuming NVARCHAR(MAX), no truncation needed
-                    SummarySent = summarySent,
-                    OrderRemarks = TruncateString(orderRemarks, 255),
-                    InsertGuid = insertGUID,
-                    StudyInstanceUid = studyInstanceUID,
-                    DicomrequestedProcedureId = dicomRequestedProc,
-                    DicomscheduledProcedureStepId = dicomScheduledProcStepId,
-                    OrderModalityId = orderModality,
-                    ScheduledAe = scheduledAE,
-                    CodeCpt = CodeCPT,
-                    CodeSnomed = CodeSNOMED,
-                    RecordedEmpRole = recordedEmpRole,
-                    SummaryTransmitted = summaryTransmitted,
-                    CodeLoinc = codeLOINC,
-                    RefProviderFirstName = RefProvFirst,
-                    RefProviderLastName = RefProvLast,
-                    RefProviderId = refProvId,
-                    RefProviderOrganizationName = refProvOrgName
-                };
-                eyeMDDbContext.EmrvisitOrders.Add(newVisitOrder);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
             }
