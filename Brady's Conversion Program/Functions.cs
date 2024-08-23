@@ -362,6 +362,7 @@ namespace Brady_s_Conversion_Program {
             var priorityXrefs = ffpmDbContext.MntPriorities.ToList();
             var patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
             var patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
+            var patientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
 
 
             foreach (var location in convDbContext.Locations) {
@@ -438,7 +439,7 @@ namespace Brady_s_Conversion_Program {
             });
             
             foreach (var patientInsurance in convDbContext.PatientInsurances) {
-                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances);
+                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
