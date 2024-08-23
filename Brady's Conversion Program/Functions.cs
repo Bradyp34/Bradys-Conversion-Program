@@ -480,8 +480,10 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var provider in convDbContext.Providers) {
-                ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress);
+                ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders);
             }
+            ffpmProviders.AddRange(ffpmProviders);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
@@ -804,7 +806,7 @@ namespace Brady_s_Conversion_Program {
 
                 var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
 
-                if (ffpmOrig != null) {
+                if (ffpmOrig == null) {
                     var newAppointmentType = new SchedulingAppointmentType {
                         Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
                         Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
@@ -1107,7 +1109,7 @@ namespace Brady_s_Conversion_Program {
 
                 var ffpmOrig = ffpmDbContext.InsInsuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
 
-                if (ffpmOrig != null) {
+                if (ffpmOrig == null) {
                     var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
                         InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
                         InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
@@ -2250,19 +2252,20 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
                 short? suffixInt = null;
-                var suffixXref = ffpmDbContext.MntSuffixes.FirstOrDefault(s => s.Suffix == provider.Suffix);
+                var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix);
                 if (suffixXref != null) {
                     suffixInt = suffixXref.SuffixId;
                 }
 
                 short? titleInt = null;
-                var titleXref = ffpmDbContext.MntTitles.FirstOrDefault(t => t.Title == provider.Title);
+                var titleXref = titleXrefs.FirstOrDefault(t => t.Title == provider.Title);
                 if (titleXref != null) {
                     titleInt = titleXref.TitleId;
                 }
@@ -2447,106 +2450,57 @@ namespace Brady_s_Conversion_Program {
                 #endregion taxonomys
 
 
-                var ffpmOrig = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == provider.OldProviderCode && p.FirstName == provider.FirstName 
-                                    && p.LastName == provider.LastName);
+                var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == provider.OldProviderCode);
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.FirstName = TruncateString(provider.FirstName, 50);
-                    ffpmOrig.MiddleName = TruncateString(provider.MiddleName, 10);
-                    ffpmOrig.LastName = TruncateString(provider.LastName, 50);
-                    ffpmOrig.ProviderCode = TruncateString(provider.OldProviderCode, 15);
-                    ffpmOrig.SuffixId = suffixInt;
-                    ffpmOrig.TitleId = titleInt;
-                    ffpmOrig.ProviderSsn = TruncateString(ssnString, 15);
-                    ffpmOrig.ProviderEin = TruncateString(einString, 15);
-                    ffpmOrig.ProviderUpin = TruncateString(upinString, 15);
-                    ffpmOrig.ProviderDob = dobDate;
-                    ffpmOrig.ProviderNpi = TruncateString(npiString, 10);
-                    ffpmOrig.IsActive = isActive;
-                    ffpmOrig.ClExpiration = clExpId;
-                    ffpmOrig.ClExpirationTypeId = -1;
-                    ffpmOrig.SpectacleExpiration = specExpId;
-                    ffpmOrig.SpectacleExpirationTypeId = specExpTypeId;
-                    ffpmOrig.LicenseIssuingStateId = stateId;
-                    ffpmOrig.ProviderLicenseNo = TruncateString(provider.LicenseNo, 15);
-                    ffpmOrig.PrimaryTaxonomyId = primaryTaxId;
-                    ffpmOrig.ProviderDeaNumber = TruncateString(provider.Deanumber, 10);
-                    ffpmOrig.ProviderSpecialityId = specialtyId;
+                if (ffpmOrig == null) {
+                    var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
+                        FirstName = TruncateString(provider.FirstName, 50),
+                        MiddleName = TruncateString(provider.MiddleName, 10),
+                        LastName = TruncateString(provider.LastName, 50),
+                        ProviderCode = TruncateString(provider.OldProviderCode, 15),
+                        SuffixId = suffixInt,
+                        TitleId = titleInt,
+                        ProviderSsn = TruncateString(ssnString, 15),
+                        ProviderEin = TruncateString(einString, 15),
+                        ProviderUpin = TruncateString(upinString, 15),
+                        ProviderDob = dobDate,
+                        ProviderNpi = TruncateString(npiString, 10),
+                        IsActive = isActive,
+                        IsReferringProvider = false,
+                        SignatureUrl = "",  // No value given, assumed not to require truncation
+                        GroupId = 0,
+                        SpectacleExpiration = specExpId,
+                        SpectacleExpirationTypeId = specExpTypeId,
+                        ClExpiration = clExpId,
+                        ClExpirationTypeId = -1,
+                        LicenseIssuingStateId = stateId,
+                        LicenseIssuingCountryId = countryId,
+                        ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
+                        PrimaryTaxonomyId = primaryTaxId,
 
-                    ffpmOrig.AlternateTaxonomy1Id = taxId1;
-                    ffpmOrig.AlternateTaxonomy2Id = taxId2;
-                    ffpmOrig.AlternateTaxonomy3Id = taxId3;
-                    ffpmOrig.AlternateTaxonomy4Id = taxId4;
-                    ffpmOrig.AlternateTaxonomy5Id = taxId5;
-                    ffpmOrig.AlternateTaxonomy6Id = taxId6;
-                    ffpmOrig.AlternateTaxonomy7Id = taxId7;
-                    ffpmOrig.AlternateTaxonomy8Id = taxId8;
-                    ffpmOrig.AlternateTaxonomy9Id = taxId9;
-                    ffpmOrig.AlternateTaxonomy10Id = taxId10;
-                    ffpmOrig.AlternateTaxonomy11Id = taxId11;
-                    ffpmOrig.AlternateTaxonomy12Id = taxId12;
-                    ffpmOrig.AlternateTaxonomy13Id = taxId13;
-                    ffpmOrig.AlternateTaxonomy14Id = taxId14;
-                    ffpmOrig.AlternateTaxonomy15Id = taxId15;
-                    ffpmOrig.AlternateTaxonomy16Id = taxId16;
-                    ffpmOrig.AlternateTaxonomy17Id = taxId17;
-                    ffpmOrig.AlternateTaxonomy18Id = taxId18;
-                    ffpmOrig.AlternateTaxonomy19Id = taxId19;
-                    ffpmOrig.AlternateTaxonomy20Id = taxId20;
-
-                    ffpmDbContext.SaveChanges();
-                    return;
+                        AlternateTaxonomy1Id = taxId1,
+                        AlternateTaxonomy2Id = taxId2,
+                        AlternateTaxonomy3Id = taxId3,
+                        AlternateTaxonomy4Id = taxId4,
+                        AlternateTaxonomy5Id = taxId5,
+                        AlternateTaxonomy6Id = taxId6,
+                        AlternateTaxonomy7Id = taxId7,
+                        AlternateTaxonomy8Id = taxId8,
+                        AlternateTaxonomy9Id = taxId9,
+                        AlternateTaxonomy10Id = taxId10,
+                        AlternateTaxonomy11Id = taxId11,
+                        AlternateTaxonomy12Id = taxId12,
+                        AlternateTaxonomy13Id = taxId13,
+                        AlternateTaxonomy14Id = taxId14,
+                        AlternateTaxonomy15Id = taxId15,
+                        AlternateTaxonomy16Id = taxId16,
+                        AlternateTaxonomy17Id = taxId17,
+                        AlternateTaxonomy18Id = taxId18,
+                        AlternateTaxonomy19Id = taxId19,
+                        AlternateTaxonomy20Id = taxId20
+                    };
+                    ffpmProviders.Add(newPatientProvider);
                 }
-
-                var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
-                    FirstName = TruncateString(provider.FirstName, 50),
-                    MiddleName = TruncateString(provider.MiddleName, 10),
-                    LastName = TruncateString(provider.LastName, 50),
-                    ProviderCode = TruncateString(provider.OldProviderCode, 15),
-                    SuffixId = suffixInt,
-                    TitleId = titleInt,
-                    ProviderSsn = TruncateString(ssnString, 15),
-                    ProviderEin = TruncateString(einString, 15),
-                    ProviderUpin = TruncateString(upinString, 15),
-                    ProviderDob = dobDate,
-                    ProviderNpi = TruncateString(npiString, 10),
-                    IsActive = isActive,
-                    IsReferringProvider = false,
-                    SignatureUrl = "",  // No value given, assumed not to require truncation
-                    GroupId = 0,
-                    SpectacleExpiration = specExpId,
-                    SpectacleExpirationTypeId = specExpTypeId,
-                    ClExpiration = clExpId,
-                    ClExpirationTypeId = -1,
-                    LicenseIssuingStateId = stateId,
-                    LicenseIssuingCountryId = countryId,
-                    ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
-                    PrimaryTaxonomyId = primaryTaxId,
-
-                    AlternateTaxonomy1Id = taxId1,
-                    AlternateTaxonomy2Id = taxId2,
-                    AlternateTaxonomy3Id = taxId3,
-                    AlternateTaxonomy4Id = taxId4,
-                    AlternateTaxonomy5Id = taxId5,
-                    AlternateTaxonomy6Id = taxId6,
-                    AlternateTaxonomy7Id = taxId7,
-                    AlternateTaxonomy8Id = taxId8,
-                    AlternateTaxonomy9Id = taxId9,
-                    AlternateTaxonomy10Id = taxId10,
-                    AlternateTaxonomy11Id = taxId11,
-                    AlternateTaxonomy12Id = taxId12,
-                    AlternateTaxonomy13Id = taxId13,
-                    AlternateTaxonomy14Id = taxId14,
-                    AlternateTaxonomy15Id = taxId15,
-                    AlternateTaxonomy16Id = taxId16,
-                    AlternateTaxonomy17Id = taxId17,
-                    AlternateTaxonomy18Id = taxId18,
-                    AlternateTaxonomy19Id = taxId19,
-                    AlternateTaxonomy20Id = taxId20
-                };
-
-                ffpmDbContext.DmgProviders.Add(newPatientProvider);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
