@@ -404,7 +404,7 @@ namespace Brady_s_Conversion_Program {
             });
             
             foreach (var insurance in convDbContext.Insurances) {
-                ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress);
+                ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress, insurances);
             } // done, did not use a local list
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
@@ -438,7 +438,7 @@ namespace Brady_s_Conversion_Program {
             });
             
             foreach (var patientInsurance in convDbContext.PatientInsurances) {
-                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress);
+                ConvertPatientInsurance(patientInsurance, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
@@ -991,7 +991,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+            List<InsInsuranceCompany> insuranceCompanies) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1094,60 +1095,38 @@ namespace Brady_s_Conversion_Program {
                 var ffpmOrig = ffpmDbContext.InsInsuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
 
                 if (ffpmOrig != null) {
-                    ffpmOrig.InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100);
-                    ffpmOrig.InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100);
-                    ffpmOrig.InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50);
-                    ffpmOrig.InsCompanyStateId = stateId;
-                    ffpmOrig.InsCompanyZip = TruncateString(insZip, 10);
-                    ffpmOrig.InsCompanyPhone = TruncateString(insPhone, 25);
-                    ffpmOrig.InsCompanyFax = TruncateString(insFax, 25);
-                    ffpmOrig.InsCompanyCode = TruncateString(code, 15);
-                    ffpmOrig.InsCompanyEmail = TruncateString(insEmail, 25);
-                    ffpmOrig.InsCompanyPayerId = TruncateString(payerId, 25);
-                    ffpmOrig.IsActive = active;
-                    ffpmOrig.IsCollectionsInsurance = collections;
-                    ffpmOrig.IsDmercPlaceOfService = dmerc;
-                    ffpmOrig.InsCompanyClaimTypeId = claimTypeId;
-                    ffpmOrig.InsCompanyPolicyTypeId = policyTypeId;
-                    ffpmOrig.InsCompanyCarrierTypeId = carrierTypeId;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                    var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
+                        InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
+                        InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
+                        InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100),
+                        InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50),
+                        InsCompanyStateId = stateId,
+                        InsCompanyZip = TruncateString(insZip, 10),
+                        InsCompanyPhone = TruncateString(insPhone, 25),
+                        InsCompanyFax = TruncateString(insFax, 25),
+                        InsCompanyCode = TruncateString(code, 15),
+                        InsCompanyEmail = TruncateString(insEmail, 25),
+                        InsCompanyPayerId = TruncateString(payerId, 25),
+                        IsActive = active,
+                        IsCollectionsInsurance = collections,
+                        IsDmercPlaceOfService = dmerc,
+                        CategoryId = 0,
+                        ResponsibilityId = 0,
+                        PaymentTransaction = "",  // No truncation specified but should be managed if needed
+                        AdjustmentTransaction = "",  // Ditto
+                        AcceptAssignment = true,
+                        PrintAsOtherInsurance = true,
+                        AllowEligibilityChecks = true,
+                        ElectornicEnabled = true,
+                        ApplyShiftLogic = true,
+                        PaperClaimsOnly = false,
+                        IsCompanyInsurance = false,
+                        InsCompanyClaimTypeId = claimTypeId,
+                        InsCompanyPolicyTypeId = policyTypeId,
+                        InsCompanyCarrierTypeId = carrierTypeId
+                    };
+                    insuranceCompanies.Add(newInsuranceCompany);
                 }
-
-
-                var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
-                    InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
-                    InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
-                    InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100),
-                    InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50),
-                    InsCompanyStateId = stateId,
-                    InsCompanyZip = TruncateString(insZip, 10),
-                    InsCompanyPhone = TruncateString(insPhone, 25),
-                    InsCompanyFax = TruncateString(insFax, 25),
-                    InsCompanyCode = TruncateString(code, 15),
-                    InsCompanyEmail = TruncateString(insEmail, 25),
-                    InsCompanyPayerId = TruncateString(payerId, 25),
-                    IsActive = active,
-                    IsCollectionsInsurance = collections,
-                    IsDmercPlaceOfService = dmerc,
-                    CategoryId = 0,
-                    ResponsibilityId = 0,
-                    PaymentTransaction = "",  // No truncation specified but should be managed if needed
-                    AdjustmentTransaction = "",  // Ditto
-                    AcceptAssignment = true,
-                    PrintAsOtherInsurance = true,
-                    AllowEligibilityChecks = true,
-                    ElectornicEnabled = true,
-                    ApplyShiftLogic = true,
-                    PaperClaimsOnly = false,
-                    IsCompanyInsurance = false,
-                    InsCompanyClaimTypeId = claimTypeId,
-                    InsCompanyPolicyTypeId = policyTypeId,
-                    InsCompanyCarrierTypeId = carrierTypeId
-                };
-                // there are so few insurance companies that I think this method is better suited
-                ffpmDbContext.InsInsuranceCompanies.Add(newInsuranceCompany);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the insurance with ID: {insurance.Id}. Error: {ex.Message}");
@@ -1912,7 +1891,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientInsurance(Models.PatientInsurance patientInsurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress) {
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
+                List<DmgPatientInsurance> patientInsurances) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -1924,18 +1904,18 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv Patient ID not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
-                var ConvPatient = convDbContext.Patients.Find(oldpatientId);
+                var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == oldpatientId);
                 if (ConvPatient == null) {
                     logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
-                DmgPatient? ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
+                DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                 if (ffpmPatient == null) {
                     logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
                 }
-                var patientInsuranceCompany = ffpmDbContext.InsInsuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == patientInsurance.InsuranceCompanyCode);
+                var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == patientInsurance.InsuranceCompanyCode);
                 if (patientInsuranceCompany == null) {
                     logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                     return;
@@ -2012,45 +1992,27 @@ namespace Brady_s_Conversion_Program {
                 }
 
 
-                var ffpmOrig = ffpmDbContext.DmgPatientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
+                var ffpmOrig = patientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
 
-                if (ffpmOrig != null) {
-                    ffpmOrig.StartDate = startDate;
-                    ffpmOrig.EndDate = endDate;
-                    ffpmOrig.Copay = copay;
-                    ffpmOrig.Deductible = deductible;
-                    ffpmOrig.Rank = rank;
-                    ffpmOrig.PlanId = plan_id;
-                    ffpmOrig.IsMedicalInsurance = medical;
-                    ffpmOrig.IsVisionInsurance = vision;
-                    ffpmOrig.IsAdditionalInsurance = isAdditional;
-                    ffpmOrig.InsuranceCompanyId = insCompId;
-                    ffpmOrig.PolicyNumber = TruncateString(patientInsurance.Cert, 50);
-                    ffpmOrig.GroupId = TruncateString(patientInsurance.Group, 50);
-                    ffpmOrig.IsActive = active;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                if (ffpmOrig == null) {
+                    var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
+                        PatientId = ffpmPatient.PatientId,
+                        IsActive = active,
+                        StartDate = startDate,
+                        EndDate = endDate,
+                        Copay = copay,
+                        Deductible = deductible,
+                        Rank = rank,
+                        PlanId = plan_id,
+                        IsMedicalInsurance = medical,
+                        IsVisionInsurance = vision,
+                        IsAdditionalInsurance = isAdditional,
+                        InsuranceCompanyId = insCompId,
+                        PolicyNumber = TruncateString(patientInsurance.Cert, 50),
+                        GroupId = TruncateString(patientInsurance.Group, 50)
+                    };
+                    patientInsurances.Add(newPatientInsurance);
                 }
-
-                var newPatientInsurance = new Brady_s_Conversion_Program.ModelsA.DmgPatientInsurance {
-                    PatientId = ffpmPatient.PatientId,
-                    IsActive = active,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Copay = copay,
-                    Deductible = deductible,
-                    Rank = rank,
-                    PlanId = plan_id,
-                    IsMedicalInsurance = medical,
-                    IsVisionInsurance = vision,
-                    IsAdditionalInsurance = isAdditional,
-                    InsuranceCompanyId = insCompId,
-                    PolicyNumber = TruncateString(patientInsurance.Cert, 50),
-                    GroupId = TruncateString(patientInsurance.Group, 50),
-                    
-                };
-                ffpmDbContext.DmgPatientInsurances.Add(newPatientInsurance);
-                ffpmDbContext.SaveChanges();
             }
             catch (Exception ex) {
                 logger.Log($"Conv: Conv An error occurred while converting the patient insurance with ID: {patientInsurance.Id}. Error: {ex.Message}");
