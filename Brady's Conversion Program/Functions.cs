@@ -421,6 +421,8 @@ namespace Brady_s_Conversion_Program {
             foreach (var patientAlert in convDbContext.PatientAlerts) {
                 ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
             }
+            ffpmDbContext.DmgPatientAlerts.AddRange(patientAlerts);
+            ffpmDbContext.SaveChanges();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
