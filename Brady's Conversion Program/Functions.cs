@@ -569,14 +569,14 @@ namespace Brady_s_Conversion_Program {
                 try { // all patients need first and last name and for active to be yes or null (not no)
                     if (patient.LastName == null) {
                         logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
-                        return;
+                        break;;
                     }
                     else if (patient.FirstName == null) {
                         logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
-                        return;
+                        break;;
                     }
                     else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
-                        return;
+                        break;;
                     }
                     string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
                     if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
@@ -1092,7 +1092,7 @@ namespace Brady_s_Conversion_Program {
                     foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
                         if (company.InsCompanyName == insurance.InsCompanyName) {
                             logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
-                            return;
+                            break;
                         }
                     }
 
@@ -1246,7 +1246,7 @@ namespace Brady_s_Conversion_Program {
                     }
                     else {
                         logger.Log($"Conv: Conv Location Name is null for location with ID: {location.Id}");
-                        return;
+                        break;
                     }
 
                     #region taxonomys
@@ -1435,13 +1435,13 @@ namespace Brady_s_Conversion_Program {
                     var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
-                        return;
+                        break;
                     }
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {guarantor.Id}");
-                        return;
+                        break;
                     }
 
                     string ssn = "";
@@ -1581,7 +1581,7 @@ namespace Brady_s_Conversion_Program {
                             var ConvPatient = convPatients.FirstOrDefault(p => p.Id == address.Id);
                             if (ConvPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             short? tempSuffixID = null;
@@ -1594,13 +1594,13 @@ namespace Brady_s_Conversion_Program {
                                 (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.SuffixId == tempSuffixID));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var ffpmPatientAdditional = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                             if (ffpmPatientAdditional == null) {
                                 logger.Log($"Conv: FFPM Patient additional not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             bool isPrimary = false;
@@ -1661,28 +1661,28 @@ namespace Brady_s_Conversion_Program {
                             var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == address.Id);
                             if (convGuarantor == null) {
                                 logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for guarantor with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var ffpmPatient2 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                             if (ffpmPatient2 == null) {
                                 logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
                             if (ffpmGuarantor == null) {
                                 logger.Log($"Conv: FFPM Guarantor not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId);
                             if (otherAddress != null) {
                                 logger.Log($"Conv: Conv duplicate guarantor address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             if (otherAddress == null) {
@@ -1708,12 +1708,12 @@ namespace Brady_s_Conversion_Program {
                             var billingLocation = convLocations.FirstOrDefault(l => l.OldLocationId == address.Id.ToString());
                             if (billingLocation == null) {
                                 logger.Log($"Conv: Conv no billing location for location for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var ffpmLocation = locations.FirstOrDefault(l => l.Name == billingLocation.LocationName);
                             if (ffpmLocation == null) {
                                 logger.Log($"Conv: Conv no FFPM billing location for location for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
 
@@ -1740,13 +1740,13 @@ namespace Brady_s_Conversion_Program {
 
                             if (convProvider == null) {
                                 logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode);
                             if (ffpmProvider == null) {
                                 logger.Log($"Conv: FFPM Provider not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var newDmgOtherAddress2 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1771,14 +1771,14 @@ namespace Brady_s_Conversion_Program {
                             var convReferral = convDbContext.Referrals.Find(address.Id);
                             if (convReferral == null) {
                                 logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var ffpmReferral = referringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
                                                             && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
                             if (ffpmReferral == null) {
                                 logger.Log($"Conv: FFPM Referral not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var newDmgOtherAddress3 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1800,18 +1800,18 @@ namespace Brady_s_Conversion_Program {
                             var localConvPatient = convPatients.FirstOrDefault(cp => cp.Id == address.Id);
                             if (localConvPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var ffpmPatient3 = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == localConvPatient.OldPatientAccountNumber) ||
                                                 p.FirstName == localConvPatient.FirstName && p.LastName == localConvPatient.LastName && p.MiddleName == localConvPatient.MiddleName);
                             if (ffpmPatient3 == null) {
                                 logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
                             var ffpmPatientAdditional2 = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient3.PatientId);
                             if (ffpmPatientAdditional2 == null) {
                                 logger.Log($"Conv: Conv Patient additional not found for address with ID: {address.Id}");
-                                return;
+                                break;
                             }
 
                             var newOtherAddress4 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1859,18 +1859,18 @@ namespace Brady_s_Conversion_Program {
                     }
                     else {
                         logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
-                        return;
+                        break;
                     }
                     var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
                     if (ConvPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
-                        return;
+                        break;
                     }
                     DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                         (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
-                        return;
+                        break;
                     }
                     short? priorityID = null;
                     var priorityXref = priorityXrefs.FirstOrDefault(p => p.PriorityId == priorityID);
@@ -1949,13 +1949,13 @@ namespace Brady_s_Conversion_Program {
                     var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
-                        return;
+                        break;
                     }
                     DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
-                        return;
+                        break;
                     }
                     short? imageType = null;
                     if (patientDocument.DocumentImageType != null) {
@@ -2017,23 +2017,23 @@ namespace Brady_s_Conversion_Program {
                     }
                     else {
                         logger.Log($"Conv: Conv Patient ID not found for patient insurance with ID: {patientInsurance.Id}");
-                        return;
+                        break;
                     }
                     var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == oldpatientId);
                     if (ConvPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
-                        return;
+                        break;
                     }
                     DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                     (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
-                        return;
+                        break;
                     }
                     var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == patientInsurance.InsuranceCompanyCode);
                     if (patientInsuranceCompany == null) {
                         logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
-                        return;
+                        break;
                     }
 
                     DateTime? startDate = null;
@@ -2150,7 +2150,7 @@ namespace Brady_s_Conversion_Program {
                     int patientId = -1;
                     if (patientNote.PatientId == null) {
                         logger.Log($"Conv: Conv Patient ID is null for patient note with ID: {patientNote.Id}");
-                        return;
+                        break;
                     }
                     else {
                         if (int.TryParse(patientNote.PatientId, out int temp)) {
@@ -2158,19 +2158,19 @@ namespace Brady_s_Conversion_Program {
                         }
                         else {
                             logger.Log($"Conv: Conv Patient ID not found for patient note with ID: {patientNote.Id}");
-                            return;
+                            break;
                         }
                     }
                     var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
-                        return;
+                        break;
                     }
                     DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
-                        return;
+                        break;
                     }
 
 
@@ -2236,7 +2236,7 @@ namespace Brady_s_Conversion_Program {
                     var convPatientInsurance = convPatientInsurances.FirstOrDefault(cp => cp.Id == policyHolder.PatientInsuranceId);
                     if (convPatientInsurance == null) {
                         logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     int policyPatientID = -1;
                     if (policyHolder.OldPolicyHolderId != null) {
@@ -2246,37 +2246,37 @@ namespace Brady_s_Conversion_Program {
                     }
                     else {
                         logger.Log($"Conv: Policy holder ID is null for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     var convInsurance = convInsurances.FirstOrDefault(ci => ci.InsuranceCompanyCode == convPatientInsurance.InsuranceCompanyCode);
                     if (convInsurance == null) {
                         logger.Log($"Conv: Conv Insurance company not found for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     var ffpmInsuranceCompany = insurances.FirstOrDefault(i => i.InsCompanyCode == convInsurance.InsuranceCompanyCode);
                     if (ffpmInsuranceCompany == null) {
                         logger.Log($"Conv: FFPM Insurance company not found for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
                     if (convPolicyPatient == null) {
                         logger.Log($"Conv: Conv Patient (subject) not found for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     var FFPMPolicyPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPolicyPatient.Id.ToString());
                     if (FFPMPolicyPatient == null) {
                         logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
-                        return;
+                        break;
                     }
                     var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId);
                     if (ffpmPatientInsurance == null) {
                         logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
-                        return;
+                        break;
                     }
                     int? patientInsuranceID = (int)ffpmPatientInsurance.PatientInsuranceId;
                     if (ffpmPatientInsurance.IsSubscriberExistingPatient == true) {
                         ffpmPatientInsurance.SubscriberId = FFPMPolicyPatient.PatientId;
-                        return;
+                        break;
                     }
 
 
@@ -2639,13 +2639,13 @@ namespace Brady_s_Conversion_Program {
                     var convPatient = convPatients.FirstOrDefault(p => p.Id == recall.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
-                        return;
+                        break;
                     }
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
-                        return;
+                        break;
                     }
 
                     int appointmentType = -1;
@@ -3134,18 +3134,18 @@ namespace Brady_s_Conversion_Program {
                     var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.Id);
                     if (ConvPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
-                        return;
+                        break;
                     }
                     DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
                     (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
-                        return;
+                        break;
                     }
                     DmgPatientAddress? address = patientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                     if (address == null) {
                         logger.Log($"Conv: FFPM Patient Address not found for phone with ID: {phone.Id}");
-                        return;
+                        break;
                     }
 
                     if (phone.Type != null) {
@@ -5641,695 +5641,186 @@ namespace Brady_s_Conversion_Program {
 
 
                 #region diagTests
-                string gonioAngleDepthSuOd = "";
-                if (diagTest.GonioAngleDepthSuOd != null) {
-                    gonioAngleDepthSuOd = diagTest.GonioAngleDepthSuOd;
-                }
-                string gonioAngleDepthMedialOd = "";
-                if (diagTest.GonioAngleDepthMedialOd != null) {
-                    gonioAngleDepthMedialOd = diagTest.GonioAngleDepthMedialOd;
-                }
-                string gonioAngleDepthInOd = "";
-                if (diagTest.GonioAngleDepthInOd != null) {
-                    gonioAngleDepthInOd = diagTest.GonioAngleDepthInOd;
-                }
-                string gonioAngleDepthTemporalOd = "";
-                if (diagTest.GonioAngleDepthTemporalOd != null) {
-                    gonioAngleDepthTemporalOd = diagTest.GonioAngleDepthTemporalOd;
-                }
-                string gonioAngleStructureSuOd = "";
-                if (diagTest.GonioAngleStructureSuOd != null) {
-                    gonioAngleStructureSuOd = diagTest.GonioAngleStructureSuOd;
-                }
-                string gonioAngleStructureMedialOd = "";
-                if (diagTest.GonioAngleStructureMedialOd != null) {
-                    gonioAngleStructureMedialOd = diagTest.GonioAngleStructureMedialOd;
-                }
-                string gonioAngleStructureInOd = "";
-                if (diagTest.GonioAngleStructureInOd != null) {
-                    gonioAngleStructureInOd = diagTest.GonioAngleStructureInOd;
-                }
-                string gonioAngleStructureTemporalOd = "";
-                if (diagTest.GonioAngleStructureTemporalOd != null) {
-                    gonioAngleStructureTemporalOd = diagTest.GonioAngleStructureTemporalOd;
-                }
-                string gonioAngleDepthSuOs = "";
-                if (diagTest.GonioAngleDepthSuOs != null) {
-                    gonioAngleDepthSuOs = diagTest.GonioAngleDepthSuOs;
-                }
-                string gonioAngleDepthMedialOs = "";
-                if (diagTest.GonioAngleDepthMedialOs != null) {
-                    gonioAngleDepthMedialOs = diagTest.GonioAngleDepthMedialOs;
-                }
-                string gonioAngleDepthInOs = "";
-                if (diagTest.GonioAngleDepthInOs != null) {
-                    gonioAngleDepthInOs = diagTest.GonioAngleDepthInOs;
-                }
-                string gonioAngleDepthTemporalOs = "";
-                if (diagTest.GonioAngleDepthTemporalOs != null) {
-                    gonioAngleDepthTemporalOs = diagTest.GonioAngleDepthTemporalOs;
-                }
-                string gonioAngleStructureSuOs = "";
-                if (diagTest.GonioAngleStructureSuOs != null) {
-                    gonioAngleStructureSuOs = diagTest.GonioAngleStructureSuOs;
-                }
-                string gonioAngleStructureMedialOs = "";
-                if (diagTest.GonioAngleStructureMedialOs != null) {
-                    gonioAngleStructureMedialOs = diagTest.GonioAngleStructureMedialOs;
-                }
-                string gonioAngleStructureInOs = "";
-                if (diagTest.GonioAngleStructureInOs != null) {
-                    gonioAngleStructureInOs = diagTest.GonioAngleStructureInOs;
-                }
-                string gonioAngleStructureTemporalOs = "";
-                if (diagTest.GonioAngleStructureTemporalOs != null) {
-                    gonioAngleStructureTemporalOs = diagTest.GonioAngleStructureTemporalOs;
-                }
-                string gonioComments = "";
-                if (diagTest.GonioComments != null) {
-                    gonioComments = diagTest.GonioComments;
-                }
-                short mBalanceScOrtho = -1;
-                if (short.TryParse(diagTest.MbalanceScortho, out short temp)) {
-                    mBalanceScOrtho = temp;
-                }
-                string mBalanceHorizScPriGaze = "";
-                if (diagTest.MbalanceHorizScpriGaze != null) {
-                    mBalanceHorizScPriGaze = diagTest.MbalanceHorizScpriGaze;
-                }
-                string mBalanceHorizTypeScPriGaze = "";
-                if (diagTest.MbalanceHorizTypeScpriGaze != null) {
-                    mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScpriGaze;
-                }
-                string mBalanceVertScPriGaze = "";
-                if (diagTest.MbalanceVertScpriGaze != null) {
-                    mBalanceVertScPriGaze = diagTest.MbalanceVertScpriGaze;
-                }
-                string mBalanceVertTypeScPriGaze = "";
-                if (diagTest.MbalanceVertTypeScpriGaze != null) {
-                    mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScpriGaze;
-                }
-                string mBalanceHorizScupGaze = "";
-                if (diagTest.MbalanceHorizScupGaze != null) {
-                    mBalanceHorizScupGaze = diagTest.MbalanceHorizScupGaze;
-                }
-                string mBalanceHorizTypeScupGaze = "";
-                if (diagTest.MbalanceHorizTypeScupGaze != null) {
-                    mBalanceHorizTypeScupGaze = diagTest.MbalanceHorizTypeScupGaze;
-                }
-                string mBalanceVertScupGaze = "";
-                if (diagTest.MbalanceVertScupGaze != null) {
-                    mBalanceVertScupGaze = diagTest.MbalanceVertScupGaze;
-                }
-                string mBalanceVertTypeScupGaze = "";
-                if (diagTest.MbalanceVertTypeScupGaze != null) {
-                    mBalanceVertTypeScupGaze = diagTest.MbalanceVertTypeScupGaze;
-                }
-                string mBalanceHorizScdownGaze = "";
-                if (diagTest.MbalanceHorizScdownGaze != null) {
-                    mBalanceHorizScdownGaze = diagTest.MbalanceHorizScdownGaze;
-                }
-                string mBalanceHorizTypeScdownGaze = "";
-                if (diagTest.MbalanceHorizTypeScdownGaze != null) {
-                    mBalanceHorizTypeScdownGaze = diagTest.MbalanceHorizTypeScdownGaze;
-                }
-                string mBalanceVertScdownGaze = "";
-                if (diagTest.MbalanceVertScdownGaze != null) {
-                    mBalanceVertScdownGaze = diagTest.MbalanceVertScdownGaze;
-                }
-                string mBalanceVertTypeScdownGaze = "";
-                if (diagTest.MbalanceVertTypeScdownGaze != null) {
-                    mBalanceVertTypeScdownGaze = diagTest.MbalanceVertTypeScdownGaze;
-                }
-                string mBalanceHorizScRtGaze = "";
-                if (diagTest.MbalanceHorizScrtGaze != null) {
-                    mBalanceHorizScRtGaze = diagTest.MbalanceHorizScrtGaze;
-                }
-                string mBalanceHorizTypeScRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScrtGaze != null) {
-                    mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScrtGaze;
-                }
-                string mBalanceVertScRtGaze = "";
-                if (diagTest.MbalanceVertScrtGaze != null) {
-                    mBalanceVertScRtGaze = diagTest.MbalanceVertScrtGaze;
-                }
-                string mBalanceVertTypeScRtGaze = "";    
-                if (diagTest.MbalanceVertTypeScrtGaze != null) {
-                    mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScrtGaze;
-                }
-                string mBalanceHorizScLtGaze = "";
-                if (diagTest.MbalanceHorizScltGaze != null) {
-                    mBalanceHorizScLtGaze = diagTest.MbalanceHorizScltGaze;
-                }
-                string mBalanceHorizTypeScLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScltGaze != null) {
-                    mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScltGaze;
-                }
-                string mBalanceVertScLtGaze = "";
-                if (diagTest.MbalanceVertScltGaze != null) {
-                    mBalanceVertScLtGaze = diagTest.MbalanceVertScltGaze;
-                }
-                string mBalanceVertTypeScLtGaze = "";
-                if (diagTest.MbalanceVertTypeScltGaze != null) {
-                    mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScltGaze;
-                }
-                short mBalanceCCOrtho = -1;
-                if (short.TryParse(diagTest.MbalanceCcortho, out short temp3)) {
-                    mBalanceCCOrtho = temp3;
-                }
-                string mBalanceHorizCcPriGaze = "";
-                if (diagTest.MbalanceHorizCcpriGaze != null) {
-                    mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcpriGaze;
-                }
-                string mBalanceHorizTypeCcPriGaze = "";
-                if (diagTest.MbalanceHorizTypeCcpriGaze != null) {
-                    mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcpriGaze;
-                }
-                string mBalanceVertCcPriGaze = "";
-                if (diagTest.MbalanceVertCcpriGaze != null) {
-                    mBalanceVertCcPriGaze = diagTest.MbalanceVertCcpriGaze;
-                }
-                string mBalanceVertTypeCcPriGaze = "";
-                if (diagTest.MbalanceVertTypeCcpriGaze != null) {
-                    mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcpriGaze;
-                }
-                string mBalanceHorizCcupGaze = "";
-                if (diagTest.MbalanceHorizCcupGaze != null) {
-                    mBalanceHorizCcupGaze = diagTest.MbalanceHorizCcupGaze;
-                }
-                string mBalanceHorizTypeCcupGaze = "";
-                if (diagTest.MbalanceHorizTypeCcupGaze != null) {
-                    mBalanceHorizTypeCcupGaze = diagTest.MbalanceHorizTypeCcupGaze;
-                }
-                string mBalanceVertCcupGaze = "";
-                if (diagTest.MbalanceVertCcupGaze != null) {
-                    mBalanceVertCcupGaze = diagTest.MbalanceVertCcupGaze;
-                }
-                string mBalanceVertTypeCcupGaze = "";
-                if (diagTest.MbalanceVertTypeCcupGaze != null) {
-                    mBalanceVertTypeCcupGaze = diagTest.MbalanceVertTypeCcupGaze;
-                }
-                string mBalanceHorizCcdownGaze = "";
-                if (diagTest.MbalanceHorizCcdownGaze != null) {
-                    mBalanceHorizCcdownGaze = diagTest.MbalanceHorizCcdownGaze;
-                }
-                string mBalanceHorizTypeCcdownGaze = "";
-                if (diagTest.MbalanceHorizTypeCcdownGaze != null) {
-                    mBalanceHorizTypeCcdownGaze = diagTest.MbalanceHorizTypeCcdownGaze;
-                }
-                string mBalanceVertCcdownGaze = "";
-                if (diagTest.MbalanceVertCcdownGaze != null) {
-                    mBalanceVertCcdownGaze = diagTest.MbalanceVertCcdownGaze;
-                }
-                string mBalanceVertTypeCcdownGaze = "";
-                if (diagTest.MbalanceVertTypeCcdownGaze != null) {
-                    mBalanceVertTypeCcdownGaze = diagTest.MbalanceVertTypeCcdownGaze;
-                }
-                string mBalanceHorizCcRtGaze = "";
-                if (diagTest.MbalanceHorizCcrtGaze != null) {
-                    mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcrtGaze;
-                }
-                string mBalanceHorizTypeCcRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcrtGaze != null) {
-                    mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcrtGaze;
-                }
-                string mBalanceVertCcRtGaze = "";
-                if (diagTest.MbalanceVertCcrtGaze != null) {
-                    mBalanceVertCcRtGaze = diagTest.MbalanceVertCcrtGaze;
-                }
-                string mBalanceVertTypeCcRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcrtGaze != null) {
-                    mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcrtGaze;
-                }
-                string mBalanceHorizCcLtGaze = "";
-                if (diagTest.MbalanceHorizCcltGaze != null) {
-                    mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcltGaze;
-                }
-                string mBalanceHorizTypeCcLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcltGaze != null) {
-                    mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcltGaze;
-                }
-                string mBalanceVertCcLtGaze = "";
-                if (diagTest.MbalanceVertCcltGaze != null) {
-                    mBalanceVertCcLtGaze = diagTest.MbalanceVertCcltGaze;
-                }
-                string mBalanceVertTypeCcLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcltGaze != null) {
-                    mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze;
-                }
-                string mBalanceMethod = "";
-                if (diagTest.MbalanceMethod != null) {
-                    mBalanceMethod = diagTest.MbalanceMethod;
-                }
-                string gonioPigmentOd = "";
-                if (diagTest.GonioPigmentOd != null) {
-                    gonioPigmentOd = diagTest.GonioPigmentOd;
-                }
-                string gonioPigmentOs = "";
-                if (diagTest.GonioPigmentOs != null) {
-                    gonioPigmentOs = diagTest.GonioPigmentOs;
-                }
-                string mBalanceScType = "";
-                if (diagTest.MbalanceSctype != null) {
-                    mBalanceScType = diagTest.MbalanceSctype;
-                }
-                string mBalanceCcType = "";
-                if (diagTest.MbalanceCctype != null) {
-                    mBalanceCcType = diagTest.MbalanceCctype;
-                }
-                string mbalanceHorizScupRtGaze = "";
-                if (diagTest.MbalanceHorizScupRtGaze != null) {
-                    mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze;
-                }
-                string mBalancehorizTypeScupRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScupRtGaze != null) {
-                    mBalancehorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze;
-                }
-                string mBalanceVertScupRtGaze = "";
-                if (diagTest.MbalanceVertScupRtGaze != null) {
-                    mBalanceVertScupRtGaze = diagTest.MbalanceVertScupRtGaze;
-                }
-                string mBalanceVertTypeScupRtGaze = "";
-                if (diagTest.MbalanceVertTypeScupRtGaze != null) {
-                    mBalanceVertTypeScupRtGaze = diagTest.MbalanceVertTypeScupRtGaze;
-                }
-                string mBalanceHorizScupLtGaze = "";
-                if (diagTest.MbalanceHorizScupLtGaze != null) {
-                    mBalanceHorizScupLtGaze = diagTest.MbalanceHorizScupLtGaze;
-                }
-                string mBalanceHorizTypeScupLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScupLtGaze != null) {
-                    mBalanceHorizTypeScupLtGaze = diagTest.MbalanceHorizTypeScupLtGaze;
-                }
-                string mBalanceVertScupLtGaze = "";
-                if (diagTest.MbalanceVertScupLtGaze != null) {
-                    mBalanceVertScupLtGaze = diagTest.MbalanceVertScupLtGaze;
-                }
-                string mBalanceVertTypeScupLtGaze = "";
-                if (diagTest.MbalanceVertTypeScupLtGaze != null) {
-                    mBalanceVertTypeScupLtGaze = diagTest.MbalanceVertTypeScupLtGaze;
-                }
-                string mBalanceHorizScdownRtGaze = "";
-                if (diagTest.MbalanceHorizScdownRtGaze != null) {
-                    mBalanceHorizScdownRtGaze = diagTest.MbalanceHorizScdownRtGaze;
-                }
-                string mBalanceHorizTypeScdownRtGaze = "";
-                if (diagTest.MbalanceHorizTypeScdownRtGaze != null) {
-                    mBalanceHorizTypeScdownRtGaze = diagTest.MbalanceHorizTypeScdownRtGaze;
-                }
-                string mBalanceVertScdownRtGaze = "";
-                if (diagTest.MbalanceVertScdownRtGaze != null) {
-                    mBalanceVertScdownRtGaze = diagTest.MbalanceVertScdownRtGaze;
-                }
-                string mBalanceVertTypeScdownRtGaze = "";
-                if (diagTest.MbalanceVertTypeScdownRtGaze != null) {
-                    mBalanceVertTypeScdownRtGaze = diagTest.MbalanceVertTypeScdownRtGaze;
-                }
-                string mBalanceHorizScdownLtGaze = "";
-                if (diagTest.MbalanceHorizScdownLtGaze != null) {
-                    mBalanceHorizScdownLtGaze = diagTest.MbalanceHorizScdownLtGaze;
-                }
-                string mBalanceHorizTypeScdownLtGaze = "";
-                if (diagTest.MbalanceHorizTypeScdownLtGaze != null) {
-                    mBalanceHorizTypeScdownLtGaze = diagTest.MbalanceHorizTypeScdownLtGaze;
-                }
-                string mBalanceVertScdownLtGaze = "";
-                if (diagTest.MbalanceVertScdownLtGaze != null) {
-                    mBalanceVertScdownLtGaze = diagTest.MbalanceVertScdownLtGaze;
-                }
-                string mBalanceVertTypeScdownLtGaze = "";
-                if (diagTest.MbalanceVertTypeScdownLtGaze != null) {
-                    mBalanceVertTypeScdownLtGaze = diagTest.MbalanceVertTypeScdownLtGaze;
-                }
-                string mBalanceHorizCcupRtGaze = "";
-                if (diagTest.MbalanceHorizCcupRtGaze != null) {
-                    mBalanceHorizCcupRtGaze = diagTest.MbalanceHorizCcupRtGaze;
-                }
-                string mBalanceHorizTypeCcupRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcupRtGaze != null) {
-                    mBalanceHorizTypeCcupRtGaze = diagTest.MbalanceHorizTypeCcupRtGaze;
-                }
-                string mBalanceVertCcupRtGaze = "";
-                if (diagTest.MbalanceVertCcupRtGaze != null) {
-                    mBalanceVertCcupRtGaze = diagTest.MbalanceVertCcupRtGaze;
-                }
-                string mBalanceVertTypeCcupRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcupRtGaze != null) {
-                    mBalanceVertTypeCcupRtGaze = diagTest.MbalanceVertTypeCcupRtGaze;
-                }
-                string mBalanceHorizCcupLtGaze = "";
-                if (diagTest.MbalanceHorizCcupLtGaze != null) {
-                    mBalanceHorizCcupLtGaze = diagTest.MbalanceHorizCcupLtGaze;
-                }
-                string mBalanceHorizTypeCcupLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcupLtGaze != null) {
-                    mBalanceHorizTypeCcupLtGaze = diagTest.MbalanceHorizTypeCcupLtGaze;
-                }
-                string mBalanceVertCcupLtGaze = "";
-                if (diagTest.MbalanceVertCcupLtGaze != null) {
-                    mBalanceVertCcupLtGaze = diagTest.MbalanceVertCcupLtGaze;
-                }
-                string mBalanceVertTypeCcupLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcupLtGaze != null) {
-                    mBalanceVertTypeCcupLtGaze = diagTest.MbalanceVertTypeCcupLtGaze;
-                }
-                string mBalanceHorizCcdownRtGaze = "";
-                if (diagTest.MbalanceHorizCcdownRtGaze != null) {
-                    mBalanceHorizCcdownRtGaze = diagTest.MbalanceHorizCcdownRtGaze;
-                }
-                string mBalanceHorizTypeCcdownRtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcdownRtGaze != null) {
-                    mBalanceHorizTypeCcdownRtGaze = diagTest.MbalanceHorizTypeCcdownRtGaze;
-                }
-                string mBalanceVertCcdownRtGaze = "";
-                if (diagTest.MbalanceVertCcdownRtGaze != null) {
-                    mBalanceVertCcdownRtGaze = diagTest.MbalanceVertCcdownRtGaze;
-                }
-                string mBalanceVertTypeCcdownRtGaze = "";
-                if (diagTest.MbalanceVertTypeCcdownRtGaze != null) {
-                    mBalanceVertTypeCcdownRtGaze = diagTest.MbalanceVertTypeCcdownRtGaze;
-                }
-                string mBalanceHorizCcdownLtGaze = "";
-                if (diagTest.MbalanceHorizCcdownLtGaze != null) {
-                    mBalanceHorizCcdownLtGaze = diagTest.MbalanceHorizCcdownLtGaze;
-                }
-                string mBalanceHorizTypeCcdownLtGaze = "";
-                if (diagTest.MbalanceHorizTypeCcdownLtGaze != null) {
-                    mBalanceHorizTypeCcdownLtGaze = diagTest.MbalanceHorizTypeCcdownLtGaze;
-                }
-                string mBalanceVertCcdownLtGaze = "";
-                if (diagTest.MbalanceVertCcdownLtGaze != null) {
-                    mBalanceVertCcdownLtGaze = diagTest.MbalanceVertCcdownLtGaze;
-                }
-                string mBalanceVertTypeCcdownLtGaze = "";
-                if (diagTest.MbalanceVertTypeCcdownLtGaze != null) {
-                    mBalanceVertTypeCcdownLtGaze = diagTest.MbalanceVertTypeCcdownLtGaze;
-                }
-                string smotorFixPrefDist = "";
-                if (diagTest.SmotorFixPrefDist != null) {
-                    smotorFixPrefDist = diagTest.SmotorFixPrefDist;
-                }
-                string smotorFixPrefNear = "";
-                if (diagTest.SmotorFixPrefNear != null) {
-                    smotorFixPrefNear = diagTest.SmotorFixPrefNear;
-                }
-                string smotorNystagmus = "";
-                if (diagTest.SmotorNystagmus != null) {
-                    smotorNystagmus = diagTest.SmotorNystagmus;
-                }
-                string smotorFrisby = "";
-                if (diagTest.SmotorFrisby != null) {
-                    smotorFrisby = diagTest.SmotorFrisby;
-                }
-                string smotorLang = "";
-                if (diagTest.SmotorLang != null) {
-                    smotorLang = diagTest.SmotorLang;
-                }
-                string smotorTitmusStereoFly = "";
-                if (diagTest.SmotorTitmusStereoFly != null) {
-                    smotorTitmusStereoFly = diagTest.SmotorTitmusStereoFly;
-                }
-                string smotorTitmusStereoCircles = "";
-                if (diagTest.SmotorTitmusStereoCircles != null) {
-                    smotorTitmusStereoCircles = diagTest.SmotorTitmusStereoCircles;
-                }
-                string smotorTitmusStereoAnimals = "";
-                if (diagTest.SmotorTitmusStereoAnimals != null) {
-                    smotorTitmusStereoAnimals = diagTest.SmotorTitmusStereoAnimals;
-                }
-                string smotorRandotCircles = "";
-                if (diagTest.SmotorRandotCircles != null) {
-                    smotorRandotCircles = diagTest.SmotorRandotCircles;
-                }
-                string smotorWorth4DotDist = "";
-                if (diagTest.SmotorWorth4DotDist != null) {
-                    smotorWorth4DotDist = diagTest.SmotorWorth4DotDist;
-                }
-                string smotorWorth4DotNear = "";
-                if (diagTest.SmotorWorth4DotNear != null) {
-                    smotorWorth4DotNear = diagTest.SmotorWorth4DotNear;
-                }
-                string smotorAvPattern = "";
-                if (diagTest.SmotorAvpattern != null) {
-                    smotorAvPattern = diagTest.SmotorAvpattern;
-                }
-                string smotorDistStereo = "";
-                if (diagTest.SmotorDistStereo != null) {
-                    smotorDistStereo = diagTest.SmotorDistStereo;
-                }
-                string smotorDistVectograph = "";
-                if (diagTest.SmotorDistVectograph != null) {
-                    smotorDistVectograph = diagTest.SmotorDistVectograph;
-                }
-                string smotorNPC = "";
-                if (diagTest.SmotorNpc != null) {
-                    smotorNPC = diagTest.SmotorNpc;
-                }
-                string smotorHorizVergBobreak = "";
-                if (diagTest.SmotorHorizVergBobreak != null) {
-                    smotorHorizVergBobreak = diagTest.SmotorHorizVergBobreak;
-                }
-                string smotorHorizVergBorecover = "";
-                if (diagTest.SmotorHorizVergBorecover != null) {
-                    smotorHorizVergBorecover = diagTest.SmotorHorizVergBorecover;
-                }
-                string smotorHorizVergBibreak = "";
-                if (diagTest.SmotorHorizVergBibreak != null) {
-                    smotorHorizVergBibreak = diagTest.SmotorHorizVergBibreak;
-                }
-                string smotorHorizVergBirecover = "";
-                if (diagTest.SmotorHorizVergBirecover != null) {
-                    smotorHorizVergBirecover = diagTest.SmotorHorizVergBirecover;
-                }
-                string smotorVertVergBubreak = "";
-                if (diagTest.SmotorVertVergBubreak != null) {
-                    smotorVertVergBubreak = diagTest.SmotorVertVergBubreak;
-                }
-                string smotorVertVergBurecover = "";
-                if (diagTest.SmotorVertVergBurecover != null) {
-                    smotorVertVergBurecover = diagTest.SmotorVertVergBurecover;
-                }
-                string smotorVertVergBdbreak = "";
-                if (diagTest.SmotorVertVergBdbreak != null) {
-                    smotorVertVergBdbreak = diagTest.SmotorVertVergBdbreak;
-                }
-                string smotorVertVergBdrecover = "";
-                if (diagTest.SmotorVertVergBdrecover != null) {
-                    smotorVertVergBdrecover = diagTest.SmotorVertVergBdrecover;
-                }
-                string smotorDMadRodOd = "";
-                if (diagTest.SmotorDmadRodOd != null) {
-                    smotorDMadRodOd = diagTest.SmotorDmadRodOd;
-                }
-                string smotorDMadRodOs = "";
-                if (diagTest.SmotorDmadRodOs != null) {
-                    smotorDMadRodOs = diagTest.SmotorDmadRodOs;
-                }
-                string smotorDMadRodTorsionOd = "";
-                if (diagTest.SmotorDmadRodTorsionOd != null) {
-                    smotorDMadRodTorsionOd = diagTest.SmotorDmadRodTorsionOd;
-                }
-                string smotorMadRodTorsionOs = "";
-                if (diagTest.SmotorDmadRodTorsionOs != null) {
-                    smotorMadRodTorsionOs = diagTest.SmotorDmadRodTorsionOs;
-                }
-                string smotorColorVisionOd = "";
-                if (diagTest.SmotorColorVisionOd != null) {
-                    smotorColorVisionOd = diagTest.SmotorColorVisionOd;
-                }
-                string smotorColorVisionOs = "";
-                if (diagTest.SmotorColorVisionOs != null) {
-                    smotorColorVisionOs = diagTest.SmotorColorVisionOs;
-                }
-                string smotorColorVisionType = "";
-                if (diagTest.SmotorColorVisionType != null) {
-                    smotorColorVisionType = diagTest.SmotorColorVisionType;
-                }
-                short? smotorAbute = null;
-                if (short.TryParse(diagTest.SmotorAbute, out short temp4)) {
-                    smotorAbute = temp4;
-                }
-                string smotorHtrtHorizSc = "";
-                if (diagTest.SmotorHtrtHorizSc != null) {
-                    smotorHtrtHorizSc = diagTest.SmotorHtrtHorizSc;
-                }
-                string smotorHtrtHorizTypeSc = "";
-                if (diagTest.SmotorHtrtHorizTypeSc != null) {
-                    smotorHtrtHorizTypeSc = diagTest.SmotorHtrtHorizTypeSc;
-                }
-                string smotorHtrtVertSc = "";
-                if (diagTest.SmotorHtrtVertSc != null) {
-                    smotorHtrtVertSc = diagTest.SmotorHtrtVertSc;
-                }
-                string smotorHtrtVertTypeSc = "";
-                if (diagTest.SmotorHtrtVertTypeSc != null) {
-                    smotorHtrtVertTypeSc = diagTest.SmotorHtrtVertTypeSc;
-                }
-                string smotorHtltHorizSc = "";
-                if (diagTest.SmotorHtltHorizSc != null) {
-                    smotorHtltHorizSc = diagTest.SmotorHtltHorizSc;
-                }
-                string smotorHtltHorizTypeSc = "";
-                if (diagTest.SmotorHtltHorizTypeSc != null) {
-                    smotorHtltHorizTypeSc = diagTest.SmotorHtltHorizTypeSc;
-                }
-                string smotorHtltVertSc = "";
-                if (diagTest.SmotorHtltVertSc != null) {
-                    smotorHtltVertSc = diagTest.SmotorHtltVertSc;
-                }
-                string smotorHtltVertTypeSc = "";
-                if (diagTest.SmotorHtltVertTypeSc != null) {
-                    smotorHtltVertTypeSc = diagTest.SmotorHtltVertTypeSc;
-                }
-                string smotorHtrtHorizCc = "";
-                if (diagTest.SmotorHtrtHorizCc != null) {
-                    smotorHtrtHorizCc = diagTest.SmotorHtrtHorizCc;
-                }
-                string smotorHtrtHorizTypeCc = "";
-                if (diagTest.SmotorHtrtHorizTypeCc != null) {
-                    smotorHtrtHorizTypeCc = diagTest.SmotorHtrtHorizTypeCc;
-                }
-                string smotorHtrtVertCc = "";
-                if (diagTest.SmotorHtrtVertCc != null) {
-                    smotorHtrtVertCc = diagTest.SmotorHtrtVertCc;
-                }
-                string smotorHtrtVertTypeCc = "";
-                if (diagTest.SmotorHtrtVertTypeCc != null) {
-                    smotorHtrtVertTypeCc = diagTest.SmotorHtrtVertTypeCc;
-                }
-                string smotorHtltHorizCc = "";
-                if (diagTest.SmotorHtltHorizCc != null) {
-                    smotorHtltHorizCc = diagTest.SmotorHtltHorizCc;
-                }
-                string smotorHtltHorizTypeCc = "";
-                if (diagTest.SmotorHtltHorizTypeCc != null) {
-                    smotorHtltHorizTypeCc = diagTest.SmotorHtltHorizTypeCc;
-                }
-                string smotorHtltVertCc = "";
-                if (diagTest.SmotorHtltVertCc != null) {
-                    smotorHtltVertCc = diagTest.SmotorHtltVertCc;
-                }
-                string smotorHtltVertTypeCc = "";
-                if (diagTest.SmotorHtltVertTypeCc != null) {
-                    smotorHtltVertTypeCc = diagTest.SmotorHtltVertTypeCc;
-                }
-                string smotorHtrtHorizScnear = "";
-                if (diagTest.SmotorHtrtHorizSc != null) {
-                    smotorHtrtHorizScnear = diagTest.SmotorHtrtHorizSc;
-                }
-                string smotorHtrtHorizTypeScnear = "";
-                if (diagTest.SmotorHtrtHorizTypeSc != null) {
-                    smotorHtrtHorizTypeScnear = diagTest.SmotorHtrtHorizTypeSc;
-                }
-                string smotorVertScnear = "";   
-                if (diagTest.SmotorVertScnear != null) {
-                    smotorVertScnear = diagTest.SmotorVertScnear;
-                }
-                string smotorVertTypeScnear = "";
-                if (diagTest.SmotorVertTypeScnear != null) {
-                    smotorVertTypeScnear = diagTest.SmotorVertTypeScnear;
-                }
-                string smotorHorizCcnear = "";
-                if (diagTest.SmotorHorizCcnear != null) {
-                    smotorHorizCcnear = diagTest.SmotorHorizCcnear;
-                }
-                string smotorHorizTypeCcnear = "";
-                if (diagTest.SmotorHorizTypeCcnear != null) {
-                    smotorHorizTypeCcnear = diagTest.SmotorHorizTypeCcnear;
-                }
-                string smotorVertCcnear = "";
-                if (diagTest.SmotorVertCcnear != null) {
-                    smotorVertCcnear = diagTest.SmotorVertCcnear;
-                }
-                string smotorVertTypeCcnear = "";
-                if (diagTest.SmotorVertTypeCcnear != null) {
-                    smotorVertTypeCcnear = diagTest.SmotorVertTypeCcnear;
-                }
-                string smotorHorizScdist = "";
-                if (diagTest.SmotorHorizScdist != null) {
-                    smotorHorizScdist = diagTest.SmotorHorizScdist;
-                }
-                string smotorHorizTypeScdist = "";
-                if (diagTest.SmotorHorizTypeScdist != null) {
-                    smotorHorizTypeScdist = diagTest.SmotorHorizTypeScdist;
-                }
-                string smotorVertScdist = "";
-                if (diagTest.SmotorVertScdist != null) {
-                    smotorVertScdist = diagTest.SmotorVertScdist;
-                }
-                string smotorVertTypeScdist = "";
-                if (diagTest.SmotorVertTypeScdist != null) {
-                    smotorVertTypeScdist = diagTest.SmotorVertTypeScdist;
-                }
-                string smotorHorizCcdist = "";
-                if (diagTest.SmotorHorizCcdist != null) {
-                    smotorHorizCcdist = diagTest.SmotorHorizCcdist;
-                }
-                string smotorHorizTypeCcdist = "";
-                if (diagTest.SmotorHorizTypeCcdist != null) {
-                    smotorHorizTypeCcdist = diagTest.SmotorHorizTypeCcdist;
-                }
-                string smotorVertCcdist = "";
-                if (diagTest.SmotorVertCcdist != null) {
-                    smotorVertCcdist = diagTest.SmotorVertCcdist;
-                }
-                string smotorVertTypeCcdist = "";
-                if (diagTest.SmotorVertTypeCcdist != null) {
-                    smotorVertTypeCcdist = diagTest.SmotorVertTypeCcdist;
-                }
-                string mbalanceMethodSc = "";
-                if (diagTest.MbalanceMethodSc != null) {
-                    mbalanceMethodSc = diagTest.MbalanceMethodSc;
-                }
-                string mbalanceMethodCc = "";
-                if (diagTest.MbalanceMethodCc != null) {
-                    mbalanceMethodCc = diagTest.MbalanceMethodCc;
-                }
-                string smotorPrismOd = "";
-                if (diagTest.SmotorPrismOd != null) {
-                    smotorPrismOd = diagTest.SmotorPrismOd;
-                }
-                string smotorPrismOs = "";
-                if (diagTest.SmotorPrismOs != null) {
-                    smotorPrismOs = diagTest.SmotorPrismOs;
-                }
-                string smotorDirectionOd = "";
-                if (diagTest.SmotorDirectionOd != null) {
-                    smotorDirectionOd = diagTest.SmotorDirectionOd;
-                }
-                string smotorDirectionOs = "";
-                if (diagTest.SmotorDirectionOs != null) {
-                    smotorDirectionOs = diagTest.SmotorDirectionOs;
-                }
-                string smotorComments = "";
-                if (diagTest.SmotorComments != null) {
-                    smotorComments = diagTest.SmotorComments;
-                }
-                string mBalanceHorizTypeScupRtGaze = ""; 
-                if (diagTest.MbalanceHorizTypeScupRtGaze != null) {
-                    mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze;
-                }
-                string smotorHorizCcnear3Plus = "";
-                if (diagTest.SmotorHorizCcnear3Plus != null) {
-                    smotorHorizCcnear3Plus = diagTest.SmotorHorizCcnear3Plus;
-                }
-                string smotorHorizScnear = "";
-                if (diagTest.SmotorHorizScnear != null) {
-                    smotorHorizScnear = diagTest.SmotorHorizScnear;
-                }
-                string smotorHorizTypeScnear = "";
-                if (diagTest.SmotorHorizTypeScnear != null) {
-                    smotorHorizTypeScnear = diagTest.SmotorHorizTypeScnear;
-                }
-                string smotorVertCcnear3Plus = "";
-                if (diagTest.SmotorVertCcnear3Plus != null) {
-                    smotorVertCcnear3Plus = diagTest.SmotorVertCcnear3Plus;
-                }
-                string smotorVertTypeCcnear3Plus = "";
-                if (diagTest.SmotorVertTypeCcnear3Plus != null) {
-                    smotorVertTypeCcnear3Plus = diagTest.SmotorVertTypeCcnear3Plus;
-                }
+                string gonioAngleDepthSuOd = diagTest.GonioAngleDepthSuOd ?? "";
+                string gonioAngleDepthMedialOd = diagTest.GonioAngleDepthMedialOd ?? "";
+                string gonioAngleDepthInOd = diagTest.GonioAngleDepthInOd ?? "";
+                string gonioAngleDepthTemporalOd = diagTest.GonioAngleDepthTemporalOd ?? "";
+                string gonioAngleStructureSuOd = diagTest.GonioAngleStructureSuOd ?? "";
+                string gonioAngleStructureMedialOd = diagTest.GonioAngleStructureMedialOd ?? "";
+                string gonioAngleStructureInOd = diagTest.GonioAngleStructureInOd ?? "";
+                string gonioAngleStructureTemporalOd = diagTest.GonioAngleStructureTemporalOd ?? "";
+                string gonioAngleDepthSuOs = diagTest.GonioAngleDepthSuOs ?? "";
+                string gonioAngleDepthMedialOs = diagTest.GonioAngleDepthMedialOs ?? "";
+                string gonioAngleDepthInOs = diagTest.GonioAngleDepthInOs ?? "";
+                string gonioAngleDepthTemporalOs = diagTest.GonioAngleDepthTemporalOs ?? "";
+                string gonioAngleStructureSuOs = diagTest.GonioAngleStructureSuOs ?? "";
+                string gonioAngleStructureMedialOs = diagTest.GonioAngleStructureMedialOs ?? "";
+                string gonioAngleStructureInOs = diagTest.GonioAngleStructureInOs ?? "";
+                string gonioAngleStructureTemporalOs = diagTest.GonioAngleStructureTemporalOs ?? "";
+                string gonioComments = diagTest.GonioComments ?? "";
+
+                short mBalanceScOrtho = short.TryParse(diagTest.MbalanceScortho, out short temp) ? temp : (short)-1;
+                string mBalanceHorizScPriGaze = diagTest.MbalanceHorizScpriGaze ?? "";
+                string mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScpriGaze ?? "";
+                string mBalanceVertScPriGaze = diagTest.MbalanceVertScpriGaze ?? "";
+                string mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScpriGaze ?? "";
+                string mBalanceHorizScupGaze = diagTest.MbalanceHorizScupGaze ?? "";
+                string mBalanceHorizTypeScupGaze = diagTest.MbalanceHorizTypeScupGaze ?? "";
+                string mBalanceVertScupGaze = diagTest.MbalanceVertScupGaze ?? "";
+                string mBalanceVertTypeScupGaze = diagTest.MbalanceVertTypeScupGaze ?? "";
+                string mBalanceHorizScdownGaze = diagTest.MbalanceHorizScdownGaze ?? "";
+                string mBalanceHorizTypeScdownGaze = diagTest.MbalanceHorizTypeScdownGaze ?? "";
+                string mBalanceVertScdownGaze = diagTest.MbalanceVertScdownGaze ?? "";
+                string mBalanceVertTypeScdownGaze = diagTest.MbalanceVertTypeScdownGaze ?? "";
+                string mBalanceHorizScRtGaze = diagTest.MbalanceHorizScrtGaze ?? "";
+                string mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScrtGaze ?? "";
+                string mBalanceVertScRtGaze = diagTest.MbalanceVertScrtGaze ?? "";
+                string mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScrtGaze ?? "";
+                string mBalanceHorizScLtGaze = diagTest.MbalanceHorizScltGaze ?? "";
+                string mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScltGaze ?? "";
+                string mBalanceVertScLtGaze = diagTest.MbalanceVertScltGaze ?? "";
+                string mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScltGaze ?? "";
+
+                short mBalanceCCOrtho = short.TryParse(diagTest.MbalanceCcortho, out short temp3) ? temp3 : (short)-1;
+                string mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcpriGaze ?? "";
+                string mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcpriGaze ?? "";
+                string mBalanceVertCcPriGaze = diagTest.MbalanceVertCcpriGaze ?? "";
+                string mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcpriGaze ?? "";
+                string mBalanceHorizCcupGaze = diagTest.MbalanceHorizCcupGaze ?? "";
+                string mBalanceHorizTypeCcupGaze = diagTest.MbalanceHorizTypeCcupGaze ?? "";
+                string mBalanceVertCcupGaze = diagTest.MbalanceVertCcupGaze ?? "";
+                string mBalanceVertTypeCcupGaze = diagTest.MbalanceVertTypeCcupGaze ?? "";
+                string mBalanceHorizCcdownGaze = diagTest.MbalanceHorizCcdownGaze ?? "";
+                string mBalanceHorizTypeCcdownGaze = diagTest.MbalanceHorizTypeCcdownGaze ?? "";
+                string mBalanceVertCcdownGaze = diagTest.MbalanceVertCcdownGaze ?? "";
+                string mBalanceVertTypeCcdownGaze = diagTest.MbalanceVertTypeCcdownGaze ?? "";
+                string mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcrtGaze ?? "";
+                string mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcrtGaze ?? "";
+                string mBalanceVertCcRtGaze = diagTest.MbalanceVertCcrtGaze ?? "";
+                string mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcrtGaze ?? "";
+                string mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcltGaze ?? "";
+                string mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcltGaze ?? "";
+                string mBalanceVertCcLtGaze = diagTest.MbalanceVertCcltGaze ?? "";
+                string mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze ?? "";
+
+                string mBalanceMethod = diagTest.MbalanceMethod ?? "";
+                string gonioPigmentOd = diagTest.GonioPigmentOd ?? "";
+                string gonioPigmentOs = diagTest.GonioPigmentOs ?? "";
+                string mBalanceScType = diagTest.MbalanceSctype ?? "";
+                string mBalanceCcType = diagTest.MbalanceCctype ?? "";
+                string mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze ?? "";
+                string mBalancehorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
+                string mBalanceVertScupRtGaze = diagTest.MbalanceVertScupRtGaze ?? "";
+                string mBalanceVertTypeScupRtGaze = diagTest.MbalanceVertTypeScupRtGaze ?? "";
+                string mBalanceHorizScupLtGaze = diagTest.MbalanceHorizScupLtGaze ?? "";
+                string mBalanceHorizTypeScupLtGaze = diagTest.MbalanceHorizTypeScupLtGaze ?? "";
+                string mBalanceVertScupLtGaze = diagTest.MbalanceVertScupLtGaze ?? "";
+                string mBalanceVertTypeScupLtGaze = diagTest.MbalanceVertTypeScupLtGaze ?? "";
+                string mBalanceHorizScdownRtGaze = diagTest.MbalanceHorizScdownRtGaze ?? "";
+                string mBalanceHorizTypeScdownRtGaze = diagTest.MbalanceHorizTypeScdownRtGaze ?? "";
+                string mBalanceVertScdownRtGaze = diagTest.MbalanceVertScdownRtGaze ?? "";
+                string mBalanceVertTypeScdownRtGaze = diagTest.MbalanceVertTypeScdownRtGaze ?? "";
+                string mBalanceHorizScdownLtGaze = diagTest.MbalanceHorizScdownLtGaze ?? "";
+                string mBalanceHorizTypeScdownLtGaze = diagTest.MbalanceHorizTypeScdownLtGaze ?? "";
+                string mBalanceVertScdownLtGaze = diagTest.MbalanceVertScdownLtGaze ?? "";
+                string mBalanceVertTypeScdownLtGaze = diagTest.MbalanceVertTypeScdownLtGaze ?? "";
+                string mBalanceHorizCcupRtGaze = diagTest.MbalanceHorizCcupRtGaze ?? "";
+                string mBalanceHorizTypeCcupRtGaze = diagTest.MbalanceHorizTypeCcupRtGaze ?? "";
+                string mBalanceVertCcupRtGaze = diagTest.MbalanceVertCcupRtGaze ?? "";
+                string mBalanceVertTypeCcupRtGaze = diagTest.MbalanceVertTypeCcupRtGaze ?? "";
+                string mBalanceHorizCcupLtGaze = diagTest.MbalanceHorizCcupLtGaze ?? "";
+                string mBalanceHorizTypeCcupLtGaze = diagTest.MbalanceHorizTypeCcupLtGaze ?? "";
+                string mBalanceVertCcupLtGaze = diagTest.MbalanceVertCcupLtGaze ?? "";
+                string mBalanceVertTypeCcupLtGaze = diagTest.MbalanceVertTypeCcupLtGaze ?? "";
+                string mBalanceHorizCcdownRtGaze = diagTest.MbalanceHorizCcdownRtGaze ?? "";
+                string mBalanceHorizTypeCcdownRtGaze = diagTest.MbalanceHorizTypeCcdownRtGaze ?? "";
+                string mBalanceVertCcdownRtGaze = diagTest.MbalanceVertCcdownRtGaze ?? "";
+                string mBalanceVertTypeCcdownRtGaze = diagTest.MbalanceVertTypeCcdownRtGaze ?? "";
+                string mBalanceHorizCcdownLtGaze = diagTest.MbalanceHorizCcdownLtGaze ?? "";
+                string mBalanceHorizTypeCcdownLtGaze = diagTest.MbalanceHorizTypeCcdownLtGaze ?? "";
+                string mBalanceVertCcdownLtGaze = diagTest.MbalanceVertCcdownLtGaze ?? "";
+                string mBalanceVertTypeCcdownLtGaze = diagTest.MbalanceVertTypeCcdownLtGaze ?? "";
+
+                string smotorFixPrefDist = diagTest.SmotorFixPrefDist ?? "";
+                string smotorFixPrefNear = diagTest.SmotorFixPrefNear ?? "";
+                string smotorNystagmus = diagTest.SmotorNystagmus ?? "";
+                string smotorFrisby = diagTest.SmotorFrisby ?? "";
+                string smotorLang = diagTest.SmotorLang ?? "";
+                string smotorTitmusStereoFly = diagTest.SmotorTitmusStereoFly ?? "";
+                string smotorTitmusStereoCircles = diagTest.SmotorTitmusStereoCircles ?? "";
+                string smotorTitmusStereoAnimals = diagTest.SmotorTitmusStereoAnimals ?? "";
+                string smotorRandotCircles = diagTest.SmotorRandotCircles ?? "";
+                string smotorWorth4DotDist = diagTest.SmotorWorth4DotDist ?? "";
+                string smotorWorth4DotNear = diagTest.SmotorWorth4DotNear ?? "";
+                string smotorAvPattern = diagTest.SmotorAvpattern ?? "";
+                string smotorDistStereo = diagTest.SmotorDistStereo ?? "";
+                string smotorDistVectograph = diagTest.SmotorDistVectograph ?? "";
+                string smotorNPC = diagTest.SmotorNpc ?? "";
+                string smotorHorizVergBobreak = diagTest.SmotorHorizVergBobreak ?? "";
+                string smotorHorizVergBorecover = diagTest.SmotorHorizVergBorecover ?? "";
+                string smotorHorizVergBibreak = diagTest.SmotorHorizVergBibreak ?? "";
+                string smotorHorizVergBirecover = diagTest.SmotorHorizVergBirecover ?? "";
+                string smotorVertVergBubreak = diagTest.SmotorVertVergBubreak ?? "";
+                string smotorVertVergBurecover = diagTest.SmotorVertVergBurecover ?? "";
+                string smotorVertVergBdbreak = diagTest.SmotorVertVergBdbreak ?? "";
+                string smotorVertVergBdrecover = diagTest.SmotorVertVergBdrecover ?? "";
+                string smotorDMadRodOd = diagTest.SmotorDmadRodOd ?? "";
+                string smotorDMadRodOs = diagTest.SmotorDmadRodOs ?? "";
+                string smotorDMadRodTorsionOd = diagTest.SmotorDmadRodTorsionOd ?? "";
+                string smotorMadRodTorsionOs = diagTest.SmotorDmadRodTorsionOs ?? "";
+                string smotorColorVisionOd = diagTest.SmotorColorVisionOd ?? "";
+                string smotorColorVisionOs = diagTest.SmotorColorVisionOs ?? "";
+                string smotorColorVisionType = diagTest.SmotorColorVisionType ?? "";
+
+                short? smotorAbute = short.TryParse(diagTest.SmotorAbute, out short temp4) ? temp4 : (short?)null;
+                string smotorHtrtHorizSc = diagTest.SmotorHtrtHorizSc ?? "";
+                string smotorHtrtHorizTypeSc = diagTest.SmotorHtrtHorizTypeSc ?? "";
+                string smotorHtrtVertSc = diagTest.SmotorHtrtVertSc ?? "";
+                string smotorHtrtVertTypeSc = diagTest.SmotorHtrtVertTypeSc ?? "";
+                string smotorHtltHorizSc = diagTest.SmotorHtltHorizSc ?? "";
+                string smotorHtltHorizTypeSc = diagTest.SmotorHtltHorizTypeSc ?? "";
+                string smotorHtltVertSc = diagTest.SmotorHtltVertSc ?? "";
+                string smotorHtltVertTypeSc = diagTest.SmotorHtltVertTypeSc ?? "";
+                string smotorHtrtHorizCc = diagTest.SmotorHtrtHorizCc ?? "";
+                string smotorHtrtHorizTypeCc = diagTest.SmotorHtrtHorizTypeCc ?? "";
+                string smotorHtrtVertCc = diagTest.SmotorHtrtVertCc ?? "";
+                string smotorHtrtVertTypeCc = diagTest.SmotorHtrtVertTypeCc ?? "";
+                string smotorHtltHorizCc = diagTest.SmotorHtltHorizCc ?? "";
+                string smotorHtltHorizTypeCc = diagTest.SmotorHtltHorizTypeCc ?? "";
+                string smotorHtltVertCc = diagTest.SmotorHtltVertCc ?? "";
+                string smotorHtltVertTypeCc = diagTest.SmotorHtltVertTypeCc ?? "";
+
+                string smotorHtrtHorizScnear = diagTest.SmotorHtrtHorizSc ?? "";
+                string smotorHtrtHorizTypeScnear = diagTest.SmotorHtrtHorizTypeSc ?? "";
+                string smotorVertScnear = diagTest.SmotorVertScnear ?? "";
+                string smotorVertTypeScnear = diagTest.SmotorVertTypeScnear ?? "";
+                string smotorHorizCcnear = diagTest.SmotorHorizCcnear ?? "";
+                string smotorHorizTypeCcnear = diagTest.SmotorHorizTypeCcnear ?? "";
+                string smotorVertCcnear = diagTest.SmotorVertCcnear ?? "";
+                string smotorVertTypeCcnear = diagTest.SmotorVertTypeCcnear ?? "";
+                string smotorHorizScdist = diagTest.SmotorHorizScdist ?? "";
+                string smotorHorizTypeScdist = diagTest.SmotorHorizTypeScdist ?? "";
+                string smotorVertScdist = diagTest.SmotorVertScdist ?? "";
+                string smotorVertTypeScdist = diagTest.SmotorVertTypeScdist ?? "";
+                string smotorHorizCcdist = diagTest.SmotorHorizCcdist ?? "";
+                string smotorHorizTypeCcdist = diagTest.SmotorHorizTypeCcdist ?? "";
+                string smotorVertCcdist = diagTest.SmotorVertCcdist ?? "";
+                string smotorVertTypeCcdist = diagTest.SmotorVertTypeCcdist ?? "";
+                string mbalanceMethodSc = diagTest.MbalanceMethodSc ?? "";
+                string mbalanceMethodCc = diagTest.MbalanceMethodCc ?? "";
+                string smotorPrismOd = diagTest.SmotorPrismOd ?? "";
+                string smotorPrismOs = diagTest.SmotorPrismOs ?? "";
+                string smotorDirectionOd = diagTest.SmotorDirectionOd ?? "";
+                string smotorDirectionOs = diagTest.SmotorDirectionOs ?? "";
+                string smotorComments = diagTest.SmotorComments ?? "";
+                string mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
+                string smotorHorizCcnear3Plus = diagTest.SmotorHorizCcnear3Plus ?? "";
+                string smotorHorizScnear = diagTest.SmotorHorizScnear ?? "";
+                string smotorHorizTypeScnear = diagTest.SmotorHorizTypeScnear ?? "";
+                string smotorVertCcnear3Plus = diagTest.SmotorVertCcnear3Plus ?? "";
+                string smotorVertTypeCcnear3Plus = diagTest.SmotorVertTypeCcnear3Plus ?? "";
                 #endregion diagTests
+
 
                 var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
 
