@@ -418,7 +418,7 @@ namespace Brady_s_Conversion_Program {
             PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
                 raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
             
-
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
@@ -456,7 +456,7 @@ namespace Brady_s_Conversion_Program {
             });
 
             
-            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients);
+            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors);
             
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -1426,7 +1426,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients) {
+            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients, List<DmgGuarantor> newGuarantors) {
             foreach (var guarantor in convGuarantors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1494,7 +1494,6 @@ namespace Brady_s_Conversion_Program {
                     // no lastModified in incoming tables
 
 
-
                     var ffpmGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
                     if (ffpmGuarantor == null) {
@@ -1519,8 +1518,7 @@ namespace Brady_s_Conversion_Program {
                             IsGuarantorExistingPatient = guarantorIsPatient,
                             LastModifiedBy = null
                         };
-                        ffpmDbContext.DmgGuarantors.Add(newGuarantor);
-                        ffpmDbContext.SaveChanges();
+                        newGuarantors.Add(newGuarantor);
                         guarantors.Add(newGuarantor);
                     }
                 }
@@ -1528,8 +1526,10 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
                 }
             }
+            ffpmDbContext.DmgGuarantors.AddRange(newGuarantors);
             ffpmDbContext.SaveChanges();
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            newGuarantors.Clear();
         }
 
         public static void ConvertAddress(List <Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
