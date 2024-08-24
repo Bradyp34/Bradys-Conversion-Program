@@ -372,6 +372,8 @@ namespace Brady_s_Conversion_Program {
             var schedulingAppointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
             var referringProviders = ffpmDbContext.ReferringProviders.ToList();
             var schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
+            var convAppointmentTypes = convDbContext.AppointmentTypes.ToList();
+            var convAppointments = convDbContext.Appointments.ToList();
 
 
 
@@ -394,42 +396,34 @@ namespace Brady_s_Conversion_Program {
             var newSchedulingCodes = new List<SchedulingCode>();
 
             
-            foreach (var location in convDbContext.Locations) {
-                ConvertLocation(location, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
-            }
-            ffpmDbContext.BillingLocations.AddRange(newLocations);
-            ffpmDbContext.SaveChanges();
-            newLocations.Clear();
+            
+            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
             });
 
-            foreach (var patient in convDbContext.Patients) { // convert each patient in the table
-                PatientConvert(patient, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
-                    raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
-            }
-            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(newAdditionalDetails);
-            eyemdDbContext.Emrpatients.AddRange(newEmrPatients);
-            ffpmDbContext.SaveChanges();
-            eyemdDbContext.SaveChanges();
-            newAdditionalDetails.Clear();
-            newEmrPatients.Clear();
+           
+            PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
+                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
+            
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
             
-            foreach (var appointmentType in convDbContext.AppointmentTypes) {
-                ConvertAppointmentType(appointmentType, convDbContext, ffpmDbContext, logger, progress, appointmentTypes, newAppointmentTypes);
-            }
-            ffpmDbContext.SchedulingAppointmentTypes.AddRange(newAppointmentTypes);
-            ffpmDbContext.SaveChanges();
-            newAppointmentTypes.Clear();
+            
+            ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, progress, appointmentTypes, newAppointmentTypes);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
-            foreach (var appointment in convDbContext.Appointments) {
-                ConvertAppointment(appointment, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
-            }
+
+            
+            ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
+            
             ffpmDbContext.SchedulingAppointments.AddRange(newAppointments);
             ffpmDbContext.SaveChanges();
             newAppointments.Clear();
@@ -576,518 +570,535 @@ namespace Brady_s_Conversion_Program {
             });
         }
                 
-        public static void PatientConvert(Models.Patient patient, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
+        public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext, 
             ILogger logger, ProgressBar progress, List<DmgPatient> ffpmPatients, List<Emrpatient> emrPatients, List<DmgPatientAdditionalDetail> patientAdditionals, 
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, 
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, List<DmgPatientAdditionalDetail> newAdditionalDetails,
                         List<Emrpatient> newEmrPatients) {
 
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try { // all patients need first and last name and for active to be yes or null (not no)
-                if (patient.LastName == null) { 
-                    logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
-                    return;
-                }
-                else if (patient.FirstName == null) {
-                    logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
-                    return;
-                }
-                else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
-                    return;
-                }
-                string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
-                if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
-                    ssn = "";
-                }
-
-                short? licenseShort = null; // dave spoke to me about xrefs, so if you see this, its an xref table. will be changing the rest to match
-                var stateXref = ffpmDbContext.MntStates.FirstOrDefault(s => s.StateCode == patient.LicenseState);
-                if (stateXref != null) {
-                    licenseShort = stateXref.StateId;
-                }
-
-                DateTime dob = minAcceptableDate;
-                if (patient.Dob != null && (patient.Dob != "")) {
-                    string dobString = CleanUpDateString(patient.Dob.Trim()); // Remove any extra whitespaces
-                    if (DateTime.TryParseExact(dobString, dateFormats,
-                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                        dob = isValidDate(dob); // make sure the date is valid
+            foreach (var patient in convPatients) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try { // all patients need first and last name and for active to be yes or null (not no)
+                    if (patient.LastName == null) {
+                        logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
+                        return;
                     }
-                }
-                short? maritalStatusInt = null;
-                var maritalStatusXref = ffpmDbContext.MntMaritalStatuses.FirstOrDefault(m => m.MaritalStatus == patient.MaritalStatus);
-                if (maritalStatusXref != null) {
-                    maritalStatusInt = maritalStatusXref.MaritalStatusId;
-                }
-
-
-                short? titleInt = null;
-                var titleXref = ffpmDbContext.MntTitles.FirstOrDefault(t => t.Title == patient.Title);
-                if (titleXref != null) {
-                    titleInt = titleXref.TitleId;
-                }
-
-                short? suffixInt = null;
-                var suffixXref = ffpmDbContext.MntSuffixes.FirstOrDefault(s => s.Suffix == patient.Suffix);
-                if (suffixXref != null) {
-                    suffixInt = suffixXref.SuffixId;
-                }
-
-                short? genderInt = null; // im not gonna bother with an xref here
-                if (patient.Sex != null) {
-                    genderInt = patient.Sex.ToLower() == "m" ? (short)1 : (short)2;
-                }
-
-                short? race = null;
-                var raceXref = ffpmDbContext.MntRaces.FirstOrDefault(s => s.Race == patient.Race);
-                if (raceXref != null) {
-                    race = raceXref.RaceId;
-                }
-
-                short? ethnicity = null;
-                var ethnicityXref = ffpmDbContext.MntEthnicities.FirstOrDefault(s => s.Ethnicity == patient.Ethnicity);
-                if (ethnicityXref != null) {
-                    ethnicity = ethnicityXref.EthnicityId;
-                }
-
-                bool? patientIsActive = true; // default is active, has to be explicitely no to be inactive
-                if (patient.Active != null) {
-                    if (patient.Active.ToUpper() == "NO" || patient.Active == "0") {
-                        patientIsActive = false;
+                    else if (patient.FirstName == null) {
+                        logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
+                        return;
                     }
-                }
-
-                bool? deceased = null;
-                if (patient.Deceased != null) {
-                    deceased = patient.Deceased.ToUpper() == "NO" ? false : true;
-                }
-
-                bool? consent = null;
-                if (patient.Consent != null) {
-                    if (patient.Consent.ToUpper() == "YES" || patient.Consent == "1") {
-                        consent = true;
+                    else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
+                        return;
                     }
-                    else if (patient.Consent.ToUpper() == "NO" || patient.Consent == "0") {
-                        consent = false;
+                    string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
+                    if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
+                        ssn = "";
                     }
-                }
 
-                DateTime? consentDate = null;
-                if (patient.ConsentDate != null && (patient.ConsentDate != "")) { 
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        consentDate = isValidDate(tempDateTime);
+                    short? licenseShort = null; // dave spoke to me about xrefs, so if you see this, its an xref table. will be changing the rest to match
+                    var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == patient.LicenseState);
+                    if (stateXref != null) {
+                        licenseShort = stateXref.StateId;
                     }
-                }
-                DateOnly? deceasedDate = null;
-                if (patient.DateOfDeath != null && (patient.DateOfDeath != "")) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
+
+                    DateTime dob = minAcceptableDate;
+                    if (patient.Dob != null && (patient.Dob != "")) {
+                        string dobString = CleanUpDateString(patient.Dob.Trim()); // Remove any extra whitespaces
+                        if (DateTime.TryParseExact(dobString, dateFormats,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
+                            dob = isValidDate(dob); // make sure the date is valid
+                        }
+                    }
+                    short? maritalStatusInt = null;
+                    var maritalStatusXref = maritalStatusXrefs.FirstOrDefault(m => m.MaritalStatus == patient.MaritalStatus);
+                    if (maritalStatusXref != null) {
+                        maritalStatusInt = maritalStatusXref.MaritalStatusId;
+                    }
+
+
+                    short? titleInt = null;
+                    var titleXref = titleXrefs.FirstOrDefault(t => t.Title == patient.Title);
+                    if (titleXref != null) {
+                        titleInt = titleXref.TitleId;
+                    }
+
+                    short? suffixInt = null;
+                    var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == patient.Suffix);
+                    if (suffixXref != null) {
+                        suffixInt = suffixXref.SuffixId;
+                    }
+
+                    short? genderInt = null; // im not gonna bother with an xref here
+                    if (patient.Sex != null) {
+                        genderInt = patient.Sex.ToLower() == "m" ? (short)1 : (short)2;
+                    }
+
+                    short? race = null;
+                    var raceXref = raceXrefs.FirstOrDefault(s => s.Race == patient.Race);
+                    if (raceXref != null) {
+                        race = raceXref.RaceId;
+                    }
+
+                    short? ethnicity = null;
+                    var ethnicityXref = ethnicityXrefs.FirstOrDefault(s => s.Ethnicity == patient.Ethnicity);
+                    if (ethnicityXref != null) {
+                        ethnicity = ethnicityXref.EthnicityId;
+                    }
+
+                    bool? patientIsActive = true; // default is active, has to be explicitely no to be inactive
+                    if (patient.Active != null) {
+                        if (patient.Active.ToUpper() == "NO" || patient.Active == "0") {
+                            patientIsActive = false;
+                        }
+                    }
+
+                    bool? deceased = null;
+                    if (patient.Deceased != null) {
+                        deceased = patient.Deceased.ToUpper() == "NO" ? false : true;
+                    }
+
+                    bool? consent = null;
+                    if (patient.Consent != null) {
+                        if (patient.Consent.ToUpper() == "YES" || patient.Consent == "1") {
+                            consent = true;
+                        }
+                        else if (patient.Consent.ToUpper() == "NO" || patient.Consent == "0") {
+                            consent = false;
+                        }
+                    }
+
+                    DateTime? consentDate = null;
+                    if (patient.ConsentDate != null && (patient.ConsentDate != "")) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patient.ConsentDate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            consentDate = isValidDate(tempDateTime);
+                        }
+                    }
+                    DateOnly? deceasedDate = null;
+                    if (patient.DateOfDeath != null && (patient.DateOfDeath != "")) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            deceasedDate = DateOnly.FromDateTime(isValidDate(tempDateTime));
+                        }
+                    }
+                    DateTime lastExamDate = minAcceptableDate;
+                    if (patient.LastExamDate != null && (patient.LastExamDate != "")) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        deceasedDate = DateOnly.FromDateTime(isValidDate(tempDateTime));
+                            lastExamDate = isValidDate(tempDateTime);
+                        }
                     }
-                }
-                DateTime lastExamDate = minAcceptableDate;
-                if (patient.LastExamDate != null && (patient.LastExamDate != "")) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patient.LastExamDate, dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        lastExamDate = isValidDate(tempDateTime);
+                    if (patient.Email != null) {
+                        string email = TruncateString(patient.Email, 50);
                     }
-                }
-                if (patient.Email != null) {
-                    string email = TruncateString(patient.Email, 50);
-                }
-                bool isEmailValid = new EmailAddressAttribute().IsValid(patient.Email);
-                bool dontSendStatements = false;
-                bool emailStatements = false;
-                short? prefContact1 = null;
-                if (patient.PreferredContact1 != null) {
-                    if (short.TryParse(patient.PreferredContact1, out short prefContact1Int)) {
-                        prefContact1 = prefContact1Int;
+                    bool isEmailValid = new EmailAddressAttribute().IsValid(patient.Email);
+                    bool dontSendStatements = false;
+                    bool emailStatements = false;
+                    short? prefContact1 = null;
+                    if (patient.PreferredContact1 != null) {
+                        if (short.TryParse(patient.PreferredContact1, out short prefContact1Int)) {
+                            prefContact1 = prefContact1Int;
+                        }
                     }
-                }
-                short? prefContact2 = null;
-                if (patient.PreferredContact2 != null) {
-                    if (short.TryParse(patient.PreferredContact2, out short prefContact2Int)) {
-                        prefContact2 = prefContact2Int;
+                    short? prefContact2 = null;
+                    if (patient.PreferredContact2 != null) {
+                        if (short.TryParse(patient.PreferredContact2, out short prefContact2Int)) {
+                            prefContact2 = prefContact2Int;
+                        }
                     }
-                }
-                short? prefContact3 = null;
-                if (patient.PreferredContact3 != null) {
-                    if (short.TryParse(patient.PreferredContact3, out short prefContact3Int)) {
-                        prefContact3 = prefContact3Int;
+                    short? prefContact3 = null;
+                    if (patient.PreferredContact3 != null) {
+                        if (short.TryParse(patient.PreferredContact3, out short prefContact3Int)) {
+                            prefContact3 = prefContact3Int;
+                        }
                     }
-                }
-                string preferredContactsNotes = patient.PreferredContact1 + "; " + patient.PreferredContact2 + "; " + patient.PreferredContact3;
+                    string preferredContactsNotes = patient.PreferredContact1 + "; " + patient.PreferredContact2 + "; " + patient.PreferredContact3;
 
-                short? medicareSecondaryId = null;
-                string medicareSecondaryNotes = "";
-                var medicareSecondary = ffpmDbContext.MntMedicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode);
-                if (medicareSecondary != null) {
-                    medicareSecondaryId = medicareSecondary.MedicareSecondaryId;
-                    if (medicareSecondary.MedicareSecondaryDescription != null) {
-                        medicareSecondaryNotes = medicareSecondary.MedicareSecondaryDescription;
+                    short? medicareSecondaryId = null;
+                    string medicareSecondaryNotes = "";
+                    var medicareSecondary = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode);
+                    if (medicareSecondary != null) {
+                        medicareSecondaryId = medicareSecondary.MedicareSecondaryId;
+                        if (medicareSecondary.MedicareSecondaryDescription != null) {
+                            medicareSecondaryNotes = medicareSecondary.MedicareSecondaryDescription;
+                        }
                     }
-                }
-                
-
-                var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.Id.ToString()
-                    && p.FirstName == patient.FirstName && p.LastName == patient.LastName);
-
-                if (ffpmOrig == null) {
-                    var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
-                        DateCreated = minAcceptableDate,
-                        AccountNumber = patient.Id.ToString(),
-                        AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
-                        LastName = TruncateString(patient.LastName, 50),
-                        MiddleName = TruncateString(patient.MiddleName, 50),
-                        FirstName = TruncateString(patient.FirstName, 50),
-                        PreferredName = TruncateString(patient.PreferredName, 50),
-                        Ssn = TruncateString(patient.Ssn, 15),
-                        DateOfBirth = dob,
-                        MaritialStatusId = maritalStatusInt,
-                        TitleId = titleInt,
-                        IsActive = patientIsActive,
-                        IsDeceased = deceased,
-                        DeceasedDate = deceasedDate,
-                        LastExamDate = lastExamDate,
-                        PatientBalance = 0,
-                        InsuranceBalance = 0,
-                        OtherBalance = 0,
-                        GenderId = genderInt,
-                        SuffixId = suffixInt,
-                        BalanceLastUpdatedDateTime = minAcceptableDate,
-                        EmailNotApplicable = isEmailValid,
-                        DoNotSendStatements = dontSendStatements,
-                        EmailStatements = emailStatements,
-                        OpenEdgeCustomerId = TruncateString("", 100),
-                        TextStatements = true,
-                        LocationId = 0,
-                        LastModifiedDate = DateTime.Now,
-                        LastModifiedBy = -1
-                    };
-
-                    ffpmDbContext.DmgPatients.Add(newPatient);
-                    ffpmDbContext.SaveChanges();
-                    ffpmPatients.Add(newPatient);
 
 
-                    var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
-                    if (patientAdditionalDetail == null) {
-                        // If no existing patient is found, create a new one
-                        var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                            PatientId = newPatient.PatientId,
-                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                            DriversLicenseStateId = licenseShort,
-                            RaceId = race,
-                            EthnicityId = ethnicity,
-                            MedicareSecondaryId = medicareSecondaryId,
-                            MedicareSecondaryNotes = medicareSecondaryNotes,
-                            HippaConsent = consent,
-                            HippaConsentDate = consentDate,
-                            PreferredContactFirstId = prefContact1,
-                            PreferredContactSecondId = prefContact2,
-                            PreferredContactThirdId = prefContact3,
-                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                            DefaultLocationId = newPatient.LocationId
+                    var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.Id.ToString()
+                        && p.FirstName == patient.FirstName && p.LastName == patient.LastName);
+
+                    if (ffpmOrig == null) {
+                        var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
+                            DateCreated = minAcceptableDate,
+                            AccountNumber = patient.Id.ToString(),
+                            AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                            LastName = TruncateString(patient.LastName, 50),
+                            MiddleName = TruncateString(patient.MiddleName, 50),
+                            FirstName = TruncateString(patient.FirstName, 50),
+                            PreferredName = TruncateString(patient.PreferredName, 50),
+                            Ssn = TruncateString(patient.Ssn, 15),
+                            DateOfBirth = dob,
+                            MaritialStatusId = maritalStatusInt,
+                            TitleId = titleInt,
+                            IsActive = patientIsActive,
+                            IsDeceased = deceased,
+                            DeceasedDate = deceasedDate,
+                            LastExamDate = lastExamDate,
+                            PatientBalance = 0,
+                            InsuranceBalance = 0,
+                            OtherBalance = 0,
+                            GenderId = genderInt,
+                            SuffixId = suffixInt,
+                            BalanceLastUpdatedDateTime = minAcceptableDate,
+                            EmailNotApplicable = isEmailValid,
+                            DoNotSendStatements = dontSendStatements,
+                            EmailStatements = emailStatements,
+                            OpenEdgeCustomerId = TruncateString("", 100),
+                            TextStatements = true,
+                            LocationId = 0,
+                            LastModifiedDate = DateTime.Now,
+                            LastModifiedBy = -1
                         };
-                        patientAdditionals.Add(newAdditionDetails); // Id like to move this up so I can add all new at once, but that
-                                                                    // will not allow to check for duplicates if theyre both new
-                        newAdditionalDetails.Add(newAdditionDetails);
-                    }
 
-                    // Update or create EMRPatient
-                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
-                    if (existingEmrPatient == null) {
-                        var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                            ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
-                            PatientNameFirst = TruncateString(newPatient.FirstName, 50),
-                            PatientNameLast = TruncateString(newPatient.LastName, 50),
-                            PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
-                        };
-                        emrPatients.Add(newEMRPatient);
-                        newEmrPatients.Add(newEMRPatient);
-                    }
-                }
-            }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
-            }
-        }
+                        ffpmDbContext.DmgPatients.Add(newPatient);
 
-        public static void ConvertAppointmentType(Models.AppointmentType appointmentType, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes, List<SchedulingAppointmentType> newAppointmentTypes) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int? duration = null;
-                if (appointmentType.DefaultDuration != null) {
-                    if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
-                        duration = durationInt;
-                    }
-                }
-                bool isActive = false;
-                if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
-                    isActive = true;
-                }
-                bool schedule = false;
-                if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
-                    schedule = true;
-                }
-                bool required = false;
-                if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
-                    required = true;
-                }
-                bool examType = false;
-                if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
-                    examType = true;
-                }
-                string code = "";
-                if (appointmentType.OldAppointmentTypeCode != null) {
-                    code = appointmentType.OldAppointmentTypeCode;
-                }
-                string description = "";
-                if (appointmentType.Description != null) {
-                    description = appointmentType.Description;
-                }
-                string notes = "";
-                if (appointmentType.Notes != null) {
-                    notes = appointmentType.Notes;
-                }
 
-                var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
+                        var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
+                        if (patientAdditionalDetail == null) {
+                            // If no existing patient is found, create a new one
+                            var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                                PatientId = newPatient.PatientId,
+                                DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
+                                DriversLicenseStateId = licenseShort,
+                                RaceId = race,
+                                EthnicityId = ethnicity,
+                                MedicareSecondaryId = medicareSecondaryId,
+                                MedicareSecondaryNotes = medicareSecondaryNotes,
+                                HippaConsent = consent,
+                                HippaConsentDate = consentDate,
+                                PreferredContactFirstId = prefContact1,
+                                PreferredContactSecondId = prefContact2,
+                                PreferredContactThirdId = prefContact3,
+                                PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
+                                DefaultLocationId = newPatient.LocationId
+                            };
+                            patientAdditionals.Add(newAdditionDetails); // Id like to move this up so I can add all new at once, but that
+                                                                        // will not allow to check for duplicates if theyre both new
+                            newAdditionalDetails.Add(newAdditionDetails);
+                        }
 
-                if (ffpmOrig == null) {
-                    var newAppointmentType = new SchedulingAppointmentType {
-                        Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
-                        Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
-                        LocationId = 0,
-                        PatientRequired = required,
-                        Notes = TruncateString(notes, 5000),  // Truncating to the specified max length of 5000
-                        IsExamType = examType,
-                        IsAppointmentType = true,
-                        IsRecallType = false, // Will set this to true for recall types
-                        DefaultDuration = duration,
-                        Active = isActive,
-                        CanSchedule = schedule
-                    };
-                    newAppointmentTypes.Add(newAppointmentType);
-                    appointmentTypes.Add(newAppointmentType);
-                }
-            }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
-            }
-        }
-
-        public static void ConvertAppointment(Models.Appointment appointment, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes, 
-                List<SchedulingAppointment> appointments, List<SchedulingAppointment> newAppointments) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int locationId = -1;
-                int patientId = -1;
-                if (appointment.PatientId > 0) {
-                    var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
-                    if (convPatient == null) {
-                        logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
-                    }
-                    else {
-                        var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) &&
-                            (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
-                        if (ffpmPatient == null) {
-                            logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
-                        } else {
-                            patientId = (int)ffpmPatient.PatientId;
-                            locationId = ffpmPatient.LocationId;
+                        // Update or create EMRPatient
+                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
+                        if (existingEmrPatient == null) {
+                            var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                                ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
+                                PatientNameFirst = TruncateString(newPatient.FirstName, 50),
+                                PatientNameLast = TruncateString(newPatient.LastName, 50),
+                                PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
+                            };
+                            emrPatients.Add(newEMRPatient);
+                            newEmrPatients.Add(newEMRPatient);
                         }
                     }
                 }
-                
-                long resource = -1;
-                if (appointment.OldResourceId != null) {
-                    long.TryParse(appointment.OldResourceId, out resource);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
                 }
-
-                DateTime start = minAcceptableDate;
-                if (appointment.StartDate != null && (appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare))) {
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats,
-                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
-                        start = isValidDate(temp);
-                    }
-                }
-                DateTime end = minAcceptableDate;
-                if (appointment.EndDate != null && (appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare))) {
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats,
-                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
-                        end = isValidDate(temp);
-                    }
-                }
-                int duration = -1;
-                if (appointment.Duration != null) {
-                    if (int.TryParse(appointment.Duration, out int durationInt)) {
-                        duration = durationInt;
-                    }
-                }
-                DateTime created = minAcceptableDate;
-                if (appointment.DateTimeCreated != null && (appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare))) {
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
-                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
-                        created = isValidDate(created);
-                    }
-                }
-                int billingLocId = 0;
-                if (appointment.OldBillingLocationId != null) {
-                    if (int.TryParse(appointment.OldBillingLocationId, out int billingLocIdInt)) {
-                        billingLocId = billingLocIdInt;
-                    }
-                }
-                bool confirmed = false;
-                if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1") {
-                    confirmed = true;
-                }
-                int sequence = 0;
-                if (appointment.Sequence != null) {
-                    if (int.TryParse(appointment.Sequence, out int sequenceInt)) {
-                        sequence = sequenceInt;
-                    }
-                }
-                int requestId = 0;
-                if (appointment.RequestId != null) {
-                    if (int.TryParse(appointment.RequestId, out int requestIdInt)) {
-                        requestId = requestIdInt;
-                    }
-                }
-                int status = 0;
-                if (appointment.Status != null) {
-                    if (int.TryParse(appointment.Status, out int statusInt)) {
-                        status = statusInt;
-                    }
-                }
-                DateTime? checkIn = null;
-                if (appointment.CheckInDateTime != null && (appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare))) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        checkIn = isValidDate(tempDateTime);
-                    }
-                }
-                DateTime? takeback = null;
-                if (appointment.TakeBackDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare))) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        takeback = isValidDate(tempDateTime);
-                    }
-                }
-                DateTime? checkOut = null;
-                if (appointment.CheckOutDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare))) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        checkOut = isValidDate(tempDateTime);
-                    }
-                }
-                long? prior = null;
-                if (appointment.PriorAppointmentId != null) {
-                    prior = long.Parse(appointment.PriorAppointmentId);
-                }
-                long? linked = null;
-                if (appointment.LinkedAppointmentId != null) {
-                    linked = long.Parse(appointment.LinkedAppointmentId);
-                }
-                int schedulingCode = 0;
-                if (appointment.SchedulingCodeId != null) {
-                    if (int.TryParse(appointment.SchedulingCodeId, out int schedulingCodeInt)) {
-                        schedulingCode = schedulingCodeInt;
-                    }
-                }
-                long? recallId = null;
-                if (appointment.RecallId != null) {
-                    recallId = long.Parse(appointment.RecallId);
-                }
-                long? waitlistId = null;
-                if (appointment.WaitingListId != null) {
-                    waitlistId = long.Parse(appointment.WaitingListId);
-                }
-                int type = -1;
-                var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
-                if (typeXref != null) {
-                    type = (int)typeXref.AppointmentTypeId;
-                }
-                DateTime? updated = null;
-                if (appointment.DateTimeUpdated != null && (appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare))) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
-                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        updated = isValidDate(tempDateTime);
-                    }
-                }
-                if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    updated = null;
-                }
-                if (checkIn == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    checkIn = null;
-                }
-                if (takeback == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    takeback = null;
-                }
-                if (checkOut == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    checkOut = null;
-                }
-                if (start == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    start = minAcceptableDate;
-                }
-                if (end == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    end = minAcceptableDate;
-                }
-                if (created == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    created = minAcceptableDate;
-                }
-                if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                    updated = null;
-                }
-
-                
-                                
-                var newAppointment = new SchedulingAppointment {
-                    PatientId = patientId,
-                    ResourceId = resource,
-                    BillingLocationId = billingLocId,
-                    StartDate = start,
-                    EndDate = end,
-                    Notes = TruncateString(appointment.Notes, 2000),
-                    Duration = duration,
-                    DateTimeCreated = created,
-                    LocationId = locationId,
-                    Confirmed = confirmed,
-                    Sequence = sequence,
-                    RequestId = requestId,
-                    Status = status,
-                    CheckInDateTime = minAcceptableDate,
-                    TakeBackDateTime = takeback,
-                    CheckOutDateTime = checkOut,
-                    Description = TruncateString(appointment.Description, 2000),
-                    PriorAppointmentId = prior,
-                    LinkedAppointmentId = linked,
-                    SchedulingCodeId = schedulingCode,
-                    SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000),
-                    AppointmentTypeId = type,
-                    DateTimeUpdated = minAcceptableDate
-                };
-                newAppointments.Add(newAppointment);
-                appointments.Add(newAppointment);
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
+            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(newAdditionalDetails);
+            eyeMdDbContext.Emrpatients.AddRange(newEmrPatients);
+            ffpmDbContext.SaveChanges();
+            eyeMdDbContext.SaveChanges();
+            newAdditionalDetails.Clear();
+            newEmrPatients.Clear();
+        }
+
+        public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes, List<SchedulingAppointmentType> newAppointmentTypes) {
+            foreach (var appointmentType in convAppointmentTypes) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int? duration = null;
+                    if (appointmentType.DefaultDuration != null) {
+                        if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
+                            duration = durationInt;
+                        }
+                    }
+                    bool isActive = false;
+                    if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
+                        isActive = true;
+                    }
+                    bool schedule = false;
+                    if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
+                        schedule = true;
+                    }
+                    bool required = false;
+                    if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
+                        required = true;
+                    }
+                    bool examType = false;
+                    if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
+                        examType = true;
+                    }
+                    string code = "";
+                    if (appointmentType.OldAppointmentTypeCode != null) {
+                        code = appointmentType.OldAppointmentTypeCode;
+                    }
+                    string description = "";
+                    if (appointmentType.Description != null) {
+                        description = appointmentType.Description;
+                    }
+                    string notes = "";
+                    if (appointmentType.Notes != null) {
+                        notes = appointmentType.Notes;
+                    }
+
+                    var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
+
+                    if (ffpmOrig == null) {
+                        var newAppointmentType = new SchedulingAppointmentType {
+                            Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
+                            Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
+                            LocationId = 0,
+                            PatientRequired = required,
+                            Notes = TruncateString(notes, 5000),  // Truncating to the specified max length of 5000
+                            IsExamType = examType,
+                            IsAppointmentType = true,
+                            IsRecallType = false, // Will set this to true for recall types
+                            DefaultDuration = duration,
+                            Active = isActive,
+                            CanSchedule = schedule
+                        };
+                        newAppointmentTypes.Add(newAppointmentType);
+                        appointmentTypes.Add(newAppointmentType);
+                    }
+                }
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
+                }
             }
+            ffpmDbContext.SchedulingAppointmentTypes.AddRange(newAppointmentTypes);
+            ffpmDbContext.SaveChanges();
+            newAppointmentTypes.Clear();
+        }
+
+        public static void ConvertAppointment(List<Models.Appointment> convAppointments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes, 
+                List<SchedulingAppointment> appointments, List<SchedulingAppointment> newAppointments) {
+            foreach (var appointment in convAppointments) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int locationId = -1;
+                    int patientId = -1;
+                    if (appointment.PatientId > 0) {
+                        var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
+                        if (convPatient == null) {
+                            logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
+                        }
+                        else {
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) &&
+                                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                            if (ffpmPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for appointment with ID: {appointment.Id}");
+                            }
+                            else {
+                                patientId = (int)ffpmPatient.PatientId;
+                                locationId = ffpmPatient.LocationId;
+                            }
+                        }
+                    }
+
+                    long resource = -1;
+                    if (appointment.OldResourceId != null) {
+                        long.TryParse(appointment.OldResourceId, out resource);
+                    }
+
+                    DateTime start = minAcceptableDate;
+                    if (appointment.StartDate != null && (appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare))) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats,
+                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                            start = isValidDate(temp);
+                        }
+                    }
+                    DateTime end = minAcceptableDate;
+                    if (appointment.EndDate != null && (appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare))) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats,
+                                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                            end = isValidDate(temp);
+                        }
+                    }
+                    int duration = -1;
+                    if (appointment.Duration != null) {
+                        if (int.TryParse(appointment.Duration, out int durationInt)) {
+                            duration = durationInt;
+                        }
+                    }
+                    DateTime created = minAcceptableDate;
+                    if (appointment.DateTimeCreated != null && (appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare))) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
+                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
+                            created = isValidDate(created);
+                        }
+                    }
+                    int billingLocId = 0;
+                    if (appointment.OldBillingLocationId != null) {
+                        if (int.TryParse(appointment.OldBillingLocationId, out int billingLocIdInt)) {
+                            billingLocId = billingLocIdInt;
+                        }
+                    }
+                    bool confirmed = false;
+                    if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1") {
+                        confirmed = true;
+                    }
+                    int sequence = 0;
+                    if (appointment.Sequence != null) {
+                        if (int.TryParse(appointment.Sequence, out int sequenceInt)) {
+                            sequence = sequenceInt;
+                        }
+                    }
+                    int requestId = 0;
+                    if (appointment.RequestId != null) {
+                        if (int.TryParse(appointment.RequestId, out int requestIdInt)) {
+                            requestId = requestIdInt;
+                        }
+                    }
+                    int status = 0;
+                    if (appointment.Status != null) {
+                        if (int.TryParse(appointment.Status, out int statusInt)) {
+                            status = statusInt;
+                        }
+                    }
+                    DateTime? checkIn = null;
+                    if (appointment.CheckInDateTime != null && (appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare))) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            checkIn = isValidDate(tempDateTime);
+                        }
+                    }
+                    DateTime? takeback = null;
+                    if (appointment.TakeBackDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare))) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            takeback = isValidDate(tempDateTime);
+                        }
+                    }
+                    DateTime? checkOut = null;
+                    if (appointment.CheckOutDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare))) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            checkOut = isValidDate(tempDateTime);
+                        }
+                    }
+                    long? prior = null;
+                    if (appointment.PriorAppointmentId != null) {
+                        prior = long.Parse(appointment.PriorAppointmentId);
+                    }
+                    long? linked = null;
+                    if (appointment.LinkedAppointmentId != null) {
+                        linked = long.Parse(appointment.LinkedAppointmentId);
+                    }
+                    int schedulingCode = 0;
+                    if (appointment.SchedulingCodeId != null) {
+                        if (int.TryParse(appointment.SchedulingCodeId, out int schedulingCodeInt)) {
+                            schedulingCode = schedulingCodeInt;
+                        }
+                    }
+                    long? recallId = null;
+                    if (appointment.RecallId != null) {
+                        recallId = long.Parse(appointment.RecallId);
+                    }
+                    long? waitlistId = null;
+                    if (appointment.WaitingListId != null) {
+                        waitlistId = long.Parse(appointment.WaitingListId);
+                    }
+                    int type = -1;
+                    var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
+                    if (typeXref != null) {
+                        type = (int)typeXref.AppointmentTypeId;
+                    }
+                    DateTime? updated = null;
+                    if (appointment.DateTimeUpdated != null && (appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare))) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            updated = isValidDate(tempDateTime);
+                        }
+                    }
+                    if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        updated = null;
+                    }
+                    if (checkIn == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        checkIn = null;
+                    }
+                    if (takeback == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        takeback = null;
+                    }
+                    if (checkOut == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        checkOut = null;
+                    }
+                    if (start == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        start = minAcceptableDate;
+                    }
+                    if (end == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        end = minAcceptableDate;
+                    }
+                    if (created == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        created = minAcceptableDate;
+                    }
+                    if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
+                        updated = null;
+                    }
+
+
+
+                    var newAppointment = new SchedulingAppointment {
+                        PatientId = patientId,
+                        ResourceId = resource,
+                        BillingLocationId = billingLocId,
+                        StartDate = start,
+                        EndDate = end,
+                        Notes = TruncateString(appointment.Notes, 2000),
+                        Duration = duration,
+                        DateTimeCreated = created,
+                        LocationId = locationId,
+                        Confirmed = confirmed,
+                        Sequence = sequence,
+                        RequestId = requestId,
+                        Status = status,
+                        CheckInDateTime = minAcceptableDate,
+                        TakeBackDateTime = takeback,
+                        CheckOutDateTime = checkOut,
+                        Description = TruncateString(appointment.Description, 2000),
+                        PriorAppointmentId = prior,
+                        LinkedAppointmentId = linked,
+                        SchedulingCodeId = schedulingCode,
+                        SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000),
+                        AppointmentTypeId = type,
+                        DateTimeUpdated = minAcceptableDate
+                    };
+                    newAppointments.Add(newAppointment);
+                    appointments.Add(newAppointment);
+                }
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
+                }
+            }
+            ffpmDbContext.SchedulingAppointments.AddRange(newAppointments);
+            ffpmDbContext.SaveChanges();
+            newAppointments.Clear();
         }
 
         public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
@@ -1233,211 +1244,217 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertLocation(Models.Location location, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+        public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
             List<BillingLocation> locations, List<BillingLocation> newLocations) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string? name = null;
-                if (location.LocationName != null && location.LocationName != "") {
-                    name = location.LocationName;
-                } else {
-                    logger.Log($"Conv: Conv Location Name is null for location with ID: {location.Id}");
-                    return;
-                }
+            foreach (var location in convLocations) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string? name = null;
+                    if (location.LocationName != null && location.LocationName != "") {
+                        name = location.LocationName;
+                    }
+                    else {
+                        logger.Log($"Conv: Conv Location Name is null for location with ID: {location.Id}");
+                        return;
+                    }
 
-                #region taxonomys
-                int primaryTaxId = 0;
-                if (int.TryParse(name, out int dontCare)) {
-                    primaryTaxId = dontCare;
-                }
-                else {
-                    logger.Log($"Conv: Conv Primary taxonomy ID not found for location with ID: {location.Id}");
-                }
+                    #region taxonomys
+                    int primaryTaxId = 0;
+                    if (int.TryParse(name, out int dontCare)) {
+                        primaryTaxId = dontCare;
+                    }
+                    else {
+                        logger.Log($"Conv: Conv Primary taxonomy ID not found for location with ID: {location.Id}");
+                    }
 
-                int tax1Id = 0;
-                if (location.AlternateTaxonomy1Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy1Id, out dontCare)) {
-                        tax1Id = dontCare;
+                    int tax1Id = 0;
+                    if (location.AlternateTaxonomy1Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy1Id, out dontCare)) {
+                            tax1Id = dontCare;
+                        }
                     }
-                }
-                int tax2Id = 0;
-                if (location.AlternateTaxonomy2Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy2Id, out dontCare)) {
-                        tax2Id = dontCare;
+                    int tax2Id = 0;
+                    if (location.AlternateTaxonomy2Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy2Id, out dontCare)) {
+                            tax2Id = dontCare;
+                        }
                     }
-                }
-                int tax3Id = 0;
-                if (location.AlternateTaxonomy3Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy3Id, out dontCare)) {
-                        tax3Id = dontCare;
+                    int tax3Id = 0;
+                    if (location.AlternateTaxonomy3Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy3Id, out dontCare)) {
+                            tax3Id = dontCare;
+                        }
                     }
-                }
-                int tax4Id = 0;
-                if (location.AlternateTaxonomy4Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy4Id, out dontCare)) {
-                        tax4Id = dontCare;
+                    int tax4Id = 0;
+                    if (location.AlternateTaxonomy4Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy4Id, out dontCare)) {
+                            tax4Id = dontCare;
+                        }
                     }
-                }
-                int tax5Id = 0;
-                if (location.AlternateTaxonomy5Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy5Id, out dontCare)) {
-                        tax5Id = dontCare;
+                    int tax5Id = 0;
+                    if (location.AlternateTaxonomy5Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy5Id, out dontCare)) {
+                            tax5Id = dontCare;
+                        }
                     }
-                }
-                int tax6Id = 0;
-                if (location.AlternateTaxonomy6Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy6Id, out dontCare)) {
-                        tax6Id = dontCare;
+                    int tax6Id = 0;
+                    if (location.AlternateTaxonomy6Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy6Id, out dontCare)) {
+                            tax6Id = dontCare;
+                        }
                     }
-                }
-                int tax7Id = 0;
-                if (location.AlternateTaxonomy7Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy7Id, out dontCare)) {
-                        tax7Id = dontCare;
+                    int tax7Id = 0;
+                    if (location.AlternateTaxonomy7Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy7Id, out dontCare)) {
+                            tax7Id = dontCare;
+                        }
                     }
-                }
-                int tax8Id = 0;
-                if (location.AlternateTaxonomy8Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy8Id, out dontCare)) {
-                        tax8Id = dontCare;
+                    int tax8Id = 0;
+                    if (location.AlternateTaxonomy8Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy8Id, out dontCare)) {
+                            tax8Id = dontCare;
+                        }
                     }
-                }
-                int tax9Id = 0;
-                if (location.AlternateTaxonomy9Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy9Id, out dontCare)) {
-                        tax9Id = dontCare;
+                    int tax9Id = 0;
+                    if (location.AlternateTaxonomy9Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy9Id, out dontCare)) {
+                            tax9Id = dontCare;
+                        }
                     }
-                }
-                int tax10Id = 0;
-                if (location.AlternateTaxonomy10Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy10Id, out dontCare)) {
-                        tax10Id = dontCare;
+                    int tax10Id = 0;
+                    if (location.AlternateTaxonomy10Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy10Id, out dontCare)) {
+                            tax10Id = dontCare;
+                        }
                     }
-                }
-                int tax11Id = 0;
-                if (location.AlternateTaxonomy11Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy11Id, out dontCare)) {
-                        tax11Id = dontCare;
+                    int tax11Id = 0;
+                    if (location.AlternateTaxonomy11Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy11Id, out dontCare)) {
+                            tax11Id = dontCare;
+                        }
                     }
-                }
-                int tax12Id = 0;
-                if (location.AlternateTaxonomy12Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy12Id, out dontCare)) {
-                        tax12Id = dontCare;
+                    int tax12Id = 0;
+                    if (location.AlternateTaxonomy12Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy12Id, out dontCare)) {
+                            tax12Id = dontCare;
+                        }
                     }
-                }
-                int tax13Id = 0;
-                if (location.AlternateTaxonomy13Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy13Id, out dontCare)) {
-                        tax13Id = dontCare;
+                    int tax13Id = 0;
+                    if (location.AlternateTaxonomy13Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy13Id, out dontCare)) {
+                            tax13Id = dontCare;
+                        }
                     }
-                }
-                int tax14Id = 0;
-                if (location.AlternateTaxonomy14Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy14Id, out dontCare)) {
-                        tax14Id = dontCare;
+                    int tax14Id = 0;
+                    if (location.AlternateTaxonomy14Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy14Id, out dontCare)) {
+                            tax14Id = dontCare;
+                        }
                     }
-                }
-                int tax15Id = 0;
-                if (location.AlternateTaxonomy15Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy15Id, out dontCare)) {
-                        tax15Id = dontCare;
+                    int tax15Id = 0;
+                    if (location.AlternateTaxonomy15Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy15Id, out dontCare)) {
+                            tax15Id = dontCare;
+                        }
                     }
-                }
-                int tax16Id = 0;
-                if (location.AlternateTaxonomy16Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy16Id, out dontCare)) {
-                        tax16Id = dontCare;
+                    int tax16Id = 0;
+                    if (location.AlternateTaxonomy16Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy16Id, out dontCare)) {
+                            tax16Id = dontCare;
+                        }
                     }
-                }
-                int tax17Id = 0;
-                if (location.AlternateTaxonomy17Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy17Id, out dontCare)) {
-                        tax17Id = dontCare;
+                    int tax17Id = 0;
+                    if (location.AlternateTaxonomy17Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy17Id, out dontCare)) {
+                            tax17Id = dontCare;
+                        }
                     }
-                }
-                int tax18Id = 0;
-                if (location.AlternateTaxonomy18Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy18Id, out dontCare)) {
-                        tax18Id = dontCare;
+                    int tax18Id = 0;
+                    if (location.AlternateTaxonomy18Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy18Id, out dontCare)) {
+                            tax18Id = dontCare;
+                        }
                     }
-                }
-                int tax19Id = 0;
-                if (location.AlternateTaxonomy19Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy19Id, out dontCare)) {
-                        tax19Id = dontCare;
+                    int tax19Id = 0;
+                    if (location.AlternateTaxonomy19Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy19Id, out dontCare)) {
+                            tax19Id = dontCare;
+                        }
                     }
-                }
-                int tax20Id = 0;
-                if (location.AlternateTaxonomy20Id != null) {
-                    if (int.TryParse(location.AlternateTaxonomy20Id, out dontCare)) {
-                        tax20Id = dontCare;
+                    int tax20Id = 0;
+                    if (location.AlternateTaxonomy20Id != null) {
+                        if (int.TryParse(location.AlternateTaxonomy20Id, out dontCare)) {
+                            tax20Id = dontCare;
+                        }
                     }
-                }
-                #endregion taxonomys
+                    #endregion taxonomys
 
-                bool isBilling = false;
-                if (location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1")) {
-                    isBilling = true;
+                    bool isBilling = false;
+                    if (location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1")) {
+                        isBilling = true;
+                    }
+                    bool isSchedule = false;
+                    if (location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1")) {
+                        isSchedule = true;
+                    }
+
+                    int treatmentPlaceId = 0;
+                    if (int.TryParse(location.PlaceOfTreatment, out int temp)) {
+                        treatmentPlaceId = temp;
+                    }
+
+                    var ffpmOrig = locations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
+
+                    if (ffpmOrig == null) {
+                        var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
+                            PrimaryTaxonomyId = primaryTaxId,
+                            AlternateTaxonomy1Id = tax1Id,
+                            AlternateTaxonomy2Id = tax2Id,
+                            AlternateTaxonomy3Id = tax3Id,
+                            AlternateTaxonomy4Id = tax4Id,
+                            AlternateTaxonomy5Id = tax5Id,
+                            AlternateTaxonomy6Id = tax6Id,
+                            AlternateTaxonomy7Id = tax7Id,
+                            AlternateTaxonomy8Id = tax8Id,
+                            AlternateTaxonomy9Id = tax9Id,
+                            AlternateTaxonomy10Id = tax10Id,
+                            AlternateTaxonomy11Id = tax11Id,
+                            AlternateTaxonomy12Id = tax12Id,
+                            AlternateTaxonomy13Id = tax13Id,
+                            AlternateTaxonomy14Id = tax14Id,
+                            AlternateTaxonomy15Id = tax15Id,
+                            AlternateTaxonomy16Id = tax16Id,
+                            AlternateTaxonomy17Id = tax17Id,
+                            AlternateTaxonomy18Id = tax18Id,
+                            AlternateTaxonomy19Id = tax19Id,
+                            AlternateTaxonomy20Id = tax20Id,
+
+                            Name = TruncateString(name, 500),
+                            IsBillingLocation = isBilling,
+                            CliaIdNo = TruncateString(location.Clia, 15),
+                            Npi = TruncateString(location.Npi, 10),
+                            FederalIdNo = TruncateString(location.FederalEin, 15),
+                            IsSchedulingLocation = isSchedule,
+                            PlaceOfTreatmentId = treatmentPlaceId,
+                            LocationId = 0,
+                            IsActive = true,
+                            CaculateTaxOnEstimatedPatientBalance = false,
+                            IsDefaultLocation = true,
+                            CaculateTaxOnTotalFee = false
+                        };
+                        locations.Add(newLocation);
+                        newLocations.Add(newLocation);
+                    }
                 }
-                bool isSchedule = false;
-                if (location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1")) {
-                    isSchedule = true;
-                }
-
-                int treatmentPlaceId = 0;
-                if (int.TryParse(location.PlaceOfTreatment, out int temp)) {
-                    treatmentPlaceId = temp;
-                }
-
-                var ffpmOrig = locations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
-
-                if (ffpmOrig == null) {
-                    var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
-                        PrimaryTaxonomyId = primaryTaxId,
-                        AlternateTaxonomy1Id = tax1Id,
-                        AlternateTaxonomy2Id = tax2Id,
-                        AlternateTaxonomy3Id = tax3Id,
-                        AlternateTaxonomy4Id = tax4Id,
-                        AlternateTaxonomy5Id = tax5Id,
-                        AlternateTaxonomy6Id = tax6Id,
-                        AlternateTaxonomy7Id = tax7Id,
-                        AlternateTaxonomy8Id = tax8Id,
-                        AlternateTaxonomy9Id = tax9Id,
-                        AlternateTaxonomy10Id = tax10Id,
-                        AlternateTaxonomy11Id = tax11Id,
-                        AlternateTaxonomy12Id = tax12Id,
-                        AlternateTaxonomy13Id = tax13Id,
-                        AlternateTaxonomy14Id = tax14Id,
-                        AlternateTaxonomy15Id = tax15Id,    
-                        AlternateTaxonomy16Id = tax16Id,
-                        AlternateTaxonomy17Id = tax17Id,
-                        AlternateTaxonomy18Id = tax18Id,
-                        AlternateTaxonomy19Id = tax19Id,                        
-                        AlternateTaxonomy20Id = tax20Id,
-
-                        Name = TruncateString(name, 500),
-                        IsBillingLocation = isBilling,
-                        CliaIdNo = TruncateString(location.Clia, 15),
-                        Npi = TruncateString(location.Npi, 10),
-                        FederalIdNo = TruncateString(location.FederalEin, 15),
-                        IsSchedulingLocation = isSchedule,
-                        PlaceOfTreatmentId = treatmentPlaceId,
-                        LocationId = 0,
-                        IsActive = true,
-                        CaculateTaxOnEstimatedPatientBalance = false,
-                        IsDefaultLocation = true,
-                        CaculateTaxOnTotalFee = false
-                    };
-                    locations.Add(newLocation);
-                    newLocations.Add(newLocation);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.BillingLocations.AddRange(newLocations);
+            ffpmDbContext.SaveChanges();
+            newLocations.Clear();
         }
 
         public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
