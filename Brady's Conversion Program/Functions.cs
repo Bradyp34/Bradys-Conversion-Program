@@ -424,29 +424,23 @@ namespace Brady_s_Conversion_Program {
             
             ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
             
-            ffpmDbContext.SchedulingAppointments.AddRange(newAppointments);
-            ffpmDbContext.SaveChanges();
-            newAppointments.Clear();
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
             
-            foreach (var insurance in convDbContext.Insurances) {
-                ConvertInsurance(insurance, convDbContext, ffpmDbContext, logger, progress, insurances, stateXrefs, newInsuranceCompanies);
-            } 
-            ffpmDbContext.InsInsuranceCompanies.AddRange(newInsuranceCompanies);
-            ffpmDbContext.SaveChanges();
-            newInsuranceCompanies.Clear();
+            
+            ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, progress, insurances, stateXrefs, newInsuranceCompanies);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
 
-            foreach (var provider in convDbContext.Providers) {
-                ConvertProvider(provider, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders, newProviders);
-            }
-            ffpmDbContext.DmgProviders.AddRange(newProviders);
-            ffpmDbContext.SaveChanges();
-            newProviders.Clear();
+            
+            ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders, newProviders);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
@@ -1101,147 +1095,155 @@ namespace Brady_s_Conversion_Program {
             newAppointments.Clear();
         }
 
-        public static void ConvertInsurance(Models.Insurance insurance, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+        public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
             List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs, List<InsInsuranceCompany> newInsuranceCompanies) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
-                    if (company.InsCompanyName == insurance.InsCompanyName) {
-                        logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
-                        return;
+            foreach (var insurance in convDbContext.Insurances) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
+                        if (company.InsCompanyName == insurance.InsCompanyName) {
+                            logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
+                            return;
+                        }
+                    }
+
+                    int stateId = -1;
+                    var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
+                    if (stateXref != null) {
+                        stateId = stateXref.StateId;
+                    }
+
+                    string insZip = "";
+                    if (insurance.InsCompanyZip != null) {
+                        if (zipRegex.IsMatch(insurance.InsCompanyZip)) {
+                            insZip = insurance.InsCompanyZip;
+                        }
+                    }
+
+                    string insEmail = "";
+                    if (insurance.InsCompanyEmail != null) {
+                        insEmail = TruncateString(insurance.InsCompanyEmail, 50);
+                    }
+
+                    string insFax = "";
+                    if (insurance.InsCompanyFax != null) {
+                        if (phoneRegex.IsMatch(insurance.InsCompanyFax)) {
+                            insFax = insurance.InsCompanyFax;
+                        }
+                    }
+
+                    string insPhone = "";
+                    if (insurance.InsCompanyPhone != null) {
+                        if (phoneRegex.IsMatch(insurance.InsCompanyPhone)) {
+                            insPhone = insurance.InsCompanyPhone;
+                        }
+                    }
+
+                    string payerId = "";
+                    if (insurance.InsuranceCompanyCode != null) {
+                        payerId = insurance.InsuranceCompanyCode;
+                    }
+
+                    bool active = false;
+                    if (insurance.Active != null && (insurance.Active.ToLower() == "yes" || insurance.Active == "1")) {
+                        active = true;
+                    }
+
+                    bool collections = false;
+                    if (insurance.IsCollections != null && (insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1")) {
+                        collections = true;
+                    }
+
+                    bool dmerc = false;
+                    if (insurance.IsDmerc != null && (insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1")) {
+                        dmerc = true;
+                    }
+                    string companyName = "";
+                    if (insurance.InsCompanyName != null) {
+                        companyName = insurance.InsCompanyName;
+                    }
+                    string code = "";
+                    if (insurance.InsuranceCompanyCode != null) {
+                        code = insurance.InsuranceCompanyCode;
+                    }
+                    int companyId = 0;
+                    if (insurance.OldInsCompanyId != null) {
+                        if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
+                            companyId = companyIdInt;
+                        }
+                    }
+                    int claimTypeId = 0;
+                    if (insurance.InsCompanyClaimType != null) {
+                        if (insurance.InsCompanyClaimType.ToLower() == "medical") {
+                            claimTypeId = 1;
+                        }
+                        else if (insurance.InsCompanyClaimType.ToLower() == "vision") {
+                            claimTypeId = 2;
+                        }
+                    }
+                    int policyTypeId = 0;
+                    if (insurance.InsCompanyPolicyType != null) {
+                        if (insurance.InsCompanyPolicyType.ToLower() == "medical") {
+                            policyTypeId = 1;
+                        }
+                        else if (insurance.InsCompanyPolicyType.ToLower() == "vision") {
+                            policyTypeId = 2;
+                        }
+                    }
+                    int? carrierTypeId = 0;
+                    if (insurance.InsCompanyCarrierType == "medical") {
+                        carrierTypeId = 1;
+                    }
+                    else if (insurance.InsCompanyCarrierType == "vision") {
+                        carrierTypeId = 2;
+                    }
+
+                    var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
+
+                    if (ffpmOrig == null) {
+                        var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
+                            InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
+                            InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
+                            InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100),
+                            InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50),
+                            InsCompanyStateId = stateId,
+                            InsCompanyZip = TruncateString(insZip, 10),
+                            InsCompanyPhone = TruncateString(insPhone, 25),
+                            InsCompanyFax = TruncateString(insFax, 25),
+                            InsCompanyCode = TruncateString(code, 15),
+                            InsCompanyEmail = TruncateString(insEmail, 25),
+                            InsCompanyPayerId = TruncateString(payerId, 25),
+                            IsActive = active,
+                            IsCollectionsInsurance = collections,
+                            IsDmercPlaceOfService = dmerc,
+                            CategoryId = 0,
+                            ResponsibilityId = 0,
+                            PaymentTransaction = "",  // No truncation specified but should be managed if needed
+                            AdjustmentTransaction = "",  // Ditto
+                            AcceptAssignment = true,
+                            PrintAsOtherInsurance = true,
+                            AllowEligibilityChecks = true,
+                            ElectornicEnabled = true,
+                            ApplyShiftLogic = true,
+                            PaperClaimsOnly = false,
+                            IsCompanyInsurance = false,
+                            InsCompanyClaimTypeId = claimTypeId,
+                            InsCompanyPolicyTypeId = policyTypeId,
+                            InsCompanyCarrierTypeId = carrierTypeId
+                        };
+                        newInsuranceCompanies.Add(newInsuranceCompany);
+                        insuranceCompanies.Add(newInsuranceCompany);
                     }
                 }
-
-                int stateId = -1;
-                var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
-                if (stateXref != null) {
-                    stateId = stateXref.StateId;
-                }
-
-                string insZip = "";
-                if (insurance.InsCompanyZip != null) {
-                    if (zipRegex.IsMatch(insurance.InsCompanyZip)) {
-                        insZip = insurance.InsCompanyZip;
-                    }
-                }
-
-                string insEmail = "";
-                if (insurance.InsCompanyEmail != null) {
-                    insEmail = TruncateString(insurance.InsCompanyEmail, 50);
-                }
-
-                string insFax = "";
-                if (insurance.InsCompanyFax != null) {
-                    if (phoneRegex.IsMatch(insurance.InsCompanyFax)) {
-                        insFax = insurance.InsCompanyFax;
-                    }
-                }
-
-                string insPhone = "";
-                if (insurance.InsCompanyPhone != null) {
-                    if (phoneRegex.IsMatch(insurance.InsCompanyPhone)) {
-                        insPhone = insurance.InsCompanyPhone;
-                    }
-                }
-
-                string payerId = "";
-                if (insurance.InsuranceCompanyCode != null) {
-                    payerId = insurance.InsuranceCompanyCode;
-                }
-
-                bool active = false;
-                if (insurance.Active != null && (insurance.Active.ToLower() == "yes" || insurance.Active == "1")) {
-                    active = true;
-                }
-
-                bool collections = false;
-                if (insurance.IsCollections != null && (insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1")) {
-                    collections = true;
-                }
-
-                bool dmerc = false;
-                if (insurance.IsDmerc != null && (insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1")) {
-                    dmerc = true;
-                }
-                string companyName = "";
-                if (insurance.InsCompanyName != null) {
-                    companyName = insurance.InsCompanyName;
-                }
-                string code = "";
-                if (insurance.InsuranceCompanyCode != null) {
-                    code = insurance.InsuranceCompanyCode;
-                }
-                int companyId = 0;
-                if (insurance.OldInsCompanyId != null) {
-                    if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
-                        companyId = companyIdInt;
-                    }
-                }
-                int claimTypeId = 0;
-                if (insurance.InsCompanyClaimType != null) {
-                    if (insurance.InsCompanyClaimType.ToLower() == "medical") {
-                        claimTypeId = 1;
-                    } else if (insurance.InsCompanyClaimType.ToLower() == "vision") {
-                        claimTypeId = 2;
-                    }
-                }
-                int policyTypeId = 0;
-                if (insurance.InsCompanyPolicyType != null) {
-                    if (insurance.InsCompanyPolicyType.ToLower() == "medical") {
-                        policyTypeId = 1;
-                    } else if (insurance.InsCompanyPolicyType.ToLower() == "vision") {
-                        policyTypeId = 2;
-                    }
-                }
-                int? carrierTypeId = 0;
-                if (insurance.InsCompanyCarrierType == "medical") {
-                    carrierTypeId = 1;
-                } else if (insurance.InsCompanyCarrierType == "vision") {
-                    carrierTypeId = 2;
-                }
-
-                var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
-
-                if (ffpmOrig == null) {
-                    var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
-                        InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
-                        InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
-                        InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100),
-                        InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50),
-                        InsCompanyStateId = stateId,
-                        InsCompanyZip = TruncateString(insZip, 10),
-                        InsCompanyPhone = TruncateString(insPhone, 25),
-                        InsCompanyFax = TruncateString(insFax, 25),
-                        InsCompanyCode = TruncateString(code, 15),
-                        InsCompanyEmail = TruncateString(insEmail, 25),
-                        InsCompanyPayerId = TruncateString(payerId, 25),
-                        IsActive = active,
-                        IsCollectionsInsurance = collections,
-                        IsDmercPlaceOfService = dmerc,
-                        CategoryId = 0,
-                        ResponsibilityId = 0,
-                        PaymentTransaction = "",  // No truncation specified but should be managed if needed
-                        AdjustmentTransaction = "",  // Ditto
-                        AcceptAssignment = true,
-                        PrintAsOtherInsurance = true,
-                        AllowEligibilityChecks = true,
-                        ElectornicEnabled = true,
-                        ApplyShiftLogic = true,
-                        PaperClaimsOnly = false,
-                        IsCompanyInsurance = false,
-                        InsCompanyClaimTypeId = claimTypeId,
-                        InsCompanyPolicyTypeId = policyTypeId,
-                        InsCompanyCarrierTypeId = carrierTypeId
-                    };
-                    newInsuranceCompanies.Add(newInsuranceCompany);
-                    insuranceCompanies.Add(newInsuranceCompany);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the insurance with ID: {insurance.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the insurance with ID: {insurance.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.InsInsuranceCompanies.AddRange(newInsuranceCompanies);
+            ffpmDbContext.SaveChanges();
+            newInsuranceCompanies.Clear();
         }
 
         public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
@@ -2361,260 +2363,265 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertProvider(Models.Provider provider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertProvider(List<Models.Provider> convProvider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders, List<DmgProvider> newProviders) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                short? suffixInt = null;
-                var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix);
-                if (suffixXref != null) {
-                    suffixInt = suffixXref.SuffixId;
-                }
+            foreach (var provider in convDbContext.Providers) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    short? suffixInt = null;
+                    var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix);
+                    if (suffixXref != null) {
+                        suffixInt = suffixXref.SuffixId;
+                    }
 
-                short? titleInt = null;
-                var titleXref = titleXrefs.FirstOrDefault(t => t.Title == provider.Title);
-                if (titleXref != null) {
-                    titleInt = titleXref.TitleId;
-                }
+                    short? titleInt = null;
+                    var titleXref = titleXrefs.FirstOrDefault(t => t.Title == provider.Title);
+                    if (titleXref != null) {
+                        titleInt = titleXref.TitleId;
+                    }
 
-                string? ssnString = null;
-                if (provider.Ssn != null) {
-                    if (ssnRegex.IsMatch(provider.Ssn)) {
-                        ssnString = provider.Ssn;
+                    string? ssnString = null;
+                    if (provider.Ssn != null) {
+                        if (ssnRegex.IsMatch(provider.Ssn)) {
+                            ssnString = provider.Ssn;
+                        }
+                    }
+
+                    DateTime? dobDate = null;
+                    if (provider.Dob != null && provider.Dob != "" && !int.TryParse(provider.Dob, out int dontCare)) {
+                        if (DateTime.TryParseExact(provider.Dob, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
+                            dobDate = isValidDate(dob);
+                        }
+                    }
+
+                    string? einString = null;
+                    if (provider.Ein != null) {
+                        einString = provider.Ein;
+                    }
+
+                    string? upinString = null;
+                    if (provider.Upin != null) {
+                        upinString = provider.Upin;
+                    }
+
+                    string? npiString = null;
+                    if (provider.Npi != null) {
+                        npiString = provider.Npi;
+                    }
+
+                    bool? isActive = null;
+                    if (provider.Active != null && (provider.Active.ToLower() == "yes" || provider.Active == "1")) {
+                        isActive = true;
+                    }
+
+                    int clExpId = 0;
+                    if (provider.Clexpiration != null) {
+                        if (int.TryParse(provider.Clexpiration, out int clExpIdInt)) {
+                            clExpId = clExpIdInt;
+                        }
+                    }
+
+                    int specExpId = 0;
+                    if (provider.SpectacleExpiration != null) {
+                        if (int.TryParse(provider.SpectacleExpiration, out int specExpIdInt)) {
+                            specExpId = specExpIdInt;
+                        }
+                    }
+                    int specExpTypeId = 0;
+
+                    int? stateId = 0;
+                    if (provider.LicenseIssuingStateId != null) {
+                        if (int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt)) {
+                            stateId = stateIdInt;
+                        }
+                    }
+
+                    int? countryId = 0;
+                    if (provider.LicenseIssuingCountryId != null) {
+                        if (int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt)) {
+                            countryId = countryIdInt;
+                        }
+                    }
+
+                    int? specialtyId = null;
+                    if (provider.SpecialtyId != null) {
+                        if (int.TryParse(provider.SpecialtyId, out int specialtyIdInt)) {
+                            specialtyId = specialtyIdInt;
+                        }
+                    }
+
+
+                    #region taxonomys
+                    int primaryTaxId = 0;
+                    if (int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt)) {
+                        primaryTaxId = primaryTaxIdInt;
+                    }
+
+                    int taxId1 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy1Id, out int taxId1Int)) {
+                        taxId1 = taxId1Int;
+                    }
+
+                    int taxId2 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy2Id, out int taxId2Int)) {
+                        taxId2 = taxId2Int;
+                    }
+
+                    int taxId3 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy3Id, out int taxId3Int)) {
+                        taxId3 = taxId3Int;
+                    }
+
+                    int taxId4 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy4Id, out int taxId4Int)) {
+                        taxId4 = taxId4Int;
+                    }
+
+                    int taxId5 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy5Id, out int taxId5Int)) {
+                        taxId5 = taxId5Int;
+                    }
+
+                    int taxId6 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy6Id, out int taxId6Int)) {
+                        taxId6 = taxId6Int;
+                    }
+
+                    int taxId7 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy7Id, out int taxId7Int)) {
+                        taxId7 = taxId7Int;
+                    }
+
+                    int taxId8 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy8Id, out int taxId8Int)) {
+                        taxId8 = taxId8Int;
+                    }
+
+                    int taxId9 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy9Id, out int taxId9Int)) {
+                        taxId9 = taxId9Int;
+                    }
+
+                    int taxId10 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy10Id, out int taxId10Int)) {
+                        taxId10 = taxId10Int;
+                    }
+
+                    int taxId11 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy11Id, out int taxId11Int)) {
+                        taxId11 = taxId11Int;
+                    }
+
+                    int taxId12 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy12Id, out int taxId12Int)) {
+                        taxId12 = taxId12Int;
+                    }
+
+                    int taxId13 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy13Id, out int taxId13Int)) {
+                        taxId13 = taxId13Int;
+                    }
+
+                    int taxId14 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy14Id, out int taxId14Int)) {
+                        taxId14 = taxId14Int;
+                    }
+
+                    int taxId15 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy15Id, out int taxId15Int)) {
+                        taxId15 = taxId15Int;
+                    }
+
+                    int taxId16 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy16Id, out int taxId16Int)) {
+                        taxId16 = taxId16Int;
+                    }
+
+                    int taxId17 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy17Id, out int taxId17Int)) {
+                        taxId17 = taxId17Int;
+                    }
+
+                    int taxId18 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy18Id, out int taxId18Int)) {
+                        taxId18 = taxId18Int;
+                    }
+
+                    int taxId19 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy19Id, out int taxId19Int)) {
+                        taxId19 = taxId19Int;
+                    }
+
+                    int taxId20 = 0;
+                    if (int.TryParse(provider.AlternateTaxonomy20Id, out int taxId20Int)) {
+                        taxId20 = taxId20Int;
+                    }
+                    #endregion taxonomys
+
+
+                    var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == provider.OldProviderCode);
+
+                    if (ffpmOrig == null) {
+                        var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
+                            FirstName = TruncateString(provider.FirstName, 50),
+                            MiddleName = TruncateString(provider.MiddleName, 10),
+                            LastName = TruncateString(provider.LastName, 50),
+                            ProviderCode = TruncateString(provider.OldProviderCode, 15),
+                            SuffixId = suffixInt,
+                            TitleId = titleInt,
+                            ProviderSsn = TruncateString(ssnString, 15),
+                            ProviderEin = TruncateString(einString, 15),
+                            ProviderUpin = TruncateString(upinString, 15),
+                            ProviderDob = dobDate,
+                            ProviderNpi = TruncateString(npiString, 10),
+                            IsActive = isActive,
+                            IsReferringProvider = false,
+                            SignatureUrl = "",  // No value given, assumed not to require truncation
+                            GroupId = 0,
+                            SpectacleExpiration = specExpId,
+                            SpectacleExpirationTypeId = specExpTypeId,
+                            ClExpiration = clExpId,
+                            ClExpirationTypeId = -1,
+                            LicenseIssuingStateId = stateId,
+                            LicenseIssuingCountryId = countryId,
+                            ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
+                            PrimaryTaxonomyId = primaryTaxId,
+
+                            AlternateTaxonomy1Id = taxId1,
+                            AlternateTaxonomy2Id = taxId2,
+                            AlternateTaxonomy3Id = taxId3,
+                            AlternateTaxonomy4Id = taxId4,
+                            AlternateTaxonomy5Id = taxId5,
+                            AlternateTaxonomy6Id = taxId6,
+                            AlternateTaxonomy7Id = taxId7,
+                            AlternateTaxonomy8Id = taxId8,
+                            AlternateTaxonomy9Id = taxId9,
+                            AlternateTaxonomy10Id = taxId10,
+                            AlternateTaxonomy11Id = taxId11,
+                            AlternateTaxonomy12Id = taxId12,
+                            AlternateTaxonomy13Id = taxId13,
+                            AlternateTaxonomy14Id = taxId14,
+                            AlternateTaxonomy15Id = taxId15,
+                            AlternateTaxonomy16Id = taxId16,
+                            AlternateTaxonomy17Id = taxId17,
+                            AlternateTaxonomy18Id = taxId18,
+                            AlternateTaxonomy19Id = taxId19,
+                            AlternateTaxonomy20Id = taxId20
+                        };
+                        newProviders.Add(newPatientProvider);
+                        ffpmProviders.Add(newPatientProvider);
                     }
                 }
-
-                DateTime? dobDate = null;
-                if (provider.Dob != null && provider.Dob != "" && !int.TryParse(provider.Dob, out int dontCare)) {
-                    if (DateTime.TryParseExact(provider.Dob, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
-                        dobDate = isValidDate(dob);
-                    }
-                }
-
-                string? einString = null;
-                if (provider.Ein != null) {
-                    einString = provider.Ein;
-                }
-
-                string? upinString = null;
-                if (provider.Upin != null) {
-                    upinString = provider.Upin;
-                }
-
-                string? npiString = null;
-                if (provider.Npi != null) {
-                    npiString = provider.Npi;
-                }
-
-                bool? isActive = null;
-                if (provider.Active != null && (provider.Active.ToLower() == "yes" || provider.Active == "1")) {
-                    isActive = true;
-                }
-
-                int clExpId = 0;
-                if (provider.Clexpiration != null) {
-                    if (int.TryParse(provider.Clexpiration, out int clExpIdInt)) {
-                        clExpId = clExpIdInt;
-                    }
-                }
-
-                int specExpId = 0;
-                if (provider.SpectacleExpiration != null) {
-                    if (int.TryParse(provider.SpectacleExpiration, out int specExpIdInt)) {
-                        specExpId = specExpIdInt;
-                    }
-                }
-                int specExpTypeId = 0;
-                
-                int? stateId = 0;
-                if (provider.LicenseIssuingStateId != null) {
-                    if (int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt)) {
-                        stateId = stateIdInt;
-                    }
-                }
-
-                int? countryId = 0;
-                if (provider.LicenseIssuingCountryId != null) {
-                    if (int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt)) {
-                        countryId = countryIdInt;
-                    }
-                }
-
-                int? specialtyId = null;
-                if (provider.SpecialtyId != null) {
-                    if (int.TryParse(provider.SpecialtyId, out int specialtyIdInt)) {
-                        specialtyId = specialtyIdInt;
-                    }
-                }
-
-
-                #region taxonomys
-                int primaryTaxId = 0;
-                if (int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt)) {
-                    primaryTaxId = primaryTaxIdInt;
-                }
-
-                int taxId1 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy1Id, out int taxId1Int)) {
-                    taxId1 = taxId1Int;
-                }
-
-                int taxId2 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy2Id, out int taxId2Int)) {
-                    taxId2 = taxId2Int;
-                }
-
-                int taxId3 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy3Id, out int taxId3Int)) {
-                    taxId3 = taxId3Int;
-                }
-
-                int taxId4 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy4Id, out int taxId4Int)) {
-                    taxId4 = taxId4Int;
-                }
-
-                int taxId5 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy5Id, out int taxId5Int)) {
-                    taxId5 = taxId5Int;
-                }
-
-                int taxId6 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy6Id, out int taxId6Int)) {
-                    taxId6 = taxId6Int;
-                }
-
-                int taxId7 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy7Id, out int taxId7Int)) {
-                    taxId7 = taxId7Int;
-                }
-
-                int taxId8 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy8Id, out int taxId8Int)) {
-                    taxId8 = taxId8Int;
-                }
-
-                int taxId9 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy9Id, out int taxId9Int)) {
-                    taxId9 = taxId9Int;
-                }
-
-                int taxId10 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy10Id, out int taxId10Int)) {
-                    taxId10 = taxId10Int;
-                }
-
-                int taxId11 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy11Id, out int taxId11Int)) {
-                    taxId11 = taxId11Int;
-                }
-
-                int taxId12 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy12Id, out int taxId12Int)) {
-                    taxId12 = taxId12Int;
-                }
-
-                int taxId13 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy13Id, out int taxId13Int)) {
-                    taxId13 = taxId13Int;
-                }
-
-                int taxId14 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy14Id, out int taxId14Int)) {
-                    taxId14 = taxId14Int;
-                }
-
-                int taxId15 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy15Id, out int taxId15Int)) {
-                    taxId15 = taxId15Int;
-                }
-
-                int taxId16 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy16Id, out int taxId16Int)) {
-                    taxId16 = taxId16Int;
-                }
-
-                int taxId17 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy17Id, out int taxId17Int)) {
-                    taxId17 = taxId17Int;
-                }
-
-                int taxId18 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy18Id, out int taxId18Int)) {
-                    taxId18 = taxId18Int;
-                }
-
-                int taxId19 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy19Id, out int taxId19Int)) {
-                    taxId19 = taxId19Int;
-                }
-
-                int taxId20 = 0;
-                if (int.TryParse(provider.AlternateTaxonomy20Id, out int taxId20Int)) {
-                    taxId20 = taxId20Int;
-                }
-                #endregion taxonomys
-
-
-                var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == provider.OldProviderCode);
-
-                if (ffpmOrig == null) {
-                    var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
-                        FirstName = TruncateString(provider.FirstName, 50),
-                        MiddleName = TruncateString(provider.MiddleName, 10),
-                        LastName = TruncateString(provider.LastName, 50),
-                        ProviderCode = TruncateString(provider.OldProviderCode, 15),
-                        SuffixId = suffixInt,
-                        TitleId = titleInt,
-                        ProviderSsn = TruncateString(ssnString, 15),
-                        ProviderEin = TruncateString(einString, 15),
-                        ProviderUpin = TruncateString(upinString, 15),
-                        ProviderDob = dobDate,
-                        ProviderNpi = TruncateString(npiString, 10),
-                        IsActive = isActive,
-                        IsReferringProvider = false,
-                        SignatureUrl = "",  // No value given, assumed not to require truncation
-                        GroupId = 0,
-                        SpectacleExpiration = specExpId,
-                        SpectacleExpirationTypeId = specExpTypeId,
-                        ClExpiration = clExpId,
-                        ClExpirationTypeId = -1,
-                        LicenseIssuingStateId = stateId,
-                        LicenseIssuingCountryId = countryId,
-                        ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
-                        PrimaryTaxonomyId = primaryTaxId,
-
-                        AlternateTaxonomy1Id = taxId1,
-                        AlternateTaxonomy2Id = taxId2,
-                        AlternateTaxonomy3Id = taxId3,
-                        AlternateTaxonomy4Id = taxId4,
-                        AlternateTaxonomy5Id = taxId5,
-                        AlternateTaxonomy6Id = taxId6,
-                        AlternateTaxonomy7Id = taxId7,
-                        AlternateTaxonomy8Id = taxId8,
-                        AlternateTaxonomy9Id = taxId9,
-                        AlternateTaxonomy10Id = taxId10,
-                        AlternateTaxonomy11Id = taxId11,
-                        AlternateTaxonomy12Id = taxId12,
-                        AlternateTaxonomy13Id = taxId13,
-                        AlternateTaxonomy14Id = taxId14,
-                        AlternateTaxonomy15Id = taxId15,
-                        AlternateTaxonomy16Id = taxId16,
-                        AlternateTaxonomy17Id = taxId17,
-                        AlternateTaxonomy18Id = taxId18,
-                        AlternateTaxonomy19Id = taxId19,
-                        AlternateTaxonomy20Id = taxId20
-                    };
-                    newProviders.Add(newPatientProvider);
-                    ffpmProviders.Add(newPatientProvider);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.DmgProviders.AddRange(newProviders);
+            ffpmDbContext.SaveChanges();
+            newProviders.Clear();
         }
 
         public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
