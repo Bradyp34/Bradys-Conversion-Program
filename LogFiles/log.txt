@@ -1,11 +1,2 @@
 Conv: Conv Primary taxonomy ID not found for location with ID: 1
 Conv: Conv Primary taxonomy ID not found for location with ID: 2
-Conv: FFPM Patient not found for guarantor with ID: 1
-Conv: FFPM Patient not found for patient alert with ID: 1
-Conv: Conv Patient not found for patient document with ID: 1
-Conv: FFPM Patient not found for patient insurance with ID: 1
-Conv: Conv Patient not found for patient note with ID: 1
-Conv: FFPM Patient (subject) not found for policy holder with ID: 1 (patient insurance has subscriber as patient, cant find patient)
-Conv: FFPM Patient not found for recall with ID: 1
-Conv: Conv Patient not found for address with ID: 1
-Conv: Conv Patient not found for phone with ID: 1
