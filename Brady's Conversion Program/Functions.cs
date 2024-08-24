@@ -374,6 +374,8 @@ namespace Brady_s_Conversion_Program {
             var schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
             var convAppointmentTypes = convDbContext.AppointmentTypes.ToList();
             var convAppointments = convDbContext.Appointments.ToList();
+            var convPatientAlerts = convDbContext.PatientAlerts.ToList();
+            var convPatientDocuments = convDbContext.PatientDocuments.ToList();
 
 
 
@@ -408,7 +410,7 @@ namespace Brady_s_Conversion_Program {
             PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
                 raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
             
-            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
@@ -445,32 +447,26 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Providers Converted\n";
             });
 
-            foreach (var guarantor in convDbContext.Guarantors) {
-                ConvertGuarantor(guarantor, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, newGuarantors);
-            }
-            ffpmDbContext.DmgGuarantors.AddRange(newGuarantors);
-            ffpmDbContext.SaveChanges();
-            newGuarantors.Clear();
+            
+            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, newGuarantors);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
             
-            foreach (var patientAlert in convDbContext.PatientAlerts) {
-                ConvertPatientAlert(patientAlert, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
-            }
-            ffpmDbContext.DmgPatientAlerts.AddRange(newPatientAlerts);
-            ffpmDbContext.SaveChanges();
-            newPatientAlerts.Clear();
+            
+            ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
             
-            foreach (var patientDocument in convDbContext.PatientDocuments) {
-                ConvertPatientDocument(patientDocument, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments, newPatientDocuments);
-            }
-            ffpmDbContext.ImgPatientDocuments.AddRange(newPatientDocuments);
-            ffpmDbContext.SaveChanges();
-            newPatientDocuments.Clear();
+            
+            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments, newPatientDocuments);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
@@ -1097,7 +1093,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
             List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs, List<InsInsuranceCompany> newInsuranceCompanies) {
-            foreach (var insurance in convDbContext.Insurances) {
+            foreach (var insurance in convInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -1459,106 +1455,111 @@ namespace Brady_s_Conversion_Program {
             newLocations.Clear();
         }
 
-        public static void ConvertGuarantor(Models.Guarantor guarantor, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgGuarantor> newGuarantors) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
-                if (convPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
-                    return;
-                }
-                var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) || 
-                    (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {guarantor.Id}");
-                    return;
-                }
+            foreach (var guarantor in convGuarantors) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
+                    if (convPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
+                        return;
+                    }
+                    var ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
+                        (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                    if (ffpmPatient == null) {
+                        logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {guarantor.Id}");
+                        return;
+                    }
 
-                string ssn = "";
-                if (guarantor.Ssn != null) {
-                    if (ssnRegex.IsMatch(guarantor.Ssn)) {
-                        ssn = guarantor.Ssn;
+                    string ssn = "";
+                    if (guarantor.Ssn != null) {
+                        if (ssnRegex.IsMatch(guarantor.Ssn)) {
+                            ssn = guarantor.Ssn;
+                        }
+                    }
+                    DateTime dob = minAcceptableDate;
+                    if (guarantor.Dob != null && guarantor.Dob != "" && !int.TryParse(guarantor.Dob, out int dontCare)) {
+                        if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
+                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
+                            dob = isValidDate(dob);
+                        }
+                    }
+                    short? relationID = null;
+                    var relationXref = relationshipXrefs.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
+                    if (relationXref != null) {
+                        relationID = relationXref.RelationshipId;
+                    }
+                    short? titleID = null;
+                    // no titleID in incoming tables
+                    short? suffixID = null;
+                    // no suffixID in incoming tables
+                    short? genderID = null;
+                    var genderXref = genderXrefs.FirstOrDefault(g => g.Gender == guarantor.Sex);
+                    if (genderXref != null) {
+                        genderID = genderXref.GenderId;
+                    }
+                    bool? isActive = null;
+                    if (guarantor.Active != null && guarantor.Active.ToLower() == "yes" || guarantor.Active == "1") {
+                        isActive = true;
+                    }
+                    bool? guarantorIsPatient = null;
+                    long? guarantorIsPatientID = null;
+                    if (guarantor.OldGuarantorAccount != null && guarantor.OldGuarantorAccount != "") {
+                        guarantorIsPatient = true;
+                        if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
+                            guarantorIsPatientID = id;
+                        }
+                    }
+
+                    short? employmentStatusID = null;
+                    // no employmentStatusID in incoming tables
+                    DateTime? addedDate = null;
+                    // no addedDate in incoming tables
+                    DateTime? removedDate = null;
+                    // no removedDate in incoming tables
+                    DateTime? lastModified = null;
+                    // no lastModified in incoming tables
+
+
+
+                    var ffpmGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+
+                    if (ffpmGuarantor == null) {
+                        var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
+                            PatientId = ffpmPatient.PatientId,
+                            FirstName = TruncateString(guarantor.FirstName, 50),
+                            LastName = TruncateString(guarantor.LastName, 50),
+                            MiddleName = TruncateString(guarantor.MiddleName, 50),
+                            Ssn = TruncateString(ssn, 15),
+                            Dob = dob,
+                            RelationId = relationID,
+                            TitleId = titleID,
+                            SuffixId = suffixID,
+                            GenderId = genderID,
+                            IsActive = isActive,
+                            EmploymentStatusId = employmentStatusID,
+                            AddedDate = addedDate,
+                            RemovedDate = removedDate,
+                            LastModifiedDate = lastModified,
+                            GuarantorExistingPatientId = guarantorIsPatientID,
+                            AddressId = null,
+                            IsGuarantorExistingPatient = guarantorIsPatient,
+                            LastModifiedBy = null
+                        };
+                        newGuarantors.Add(newGuarantor);
+                        guarantors.Add(newGuarantor);
                     }
                 }
-                DateTime dob = minAcceptableDate;
-                if (guarantor.Dob != null && guarantor.Dob != "" && !int.TryParse(guarantor.Dob, out int dontCare)) {
-                    if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
-                                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                        dob = isValidDate(dob);
-                    }
-                }
-                short? relationID = null;
-                var relationXref = relationshipXrefs.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
-                if (relationXref != null) {
-                    relationID = relationXref.RelationshipId;
-                }
-                short? titleID = null;
-                // no titleID in incoming tables
-                short? suffixID = null;
-                // no suffixID in incoming tables
-                short? genderID = null;
-                var genderXref = genderXrefs.FirstOrDefault(g => g.Gender == guarantor.Sex);
-                if (genderXref != null) {
-                    genderID = genderXref.GenderId;
-                }
-                bool? isActive = null;
-                if (guarantor.Active != null && guarantor.Active.ToLower() == "yes" || guarantor.Active == "1") {
-                    isActive = true;
-                }
-                bool? guarantorIsPatient = null;
-                long? guarantorIsPatientID = null;
-                if (guarantor.OldGuarantorAccount != null && guarantor.OldGuarantorAccount != "") {
-                    guarantorIsPatient = true;
-                    if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
-                        guarantorIsPatientID = id;
-                    }
-                }
-                
-                short? employmentStatusID = null;
-                // no employmentStatusID in incoming tables
-                DateTime? addedDate = null;
-                // no addedDate in incoming tables
-                DateTime? removedDate = null;
-                // no removedDate in incoming tables
-                DateTime? lastModified = null;
-                // no lastModified in incoming tables
-                
-
-
-                var ffpmGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
-
-                if (ffpmGuarantor == null) {
-                    var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
-                        PatientId = ffpmPatient.PatientId,
-                        FirstName = TruncateString(guarantor.FirstName, 50),
-                        LastName = TruncateString(guarantor.LastName, 50),
-                        MiddleName = TruncateString(guarantor.MiddleName, 50),
-                        Ssn = TruncateString(ssn, 15),
-                        Dob = dob,
-                        RelationId = relationID,
-                        TitleId = titleID,
-                        SuffixId = suffixID,
-                        GenderId = genderID,
-                        IsActive = isActive,
-                        EmploymentStatusId = employmentStatusID,
-                        AddedDate = addedDate,
-                        RemovedDate = removedDate,
-                        LastModifiedDate = lastModified,
-                        GuarantorExistingPatientId = guarantorIsPatientID,
-                        AddressId = null,
-                        IsGuarantorExistingPatient = guarantorIsPatient,
-                        LastModifiedBy = null
-                    };
-                    newGuarantors.Add(newGuarantor);
-                    guarantors.Add(newGuarantor);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.DmgGuarantors.AddRange(newGuarantors);
+            ffpmDbContext.SaveChanges();
+            newGuarantors.Clear();
         }
 
         public static void ConvertAddress(Models.Address address, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -1869,150 +1870,158 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ConvertPatientAlert(Models.PatientAlert patientAlert, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
+        public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs, 
                 List<DmgPatientAlert> patientAlerts, List<DmgPatientAlert> newPatientAlerts) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int patientId = 0;
-                if (int.TryParse(patientAlert.PatientId, out int temp)) {
-                    patientId = temp;
-                } else {
-                    logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
-                    return;
-                }
-                var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
-                if (ConvPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
-                    return;
-                }
-                DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber || 
-                    (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
-                    return;
-                }
-                short? priorityID = null;
-                var priorityXref = priorityXrefs.FirstOrDefault(p => p.PriorityId == priorityID);
-                if (priorityXref != null) {
-                    priorityID = priorityXref.PriorityId;
-                }
+            foreach (var patientAlert in convPatientAlerts) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int patientId = 0;
+                    if (int.TryParse(patientAlert.PatientId, out int temp)) {
+                        patientId = temp;
+                    }
+                    else {
+                        logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
+                        return;
+                    }
+                    var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
+                    if (ConvPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
+                        return;
+                    }
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
+                        (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
+                    if (ffpmPatient == null) {
+                        logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
+                        return;
+                    }
+                    short? priorityID = null;
+                    var priorityXref = priorityXrefs.FirstOrDefault(p => p.PriorityId == priorityID);
+                    if (priorityXref != null) {
+                        priorityID = priorityXref.PriorityId;
+                    }
 
-                DateTime? alertDate = null;
-                if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != "" && !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
-                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        alertDate = tempDateTime;
+                    DateTime? alertDate = null;
+                    if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != "" && !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            alertDate = tempDateTime;
+                        }
                     }
-                }
-                DateTime? alertEndDate = null;
-                if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && !int.TryParse(patientAlert.AlertExpiryDate, out dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
-                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        alertEndDate = tempDateTime;
+                    DateTime? alertEndDate = null;
+                    if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && !int.TryParse(patientAlert.AlertExpiryDate, out dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
+                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            alertEndDate = tempDateTime;
+                        }
                     }
-                }
-                long? alertCreatedBy = null;
-                if (patientAlert.AlertCreatedBy != null) {
-                    if (long.TryParse(patientAlert.AlertCreatedBy, out long createdBy)) {
-                        alertCreatedBy = createdBy;
+                    long? alertCreatedBy = null;
+                    if (patientAlert.AlertCreatedBy != null) {
+                        if (long.TryParse(patientAlert.AlertCreatedBy, out long createdBy)) {
+                            alertCreatedBy = createdBy;
+                        }
                     }
-                }
-                bool? isActive = true;
-                if (patientAlert.Active != null) {
-                    if (patientAlert.Active.ToLower() == "no" || patientAlert.Active == "0") {
-                        isActive = false;
+                    bool? isActive = true;
+                    if (patientAlert.Active != null) {
+                        if (patientAlert.Active.ToLower() == "no" || patientAlert.Active == "0") {
+                            isActive = false;
+                        }
                     }
-                }
-                bool? alertFlash = null;
-                if (patientAlert.AlertFlash != null) {
-                    if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
-                        alertFlash = flash;
+                    bool? alertFlash = null;
+                    if (patientAlert.AlertFlash != null) {
+                        if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
+                            alertFlash = flash;
+                        }
                     }
-                }
 
-                var ffpmOrig = patientAlerts.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AlertMessage == patientAlert.AlertMessage);
+                    var ffpmOrig = patientAlerts.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AlertMessage == patientAlert.AlertMessage);
 
-                if (ffpmOrig == null) {
-                    var newPatientAlert = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
-                        PatientId = ffpmPatient.PatientId,
-                        AlertMessage = patientAlert.AlertMessage,  // No need to truncate due to VARCHAR(MAX)
-                        PriorityId = priorityID,
-                        AlertCreatedDate = alertDate,
-                        AlertCreatedBy = alertCreatedBy,
-                        AlertExpiryDate = alertEndDate,
-                        IsActive = isActive,
-                        AlertFlash = alertFlash
-                    };
-                    patientAlerts.Add(newPatientAlert);
+                    if (ffpmOrig == null) {
+                        var newPatientAlert = new Brady_s_Conversion_Program.ModelsA.DmgPatientAlert {
+                            PatientId = ffpmPatient.PatientId,
+                            AlertMessage = patientAlert.AlertMessage,  // No need to truncate due to VARCHAR(MAX)
+                            PriorityId = priorityID,
+                            AlertCreatedDate = alertDate,
+                            AlertCreatedBy = alertCreatedBy,
+                            AlertExpiryDate = alertEndDate,
+                            IsActive = isActive,
+                            AlertFlash = alertFlash
+                        };
+                        patientAlerts.Add(newPatientAlert);
+                    }
+                }
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the patient alert with ID: {patientAlert.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the patient alert with ID: {patientAlert.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.DmgPatientAlerts.AddRange(newPatientAlerts);
+            ffpmDbContext.SaveChanges();
+            newPatientAlerts.Clear();
         }
 
-        public static void ConvertPatientDocument(Models.PatientDocument patientDocument, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
+        public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient>ffpmPatients, List<ImgPatientDocument> patientDocuments, 
                 List<ImgPatientDocument> newPatientDocuments) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
-                if (convPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
-                    return;
-                }
-                DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
-                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
-                    return;
-                }
-                short? imageType = null;
-                if (patientDocument.DocumentImageType != null) {
-                    if (short.TryParse(patientDocument.DocumentImageType, out short type)) {
-                        imageType = type;
+            foreach (var patientDocument in convPatientDocuments) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
+                    if (convPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
+                        return;
                     }
-                }
-                DateTime? dateDocument = null;
-                if (patientDocument.Date != null && patientDocument.Date != "" && !int.TryParse(patientDocument.Date, out int dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
-                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dateDocument = tempDateTime;
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                    (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                    if (ffpmPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
+                        return;
                     }
-                }
-                bool? isActive = true;
-                if (patientDocument.Active != null) {
-                    if (patientDocument.Active.ToLower() == "no" || patientDocument.Active == "0") {
-                        isActive = false;
+                    short? imageType = null;
+                    if (patientDocument.DocumentImageType != null) {
+                        if (short.TryParse(patientDocument.DocumentImageType, out short type)) {
+                            imageType = type;
+                        }
                     }
-                }
+                    DateTime? dateDocument = null;
+                    if (patientDocument.Date != null && patientDocument.Date != "" && !int.TryParse(patientDocument.Date, out int dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
+                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dateDocument = tempDateTime;
+                        }
+                    }
+                    bool? isActive = true;
+                    if (patientDocument.Active != null) {
+                        if (patientDocument.Active.ToLower() == "no" || patientDocument.Active == "0") {
+                            isActive = false;
+                        }
+                    }
 
-                var ffpmOrig = patientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
+                    var ffpmOrig = patientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
 
-                if (ffpmOrig == null) {
-                    var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
-                        PatientId = ffpmPatient.PatientId,
-                        DocumentType = imageType,
-                        DocumentRemarks = patientDocument.DocumentNotes,  // No need to truncate due to VARCHAR(MAX)
-                        AddedDate = dateDocument,
-                        DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
-                        DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
-                        IsActive = isActive
-                    };
-                    patientDocuments.Add(newPatientDocument);
-                    newPatientDocuments.Add(newPatientDocument);
+                    if (ffpmOrig == null) {
+                        var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
+                            PatientId = ffpmPatient.PatientId,
+                            DocumentType = imageType,
+                            DocumentRemarks = patientDocument.DocumentNotes,  // No need to truncate due to VARCHAR(MAX)
+                            AddedDate = dateDocument,
+                            DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
+                            DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
+                            IsActive = isActive
+                        };
+                        patientDocuments.Add(newPatientDocument);
+                        newPatientDocuments.Add(newPatientDocument);
+                    }
                 }
-            }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
+                }
             }
         }
 
@@ -2365,7 +2374,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertProvider(List<Models.Provider> convProvider, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders, List<DmgProvider> newProviders) {
-            foreach (var provider in convDbContext.Providers) {
+            foreach (var provider in convProviders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
