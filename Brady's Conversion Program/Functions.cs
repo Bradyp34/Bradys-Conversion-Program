@@ -780,7 +780,8 @@ namespace Brady_s_Conversion_Program {
                         }
 
                         // Update or create EMRPatient
-                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
+                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString() 
+                            && emr.PatientNameFirst == patient.FirstName && emr.PatientNameLast == patient.LastName);
                         if (existingEmrPatient == null) {
                             var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
                                 ClientSoftwarePtId = TruncateString(newPatient.PatientId.ToString(), 50),
