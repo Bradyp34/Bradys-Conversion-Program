@@ -2872,9 +2872,6 @@ namespace Brady_s_Conversion_Program {
                     if (int.TryParse(referral.PrimaryTaxonomyId, out int primaryTaxIdInt)) {
                         primaryTaxId = primaryTaxIdInt;
                     }
-                    else {
-                        logger.Log($"Conv: Conv Primary taxonomy ID not found for referral with ID: {referral.Id}");
-                    }
 
                     int tax1Id = 0;
                     if (int.TryParse(referral.AlternateTaxonomy1Id, out int tax1IdInt)) {

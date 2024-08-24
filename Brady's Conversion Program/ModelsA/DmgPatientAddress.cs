@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Brady_s_Conversion_Program.ModelsA;
 
-public partial class DmgPatientAddress
-{
+public partial class DmgPatientAddress {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long PatientAddressId { get; set; }
 
     public long PatientId { get; set; }

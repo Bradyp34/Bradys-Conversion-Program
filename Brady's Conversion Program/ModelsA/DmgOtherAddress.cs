@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Brady_s_Conversion_Program.ModelsA;
 
-public partial class DmgOtherAddress
-{
+public partial class DmgOtherAddress {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long AddressId { get; set; }
 
     public long? OwnerId { get; set; }
