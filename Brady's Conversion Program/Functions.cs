@@ -509,12 +509,10 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
-            foreach (var recall in convDbContext.Recalls) {
-                ConvertRecall(recall, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists, newPatientRecallLists);
-            }
-            ffpmDbContext.SchedulingPatientRecallLists.AddRange(newPatientRecallLists);
-            ffpmDbContext.SaveChanges();
-            newPatientRecallLists.Clear();
+            
+            ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists, newPatientRecallLists);
+            
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
@@ -2165,7 +2163,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes, 
                 List<DmgPatientRemark> newPatientNotes) {
-            foreach (var patientNote in convDbContext.PatientNotes) {
+            foreach (var patientNote in convPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -2247,11 +2245,11 @@ namespace Brady_s_Conversion_Program {
             newPatientNotes.Clear();
         }
 
-        public static void ConvertPolicyHolder(List<Models.PolicyHolder> convPolicyHolders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+        public static void ConvertPolicyHolder(List<Models.PolicyHolder> policyHolders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Insurance> convInsurances, List<Models.Patient> convPatients, 
                 List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, 
                     List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers, List<InsInsuranceCompany> insurances) {
-            foreach (var policyHolder in convDbContext.PolicyHolders) {
+            foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -2651,89 +2649,94 @@ namespace Brady_s_Conversion_Program {
             newProviders.Clear();
         }
 
-        public static void ConvertRecall(Models.Recall recall, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertRecall(List<Models.Recall> convRecalls, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations, 
                 List<SchedulingPatientRecallList> patientRecallLists, List<SchedulingPatientRecallList> newPatientRecallLists) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var convPatient = convPatients.FirstOrDefault(p => p.Id == recall.PatientId);
-                if (convPatient == null) {
-                    logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
-                    return;
-                }
-                var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
-                    (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
-                if (ffpmPatient == null) {
-                    logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
-                    return;
-                }
+            foreach (var recall in convRecalls) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    var convPatient = convPatients.FirstOrDefault(p => p.Id == recall.PatientId);
+                    if (convPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
+                        return;
+                    }
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
+                        (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
+                    if (ffpmPatient == null) {
+                        logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
+                        return;
+                    }
 
-                int appointmentType = -1;
-                if (recall.OldRecallTypeId != null) {
-                    if (int.TryParse(recall.OldRecallTypeId, out int apptType)) {
-                        appointmentType = apptType;
+                    int appointmentType = -1;
+                    if (recall.OldRecallTypeId != null) {
+                        if (int.TryParse(recall.OldRecallTypeId, out int apptType)) {
+                            appointmentType = apptType;
+                        }
+                    }
+                    int resource = -1;
+                    if (int.TryParse(recall.OldResourceId, out int temp)) {
+                        resource = temp;
+                    }
+                    int billingLocation = -1;
+                    var convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
+                    if (convLocation != null) {
+                        var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.Name == convLocation.LocationName);
+                        if (ffpmLocation != null) {
+                            billingLocation = ffpmLocation.LocationId;
+                        }
+                    }
+                    DateOnly recallDate = new DateOnly();
+                    if (recall.RecallDate != null && recall.RecallDate != "" && !int.TryParse(recall.RecallDate, out int dontCare)) {
+                        DateOnly tempDate;
+                        if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
+                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
+                            recallDate = tempDate;
+                        }
+                    }
+                    bool isActive = true;
+                    if (recall.Active != null && (recall.Active.ToLower() == "no" || recall.Active == "0")) {
+                        isActive = false;
+                    }
+
+                    int location = 0;
+                    int number = 0;
+                    string note = "";
+                    if (recall.Notes != null) {
+                        note = recall.Notes;
+                    }
+
+                    var ffpmOrig = patientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType && p.RecallListDate == recallDate);
+
+                    if (ffpmOrig == null) {
+                        var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
+                            PatientId = ffpmPatient.PatientId,
+                            AppointmentTypeId = appointmentType,
+                            Notes = note,
+                            ResourceId = resource,
+                            BillingLocationId = billingLocation,
+                            RecallListDate = recallDate,
+                            Active = isActive,
+                            LocationId = location,
+                            NumberOfRecallSent = number
+                        };
+                        newPatientRecallLists.Add(newRecallList);
+                        patientRecallLists.Add(newRecallList);
                     }
                 }
-                int resource = -1;
-                if (int.TryParse(recall.OldResourceId, out int temp)) {
-                    resource = temp;
-                }
-                int billingLocation = -1;
-                var convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
-                if (convLocation != null) {
-                    var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.Name == convLocation.LocationName);
-                    if (ffpmLocation != null) {
-                        billingLocation = ffpmLocation.LocationId;
-                    }
-                }
-                DateOnly recallDate = new DateOnly();
-                if (recall.RecallDate != null && recall.RecallDate != "" && !int.TryParse(recall.RecallDate, out int dontCare)) {
-                    DateOnly tempDate;
-                    if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
-                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
-                        recallDate = tempDate;
-                    }
-                }
-                bool isActive = true;
-                if (recall.Active != null && (recall.Active.ToLower() == "no" || recall.Active == "0")) {
-                    isActive = false;
-                }
-
-                int location = 0;
-                int number = 0;
-                string note = "";
-                if (recall.Notes != null) {
-                    note = recall.Notes;
-                }
-
-                var ffpmOrig = patientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType && p.RecallListDate == recallDate);
-
-                if (ffpmOrig == null) {
-                    var newRecallList = new Brady_s_Conversion_Program.ModelsA.SchedulingPatientRecallList {
-                        PatientId = ffpmPatient.PatientId,
-                        AppointmentTypeId = appointmentType,
-                        Notes = note,
-                        ResourceId = resource,
-                        BillingLocationId = billingLocation,
-                        RecallListDate = recallDate,
-                        Active = isActive,
-                        LocationId = location,
-                        NumberOfRecallSent = number
-                    };
-                    newPatientRecallLists.Add(newRecallList);
-                    patientRecallLists.Add(newRecallList);
+                catch (Exception ex) {
+                    logger.Log($"Conv: Conv An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
                 }
             }
-            catch (Exception ex) {
-                logger.Log($"Conv: Conv An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
-            }
+            ffpmDbContext.SchedulingPatientRecallLists.AddRange(newPatientRecallLists);
+            ffpmDbContext.SaveChanges();
+            newPatientRecallLists.Clear();
         }
 
         public static void ConvertRecallType(List<Models.RecallType> convRecallTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<SchedulingAppointmentType> schedulingAppointmentTypes, List<SchedulingAppointmentType> newSchedulingAppointmentTypes) {
-            foreach (var recallType in convDbContext.RecallTypes) {
+            foreach (var recallType in convRecallTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
