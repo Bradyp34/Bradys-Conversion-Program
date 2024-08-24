@@ -753,6 +753,7 @@ namespace Brady_s_Conversion_Program {
                         };
 
                         ffpmDbContext.DmgPatients.Add(newPatient);
+                        ffpmDbContext.SaveChanges();
 
 
                         var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
@@ -1536,6 +1537,7 @@ namespace Brady_s_Conversion_Program {
                 List<DmgPatientAddress> ffpmPatientAddresses, List<DmgOtherAddress> otherAddresses, List<ReferringProvider> referringProviders, List<Provider> convProviders,
                     List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> ffpmGuarantors, List<MntSuffix> suffixXrefs, 
                         List<DmgPatientAdditionalDetail> patientAdditionalDetails, List<Models.Location> convLocations, List<BillingLocation> locations) {
+            var newOtherAddresses = new List<DmgOtherAddress>();
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1649,6 +1651,7 @@ namespace Brady_s_Conversion_Program {
                                     AddressType = addressType
                                 };
                                 ffpmDbContext.DmgPatientAddresses.Add(newAddress);
+                                ffpmDbContext.SaveChanges();
                                 ffpmPatientAddresses.Add(newAddress);
                                 ffpmPatient.AddressId = newAddress.PatientAddressId;
                             }
@@ -1696,6 +1699,7 @@ namespace Brady_s_Conversion_Program {
                                     OwnerType = 0
                                 };
                                 ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress);
+                                ffpmDbContext.SaveChanges();
                                 otherAddresses.Add(newOtherAddress);
                                 ffpmGuarantor.AddressId = newOtherAddress.AddressId;
                             }
@@ -1726,6 +1730,7 @@ namespace Brady_s_Conversion_Program {
                                 OwnerType = 1
                             };
                             ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
+                            ffpmDbContext.SaveChanges();
                             otherAddresses.Add(newDmgOtherAddress);
                             ffpmLocation.AddressId = newDmgOtherAddress.AddressId;
 
@@ -1757,6 +1762,7 @@ namespace Brady_s_Conversion_Program {
                                 OwnerType = 1
                             };
                             ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress2);
+                            ffpmDbContext.SaveChanges();
                             otherAddresses.Add(newDmgOtherAddress2);
                             ffpmProvider.ProviderAddressId = newDmgOtherAddress2.AddressId;
 
@@ -1787,7 +1793,7 @@ namespace Brady_s_Conversion_Program {
                                 AddressType = addressType,
                                 OwnerType = 1
                             };
-                            otherAddresses.Add(newDmgOtherAddress3);
+                            newOtherAddresses.Add(newDmgOtherAddress3);
                             // appears to only be connected by the address and not the referring provider
                             break;
                         case "emp":
@@ -1821,6 +1827,7 @@ namespace Brady_s_Conversion_Program {
                                 OwnerType = 1
                             };
                             ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress4);
+                            ffpmDbContext.SaveChanges();
                             otherAddresses.Add(newOtherAddress4);
                             ffpmPatientAdditional2.EmployerAddressId = newOtherAddress4.AddressId;
 
@@ -1834,7 +1841,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
                 }
             }
-
+            ffpmDbContext.DmgOtherAddresses.AddRange(newOtherAddresses);
             ffpmDbContext.SaveChanges();
         }
 
