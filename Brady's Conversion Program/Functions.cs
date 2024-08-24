@@ -2247,8 +2247,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
                     return;
                 }
-                var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId
-                    && p.IsActive == true && p.InsuranceCompanyId == ffpmInsuranceCompany.InsCompanyId);
+                var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId);
                 if (ffpmPatientInsurance == null) {
                     logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                     return;
