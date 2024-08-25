@@ -1578,20 +1578,20 @@ namespace Brady_s_Conversion_Program {
                     switch (primaryFile.ToLower()) {
                         case "pat":
                         case "":
-                            var ConvPatient = convPatients.FirstOrDefault(p => p.Id.ToString() == address.PrimaryFileId);
-                            if (ConvPatient == null) {
+                            var convPatient = convPatients.FirstOrDefault(p => p.Id.ToString() == address.PrimaryFileId);
+                            if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
                             }
 
                             short? tempSuffixID = null;
-                            var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == ConvPatient.Suffix);
+                            var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == convPatient.Suffix);
                             if (suffixXref != null) {
                                 tempSuffixID = suffixXref.SuffixId;
                             }
 
-                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
-                                (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.SuffixId == tempSuffixID));
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.SuffixId == tempSuffixID));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
@@ -1641,7 +1641,7 @@ namespace Brady_s_Conversion_Program {
                                     City = TruncateString(address.City, 50),
                                     StateId = state,
                                     Zip = TruncateString(zipCode, 10),
-                                    Email = TruncateString(ConvPatient.Email, 50),
+                                    Email = TruncateString(convPatient.Email, 50),
                                     Notes = TruncateString(address.Note, 1000),
                                     IsPrimary = isPrimary,
                                     IsActive = isActive,
@@ -1667,12 +1667,12 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
                                 continue;
                             }
-                            var convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
+                            convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for guarantor with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmPatient2 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                            var ffpmPatient2 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
                             if (ffpmPatient2 == null) {
                                 logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
                                 continue;
@@ -1801,13 +1801,13 @@ namespace Brady_s_Conversion_Program {
                             // appears to only be connected by the address and not the referring provider
                             break;
                         case "emp":
-                            var localConvPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
-                            if (localConvPatient == null) {
+                            var localconvPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
+                            if (localconvPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmPatient3 = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == localConvPatient.OldPatientAccountNumber) ||
-                                                p.FirstName == localConvPatient.FirstName && p.LastName == localConvPatient.LastName && p.MiddleName == localConvPatient.MiddleName);
+                            var ffpmPatient3 = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == localconvPatient.Id.ToString()) ||
+                                                p.FirstName == localconvPatient.FirstName && p.LastName == localconvPatient.LastName && p.MiddleName == localconvPatient.MiddleName);
                             if (ffpmPatient3 == null) {
                                 logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
                                 continue;
@@ -1865,13 +1865,13 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
-                    if (ConvPatient == null) {
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
+                    if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
-                        (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                        (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
@@ -1957,7 +1957,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
@@ -2025,13 +2025,13 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient ID not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == oldpatientId);
-                    if (ConvPatient == null) {
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == oldpatientId);
+                    if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
-                    (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                    (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
@@ -2172,7 +2172,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
@@ -2245,17 +2245,15 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
                     int policyPatientID = -1;
-                    if (policyHolder.OldPolicyHolderId != null) {
-                        if (int.TryParse(policyHolder.OldPolicyHolderId, out int temp)) {
+                    if (convPatientInsurance.OldPatientId != null) {
+                        if (int.TryParse(convPatientInsurance.OldPatientId, out int temp)) {
                             policyPatientID = temp;
                         }
+                        else {
+                            logger.Log($"Conv: Conv Patient ID not found for policy holder with ID: {policyHolder.Id}");
+                            continue;
+                        }
                     }
-                    else {
-                        logger.Log($"Conv: Policy holder ID is null for policy holder with ID: {policyHolder.Id}");
-                        continue;
-                    }
-
-
 
                     var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
                     if (convPolicyPatient == null) {
@@ -2642,7 +2640,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
@@ -3139,12 +3137,12 @@ namespace Brady_s_Conversion_Program {
                     }
                     switch (phone.PrimaryFile.Trim().ToUpper()) {
                         case "PAT":
-                            var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.PrimaryFileId);
-                            if (ConvPatient == null) {
+                            var convPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.PrimaryFileId);
+                            if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.Id.ToString());
+                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3271,7 +3269,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            var convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
+                            convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
