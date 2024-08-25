@@ -161,7 +161,7 @@ namespace Brady_s_Conversion_Program {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             try {
-                ILogger logger = new FileLogger("././././LogFiles/log.txt"); // Log file path
+                ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
 
                 // Using block for convDbContext conversion
                 int totalEntries = 0;
@@ -2364,7 +2364,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the policy holder with ID: {policyHolder.Id}. Error: {ex.Message}");
                 }
             }
-            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances);
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances); // will this work properly?
             ffpmDbContext.SaveChanges();
         }
 
