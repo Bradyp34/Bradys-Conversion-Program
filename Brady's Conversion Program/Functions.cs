@@ -418,7 +418,7 @@ namespace Brady_s_Conversion_Program {
             PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
                 raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
             
-            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
@@ -2301,7 +2301,11 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
 
             // Update the manually managed list after SaveChanges
-            newSubscribers.ForEach(sub => sub.SubscriberId = subscribers.Max(s => s.SubscriberId) + 1);
+            newSubscribers.ForEach(sub =>
+            {
+                // Check if the 'subscribers' list is empty before calling Max
+                sub.SubscriberId = subscribers.Any() ? subscribers.Max(s => s.SubscriberId) + 1 : 1;
+            });
             subscribers.AddRange(newSubscribers);
 
             // Clear lists after saving
