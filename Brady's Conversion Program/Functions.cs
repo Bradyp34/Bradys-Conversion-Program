@@ -161,7 +161,7 @@ namespace Brady_s_Conversion_Program {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             try {
-                ILogger logger = new FileLogger("../../../../LogFiles/log.txt"); // Log file path
+                ILogger logger = new FileLogger("././././LogFiles/log.txt"); // Log file path
 
                 // Using block for convDbContext conversion
                 int totalEntries = 0;
@@ -497,8 +497,8 @@ namespace Brady_s_Conversion_Program {
             });
             
             
-            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convInsurances, convPatients, ffpmPatients, 
-                patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers, insurances);
+            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients, 
+                patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
             
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -540,7 +540,7 @@ namespace Brady_s_Conversion_Program {
             
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
                 otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors, suffixXrefs, patientAdditionalDetails, convLocations, 
-                locations);
+                locations, convReferrals);
             
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -1536,7 +1536,7 @@ namespace Brady_s_Conversion_Program {
             List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
                 List<DmgPatientAddress> ffpmPatientAddresses, List<DmgOtherAddress> otherAddresses, List<ReferringProvider> referringProviders, List<Provider> convProviders,
                     List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> ffpmGuarantors, List<MntSuffix> suffixXrefs, 
-                        List<DmgPatientAdditionalDetail> patientAdditionalDetails, List<Models.Location> convLocations, List<BillingLocation> locations) {
+                        List<DmgPatientAdditionalDetail> patientAdditionalDetails, List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
             var newOtherAddresses = new List<DmgOtherAddress>();
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1578,7 +1578,7 @@ namespace Brady_s_Conversion_Program {
                     switch (primaryFile.ToLower()) {
                         case "pat":
                         case "":
-                            var ConvPatient = convPatients.FirstOrDefault(p => p.Id == address.Id);
+                            var ConvPatient = convPatients.FirstOrDefault(p => p.Id.ToString() == address.PrimaryFileId);
                             if (ConvPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
@@ -1618,15 +1618,15 @@ namespace Brady_s_Conversion_Program {
                                     case "primary":
                                         isPrimary = true;
                                         isPreferred = true;
-                                        continue;
+                                        break;
                                     case "alternate":
                                         isAlternate = true;
-                                        continue;
+                                        break;
                                     case "emergency":
                                         isEmergency = true;
-                                        continue;
+                                        break;
                                     default:
-                                        continue;
+                                        break;
                                 }
                             }
 
@@ -1655,10 +1655,14 @@ namespace Brady_s_Conversion_Program {
                                 ffpmPatientAddresses.Add(newAddress);
                                 ffpmPatient.AddressId = newAddress.PatientAddressId;
                             }
-                            continue;
+                            break;
                         case "guar":
                         case "guarantor":
-                            var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == address.Id);
+                            int primaryFileId = -1;
+                            if (int.TryParse(address.PrimaryFileId, out int primaryFileIdInt)) {
+                                primaryFileId = primaryFileIdInt;
+                            }
+                            var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == primaryFileId);
                             if (convGuarantor == null) {
                                 logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
                                 continue;
@@ -1703,9 +1707,9 @@ namespace Brady_s_Conversion_Program {
                                 otherAddresses.Add(newOtherAddress);
                                 ffpmGuarantor.AddressId = newOtherAddress.AddressId;
                             }
-                            continue;
+                            break;
                         case "loc":
-                            var billingLocation = convLocations.FirstOrDefault(l => l.OldLocationId == address.Id.ToString());
+                            var billingLocation = convLocations.FirstOrDefault(l => l.OldLocationId == address.PrimaryFileId);
                             if (billingLocation == null) {
                                 logger.Log($"Conv: Conv no billing location for location for address with ID: {address.Id}");
                                 continue;
@@ -1734,9 +1738,9 @@ namespace Brady_s_Conversion_Program {
                             otherAddresses.Add(newDmgOtherAddress);
                             ffpmLocation.AddressId = newDmgOtherAddress.AddressId;
 
-                            continue;
+                            break;
                         case "prov":
-                            var convProvider = convProviders.FirstOrDefault(cp => cp.Id == address.Id);
+                            var convProvider = convProviders.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
 
                             if (convProvider == null) {
                                 logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
@@ -1766,9 +1770,9 @@ namespace Brady_s_Conversion_Program {
                             otherAddresses.Add(newDmgOtherAddress2);
                             ffpmProvider.ProviderAddressId = newDmgOtherAddress2.AddressId;
 
-                            continue;
+                            break;
                         case "ref":
-                            var convReferral = convDbContext.Referrals.Find(address.Id);
+                            var convReferral = referrals.FirstOrDefault(r => r.Id.ToString() == address.PrimaryFileId);
                             if (convReferral == null) {
                                 logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
                                 continue;
@@ -1795,9 +1799,9 @@ namespace Brady_s_Conversion_Program {
                             };
                             newOtherAddresses.Add(newDmgOtherAddress3);
                             // appears to only be connected by the address and not the referring provider
-                            continue;
+                            break;
                         case "emp":
-                            var localConvPatient = convPatients.FirstOrDefault(cp => cp.Id == address.Id);
+                            var localConvPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
                             if (localConvPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
@@ -1831,10 +1835,10 @@ namespace Brady_s_Conversion_Program {
                             otherAddresses.Add(newOtherAddress4);
                             ffpmPatientAdditional2.EmployerAddressId = newOtherAddress4.AddressId;
 
-                            continue;
+                            break;
                         case "pol": // Policy Holders / patient insurances
 
-                            continue;
+                            break;
                     };
                 }
                 catch (Exception ex) {
@@ -1927,6 +1931,7 @@ namespace Brady_s_Conversion_Program {
                             AlertFlash = alertFlash
                         };
                         patientAlerts.Add(newPatientAlert);
+                        newPatientAlerts.Add(newPatientAlert);
                     }
                 }
                 catch (Exception ex) {
@@ -1935,6 +1940,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientAlerts.AddRange(newPatientAlerts);
             ffpmDbContext.SaveChanges();
+            patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
             newPatientAlerts.Clear();
         }
 
@@ -2225,9 +2231,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPolicyHolder(List<Models.PolicyHolder> policyHolders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Insurance> convInsurances, List<Models.Patient> convPatients, 
+            ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Patient> convPatients, 
                 List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, 
-                    List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers, List<InsInsuranceCompany> insurances) {
+                    List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers) {
             foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2248,16 +2254,9 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Policy holder ID is null for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
-                    var convInsurance = convInsurances.FirstOrDefault(ci => ci.InsuranceCompanyCode == convPatientInsurance.InsuranceCompanyCode);
-                    if (convInsurance == null) {
-                        logger.Log($"Conv: Conv Insurance company not found for policy holder with ID: {policyHolder.Id}");
-                        continue;
-                    }
-                    var ffpmInsuranceCompany = insurances.FirstOrDefault(i => i.InsCompanyCode == convInsurance.InsuranceCompanyCode);
-                    if (ffpmInsuranceCompany == null) {
-                        logger.Log($"Conv: FFPM Insurance company not found for policy holder with ID: {policyHolder.Id}");
-                        continue;
-                    }
+
+
+
                     var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
                     if (convPolicyPatient == null) {
                         logger.Log($"Conv: Conv Patient (subject) not found for policy holder with ID: {policyHolder.Id}");
@@ -2268,7 +2267,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
                         continue;
                     }
-                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId);
+                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId && p.PolicyNumber == convPatientInsurance.Cert);
                     if (ffpmPatientInsurance == null) {
                         logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
@@ -2359,11 +2358,13 @@ namespace Brady_s_Conversion_Program {
                     subscribers.Add(newSubscriber);
 
                     ffpmPatientInsurance.SubscriberId = newSubscriber.SubscriberId;
+                    ffpmPatientInsurances.Add(ffpmPatientInsurance);
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the policy holder with ID: {policyHolder.Id}. Error: {ex.Message}");
                 }
             }
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances);
             ffpmDbContext.SaveChanges();
         }
 
@@ -3124,6 +3125,7 @@ namespace Brady_s_Conversion_Program {
             newSchedulingCodes.Clear();
         }
 
+        // IMPORTANT, THE OWNER TYPES IN OTHER ADDRESSES IS A SHORT, BUT I CANNOT FIND THE REFERENCE FOR SHORTS TO ACTUAL VALUE. WILL NEED TO CHANGE ACCORDINGLY.
         public static void ConvertPhone(List<Models.Phone> phones, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientAddress> patientAddresses) {
             foreach (var phone in phones) {
@@ -3131,43 +3133,217 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.Id);
-                    if (ConvPatient == null) {
-                        logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                    if (phone.PrimaryFile == null) {
+                        logger.Log($"Conv: Conv Primary file not found for phone with ID: {phone.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.OldPatientAccountNumber ||
-                    (p.FirstName == ConvPatient.FirstName && p.LastName == ConvPatient.LastName && p.MiddleName == ConvPatient.MiddleName));
-                    if (ffpmPatient == null) {
-                        logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
-                        continue;
-                    }
-                    DmgPatientAddress? address = patientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
-                    if (address == null) {
-                        logger.Log($"Conv: FFPM Patient Address not found for phone with ID: {phone.Id}");
-                        continue;
-                    }
+                    switch (phone.PrimaryFile.Trim().ToUpper()) {
+                        case "PAT":
+                            var ConvPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.PrimaryFileId);
+                            if (ConvPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ConvPatient.Id.ToString());
+                            if (ffpmPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            DmgPatientAddress? address = patientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                            if (address == null) {
+                                logger.Log($"Conv: FFPM Patient Address not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
 
-                    if (phone.Type != null) {
-                        switch (phone.Type.ToLower()) {
-                            case "home":
-                                address.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                continue;
-                            case "work":
-                                address.WorkPhone = TruncateString(phone.PhoneNumber, 15);
-                                continue;
-                            case "cell":
+                            if (phone.Type != null) {
+                                switch (phone.Type.ToLower()) {
+                                    case "home":
+                                        address.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                        break;
+                                    case "work":
+                                        address.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                        break;
+                                    case "cell":
+                                        address.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                        break;
+                                    default:
+                                        address.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                        break;
+                                }
+                                address.Extension = TruncateString(phone.Extension, 10);
+                            }
+                            else {
                                 address.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                address.Extension = TruncateString(phone.Extension, 10);
+                            }
+                            break;
+                        case "PROV":
+                            var convProvider = convDbContext.Providers.FirstOrDefault(p => p.Id == phone.PrimaryFileId);
+                            if (convProvider == null) {
+                                logger.Log($"Conv: Conv Provider not found for phone with ID: {phone.Id}");
                                 continue;
-                            default:
-                                address.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                            }
+                            var ffpmProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode); // given that this is what it sounds like
+                            if (ffpmProvider == null) {
+                                logger.Log($"Conv: FFPM Provider not found for phone with ID: {phone.Id}");
                                 continue;
-                        }
-                        address.Extension = TruncateString(phone.Extension, 10);
-                    }
-                    else {
-                        address.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                        address.Extension = TruncateString(phone.Extension, 10);
+                            }
+                            short ownerType = 1;
+                            /*
+                             SWAP OUT THE OWNER TYPE SHORTS
+                            I need the table or reference for the owner types first
+                            var ownerType = ownerTypes.FirstOrDefault(o => o.OwnerType == "PROV");
+                             */
+                            var ffpmProviderAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmProvider.ProviderId && p.OwnerType == ownerType);
+                            if (ffpmProviderAddress == null) {
+                                logger.Log($"Conv: FFPM Provider Address not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            if (phone.Type == null) {
+                                ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
+                            }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmProviderAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                            }
+                            break;
+                        case "REF":
+                            var convReferral = convDbContext.Referrals.FirstOrDefault(r => r.Id == phone.PrimaryFileId);
+                            if (convReferral == null) {
+                                logger.Log($"Conv: Conv Referral not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            var ffpmReferral = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == convReferral.OldReferralCode && p.IsReferringProvider == true);
+                            if (ffpmReferral == null) {
+                                logger.Log($"Conv: FFPM Referral not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            ownerType = 2;
+                            // ALSO SWAP OUT HERE
+                            var ffpmReferralAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.ProviderId && p.OwnerType == ownerType);
+                            if (ffpmReferralAddress == null) {
+                                logger.Log($"Conv: FFPM Referral Address not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            if (phone.Type == null) {
+                                ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
+                            }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmReferralAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                            }
+                            break;
+                        case "GUAR":
+                            var convGuarantor = convDbContext.Guarantors.FirstOrDefault(g => g.Id == phone.PrimaryFileId);
+                            if (convGuarantor == null) {
+                                logger.Log($"Conv: Conv Guarantor not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            var convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
+                            if (convPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            if (ffpmPatient == null) {
+                                logger.Log($"Conv: FFPM Patient not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            var ffpmGuarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
+                            if (ffpmGuarantor == null) {
+                                logger.Log($"Conv: FFPM Guarantor not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            ownerType = 3;
+                            // ALSO SWAP OUT HERE
+                            var ffpmGuarantorAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId && p.OwnerType == ownerType);
+                            if (ffpmGuarantorAddress == null) {
+                                logger.Log($"Conv: FFPM Guarantor Address not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            if (phone.Type == null) {
+                                ffpmGuarantorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                ffpmGuarantorAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
+                            }
+                            break;
+                        case "LOC":
+                            var convLocation = convDbContext.Locations.FirstOrDefault(l => l.Id == phone.PrimaryFileId);
+                            if (convLocation == null) {
+                                logger.Log($"Conv: Conv Location not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            var ffpmLocation = ffpmDbContext.BillingLocations.FirstOrDefault(l => l.Npi == convLocation.Npi || l.Name == convLocation.LocationName);
+                            if (ffpmLocation == null) {
+                                logger.Log($"Conv: FFPM Location not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            ownerType = 4;
+                            // ALSO SWAP OUT HERE
+                            var ffpmLocationAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmLocation.LocationId && p.OwnerType == ownerType);
+                            if (ffpmLocationAddress == null) {
+                                logger.Log($"Conv: FFPM Location Address not found for phone with ID: {phone.Id}");
+                                continue;
+                            }
+                            if (phone.Type == null) {
+                                ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
+                            }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmLocationAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                            }
+                            break;
+                        default:
+                            logger.Log($"Conv: Address PrimaryFile is unexpected type of {phone.PrimaryFile} on phone with ID: {phone.Id}");
+                            break;
                     }
                 }
                 catch (Exception ex) {
