@@ -407,7 +407,7 @@ namespace Brady_s_Conversion_Program {
 
             
             
-            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
             
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -454,7 +454,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
-
+*/
             
             ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors);
             
@@ -463,7 +463,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Guarantors Converted\n";
             });
             
-            
+            /*
             ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
             
             
@@ -495,7 +495,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-            
+            */
             
             ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients, 
                 patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
@@ -2244,16 +2244,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
-                    int policyPatientID = -1;
-                    if (convPatientInsurance.OldPatientId != null) {
-                        if (int.TryParse(convPatientInsurance.OldPatientId, out int temp)) {
-                            policyPatientID = temp;
-                        }
-                        else {
-                            logger.Log($"Conv: Conv Patient ID not found for policy holder with ID: {policyHolder.Id}");
-                            continue;
-                        }
-                    }
+                    int policyPatientID = convPatientInsurance.Id;
 
                     var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
                     if (convPolicyPatient == null) {
