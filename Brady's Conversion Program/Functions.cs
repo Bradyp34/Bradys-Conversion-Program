@@ -1682,27 +1682,27 @@ namespace Brady_s_Conversion_Program {
                                 primaryFileId = primaryFileIdInt;
                             }
                             if (primaryFileId == -1) {
-                                logger.Log($"Conv: Conv Guarantor ID not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: Conv Guarantor ID not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
                             var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == primaryFileId);
                             if (convGuarantor == null) {
-                                logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: Conv Guarantor not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
+                            convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == convGuarantor.PatientId.ToString());
                             if (convPatient == null) {
-                                logger.Log($"Conv: Conv Patient not found for guarantor with ID: {address.Id}");
+                                logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
                             ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
                             if (ffpmPatient == null) {
-                                logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
+                                logger.Log($"Conv: FFPM Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
                             var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
                             if (ffpmGuarantor == null) {
-                                logger.Log($"Conv: FFPM Guarantor not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: FFPM Guarantor not found for address (guarantor) with ID: {address.Id}: FFPM Patient ID: {ffpmPatient.PatientId}");
                                 continue;
                             }
 
