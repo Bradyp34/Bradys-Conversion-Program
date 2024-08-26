@@ -455,7 +455,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors);
+            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors, convPatients);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -1433,13 +1433,14 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients, List<DmgGuarantor> newGuarantors) {
+            List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients, List<DmgGuarantor> newGuarantors,
+                List<Models.Patient> convPatients) {
             foreach (var guarantor in convGuarantors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-                    var convPatient = convDbContext.Patients.Find(guarantor.PatientId);
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == guarantor.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
                         continue;
@@ -1504,9 +1505,9 @@ namespace Brady_s_Conversion_Program {
                     // no lastModified in incoming tables
 
 
-                    var guarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                    var existingGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
-                    if (guarantor == null) {
+                    if (existingGuarantor == null) {
                         var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
                             PatientId = ffpmPatient.PatientId,
                             FirstName = TruncateString(guarantor.FirstName, 50),
