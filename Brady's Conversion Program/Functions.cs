@@ -2251,6 +2251,10 @@ namespace Brady_s_Conversion_Program {
             ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Patient> convPatients, 
                 List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, 
                     List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers) {
+            long subscriberId = 1;
+            if (ffpmDbContext.DmgSubscribers.Any())
+                subscriberId = ffpmDbContext.DmgSubscribers.Max(p => p.SubscriberId);
+            
             foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2360,18 +2364,17 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedBy = lastModifiedBy,
                         IsActive = active
                     };
-                    ffpmDbContext.DmgSubscribers.Add(newSubscriber);
-                    ffpmDbContext.SaveChanges();
                     subscribers.Add(newSubscriber);
 
                     ffpmPatientInsurance.SubscriberId = newSubscriber.SubscriberId;
-                    ffpmPatientInsurances.Add(ffpmPatientInsurance);
+                    subscriberId++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the policy holder with ID: {policyHolder.Id}. Error: {ex.Message}");
                 }
             }
-            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances); // will this work properly?
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances);
+            ffpmDbContext.DmgSubscribers.UpdateRange(subscribers);
             ffpmDbContext.SaveChanges();
         }
 
