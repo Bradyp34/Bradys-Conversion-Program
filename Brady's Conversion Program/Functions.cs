@@ -407,7 +407,7 @@ namespace Brady_s_Conversion_Program {
 
             
             
-            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
             
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -454,7 +454,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
-*/
+
             
             ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors);
             
@@ -463,7 +463,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Guarantors Converted\n";
             });
             
-            /*
+            
             ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
             
             
@@ -495,7 +495,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-            */
+            
             
             ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients, 
                 patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
@@ -1476,8 +1476,11 @@ namespace Brady_s_Conversion_Program {
                         isActive = true;
                     }
                     bool? guarantorIsPatient = null;
+                    if (guarantor.OldGuarantorAccount != "" && guarantor.OldGuarantorAccount != null) { 
+                        guarantorIsPatient = true;
+                    }
                     long? guarantorIsPatientID = null;
-                    if (guarantor.OldGuarantorAccount != null && guarantor.OldGuarantorAccount != "") {
+                    if (guarantorIsPatient == true) {
                         guarantorIsPatient = true;
                         if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
                             guarantorIsPatientID = id;
@@ -1653,11 +1656,12 @@ namespace Brady_s_Conversion_Program {
                                 ffpmDbContext.DmgPatientAddresses.Add(newAddress);
                                 ffpmDbContext.SaveChanges();
                                 ffpmPatientAddresses.Add(newAddress);
-                                ffpmPatient.AddressId = newAddress.PatientAddressId;
+                                if (isPrimary)
+                                    ffpmPatient.AddressId = newAddress.PatientAddressId;
                             }
                             break;
-                        case "guar":
                         case "guarantor":
+                        case "guar":
                             int primaryFileId = -1;
                             if (int.TryParse(address.PrimaryFileId, out int primaryFileIdInt)) {
                                 primaryFileId = primaryFileIdInt;
@@ -1677,17 +1681,13 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
+                            var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient2.PatientId);
                             if (ffpmGuarantor == null) {
                                 logger.Log($"Conv: FFPM Guarantor not found for address with ID: {address.Id}");
                                 continue;
                             }
 
                             var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId);
-                            if (otherAddress != null) {
-                                logger.Log($"Conv: Conv duplicate guarantor address with ID: {address.Id}");
-                                continue;
-                            }
 
                             if (otherAddress == null) {
                                 var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -2018,7 +2018,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int oldpatientId = 0;
-                    if (int.TryParse(patientInsurance.OldPatientId, out int temp)) {
+                    if (int.TryParse(patientInsurance.PrimaryId, out int temp)) {
                         oldpatientId = temp;
                     }
                     else {
@@ -2111,6 +2111,7 @@ namespace Brady_s_Conversion_Program {
                             active = false;
                         }
                     }
+                    bool? isSubscriberExistingPatient = null;
 
 
                     var ffpmOrig = patientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
@@ -2130,7 +2131,8 @@ namespace Brady_s_Conversion_Program {
                             IsAdditionalInsurance = isAdditional,
                             InsuranceCompanyId = insCompId,
                             PolicyNumber = TruncateString(patientInsurance.Cert, 50),
-                            GroupId = TruncateString(patientInsurance.Group, 50)
+                            GroupId = TruncateString(patientInsurance.Group, 50),
+                            IsSubscriberExistingPatient = isSubscriberExistingPatient
                         };
                         patientInsurances.Add(newPatientInsurance);
                         newPatientInsurances.Add(newPatientInsurance);
@@ -2244,9 +2246,9 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
-                    int policyPatientID = convPatientInsurance.Id;
+                    string? policyPatientID = convPatientInsurance.PrimaryId;
 
-                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
+                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == policyPatientID);
                     if (convPolicyPatient == null) {
                         logger.Log($"Conv: Conv Patient (subject) not found for policy holder with ID: {policyHolder.Id}");
                         continue;
@@ -2256,7 +2258,8 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
                         continue;
                     }
-                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId && p.PolicyNumber == convPatientInsurance.Cert);
+                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId && p.PolicyNumber == convPatientInsurance.Cert || 
+                        ((p.PolicyNumber == "" || p.PolicyNumber == null) && (convPatientInsurance.Cert == null || convPatientInsurance.Cert == "")));
                     if (ffpmPatientInsurance == null) {
                         logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
