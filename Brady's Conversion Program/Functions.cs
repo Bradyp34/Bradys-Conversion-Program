@@ -182,7 +182,7 @@ namespace Brady_s_Conversion_Program {
                                 eyeMDDbContext.Database.OpenConnection();
 
                                 // Calculate total number of entries for progress tracking
-                                totalEntries = convDbContext.Patients.Count() +
+                                totalEntries = /*convDbContext.Patients.Count() +
                                                 convDbContext.Locations.Count() +
                                                 convDbContext.Appointments.Count() +
                                                 convDbContext.AppointmentTypes.Count() +
@@ -197,7 +197,7 @@ namespace Brady_s_Conversion_Program {
                                                 convDbContext.Recalls.Count() +
                                                 convDbContext.RecallTypes.Count() +
                                                 convDbContext.Referrals.Count() +
-                                                convDbContext.SchedCodes.Count() +
+                                                convDbContext.SchedCodes.Count() +*/
                                                 convDbContext.Addresses.Count() +
                                                 convDbContext.Phones.Count();
 
@@ -405,7 +405,7 @@ namespace Brady_s_Conversion_Program {
             var newSchedulingCodes = new List<SchedulingCode>();
 
 
-
+/*
             ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
 
 
@@ -535,7 +535,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
-
+*/
 
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
                 otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations,
@@ -1673,7 +1673,6 @@ namespace Brady_s_Conversion_Program {
                                 patientAddressId++;
                             }
                             break;
-                        case "guarantor":
                         case "guar":
                             int primaryFileId = -1;
                             if (int.TryParse(address.PrimaryFileId, out int primaryFileIdInt)) {
@@ -1857,6 +1856,10 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientAddresses.UpdateRange(ffpmPatientAddresses);
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
+            ffpmDbContext.DmgPatients.UpdateRange(ffpmPatients);
+            ffpmDbContext.DmgGuarantors.UpdateRange(guarantors);
+            ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
+            ffpmDbContext.BillingLocations.UpdateRange(locations);
             ffpmDbContext.SaveChanges();
             ffpmPatientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
