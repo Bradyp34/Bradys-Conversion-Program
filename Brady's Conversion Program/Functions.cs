@@ -3393,6 +3393,10 @@ namespace Brady_s_Conversion_Program {
             var procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
             var procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
             var refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
+            var rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
+            var surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
+            var techs = eyeMDDbContext.EmrvisitTeches.ToList();
+            var tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
 
 
             // not even using this
@@ -3587,29 +3591,41 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var rx in eHRDbContext.RxMedications) {
-                RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress);
+                RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
             }
+            eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
+            eyeMDDbContext.SaveChanges();
+            rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Rx medications converted.\n");
             });
 
             foreach (var surgHistory in eHRDbContext.SurgHistories) {
-                SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress);
+                SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
             }
+            eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
+            eyeMDDbContext.SaveChanges();
+            surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Surg histories converted.\n");
             });
 
             foreach (var tech in eHRDbContext.Teches) {
-                TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress);
+                TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, techs);
             }
+            eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
+            eyeMDDbContext.SaveChanges();
+            techs = eyeMDDbContext.EmrvisitTeches.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Techs converted.\n");
             });
 
             foreach (var tech2 in eHRDbContext.Tech2s) {
-                Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress);
+                Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, tech2s);
             }
+            eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
+            eyeMDDbContext.SaveChanges();
+            tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Tech2s converted.\n");
             });
@@ -7144,7 +7160,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void RxConvert(ModelsC.RxMedication rx, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void RxConvert(ModelsC.RxMedication rx, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitRxMedication> rxMedications, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7161,12 +7178,12 @@ namespace Brady_s_Conversion_Program {
                 if (rx.VisitId! <= -1) {
                     visitId = rx.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Rx with ID: {rx.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Rx with ID: {rx.Id}");
                 }
@@ -7174,9 +7191,8 @@ namespace Brady_s_Conversion_Program {
                 if (rx.PtId !<= -1) {
                     ptId = rx.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     } else {
@@ -7429,124 +7445,71 @@ namespace Brady_s_Conversion_Program {
                     erxStatus = rx.ErxStatus;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitRxMedications.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = rxMedications.FirstOrDefault(rx => rx.PtId == ptId && rx.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.MedName = TruncateString(medName, 255);
-                    ehrOrig.MedSig = TruncateString(medSig, 255);
-                    ehrOrig.MedDisp = TruncateString(medDisp, 255);
-                    ehrOrig.MedRefill = TruncateString(medRefill, 255);
-                    ehrOrig.MedType = medType;
-                    ehrOrig.BrandMedOnly = brandMedOnly; // smallint, no truncation needed
-                    ehrOrig.DoNotPrintRx = doNotPrintRx; // smallint, no truncation needed
-                    ehrOrig.SampleGiven = sampleGiven; // smallint, no truncation needed
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.Description = TruncateString(description, int.MaxValue);
-                    ehrOrig.MedTableId = medTableId;
-                    ehrOrig.MedDispType = medDispType; // smallint, no truncation needed
-                    ehrOrig.DrugStrength = TruncateString(drugStrength, 100);
-                    ehrOrig.DrugRoute = TruncateString(drugRoute, 100);
-                    ehrOrig.DrugForm = TruncateString(drugForm, 100);
-                    ehrOrig.DrugMappingId = TruncateString(drugMappingId, 100);
-                    ehrOrig.DrugAltMappingId = TruncateString(drugAltMappingId, 100);
-                    ehrOrig.DrugName = TruncateString(drugName, 200);
-                    ehrOrig.DrugNameId = TruncateString(drugNameId, 100);
-                    ehrOrig.ErxGuid = TruncateString(erxGUID, 50);
-                    ehrOrig.ErxPendingTransmit = erxPendingTransmit; // smallint, no truncation needed
-                    ehrOrig.CalledInLocationId = calledInLocationId;
-                    ehrOrig.CalledInProviderEmpId = calledInProviderEmpId;
-                    ehrOrig.MedDispUnitType = TruncateString(medDispUnitType, 100);
-                    ehrOrig.Rxcui = TruncateString(rxcui, 50);
-                    ehrOrig.IsRefill = isRefill; // smallint, no truncation needed
-                    ehrOrig.OriginalMedicationId = TruncateString(originalMedicationId, 255);
-                    ehrOrig.OriginalMedicationDate = TruncateString(originalMedicationDate, 50);
-                    ehrOrig.SentViaErx = sentViaErx; // smallint, no truncation needed
-                    ehrOrig.Snomed = TruncateString(snomed, 50);
-                    ehrOrig.DrugFdastatus = TruncateString(drugFdaStatus, 50);
-                    ehrOrig.DrugDeaclass = TruncateString(drugDeaClass, 25);
-                    ehrOrig.RxRemarks = TruncateString(rxRemarks, 255);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.RecordedEmpRole = recordedEmpRole;
-                    ehrOrig.AdministeredMed = administeredMed; // smallint, no truncation needed
-                    ehrOrig.FormularyChecked = formularyChecked; // smallint, no truncation needed
-                    ehrOrig.PrintedRx = printedRx; // smallint, no truncation needed
-                    ehrOrig.RxStartDate = rxStartDate;
-                    ehrOrig.RxEndDate = rxEndDate;
-                    ehrOrig.RxDurationDays = rxDurationDays;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.Created = created;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.ErxStatus = TruncateString(erxStatus, 100);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        MedName = TruncateString(medName, 255),
+                        MedSig = TruncateString(medSig, 255),
+                        MedDisp = TruncateString(medDisp, 255),
+                        MedRefill = TruncateString(medRefill, 255),
+                        MedType = medType,
+                        BrandMedOnly = brandMedOnly, // smallint, no truncation needed
+                        DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
+                        SampleGiven = sampleGiven, // smallint, no truncation needed
+                        Notes = TruncateString(notes, int.MaxValue),
+                        Description = TruncateString(description, int.MaxValue),
+                        MedTableId = medTableId,
+                        MedDispType = medDispType, // smallint, no truncation needed
+                        DrugStrength = TruncateString(drugStrength, 100),
+                        DrugRoute = TruncateString(drugRoute, 100),
+                        DrugForm = TruncateString(drugForm, 100),
+                        DrugMappingId = TruncateString(drugMappingId, 100),
+                        DrugAltMappingId = TruncateString(drugAltMappingId, 100),
+                        DrugName = TruncateString(drugName, 200),
+                        DrugNameId = TruncateString(drugNameId, 100),
+                        ErxGuid = TruncateString(erxGUID, 50),
+                        ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
+                        CalledInLocationId = calledInLocationId,
+                        CalledInProviderEmpId = calledInProviderEmpId,
+                        MedDispUnitType = TruncateString(medDispUnitType, 100),
+                        Rxcui = TruncateString(rxcui, 50),
+                        IsRefill = isRefill, // smallint, no truncation needed
+                        OriginalMedicationId = TruncateString(originalMedicationId, 255),
+                        OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
+                        SentViaErx = sentViaErx, // smallint, no truncation needed
+                        Snomed = TruncateString(snomed, 50),
+                        DrugFdastatus = TruncateString(drugFdaStatus, 50),
+                        DrugDeaclass = TruncateString(drugDeaClass, 25),
+                        RxRemarks = TruncateString(rxRemarks, 255),
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        RecordedEmpRole = recordedEmpRole,
+                        AdministeredMed = administeredMed, // smallint, no truncation needed
+                        FormularyChecked = formularyChecked, // smallint, no truncation needed
+                        PrintedRx = printedRx, // smallint, no truncation needed
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        RxStartDate = rxStartDate,
+                        RxEndDate = rxEndDate,
+                        RxDurationDays = rxDurationDays,
+                        LastModified = lastModified,
+                        VisitDiagCodePoolId = visitDiagCodePoolId,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        ErxStatus = TruncateString(erxStatus, 100)
+                    };
+                    rxMedications.Add(newRx);
                 }
-
-                var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    MedName = TruncateString(medName, 255),
-                    MedSig = TruncateString(medSig, 255),
-                    MedDisp = TruncateString(medDisp, 255),
-                    MedRefill = TruncateString(medRefill, 255),
-                    MedType = medType,
-                    BrandMedOnly = brandMedOnly, // smallint, no truncation needed
-                    DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
-                    SampleGiven = sampleGiven, // smallint, no truncation needed
-                    Notes = TruncateString(notes, int.MaxValue),
-                    Description = TruncateString(description, int.MaxValue),
-                    MedTableId = medTableId,
-                    MedDispType = medDispType, // smallint, no truncation needed
-                    DrugStrength = TruncateString(drugStrength, 100),
-                    DrugRoute = TruncateString(drugRoute, 100),
-                    DrugForm = TruncateString(drugForm, 100),
-                    DrugMappingId = TruncateString(drugMappingId, 100),
-                    DrugAltMappingId = TruncateString(drugAltMappingId, 100),
-                    DrugName = TruncateString(drugName, 200),
-                    DrugNameId = TruncateString(drugNameId, 100),
-                    ErxGuid = TruncateString(erxGUID, 50),
-                    ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
-                    CalledInLocationId = calledInLocationId,
-                    CalledInProviderEmpId = calledInProviderEmpId,
-                    MedDispUnitType = TruncateString(medDispUnitType, 100),
-                    Rxcui = TruncateString(rxcui, 50),
-                    IsRefill = isRefill, // smallint, no truncation needed
-                    OriginalMedicationId = TruncateString(originalMedicationId, 255),
-                    OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
-                    SentViaErx = sentViaErx, // smallint, no truncation needed
-                    Snomed = TruncateString(snomed, 50),
-                    DrugFdastatus = TruncateString(drugFdaStatus, 50),
-                    DrugDeaclass = TruncateString(drugDeaClass, 25),
-                    RxRemarks = TruncateString(rxRemarks, 255),
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    RecordedEmpRole = recordedEmpRole,
-                    AdministeredMed = administeredMed, // smallint, no truncation needed
-                    FormularyChecked = formularyChecked, // smallint, no truncation needed
-                    PrintedRx = printedRx, // smallint, no truncation needed
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    RxStartDate = rxStartDate,
-                    RxEndDate = rxEndDate,
-                    RxDurationDays = rxDurationDays,
-                    LastModified = lastModified,
-                    VisitDiagCodePoolId = visitDiagCodePoolId,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    ErxStatus = TruncateString(erxStatus, 100)
-                };
-                eyeMDDbContext.EmrvisitRxMedications.Add(newRx);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
             }
         }
 
-        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Emrvisit> visits, List<EmrvisitSurgicalHistory> surgicalHistories, List<Emrpatient> eyeMDPatients, List<Visit> ehrVisits) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7563,12 +7526,12 @@ namespace Brady_s_Conversion_Program {
                 if (surgHistory.VisitId != null) {
                     visitId = surgHistory.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Surg History with ID: {surgHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Surg History with ID: {surgHistory.Id}");
                 }
@@ -7576,9 +7539,8 @@ namespace Brady_s_Conversion_Program {
                 if (surgHistory.PtId !<= -1) {
                     ptId = surgHistory.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     } else {
@@ -7737,104 +7699,61 @@ namespace Brady_s_Conversion_Program {
                 int? lastModifiedEmpId = null;
                 // no lastModifiedEmpId in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitSurgicalHistories.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = surgicalHistories.FirstOrDefault(s => s.PtId == ptId && s.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.VisitDate = dosDate;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId;
-                    ehrOrig.OrigVisitDate = origVisitDate;
-                    ehrOrig.Description = TruncateString(description, 255);
-                    ehrOrig.TypeId = typeId;
-                    ehrOrig.CodeId = codeId;
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.Modifier = TruncateString(modifier, 50);
-                    ehrOrig.CodeIcd10 = TruncateString(codeICD10, 50);
-                    ehrOrig.CodeSnomed = TruncateString(codeSnomed, 50);
-                    ehrOrig.ComanageEmpId1 = performedByEmpId1;
-                    ehrOrig.ComanageRefProviderId1 = comanageRefProviderId1;
-                    ehrOrig.ComanageFullName1 = TruncateString(comanageFullName1, 100);
-                    ehrOrig.ComanageEmpId2 = performedByEmpId2;
-                    ehrOrig.ComanageRefProviderId2 = performedbyRefProviderId2;
-                    ehrOrig.ComanageFullName2 = TruncateString(comanageFullName2, 100);
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.Created = created;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.PtDeviceId = ptDeviceId;
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.Location1 = TruncateString(location1, 50);
-                    ehrOrig.ProcedureMonth1 = TruncateString(procedureMonth1, 10);
-                    ehrOrig.ProcedureDay1 = TruncateString(procedureDay1, 10);
-                    ehrOrig.ProcedureYear1 = TruncateString(procedureYear1, 10);
-                    ehrOrig.PerformedbyEmpId1 = performedByEmpId1;
-                    ehrOrig.PerformedbyFullName1 = TruncateString(comanageFullName1, 100);
-                    ehrOrig.PerformedbyRefProviderId1 = performedByRefProvider1;
-                    ehrOrig.Location2 = TruncateString(location2, 50);
-                    ehrOrig.ProcedureMonth2 = TruncateString(procedureMonth2, 10);
-                    ehrOrig.ProcedureDay2 = TruncateString(procedureDay2, 10);
-                    ehrOrig.ProcedureYear2 = TruncateString(procedureYear2, 10);
-                    ehrOrig.PerformedbyEmpId2 = performedByEmpId2;
-                    ehrOrig.PerformedbyFullName2 = TruncateString(comanageFullName2, 100);
-                    ehrOrig.PerformedbyRefProviderId2 = performedbyRefProviderId2;
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        VisitDate = dosDate,
+                        ControlId = controlId,
+                        OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
+                        OrigVisitDate = origVisitDate,
+                        Description = TruncateString(description, 255),
+                        TypeId = typeId,
+                        CodeId = codeId,
+                        Code = TruncateString(code, 50),
+                        Modifier = TruncateString(modifier, 50),
+                        CodeIcd10 = TruncateString(codeICD10, 50),
+                        CodeSnomed = TruncateString(codeSnomed, 50),
+                        ComanageEmpId1 = performedByEmpId1,
+                        ComanageRefProviderId1 = comanageRefProviderId1,
+                        ComanageFullName1 = TruncateString(comanageFullName1, 100),
+                        ComanageEmpId2 = performedByEmpId2,
+                        ComanageRefProviderId2 = performedbyRefProviderId2,
+                        ComanageFullName2 = TruncateString(comanageFullName2, 100),
+                        Notes = TruncateString(notes, int.MaxValue),
+                        Created = created,
+                        LastModified = lastModified,
+                        CreatedEmpId = createdEmpId,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        PtDeviceId = ptDeviceId,
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        Location1 = TruncateString(location1, 50),
+                        ProcedureMonth1 = TruncateString(procedureMonth1, 10),
+                        ProcedureDay1 = TruncateString(procedureDay1, 10),
+                        ProcedureYear1 = TruncateString(procedureYear1, 10),
+                        PerformedbyEmpId1 = performedByEmpId1,
+                        PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
+                        PerformedbyRefProviderId1 = performedByRefProvider1,
+                        Location2 = TruncateString(location2, 50),
+                        ProcedureMonth2 = TruncateString(procedureMonth2, 10),
+                        ProcedureDay2 = TruncateString(procedureDay2, 10),
+                        ProcedureYear2 = TruncateString(procedureYear2, 10),
+                        PerformedbyEmpId2 = performedByEmpId2,
+                        PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
+                        PerformedbyRefProviderId2 = performedbyRefProviderId2
+                    };
+                    surgicalHistories.Add(newSurgHistory);
                 }
-
-                var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    VisitDate = dosDate,
-                    ControlId = controlId,
-                    OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
-                    OrigVisitDate = origVisitDate,
-                    Description = TruncateString(description, 255),
-                    TypeId = typeId,
-                    CodeId = codeId,
-                    Code = TruncateString(code, 50),
-                    Modifier = TruncateString(modifier, 50),
-                    CodeIcd10 = TruncateString(codeICD10, 50),
-                    CodeSnomed = TruncateString(codeSnomed, 50),
-                    ComanageEmpId1 = performedByEmpId1,
-                    ComanageRefProviderId1 = comanageRefProviderId1,
-                    ComanageFullName1 = TruncateString(comanageFullName1, 100),
-                    ComanageEmpId2 = performedByEmpId2,
-                    ComanageRefProviderId2 = performedbyRefProviderId2,
-                    ComanageFullName2 = TruncateString(comanageFullName2, 100),
-                    Notes = TruncateString(notes, int.MaxValue),
-                    Created = created,
-                    LastModified = lastModified,
-                    CreatedEmpId = createdEmpId,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    PtDeviceId = ptDeviceId,
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    Location1 = TruncateString(location1, 50),
-                    ProcedureMonth1 = TruncateString(procedureMonth1, 10),
-                    ProcedureDay1 = TruncateString(procedureDay1, 10),
-                    ProcedureYear1 = TruncateString(procedureYear1, 10),
-                    PerformedbyEmpId1 = performedByEmpId1,
-                    PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
-                    PerformedbyRefProviderId1 = performedByRefProvider1,
-                    Location2 = TruncateString(location2, 50),
-                    ProcedureMonth2 = TruncateString(procedureMonth2, 10),
-                    ProcedureDay2 = TruncateString(procedureDay2, 10),
-                    ProcedureYear2 = TruncateString(procedureYear2, 10),
-                    PerformedbyEmpId2 = performedByEmpId2,
-                    PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
-                    PerformedbyRefProviderId2 = performedbyRefProviderId2
-                };
-                eyeMDDbContext.EmrvisitSurgicalHistories.Add(newSurgHistory);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
             }
         }
 
-        public static void TechsConvert(ModelsC.Tech tech, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void TechsConvert(ModelsC.Tech tech, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech> techs) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7851,12 +7770,12 @@ namespace Brady_s_Conversion_Program {
                 if (tech.VisitId != null) {
                     visitId = tech.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Tech with ID: {tech.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Tech with ID: {tech.Id}");
                 }
@@ -7864,9 +7783,8 @@ namespace Brady_s_Conversion_Program {
                 if (tech.PtId !<= -1) {
                     ptId = tech.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     } else {
@@ -8079,257 +7997,143 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitTeches.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = techs.FirstOrDefault(t => t.PtId == ptId && t.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Pmhsmoking = pmhSmoking;
-                    ehrOrig.Pmhalcohol = pmhAlcohol;
-                    ehrOrig.Pmhdrugs = pmhDrugs;
-                    ehrOrig.WuvaCcType = wuvaCcType;
-                    ehrOrig.WorkupMdreviewed = workupMdReviewed; // smallint, no truncation needed
-                    ehrOrig.WorkupMdreviewedDate = workupMdReviewedDate;
-                    ehrOrig.WorkupMdreviewedEmpId = workupMdReviewedEmpId;
-                    ehrOrig.WucvfAbute = wucvfAbute; // smallint, no truncation needed
-                    ehrOrig.Wudilated = wuDilated; // smallint, no truncation needed
-                    ehrOrig.VitalsBmipercentile = vitalsBmiPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsHofcpercentile = vitalsHofcPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsInhaled02Concentration = vitalsInhaled02Concentration; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsPulseOximetry = vitalsPulseOximetry; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsWflpercentile = vitalsWflPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.HistoryMdreviewed = historyReviewed; // smallint, no truncation needed
-                    ehrOrig.HistoryMdreviewedDate = historyMdReviewedDate;
-                    ehrOrig.HistoryMdreviewedEmpId = historyMdReviewedEmpId;
-                    ehrOrig.Created = created;
-                    ehrOrig.WudilatedTime = wuDilatedTime;
-                    ehrOrig.WudilatedTimeZone = wuDilatedTimeZone; // smallint, no truncation needed
-                    ehrOrig.IntakeReconciled = intakeReconciled; // bit, no truncation needed
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.MedRecNotPerformed = medRecNotPerformed; // smallint, no truncation needed
-                    ehrOrig.Wumood = wuMood; // smallint, no truncation needed
-                    ehrOrig.Wuextpan = wuextPan; // int, no truncation needed
-                    ehrOrig.WuiopAbute = wuiopAbute; // smallint, no truncation needed
-                    ehrOrig.WuorientPerson = wuOrientPerson; // int, no truncation needed
-                    ehrOrig.WuorientPlace = wuOrientPlace; // int, no truncation needed
-                    ehrOrig.WuorientTime = wuOrientTime; // int, no truncation needed
-                    ehrOrig.WuorientSituation = wuOrientSituation; // int, no truncation needed
-                    ehrOrig.Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue);
-                    ehrOrig.PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50);
-                    ehrOrig.PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50);
-                    ehrOrig.PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50);
-                    ehrOrig.PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50);
-                    ehrOrig.PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue);
-                    ehrOrig.PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50);
-                    ehrOrig.PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50);
-                    ehrOrig.PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50);
-                    ehrOrig.HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255);
-                    ehrOrig.Hpilocation1 = TruncateString(tech.Hpilocation1, 255);
-                    ehrOrig.Hpiquality1 = TruncateString(tech.Hpiquality1, 255);
-                    ehrOrig.Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255);
-                    ehrOrig.Hpitiming1 = TruncateString(tech.Hpitiming1, 255);
-                    ehrOrig.Hpiduration1 = TruncateString(tech.Hpiduration1, 255);
-                    ehrOrig.Hpicontext1 = TruncateString(tech.Hpicontext1, 255);
-                    ehrOrig.HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255);
-                    ehrOrig.HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255);
-                    ehrOrig.Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue);
-                    ehrOrig.WuvaCcOd = TruncateString(tech.Wuvaccod, 50);
-                    ehrOrig.WuvaCcOs = TruncateString(tech.Wuvaccos, 50);
-                    ehrOrig.WuvaCcOu = TruncateString(tech.Wuvaccou, 50);
-                    ehrOrig.WuvaPhOd = TruncateString(tech.Wuvaphod, 50);
-                    ehrOrig.WuvaPhOs = TruncateString(tech.Wuvaphos, 50);
-                    ehrOrig.WuvaScOd = TruncateString(tech.Wuvascod, 50);
-                    ehrOrig.WuvaScOs = TruncateString(tech.Wuvascos, 50);
-                    ehrOrig.WuvaScOu = TruncateString(tech.Wuvascou, 50);
-                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50);
-                    ehrOrig.WunCcOd = TruncateString(tech.Wunccod, 50);
-                    ehrOrig.WunCcOs = TruncateString(tech.Wunccos, 50);
-                    ehrOrig.WunCcOu = TruncateString(tech.Wunccou, 50);
-                    ehrOrig.Wunotes = TruncateString(tech.Wunotes, int.MaxValue);
-                    ehrOrig.WunScOd = TruncateString(tech.Wunscod, 50);
-                    ehrOrig.WunScOs = TruncateString(tech.Wunscos, 50);
-                    ehrOrig.WunScOu = TruncateString(tech.Wunscou, 50);
-                    ehrOrig.WudomEye = TruncateString(tech.WudomEye, 50);
-                    ehrOrig.WutcvfOd = TruncateString(tech.Wutcvfod, 50);
-                    ehrOrig.WutcvfOs = TruncateString(tech.Wutcvfos, 50);
-                    ehrOrig.WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue);
-                    ehrOrig.WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue);
-                    ehrOrig.WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50);
-                    ehrOrig.WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50);
-                    ehrOrig.WueomMedialOd = TruncateString(tech.WueommedialOd, 50);
-                    ehrOrig.WueomMedialOs = TruncateString(tech.WueommedialOs, 50);
-                    ehrOrig.WueomInNaOs = TruncateString(tech.WueominNaOs, 50);
-                    ehrOrig.WueomInNaOd = TruncateString(tech.WueominNaOd, 50);
-                    ehrOrig.WueomInTmOd = TruncateString(tech.WueominTmOd, 50);
-                    ehrOrig.WueomInTmOs = TruncateString(tech.WueominTmOs, 50);
-                    ehrOrig.WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50);
-                    ehrOrig.WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50);
-                    ehrOrig.WupupilNearOd = TruncateString(tech.WupupilNearOd, 50);
-                    ehrOrig.WupupilNearOs = TruncateString(tech.WupupilNearOs, 50);
-                    ehrOrig.WuamslerOd = TruncateString(tech.WuamslerOd, 255);
-                    ehrOrig.WuamslerOs = TruncateString(tech.WuamslerOs, 255);
-                    ehrOrig.WudilatedAgent = TruncateString(tech.WudilatedAgent, 255);
-                    ehrOrig.WudilatedEye = TruncateString(tech.WudilatedEye, 50);
-                    ehrOrig.WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255);
-                    ehrOrig.VitalsTemp = TruncateString(tech.VitalsTemp, 50);
-                    ehrOrig.VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50);
-                    ehrOrig.VitalsPulse = TruncateString(tech.VitalsPulse, 50);
-                    ehrOrig.VitalsBpsys = TruncateString(tech.VitalsBpsys, 50);
-                    ehrOrig.VitalsBpdia = TruncateString(tech.VitalsBpdia, 50);
-                    ehrOrig.VitalsRespRate = TruncateString(tech.VitalsRespRate, 255);
-                    ehrOrig.VitalsWeight = TruncateString(tech.VitalsWeight, 50);
-                    ehrOrig.VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50);
-                    ehrOrig.VitalsHeight = TruncateString(tech.VitalsHeight, 50);
-                    ehrOrig.VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50);
-                    ehrOrig.VitalsBmi = TruncateString(tech.VitalsBmi, 50);
-                    ehrOrig.VitalsBgl = TruncateString(tech.VitalsBgl, 50);
-                    ehrOrig.VitalsBglunits = TruncateString(tech.VitalsBglunits, 50);
-                    ehrOrig.PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100);
-                    ehrOrig.WuvaCcOu = TruncateString(tech.Wuvaccou, 50);
-                    ehrOrig.WuvaScOu = TruncateString(tech.Wuvascou, 50);
-                    ehrOrig.WunCcOu = TruncateString(tech.Wunccou, 50);
-                    ehrOrig.WunScOu = TruncateString(tech.Wunscou, 50);
-                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50);
-                    ehrOrig.WueomType = TruncateString(tech.Wueomtype, 255);
-                    ehrOrig.HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Pmhsmoking = pmhSmoking,
+                        Pmhalcohol = pmhAlcohol,
+                        Pmhdrugs = pmhDrugs,
+                        WuvaCcType = wuvaCcType,
+                        Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
+                        PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
+                        PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
+                        PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
+                        PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
+                        PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
+                        PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
+                        PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
+                        PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
+                        HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
+                        Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
+                        Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
+                        Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
+                        Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
+                        Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
+                        Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
+                        HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
+                        HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
+                        Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
+                        WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
+                        WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
+                        WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
+                        WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
+                        WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
+                        WuvaScOd = TruncateString(tech.Wuvascod, 50),
+                        WuvaScOs = TruncateString(tech.Wuvascos, 50),
+                        WuvaScOu = TruncateString(tech.Wuvascou, 50),
+                        WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
+                        WunCcOd = TruncateString(tech.Wunccod, 50),
+                        WunCcOs = TruncateString(tech.Wunccos, 50),
+                        WunCcOu = TruncateString(tech.Wunccou, 50),
+                        Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
+                        WunScOd = TruncateString(tech.Wunscod, 50),
+                        WunScOs = TruncateString(tech.Wunscos, 50),
+                        WunScOu = TruncateString(tech.Wunscou, 50),
+                        WudomEye = TruncateString(tech.WudomEye, 50),
+                        WutcvfOd = TruncateString(tech.Wutcvfod, 50),
+                        WutcvfOs = TruncateString(tech.Wutcvfos, 50),
+                        WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
+                        WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
+                        WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
+                        WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
+                        WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
+                        WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
+                        WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
+                        WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
+                        WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
+                        WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
+                        WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
+                        WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
+                        WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
+                        WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
+                        WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
+                        WorkupMdreviewedDate = workupMdReviewedDate,
+                        WorkupMdreviewedEmpId = workupMdReviewedEmpId,
+                        WuamslerOd = TruncateString(tech.WuamslerOd, 255),
+                        WuamslerOs = TruncateString(tech.WuamslerOs, 255),
+                        WucvfAbute = wucvfAbute, // smallint, no truncation needed
+                        Wudilated = wuDilated, // smallint, no truncation needed
+                        WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
+                        WudilatedEye = TruncateString(tech.WudilatedEye, 50),
+                        WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
+                        VitalsTemp = TruncateString(tech.VitalsTemp, 50),
+                        VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
+                        VitalsPulse = TruncateString(tech.VitalsPulse, 50),
+                        VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
+                        VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
+                        VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
+                        VitalsWeight = TruncateString(tech.VitalsWeight, 50),
+                        VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
+                        VitalsHeight = TruncateString(tech.VitalsHeight, 50),
+                        VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
+                        VitalsBmi = TruncateString(tech.VitalsBmi, 50),
+                        VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
+                        VitalsBgl = TruncateString(tech.VitalsBgl, 50),
+                        VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
+                        VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
+                        VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
+                        VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
+                        VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
+                        HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
+                        HistoryMdreviewedDate = historyMdReviewedDate,
+                        HistoryMdreviewedEmpId = historyMdReviewedEmpId,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
+                        WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
+                        WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
+                        WudilatedTime = wuDilatedTime,
+                        WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
+                        WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
+                        WueomType = TruncateString(tech.Wueomtype, 255),
+                        Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
+                        Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
+                        PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
+                        WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
+                        WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
+                        WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
+                        WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
+                        WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
+                        WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
+                        WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
+                        WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
+                        HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
+                        IntakeReconciled = intakeReconciled, // bit, no truncation needed
+                        LastModified = lastModified,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
+                        UpsizeTs = null,
+                        Wumood = wuMood, // smallint, no truncation needed
+                        Wuextpan = wuextPan, // int, no truncation needed
+                        WuiopAbute = wuiopAbute, // smallint, no truncation needed
+                        WuorientPerson = wuOrientPerson, // int, no truncation needed
+                        WuorientPlace = wuOrientPlace, // int, no truncation needed
+                        WuorientTime = wuOrientTime, // int, no truncation needed
+                        WuorientSituation = wuOrientSituation // int, no truncation needed
+                    };
+                    techs.Add(newTech);
                 }
-
-                var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Pmhsmoking = pmhSmoking,
-                    Pmhalcohol = pmhAlcohol,
-                    Pmhdrugs = pmhDrugs,
-                    WuvaCcType = wuvaCcType,
-                    Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
-                    PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
-                    PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
-                    PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
-                    PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
-                    PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
-                    PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
-                    PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
-                    PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
-                    HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
-                    Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
-                    Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
-                    Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
-                    Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
-                    Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
-                    Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
-                    HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
-                    HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
-                    Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
-                    WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
-                    WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
-                    WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
-                    WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
-                    WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
-                    WuvaScOd = TruncateString(tech.Wuvascod, 50),
-                    WuvaScOs = TruncateString(tech.Wuvascos, 50),
-                    WuvaScOu = TruncateString(tech.Wuvascou, 50),
-                    WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
-                    WunCcOd = TruncateString(tech.Wunccod, 50),
-                    WunCcOs = TruncateString(tech.Wunccos, 50),
-                    WunCcOu = TruncateString(tech.Wunccou, 50),
-                    Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
-                    WunScOd = TruncateString(tech.Wunscod, 50),
-                    WunScOs = TruncateString(tech.Wunscos, 50),
-                    WunScOu = TruncateString(tech.Wunscou, 50),
-                    WudomEye = TruncateString(tech.WudomEye, 50),
-                    WutcvfOd = TruncateString(tech.Wutcvfod, 50),
-                    WutcvfOs = TruncateString(tech.Wutcvfos, 50),
-                    WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
-                    WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
-                    WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
-                    WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
-                    WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
-                    WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
-                    WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
-                    WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
-                    WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
-                    WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
-                    WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
-                    WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
-                    WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
-                    WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
-                    WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
-                    WorkupMdreviewedDate = workupMdReviewedDate,
-                    WorkupMdreviewedEmpId = workupMdReviewedEmpId,
-                    WuamslerOd = TruncateString(tech.WuamslerOd, 255),
-                    WuamslerOs = TruncateString(tech.WuamslerOs, 255),
-                    WucvfAbute = wucvfAbute, // smallint, no truncation needed
-                    Wudilated = wuDilated, // smallint, no truncation needed
-                    WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
-                    WudilatedEye = TruncateString(tech.WudilatedEye, 50),
-                    WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
-                    VitalsTemp = TruncateString(tech.VitalsTemp, 50),
-                    VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
-                    VitalsPulse = TruncateString(tech.VitalsPulse, 50),
-                    VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
-                    VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
-                    VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
-                    VitalsWeight = TruncateString(tech.VitalsWeight, 50),
-                    VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
-                    VitalsHeight = TruncateString(tech.VitalsHeight, 50),
-                    VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
-                    VitalsBmi = TruncateString(tech.VitalsBmi, 50),
-                    VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
-                    VitalsBgl = TruncateString(tech.VitalsBgl, 50),
-                    VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
-                    VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
-                    VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
-                    VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
-                    VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
-                    HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
-                    HistoryMdreviewedDate = historyMdReviewedDate,
-                    HistoryMdreviewedEmpId = historyMdReviewedEmpId,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
-                    WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
-                    WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
-                    WudilatedTime = wuDilatedTime,
-                    WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
-                    WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
-                    WueomType = TruncateString(tech.Wueomtype, 255),
-                    Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
-                    Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
-                    PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
-                    WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
-                    WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
-                    WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
-                    WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
-                    WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
-                    WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
-                    WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
-                    WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
-                    HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
-                    IntakeReconciled = intakeReconciled, // bit, no truncation needed
-                    LastModified = lastModified,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
-                    UpsizeTs = null,
-                    Wumood = wuMood, // smallint, no truncation needed
-                    Wuextpan = wuextPan, // int, no truncation needed
-                    WuiopAbute = wuiopAbute, // smallint, no truncation needed
-                    WuorientPerson = wuOrientPerson, // int, no truncation needed
-                    WuorientPlace = wuOrientPlace, // int, no truncation needed
-                    WuorientTime = wuOrientTime, // int, no truncation needed
-                    WuorientSituation = wuOrientSituation // int, no truncation needed
-                };
-                eyeMDDbContext.EmrvisitTeches.Add(newTech);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
             }
         }
 
-        public static void Tech2sConvert(ModelsC.Tech2 tech2, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void Tech2sConvert(ModelsC.Tech2 tech2, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech2> tech2s) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -8346,12 +8150,12 @@ namespace Brady_s_Conversion_Program {
                 if (tech2.VisitId != null) {
                     visitId = tech2.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Tech2 with ID: {tech2.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Tech2 with ID: {tech2.Id}");
                 }
@@ -8359,9 +8163,8 @@ namespace Brady_s_Conversion_Program {
                 if (tech2.PtId! <= -1) {
                     ptId = tech2.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     }
@@ -8430,174 +8233,92 @@ namespace Brady_s_Conversion_Program {
                 byte[]? upsizets = null;
                 // no upsizets in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitTech2s.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = tech2s.FirstOrDefault(t2 => t2.PtId == ptId && t2.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Wu2vaOrxOd = tech2.Wu2vaorxOd;
-                    ehrOrig.Wu2vaOrxOs = tech2.Wu2vaorxOs;
-                    ehrOrig.Wu2kmaxOd = wu2kmaxOd;
-                    ehrOrig.Wu2kmaxOs = wu2kmaxOs;
-                    ehrOrig.Wu2kminOd = wu2kminOd;
-                    ehrOrig.Wu2kminOs = wu2kminOs;
-                    ehrOrig.Wu2kminDegOd = wu2kminDegOd;
-                    ehrOrig.Wu2kminDegOs = wu2kminDegOs;
-                    ehrOrig.Wu2kmaxDegOd = wu2kmaxDegOd;
-                    ehrOrig.Wu2kmaxDegOs = wu2kmaxDegOs;
-                    ehrOrig.UpsizeTs = upsizets;
-                    ehrOrig.Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd;
-                    ehrOrig.Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs;
-                    ehrOrig.Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult;
-                    ehrOrig.Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue);
-                    ehrOrig.Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50);
-                    ehrOrig.Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue);
-                    ehrOrig.Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50);
-                    ehrOrig.Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue);
-                    ehrOrig.Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50);
-                    ehrOrig.Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue);
-                    ehrOrig.Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50);
-                    ehrOrig.Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue);
-                    ehrOrig.Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50);
-                    ehrOrig.Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue);
-                    ehrOrig.Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50);
-                    ehrOrig.Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue);
-                    ehrOrig.Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50);
-                    ehrOrig.Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue);
-                    ehrOrig.Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50);
-                    ehrOrig.Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue);
-                    ehrOrig.Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50);
-                    ehrOrig.Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue);
-                    ehrOrig.Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50);
-                    ehrOrig.Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue);
-                    ehrOrig.Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50);
-                    ehrOrig.Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue);
-                    ehrOrig.Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50);
-                    ehrOrig.Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue);
-                    ehrOrig.Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50);
-                    ehrOrig.Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue);
-                    ehrOrig.Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50);
-                    ehrOrig.Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue);
-                    ehrOrig.Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50);
-                    ehrOrig.Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue);
-                    ehrOrig.Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50);
-                    ehrOrig.Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue);
-                    ehrOrig.Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50);
-                    ehrOrig.Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue);
-                    ehrOrig.Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50);
-                    ehrOrig.Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue);
-                    ehrOrig.Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50);
-                    ehrOrig.Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue);
-                    ehrOrig.Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50);
-                    ehrOrig.Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue);
-                    ehrOrig.Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50);
-                    ehrOrig.Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue);
-                    ehrOrig.Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50);
-                    ehrOrig.Wu2GlareHighOd = tech2.Wu2glareHighOd;
-                    ehrOrig.Wu2GlareHighOs = tech2.Wu2glareHighOs;
-                    ehrOrig.Wu2GlareLowOd = tech2.Wu2glareLowOd;
-                    ehrOrig.Wu2GlareLowOs = tech2.Wu2glareLowOs;
-                    ehrOrig.Wu2GlareMedOd = tech2.Wu2glareMedOd;
-                    ehrOrig.Wu2GlareMedOs = tech2.Wu2glareMedOs;
-                    ehrOrig.Wu2GlareType = TruncateString(tech2.Wu2glareType, 50);
-                    ehrOrig.Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100);
-                    ehrOrig.Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100);
-                    ehrOrig.Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100);
-                    ehrOrig.Wu2ktype = TruncateString(tech2.Wu2ktype, 255);
-                    ehrOrig.Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50);
-                    ehrOrig.Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50);
-                    ehrOrig.Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50);
-                    ehrOrig.Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50);
-                    ehrOrig.Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue);
-                    ehrOrig.Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50);
-                    ehrOrig.Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Wu2vaOrxOd = tech2.Wu2vaorxOd,
+                        Wu2vaOrxOs = tech2.Wu2vaorxOs,
+                        Wu2kmaxOd = wu2kmaxOd,
+                        Wu2kmaxOs = wu2kmaxOs,
+                        Wu2kminOd = wu2kminOd,
+                        Wu2kminOs = wu2kminOs,
+                        Wu2kminDegOd = wu2kminDegOd,
+                        Wu2kminDegOs = wu2kminDegOs,
+                        Wu2kmaxDegOd = wu2kmaxDegOd,
+                        Wu2kmaxDegOs = wu2kmaxDegOs,
+                        UpsizeTs = upsizets,
+                        Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
+                        Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
+                        Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
+                        Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
+                        Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
+                        Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
+                        Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
+                        Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
+                        Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
+                        Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
+                        Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
+                        Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
+                        Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
+                        Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
+                        Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
+                        Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
+                        Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
+                        Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
+                        Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
+                        Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
+                        Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
+                        Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
+                        Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
+                        Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
+                        Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
+                        Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
+                        Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
+                        Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
+                        Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
+                        Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
+                        Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
+                        Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
+                        Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
+                        Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
+                        Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
+                        Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
+                        Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
+                        Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
+                        Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
+                        Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
+                        Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
+                        Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
+                        Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
+                        Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
+                        Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
+                        Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
+                        Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
+                        Wu2GlareHighOd = tech2.Wu2glareHighOd,
+                        Wu2GlareHighOs = tech2.Wu2glareHighOs,
+                        Wu2GlareLowOd = tech2.Wu2glareLowOd,
+                        Wu2GlareLowOs = tech2.Wu2glareLowOs,
+                        Wu2GlareMedOd = tech2.Wu2glareMedOd,
+                        Wu2GlareMedOs = tech2.Wu2glareMedOs,
+                        Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
+                        Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
+                        Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
+                        Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
+                        Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
+                        Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
+                        Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
+                        Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
+                        Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
+                        Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
+                        Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
+                        Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
+                    };
+                    tech2s.Add(newTech2);
                 }
-
-                var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Wu2vaOrxOd = tech2.Wu2vaorxOd,
-                    Wu2vaOrxOs = tech2.Wu2vaorxOs,
-                    Wu2kmaxOd = wu2kmaxOd,
-                    Wu2kmaxOs = wu2kmaxOs,
-                    Wu2kminOd = wu2kminOd,
-                    Wu2kminOs = wu2kminOs,
-                    Wu2kminDegOd = wu2kminDegOd,
-                    Wu2kminDegOs = wu2kminDegOs,
-                    Wu2kmaxDegOd = wu2kmaxDegOd,
-                    Wu2kmaxDegOs = wu2kmaxDegOs,
-                    UpsizeTs = upsizets,
-                    Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
-                    Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
-                    Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
-                    Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
-                    Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
-                    Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
-                    Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
-                    Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
-                    Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
-                    Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
-                    Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
-                    Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
-                    Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
-                    Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
-                    Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
-                    Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
-                    Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
-                    Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
-                    Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
-                    Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
-                    Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
-                    Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
-                    Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
-                    Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
-                    Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
-                    Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
-                    Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
-                    Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
-                    Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
-                    Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
-                    Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
-                    Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
-                    Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
-                    Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
-                    Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
-                    Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
-                    Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
-                    Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
-                    Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
-                    Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
-                    Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
-                    Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
-                    Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
-                    Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
-                    Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
-                    Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
-                    Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
-                    Wu2GlareHighOd = tech2.Wu2glareHighOd,
-                    Wu2GlareHighOs = tech2.Wu2glareHighOs,
-                    Wu2GlareLowOd = tech2.Wu2glareLowOd,
-                    Wu2GlareLowOs = tech2.Wu2glareLowOs,
-                    Wu2GlareMedOd = tech2.Wu2glareMedOd,
-                    Wu2GlareMedOs = tech2.Wu2glareMedOs,
-                    Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
-                    Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
-                    Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
-                    Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
-                    Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
-                    Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
-                    Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
-                    Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
-                    Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
-                    Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
-                    Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
-                    Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
-                };
-                eyeMDDbContext.EmrvisitTech2s.Add(newTech2);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
             }
