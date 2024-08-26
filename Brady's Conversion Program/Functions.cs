@@ -182,7 +182,7 @@ namespace Brady_s_Conversion_Program {
                                 eyeMDDbContext.Database.OpenConnection();
 
                                 // Calculate total number of entries for progress tracking
-                                totalEntries = convDbContext.Patients.Count() +
+                                totalEntries = /*convDbContext.Patients.Count() +
                                                 convDbContext.Locations.Count() +
                                                 convDbContext.Appointments.Count() +
                                                 convDbContext.AppointmentTypes.Count() +
@@ -197,7 +197,7 @@ namespace Brady_s_Conversion_Program {
                                                 convDbContext.Recalls.Count() +
                                                 convDbContext.RecallTypes.Count() +
                                                 convDbContext.Referrals.Count() +
-                                                convDbContext.SchedCodes.Count() +
+                                                convDbContext.SchedCodes.Count() */+
                                                 convDbContext.Addresses.Count() +
                                                 convDbContext.Phones.Count();
 
@@ -358,7 +358,6 @@ namespace Brady_s_Conversion_Program {
             var convProviders = convDbContext.Providers.ToList();
             var ffpmProviders = ffpmDbContext.DmgProviders.ToList();
             var convGuarantors = convDbContext.Guarantors.ToList();
-            var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
             var convLocations = convDbContext.Locations.ToList();
             var priorityXrefs = ffpmDbContext.MntPriorities.ToList();
             var patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
@@ -407,7 +406,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -536,10 +535,10 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
-
+*/
 
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
-                otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors, suffixXrefs, patientAdditionalDetails, convLocations, 
+                otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations, 
                 locations, convReferrals);
             
 
@@ -1546,7 +1545,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertAddress(List <Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
                 List<DmgPatientAddress> ffpmPatientAddresses, List<DmgOtherAddress> otherAddresses, List<ReferringProvider> referringProviders, List<Provider> convProviders,
-                    List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> ffpmGuarantors, List<MntSuffix> suffixXrefs, 
+                    List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, 
                         List<DmgPatientAdditionalDetail> patientAdditionalDetails, List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
             var newOtherAddresses = new List<DmgOtherAddress>();
             long patientAddressId = 1;
@@ -1555,6 +1554,7 @@ namespace Brady_s_Conversion_Program {
                 patientAddressId = ffpmDbContext.DmgPatientAddresses.Max(p => p.PatientAddressId) +1;
             if (ffpmDbContext.DmgOtherAddresses.Any())
                 otherAddressId = ffpmDbContext.DmgOtherAddresses.Max(p => p.AddressId) + 1;
+            guarantors = ffpmDbContext.DmgGuarantors.ToList();
 
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1699,7 +1699,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
+                            var ffpmGuarantor = guarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
                             if (ffpmGuarantor == null) {
                                 logger.Log($"Conv: FFPM Guarantor not found for address (guarantor) with ID: {address.Id}: FFPM Patient ID: {ffpmPatient.PatientId}");
                                 continue;
