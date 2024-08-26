@@ -202,8 +202,8 @@ namespace Brady_s_Conversion_Program {
                                                 convDbContext.Phones.Count();
 
 
-                // Set progress bar properties on UI thread
-                progress.Invoke((MethodInvoker)delegate {
+                                    // Set progress bar properties on UI thread
+                                    progress.Invoke((MethodInvoker)delegate {
                                     progress.Maximum = totalEntries;
                                     progress.Step = 1;
                                     progress.Value = 0;
@@ -794,6 +794,7 @@ namespace Brady_s_Conversion_Program {
                             emrPatients.Add(newEMRPatient);
                             newEmrPatients.Add(newEMRPatient);
                         }
+                        patientId++;
                     }
                 }
                 catch (Exception ex) {
