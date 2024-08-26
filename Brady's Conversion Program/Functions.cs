@@ -167,7 +167,7 @@ namespace Brady_s_Conversion_Program {
                 int totalEntries = 0;
 
                 if (conv == true) { // if it is an ffpm conversion
-                    using (var convDbContext = new FoxfireConvContext(convConnection)) { 
+                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
                         convDbContext.Database.OpenConnection();
                         if (newFfpm) { // if it is a new ffpm database
                             new FfpmContext(FFPMConnection).Database.EnsureCreated();
@@ -182,7 +182,7 @@ namespace Brady_s_Conversion_Program {
                                 eyeMDDbContext.Database.OpenConnection();
 
                                 // Calculate total number of entries for progress tracking
-                                totalEntries =  convDbContext.Patients.Count() +
+                                totalEntries = convDbContext.Patients.Count() +
                                                 convDbContext.Locations.Count() +
                                                 convDbContext.Appointments.Count() +
                                                 convDbContext.AppointmentTypes.Count() +
@@ -202,8 +202,8 @@ namespace Brady_s_Conversion_Program {
                                                 convDbContext.Phones.Count();
 
 
-                // Set progress bar properties on UI thread
-                progress.Invoke((MethodInvoker)delegate {
+                                // Set progress bar properties on UI thread
+                                progress.Invoke((MethodInvoker)delegate {
                                     progress.Maximum = totalEntries;
                                     progress.Step = 1;
                                     progress.Value = 0;
@@ -269,7 +269,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-                            eyeMDDbContext.Database.OpenConnection(); 
+                            eyeMDDbContext.Database.OpenConnection();
                             ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox); // convert eyemd data
                             eyeMDDbContext.SaveChanges();
                         }
@@ -358,7 +358,6 @@ namespace Brady_s_Conversion_Program {
             var convProviders = convDbContext.Providers.ToList();
             var ffpmProviders = ffpmDbContext.DmgProviders.ToList();
             var convGuarantors = convDbContext.Guarantors.ToList();
-            var ffpmGuarantors = ffpmDbContext.DmgGuarantors.ToList();
             var convLocations = convDbContext.Locations.ToList();
             var priorityXrefs = ffpmDbContext.MntPriorities.ToList();
             var patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
@@ -405,153 +404,152 @@ namespace Brady_s_Conversion_Program {
             var newOtherAddresses = new List<DmgOtherAddress>();
             var newSchedulingCodes = new List<SchedulingCode>();
 
-            
-            
+
+
             ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Locations Converted\n";
             });
 
-           
-            PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys, 
-                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
-            
 
+            PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys,
+                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
+
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
                 resultsBox.Text += "Patients Converted\n";
             });
-            
-            
+
+            // moved the foreach loops into the functions
             ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, progress, appointmentTypes, newAppointmentTypes);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "AppointmentTypes Converted\n";
             });
 
-            
+
             ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments, newAppointments);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Appointments Converted\n";
             });
-            
-            
+
+
             ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, progress, insurances, stateXrefs, newInsuranceCompanies);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Insurances Converted\n";
             });
 
-            
+
             ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders, newProviders);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Providers Converted\n";
             });
 
-            
+
             ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, newGuarantors);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Guarantors Converted\n";
             });
-            
-            
+
+
             ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts, newPatientAlerts);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientAlerts Converted\n";
             });
-            
-            
+
+
             ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments, newPatientDocuments);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientDocuments Converted\n";
             });
-            
-            
-            ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances, 
+
+
+            ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances,
                 newPatientInsurances);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientInsurances Converted\n";
             });
-           
-            
+
+
             ConvertPatientNote(convPatientNotes, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientNotes, newPatientNotes);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PatientNotes Converted\n";
             });
-            
-            
-            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients, 
+
+
+            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients,
                 patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs, subscribers);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "PolicyHolders Converted\n";
             });
 
-            
+
             ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, progress, schedulingAppointmentTypes, newSchedulingAppointmentTypes);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
-            
+
             ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists, newPatientRecallLists);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Recalls Converted\n";
             });
 
-            
+
             ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders, newReferringProviders, newProviders);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Referrals Converted\n";
             });
 
-            
+
             ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, progress, schedulingCodes, newSchedulingCodes);
-            
-            
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
 
-            
+
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
-                otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, ffpmGuarantors, suffixXrefs, patientAdditionalDetails, convLocations, 
+                otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations,
                 locations, convReferrals);
-            
+
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Addresses Converted\n";
             });
 
-            
-            ConvertPhone(phones, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convProviders, newProviders, otherAddresses,
-                ffpmGuarantors, locations, convReferrals, convGuarantors, convLocations);
-            
-            
+
+            ConvertPhone(phones, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses);
+
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Phones Converted\n";
             });
@@ -562,28 +560,27 @@ namespace Brady_s_Conversion_Program {
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, List<DmgPatientAdditionalDetail> newAdditionalDetails,
                         List<Emrpatient> newEmrPatients) {
-
-            // Calculate the next available PatientId based on the current maximum in ffpmPatients
-            long nextPatientId = ffpmPatients.Any() ? ffpmPatients.Max(p => p.PatientId) + 1 : 1;
-
+            long patientId = 1;
+            if (ffpmDbContext.DmgPatients.Any()) {
+                patientId = ffpmDbContext.DmgPatients.Max(p => p.PatientId) + 1;
+            }
             foreach (var patient in convPatients) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
-                try {
+                try { // all patients need first and last name and for active to be yes or null (not no)
                     if (patient.LastName == null) {
                         logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
-                        continue;
+                        continue; ;
                     }
                     else if (patient.FirstName == null) {
                         logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
-                        continue;
+                        continue; ;
                     }
                     else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
-                        continue;
+                        continue; ;
                     }
-
-                    string? ssn = patient.Ssn;
+                    string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
                     if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
                         ssn = "";
                     }
@@ -720,6 +717,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
+
                     var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.Id.ToString()
                         && p.FirstName == patient.FirstName && p.LastName == patient.LastName);
 
@@ -755,12 +753,15 @@ namespace Brady_s_Conversion_Program {
                             LastModifiedDate = DateTime.Now,
                             LastModifiedBy = -1
                         };
-                        ffpmPatients.Add(newPatient);  // Add to local list
+
+                        ffpmDbContext.DmgPatients.Add(newPatient);
+
 
                         var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
                         if (patientAdditionalDetail == null) {
+                            // If no existing patient is found, create a new one
                             var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                                PatientId = nextPatientId++,
+                                PatientId = patientId,
                                 DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
                                 DriversLicenseStateId = licenseShort,
                                 RaceId = race,
@@ -775,40 +776,39 @@ namespace Brady_s_Conversion_Program {
                                 PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
                                 DefaultLocationId = newPatient.LocationId
                             };
-                            newAdditionalDetails.Add(newAdditionDetails);  // Add to local list
+                            patientAdditionals.Add(newAdditionDetails); // Id like to move this up so I can add all new at once, but that
+                                                                        // will not allow to check for duplicates if theyre both new
+                            newAdditionalDetails.Add(newAdditionDetails);
                         }
 
+                        // Update or create EMRPatient
                         var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
                         if (existingEmrPatient == null) {
                             var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                                ClientSoftwarePtId = TruncateString(nextPatientId.ToString(), 50),
+                                ClientSoftwarePtId = TruncateString(patientId.ToString(), 50),
                                 PatientNameFirst = TruncateString(newPatient.FirstName, 50),
                                 PatientNameLast = TruncateString(newPatient.LastName, 50),
                                 PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
                             };
-                            newEmrPatients.Add(newEMRPatient);  // Add to local list
+                            emrPatients.Add(newEMRPatient);
+                            newEmrPatients.Add(newEMRPatient);
                         }
+                        patientId++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
                 }
             }
-
-            // Bulk insert new records to database and save changes once
-            ffpmDbContext.DmgPatients.AddRange(ffpmPatients);
+            ffpmDbContext.DmgPatients.UpdateRange(ffpmPatients);
             ffpmDbContext.DmgPatientAdditionalDetails.AddRange(newAdditionalDetails);
             eyeMdDbContext.Emrpatients.AddRange(newEmrPatients);
             ffpmDbContext.SaveChanges();
             eyeMdDbContext.SaveChanges();
-
-            // Clear local lists after saving
-            ffpmPatients.Clear();
-            newAdditionalDetails.Clear();
-            newEmrPatients.Clear();
-            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             patientAdditionals = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             emrPatients = eyeMdDbContext.Emrpatients.ToList();
+            newAdditionalDetails.Clear();
+            newEmrPatients.Clear();
         }
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
@@ -879,12 +879,12 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingAppointmentTypes.AddRange(newAppointmentTypes);
             ffpmDbContext.SaveChanges();
+            appointmentTypes.AddRange(newAppointmentTypes);
             newAppointmentTypes.Clear();
-            appointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
         }
 
-        public static void ConvertAppointment(List<Models.Appointment> convAppointments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes, 
+        public static void ConvertAppointment(List<Models.Appointment> convAppointments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes,
                 List<SchedulingAppointment> appointments, List<SchedulingAppointment> newAppointments) {
             foreach (var appointment in convAppointments) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -932,7 +932,7 @@ namespace Brady_s_Conversion_Program {
                     DateTime created = minAcceptableDate;
                     if (appointment.DateTimeCreated != null && (appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare))) {
                         if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
-                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
+                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
                             created = isValidDate(created);
                         }
                     }
@@ -1085,10 +1085,9 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SchedulingAppointments.AddRange(newAppointments);
             ffpmDbContext.SaveChanges();
             newAppointments.Clear();
-            appointments = ffpmDbContext.SchedulingAppointments.ToList();
         }
 
-        public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+        public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs, List<InsInsuranceCompany> newInsuranceCompanies) {
             foreach (var insurance in convInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1240,7 +1239,7 @@ namespace Brady_s_Conversion_Program {
             newInsuranceCompanies.Clear();
         }
 
-        public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
+        public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<BillingLocation> locations, List<BillingLocation> newLocations) {
             foreach (var location in convLocations) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1458,11 +1457,11 @@ namespace Brady_s_Conversion_Program {
                             ssn = guarantor.Ssn;
                         }
                     }
-                    DateTime dob = minAcceptableDate;
+                    DateTime? dob = null;
                     if (guarantor.Dob != null && guarantor.Dob != "" && !int.TryParse(guarantor.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                            dob = isValidDate(dob);
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDate)) {
+                            dob = isValidDate(tempDate);
                         }
                     }
                     short? relationID = null;
@@ -1484,8 +1483,11 @@ namespace Brady_s_Conversion_Program {
                         isActive = true;
                     }
                     bool? guarantorIsPatient = null;
+                    if (guarantor.OldGuarantorAccount != "" && guarantor.OldGuarantorAccount != null) {
+                        guarantorIsPatient = true;
+                    }
                     long? guarantorIsPatientID = null;
-                    if (guarantor.OldGuarantorAccount != null && guarantor.OldGuarantorAccount != "") {
+                    if (guarantorIsPatient == true) {
                         guarantorIsPatient = true;
                         if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
                             guarantorIsPatientID = id;
@@ -1502,9 +1504,9 @@ namespace Brady_s_Conversion_Program {
                     // no lastModified in incoming tables
 
 
-                    var ffpmGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                    var guarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
-                    if (ffpmGuarantor == null) {
+                    if (guarantor == null) {
                         var newGuarantor = new Brady_s_Conversion_Program.ModelsA.DmgGuarantor {
                             PatientId = ffpmPatient.PatientId,
                             FirstName = TruncateString(guarantor.FirstName, 50),
@@ -1526,7 +1528,6 @@ namespace Brady_s_Conversion_Program {
                             IsGuarantorExistingPatient = guarantorIsPatient,
                             LastModifiedBy = null
                         };
-                        newGuarantors.Add(newGuarantor);
                         guarantors.Add(newGuarantor);
                     }
                 }
@@ -1543,21 +1544,20 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertAddress(List<Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
                 List<DmgPatientAddress> ffpmPatientAddresses, List<DmgOtherAddress> otherAddresses, List<ReferringProvider> referringProviders, List<Provider> convProviders,
-                    List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> ffpmGuarantors, List<MntSuffix> suffixXrefs,
+                    List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors, List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs,
                         List<DmgPatientAdditionalDetail> patientAdditionalDetails, List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
-
-            var newPatientAddresses = new List<DmgPatientAddress>();  // List to hold new DmgPatientAddress
-            var newOtherAddresses = new List<DmgOtherAddress>();  // List to hold new DmgOtherAddress
-
-            // Calculate the next available primary key for each type based on the current maximum
-            long nextPatientAddressId = ffpmPatientAddresses.Any() ? ffpmPatientAddresses.Max(a => a.PatientAddressId) + 1 : 1;
-            long nextOtherAddressId = otherAddresses.Any() ? otherAddresses.Max(a => a.AddressId) + 1 : 1;
+            var newOtherAddresses = new List<DmgOtherAddress>();
+            long patientAddressId = 1;
+            long otherAddressId = 1;
+            if (ffpmDbContext.DmgPatientAddresses.Any())
+                patientAddressId = ffpmDbContext.DmgPatientAddresses.Max(p => p.PatientAddressId) + 1;
+            if (ffpmDbContext.DmgOtherAddresses.Any())
+                otherAddressId = ffpmDbContext.DmgOtherAddresses.Max(p => p.AddressId) + 1;
 
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
-
                 try {
                     short? addressType = null;
                     var addressTypeXref = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive);
@@ -1587,10 +1587,12 @@ namespace Brady_s_Conversion_Program {
                         isActive = false;
                     }
 
-                    string? primaryFile = address.PrimaryFile ?? "";
+                    string? primaryFile = address.PrimaryFile;
+                    if (primaryFile == null) {
+                        primaryFile = "";
+                    }
                     switch (primaryFile.ToLower()) {
                         case "pat":
-                        case "":
                             var convPatient = convPatients.FirstOrDefault(p => p.Id.ToString() == address.PrimaryFileId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
@@ -1616,8 +1618,15 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            bool isPrimary = false, isAlternate = false, isEmergency = false, isPreferred = false;
-                            string zipExt = zipCode != null && zipCode.Length > 5 ? zipCode.Substring(5) : "";
+                            bool isPrimary = false;
+                            bool isAlternate = false;
+                            bool isEmergency = false;
+                            bool isPreferred = false;
+
+                            string zipExt = "";
+                            if (zipCode != null && zipCode.Length > 5) {
+                                zipExt = zipCode.Substring(5); // Extracts the substring starting at index 5 to the end of the string
+                            }
 
                             if (address.TypeOfAddress != null) {
                                 switch (address.TypeOfAddress.ToLower()) {
@@ -1631,14 +1640,16 @@ namespace Brady_s_Conversion_Program {
                                     case "emergency":
                                         isEmergency = true;
                                         break;
+                                    default:
+                                        break;
                                 }
                             }
 
-                            var ffpmOrig = ffpmPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId && p.IsPrimary == true));
+                            var ffpmOrig = ffpmPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId &&
+                                    p.IsPrimary == true)); // new address will be alternate if found
+
                             if (ffpmOrig == null) {
                                 var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
-                                    // Manually manage the identity key
-                                    PatientAddressId = nextPatientAddressId++,
                                     PatientId = ffpmPatient.PatientId,
                                     Address1 = TruncateString(address.Address1, 50),
                                     Address2 = TruncateString(address.Address2, 50),
@@ -1654,49 +1665,49 @@ namespace Brady_s_Conversion_Program {
                                     IsAlternateAddress = isAlternate,
                                     AddressType = addressType
                                 };
-                                newPatientAddresses.Add(newAddress);
-                                ffpmPatient.AddressId = newAddress.PatientAddressId;  // Use the locally managed ID
+                                ffpmPatientAddresses.Add(newAddress);
+                                if (isPrimary) {
+                                    ffpmPatient.AddressId = patientAddressId;
+                                }
+                                patientAddressId++;
                             }
                             break;
-
-                        case "guar":
                         case "guarantor":
+                        case "guar":
                             int primaryFileId = -1;
                             if (int.TryParse(address.PrimaryFileId, out int primaryFileIdInt)) {
                                 primaryFileId = primaryFileIdInt;
                             }
+                            if (primaryFileId == -1) {
+                                logger.Log($"Conv: Conv Guarantor ID not found for address (guarantor) with ID: {address.Id}");
+                                continue;
+                            }
                             var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == primaryFileId);
                             if (convGuarantor == null) {
-                                logger.Log($"Conv: Conv Guarantor not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: Conv Guarantor not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
                             convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
-                                logger.Log($"Conv: Conv Patient not found for guarantor with ID: {address.Id}");
+                                logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmPatient2 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
-                            if (ffpmPatient2 == null) {
-                                logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {address.Id}");
+                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            if (ffpmPatient == null) {
+                                logger.Log($"Conv: FFPM Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(p => p.PatientId == ffpmPatient2.PatientId);
-                            if (ffpmGuarantor == null) {
-                                logger.Log($"Conv: FFPM Guarantor not found for address with ID: {address.Id}");
+                            var guarantor = guarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
+                            if (guarantor == null) {
+                                logger.Log($"Conv: FFPM Guarantor not found for address (guarantor) with ID: {address.Id}: FFPM Patient ID: {ffpmPatient.PatientId}");
                                 continue;
                             }
 
-                            var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId);
-                            if (otherAddress != null) {
-                                logger.Log($"Conv: Conv duplicate guarantor address with ID: {address.Id}");
-                                continue;
-                            }
+                            var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == guarantor.GuarantorId);
 
                             if (otherAddress == null) {
                                 var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
-                                    // Manually manage the identity key
-                                    AddressId = nextOtherAddressId++,
-                                    OwnerId = ffpmGuarantor.GuarantorId,
+                                    OwnerId = guarantor.GuarantorId,
                                     Address1 = TruncateString(address.Address1, 50),
                                     Address2 = TruncateString(address.Address2, 50),
                                     City = TruncateString(address.City, 50),
@@ -1707,11 +1718,11 @@ namespace Brady_s_Conversion_Program {
                                     AddressType = addressType,
                                     OwnerType = 0
                                 };
-                                newOtherAddresses.Add(newOtherAddress);
-                                ffpmGuarantor.AddressId = newOtherAddress.AddressId;  // Use the locally managed ID
+                                otherAddresses.Add(newOtherAddress);
+                                guarantor.AddressId = otherAddressId;
+                                otherAddressId++;
                             }
                             break;
-
                         case "loc":
                             var billingLocation = convLocations.FirstOrDefault(l => l.OldLocationId == address.PrimaryFileId);
                             if (billingLocation == null) {
@@ -1724,9 +1735,8 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
+
                             var newDmgOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
-                                // Manually manage the identity key
-                                AddressId = nextOtherAddressId++,
                                 OwnerId = ffpmLocation.LocationId,
                                 Address1 = TruncateString(address.Address1, 50),
                                 Address2 = TruncateString(address.Address2, 50),
@@ -1738,51 +1748,123 @@ namespace Brady_s_Conversion_Program {
                                 AddressType = addressType,
                                 OwnerType = 1
                             };
-                            newOtherAddresses.Add(newDmgOtherAddress);
-                            ffpmLocation.AddressId = newDmgOtherAddress.AddressId;  // Use the locally managed ID
+                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
+                            ffpmDbContext.SaveChanges();
+                            otherAddresses.Add(newDmgOtherAddress);
+                            ffpmLocation.AddressId = otherAddressId;
+                            otherAddressId++;
                             break;
+                        case "prov":
+                            var convProvider = convProviders.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
 
-                        // Repeat for other cases...
+                            if (convProvider == null) {
+                                logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
+                                continue;
+                            }
 
+                            var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode);
+                            if (ffpmProvider == null) {
+                                logger.Log($"Conv: FFPM Provider not found for address with ID: {address.Id}");
+                                continue;
+                            }
+
+                            var newDmgOtherAddress2 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = ffpmProvider.ProviderId,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                CountryId = country,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 1
+                            };
+                            otherAddresses.Add(newDmgOtherAddress2);
+                            ffpmProvider.ProviderAddressId = otherAddressId;
+                            otherAddressId++;
+                            break;
+                        case "ref":
+                            var convReferral = referrals.FirstOrDefault(r => r.Id.ToString() == address.PrimaryFileId);
+                            if (convReferral == null) {
+                                logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
+                                continue;
+                            }
+
+                            var ffpmReferral = referringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
+                                                            && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
+                            if (ffpmReferral == null) {
+                                logger.Log($"Conv: FFPM Referral not found for address with ID: {address.Id}");
+                                continue;
+                            }
+
+                            var newDmgOtherAddress3 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = ffpmReferral.RefProviderId,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                CountryId = country,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 1
+                            };
+                            newOtherAddresses.Add(newDmgOtherAddress3);
+                            // appears to only be connected by the address and not the referring provider
+                            break;
+                        case "emp":
+                            var localconvPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == address.PrimaryFileId);
+                            if (localconvPatient == null) {
+                                logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
+                                continue;
+                            }
+                            var ffpmPatient3 = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == localconvPatient.Id.ToString()) ||
+                                                p.FirstName == localconvPatient.FirstName && p.LastName == localconvPatient.LastName && p.MiddleName == localconvPatient.MiddleName);
+                            if (ffpmPatient3 == null) {
+                                logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
+                                continue;
+                            }
+                            var ffpmPatientAdditional2 = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient3.PatientId);
+                            if (ffpmPatientAdditional2 == null) {
+                                logger.Log($"Conv: Conv Patient additional not found for address with ID: {address.Id}");
+                                continue;
+                            }
+
+                            var newOtherAddress4 = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                OwnerId = ffpmPatientAdditional2.PatientAdditionalDetailsId,
+                                Address1 = TruncateString(address.Address1, 50),
+                                Address2 = TruncateString(address.Address2, 50),
+                                City = TruncateString(address.City, 50),
+                                StateId = state,
+                                CountryId = country,
+                                Zip = TruncateString(zipCode, 10),
+                                IsActive = isActive,
+                                AddressType = addressType,
+                                OwnerType = 1
+                            };
+                            otherAddresses.Add(newOtherAddress4);
+                            ffpmPatientAdditional2.EmployerAddressId = otherAddressId;
+                            otherAddressId++;
+                            break;
                         default:
-                            logger.Log($"Conv: Unexpected PrimaryFile type for address with ID: {address.Id}");
+                            logger.Log($"Conv: Conv Primary File not found for address with ID: {address.Id}");
                             break;
-                    }
+                    };
                 }
                 catch (Exception ex) {
-                    logger.Log($"Conv: An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
+                    logger.Log($"Conv: Conv An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
                 }
             }
-
-            // Add all new records in bulk to the context
-            ffpmDbContext.DmgPatientAddresses.AddRange(newPatientAddresses.Select(addr => {
-                addr.PatientAddressId = 0;  // Reset PatientAddressId to 0 or default to let the DB handle it
-                return addr;
-            }).ToList());
-
-            ffpmDbContext.DmgOtherAddresses.AddRange(newOtherAddresses.Select(addr => {
-                addr.AddressId = 0;  // Reset AddressId to 0 or default to let the DB handle it
-                return addr;
-            }).ToList());
-
+            ffpmDbContext.DmgPatientAddresses.UpdateRange(ffpmPatientAddresses);
+            ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
             ffpmDbContext.SaveChanges();
-
-            // Update local lists with generated IDs if needed
-            newPatientAddresses.ForEach(addr => addr.PatientAddressId = ffpmPatientAddresses.Max(a => a.PatientAddressId) + 1);
-            newOtherAddresses.ForEach(addr => addr.AddressId = otherAddresses.Max(a => a.AddressId) + 1);
-
-            ffpmPatientAddresses.AddRange(newPatientAddresses);
-            otherAddresses.AddRange(newOtherAddresses);
-
-            // Clear lists after saving
-            newPatientAddresses.Clear();
-            newOtherAddresses.Clear();
             ffpmPatientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
         }
 
-        public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs, 
+        public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs,
                 List<DmgPatientAlert> patientAlerts, List<DmgPatientAlert> newPatientAlerts) {
             foreach (var patientAlert in convPatientAlerts) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1876,8 +1958,8 @@ namespace Brady_s_Conversion_Program {
             newPatientAlerts.Clear();
         }
 
-        public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient>ffpmPatients, List<ImgPatientDocument> patientDocuments, 
+        public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<ImgPatientDocument> patientDocuments,
                 List<ImgPatientDocument> newPatientDocuments) {
             foreach (var patientDocument in convPatientDocuments) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1938,11 +2020,10 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.ImgPatientDocuments.AddRange(newPatientDocuments);
             ffpmDbContext.SaveChanges();
-            patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
             newPatientDocuments.Clear();
         }
 
-        public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
+        public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
                 List<DmgPatientInsurance> patientInsurances, List<DmgPatientInsurance> newPatientInsurances) {
             foreach (var patientInsurance in convPatientInsurances) {
@@ -1951,7 +2032,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int oldpatientId = 0;
-                    if (int.TryParse(patientInsurance.OldPatientId, out int temp)) {
+                    if (int.TryParse(patientInsurance.PrimaryId, out int temp)) {
                         oldpatientId = temp;
                     }
                     else {
@@ -2044,6 +2125,7 @@ namespace Brady_s_Conversion_Program {
                             active = false;
                         }
                     }
+                    bool? isSubscriberExistingPatient = null;
 
 
                     var ffpmOrig = patientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
@@ -2063,7 +2145,8 @@ namespace Brady_s_Conversion_Program {
                             IsAdditionalInsurance = isAdditional,
                             InsuranceCompanyId = insCompId,
                             PolicyNumber = TruncateString(patientInsurance.Cert, 50),
-                            GroupId = TruncateString(patientInsurance.Group, 50)
+                            GroupId = TruncateString(patientInsurance.Group, 50),
+                            IsSubscriberExistingPatient = isSubscriberExistingPatient
                         };
                         patientInsurances.Add(newPatientInsurance);
                         newPatientInsurances.Add(newPatientInsurance);
@@ -2075,12 +2158,11 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientInsurances.AddRange(newPatientInsurances);
             ffpmDbContext.SaveChanges();
-            patientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
             newPatientInsurances.Clear();
         }
 
-        public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes, 
+        public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes,
                 List<DmgPatientRemark> newPatientNotes) {
             foreach (var patientNote in convPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2161,7 +2243,6 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatientRemarks.AddRange(newPatientNotes);
             ffpmDbContext.SaveChanges();
-            patientNotes = ffpmDbContext.DmgPatientRemarks.ToList();
             newPatientNotes.Clear();
         }
 
@@ -2169,12 +2250,9 @@ namespace Brady_s_Conversion_Program {
             ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Patient> convPatients,
                 List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs,
                     List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers) {
-
-            var newSubscribers = new List<DmgSubscriber>();  // List to hold new DmgSubscribers
-            var updatedPatientInsurances = new List<DmgPatientInsurance>();  // List to hold updated DmgPatientInsurance
-
-            // Calculate the next available SubscriberId based on the current maximum in the subscribers list
-            long nextSubscriberId = subscribers.Any() ? subscribers.Max(s => s.SubscriberId) + 1 : 1;
+            long subscriberId = 1;
+            if (ffpmDbContext.DmgSubscribers.Any())
+                subscriberId = ffpmDbContext.DmgSubscribers.Max(p => p.SubscriberId) + 1;
 
             foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2186,19 +2264,20 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
-                    int policyPatientID = convPatientInsurance.Id;
+                    string? policyPatientID = convPatientInsurance.PrimaryId;
 
-                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id == policyPatientID);
+                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == policyPatientID);
                     if (convPolicyPatient == null) {
                         logger.Log($"Conv: Conv Patient (subject) not found for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
                     var FFPMPolicyPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPolicyPatient.Id.ToString());
                     if (FFPMPolicyPatient == null) {
-                        logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, can't find patient)");
+                        logger.Log($"Conv: FFPM Patient (subject) not found for policy holder with ID: {policyHolder.Id} (patient insurance has subscriber as patient, cant find patient)");
                         continue;
                     }
-                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => p.PatientId == FFPMPolicyPatient.PatientId && p.PolicyNumber == convPatientInsurance.Cert);
+                    var ffpmPatientInsurance = ffpmPatientInsurances.FirstOrDefault(p => (p.PatientId == FFPMPolicyPatient.PatientId && p.PolicyNumber == convPatientInsurance.Cert) ||
+                        ((p.PolicyNumber == "" || p.PolicyNumber == null) && (convPatientInsurance.Cert == null || convPatientInsurance.Cert == "")));
                     if (ffpmPatientInsurance == null) {
                         logger.Log($"Conv: FFPM Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
@@ -2206,9 +2285,9 @@ namespace Brady_s_Conversion_Program {
                     int? patientInsuranceID = (int)ffpmPatientInsurance.PatientInsuranceId;
                     if (ffpmPatientInsurance.IsSubscriberExistingPatient == true) {
                         ffpmPatientInsurance.SubscriberId = FFPMPolicyPatient.PatientId;
-                        updatedPatientInsurances.Add(ffpmPatientInsurance);
                         continue;
                     }
+
 
                     long patientId = FFPMPolicyPatient.PatientId;
                     string? ssn = null;
@@ -2220,7 +2299,7 @@ namespace Brady_s_Conversion_Program {
                     DateTime? dob = null;
                     if (convPolicyPatient.Dob != null && convPolicyPatient.Dob != "" && !int.TryParse(convPolicyPatient.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(convPolicyPatient.Dob, dateFormats,
-                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dobDate)) {
+                                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dobDate)) {
                             dob = isValidDate(dobDate);
                         }
                     }
@@ -2240,8 +2319,11 @@ namespace Brady_s_Conversion_Program {
                         relationshipID = relationshipXref.RelationshipId;
                     }
                     short? genderID = null;
+                    // no genderID in incoming tables
                     short? employmentStatusID = null;
+                    // no employmentStatusID in incoming tables
                     long? addressID = null;
+                    // no addressID in incoming tables
                     string ssn1 = "";
                     if (convPolicyPatient.Ssn != null) {
                         if (ssnRegex.IsMatch(convPolicyPatient.Ssn)) {
@@ -2249,16 +2331,20 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     DateTime? addedDate = null;
+                    // no addedDate in incoming tables
                     DateTime? removedDate = null;
+                    // no removedDate in incoming tables
                     DateTime? lastModifiedDate = null;
+                    // no lastModifiedDate in incoming tables
                     int? lastModifiedBy = null;
+                    // no lastModifiedBy in incoming tables
                     bool active = true;
                     if (convPolicyPatient.Active != null && (convPolicyPatient.Active.ToLower() == "no" || convPolicyPatient.Active == "0")) {
                         active = false;
                     }
 
+
                     var newSubscriber = new Brady_s_Conversion_Program.ModelsA.DmgSubscriber {
-                        // Do not set SubscriberId explicitly
                         PatientId = patientId,
                         FirstName = TruncateString(convPolicyPatient.FirstName, 50),
                         LastName = TruncateString(convPolicyPatient.LastName, 50),
@@ -2277,41 +2363,18 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedBy = lastModifiedBy,
                         IsActive = active
                     };
+                    subscribers.Add(newSubscriber);
 
-                    // Manually manage the identity key
-                    newSubscriber.SubscriberId = nextSubscriberId++;  // Assign a new local primary key
-                    newSubscribers.Add(newSubscriber);  // Add to local list
-
-                    // Use the locally managed SubscriberId
                     ffpmPatientInsurance.SubscriberId = newSubscriber.SubscriberId;
-                    updatedPatientInsurances.Add(ffpmPatientInsurance);
+                    subscriberId++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the policy holder with ID: {policyHolder.Id}. Error: {ex.Message}");
                 }
             }
-
-            // Reset SubscriberId before saving to let the DB generate the actual ID
-            ffpmDbContext.DmgSubscribers.AddRange(newSubscribers.Select(sub => {
-                sub.SubscriberId = 0;  // Reset SubscriberId to 0 or default to let the DB handle it
-                return sub;
-            }).ToList());
-
-            ffpmDbContext.DmgPatientInsurances.UpdateRange(updatedPatientInsurances);
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances);
+            ffpmDbContext.DmgSubscribers.UpdateRange(subscribers);
             ffpmDbContext.SaveChanges();
-
-            // Update the manually managed list after SaveChanges
-            newSubscribers.ForEach(sub =>
-            {
-                // Check if the 'subscribers' list is empty before calling Max
-                sub.SubscriberId = subscribers.Any() ? subscribers.Max(s => s.SubscriberId) + 1 : 1;
-            });
-            subscribers.AddRange(newSubscribers);
-
-            // Clear lists after saving
-            newSubscribers.Clear();
-            updatedPatientInsurances.Clear();
-            ffpmPatientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
         }
 
         public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -2572,12 +2635,11 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgProviders.AddRange(newProviders);
             ffpmDbContext.SaveChanges();
-            ffpmProviders = ffpmDbContext.DmgProviders.ToList();
             newProviders.Clear();
         }
 
         public static void ConvertRecall(List<Models.Recall> convRecalls, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations, 
+            List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations,
                 List<SchedulingPatientRecallList> patientRecallLists, List<SchedulingPatientRecallList> newPatientRecallLists) {
             foreach (var recall in convRecalls) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2658,7 +2720,6 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingPatientRecallLists.AddRange(newPatientRecallLists);
             ffpmDbContext.SaveChanges();
-            patientRecallLists = ffpmDbContext.SchedulingPatientRecallLists.ToList();
             newPatientRecallLists.Clear();
         }
 
@@ -2715,12 +2776,11 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingAppointmentTypes.AddRange(newSchedulingAppointmentTypes);
             ffpmDbContext.SaveChanges();
-            schedulingAppointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
             newSchedulingAppointmentTypes.Clear();
         }
 
         public static void ConvertReferral(List<Models.Referral> convReferrals, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders, 
+            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders,
                 List<ReferringProvider> newReferringProviders, List<DmgProvider> newProviders) {
             foreach (var referral in convReferrals) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -3017,8 +3077,6 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
             newReferringProviders.Clear();
             newProviders.Clear();
-            ffpmProviders = ffpmDbContext.DmgProviders.ToList();
-            referringProviders = ffpmDbContext.ReferringProviders.ToList();
         }
 
         public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -3073,30 +3131,21 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.SchedulingCodes.AddRange(newSchedulingCodes);
             ffpmDbContext.SaveChanges();
-            schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
             newSchedulingCodes.Clear();
         }
 
         // IMPORTANT, THE OWNER TYPES IN OTHER ADDRESSES IS A SHORT, BUT I CANNOT FIND THE REFERENCE FOR SHORTS TO ACTUAL VALUE. WILL NEED TO CHANGE ACCORDINGLY.
         public static void ConvertPhone(List<Models.Phone> phones, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientAddress> patientAddresses, List<Provider> convProviders,
-                List<DmgProvider> ffpmProviders, List<DmgOtherAddress> otherAddresses, List<DmgGuarantor> ffpmGuarantors, List<BillingLocation> locations,
-                    List<Referral> convReferrals, List<Guarantor> convGuarantors, List<Models.Location> convLocations) {
-
-            var updatedPatientAddresses = new List<DmgPatientAddress>();
-            var updatedOtherAddresses = new List<DmgOtherAddress>();
-
+            List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientAddress> patientAddresses) {
             foreach (var phone in phones) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
-
                 try {
                     if (phone.PrimaryFile == null) {
                         logger.Log($"Conv: Conv Primary file not found for phone with ID: {phone.Id}");
                         continue;
                     }
-
                     switch (phone.PrimaryFile.Trim().ToUpper()) {
                         case "PAT":
                             var convPatient = convPatients.FirstOrDefault(cp => cp.Id == phone.PrimaryFileId);
@@ -3104,13 +3153,11 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             DmgPatientAddress? address = patientAddresses.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                             if (address == null) {
                                 logger.Log($"Conv: FFPM Patient Address not found for phone with ID: {phone.Id}");
@@ -3138,194 +3185,171 @@ namespace Brady_s_Conversion_Program {
                                 address.CellPhone = TruncateString(phone.PhoneNumber, 15);
                                 address.Extension = TruncateString(phone.Extension, 10);
                             }
-
-                            updatedPatientAddresses.Add(address);
                             break;
-
                         case "PROV":
-                            var convProvider = convProviders.FirstOrDefault(p => p.Id == phone.PrimaryFileId);
+                            var convProvider = convDbContext.Providers.FirstOrDefault(p => p.Id == phone.PrimaryFileId);
                             if (convProvider == null) {
                                 logger.Log($"Conv: Conv Provider not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode);
+                            var ffpmProvider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode); // given that this is what it sounds like
                             if (ffpmProvider == null) {
                                 logger.Log($"Conv: FFPM Provider not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             short ownerType = 1;
-                            var ffpmProviderAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmProvider.ProviderId && p.OwnerType == ownerType);
+                            /*
+                             SWAP OUT THE OWNER TYPE SHORTS
+                            I need the table or reference for the owner types first
+                            var ownerType = ownerTypes.FirstOrDefault(o => o.OwnerType == "PROV");
+                             */
+                            var ffpmProviderAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmProvider.ProviderId && p.OwnerType == ownerType);
                             if (ffpmProviderAddress == null) {
                                 logger.Log($"Conv: FFPM Provider Address not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             if (phone.Type == null) {
                                 ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
                             }
-                            else {
-                                switch (phone.Type.ToLower()) {
-                                    case "home":
-                                        ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "work":
-                                        ffpmProviderAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "cell":
-                                        ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    default:
-                                        ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmProviderAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmProviderAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
                             }
-
-                            updatedOtherAddresses.Add(ffpmProviderAddress);
                             break;
-
                         case "REF":
-                            var convReferral = convReferrals.FirstOrDefault(r => r.Id == phone.PrimaryFileId);
+                            var convReferral = convDbContext.Referrals.FirstOrDefault(r => r.Id == phone.PrimaryFileId);
                             if (convReferral == null) {
                                 logger.Log($"Conv: Conv Referral not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            var ffpmReferral = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convReferral.OldReferralCode && p.IsReferringProvider == true);
+                            var ffpmReferral = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderCode == convReferral.OldReferralCode && p.IsReferringProvider == true);
                             if (ffpmReferral == null) {
                                 logger.Log($"Conv: FFPM Referral not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             ownerType = 2;
-                            var ffpmReferralAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.ProviderId && p.OwnerType == ownerType);
+                            // ALSO SWAP OUT HERE
+                            var ffpmReferralAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.ProviderId && p.OwnerType == ownerType);
                             if (ffpmReferralAddress == null) {
                                 logger.Log($"Conv: FFPM Referral Address not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             if (phone.Type == null) {
                                 ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
                             }
-                            else {
-                                switch (phone.Type.ToLower()) {
-                                    case "home":
-                                        ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "work":
-                                        ffpmReferralAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "cell":
-                                        ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    default:
-                                        ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmReferralAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmReferralAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
                             }
-
-                            updatedOtherAddresses.Add(ffpmReferralAddress);
                             break;
-
                         case "GUAR":
-                            var convGuarantor = convGuarantors.FirstOrDefault(g => g.Id == phone.PrimaryFileId);
+                            var convGuarantor = convDbContext.Guarantors.FirstOrDefault(g => g.Id == phone.PrimaryFileId);
                             if (convGuarantor == null) {
                                 logger.Log($"Conv: Conv Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            convPatient = convPatients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
+                            convPatient = convDbContext.Patients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            ffpmPatient = ffpmDbContext.DmgPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: FFPM Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            var ffpmGuarantor = ffpmGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
-                            if (ffpmGuarantor == null) {
+                            var guarantor = ffpmDbContext.DmgGuarantors.FirstOrDefault(g => g.PatientId == ffpmPatient.PatientId);
+                            if (guarantor == null) {
                                 logger.Log($"Conv: FFPM Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             ownerType = 3;
-                            var ffpmGuarantorAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmGuarantor.GuarantorId && p.OwnerType == ownerType);
-                            if (ffpmGuarantorAddress == null) {
+                            // ALSO SWAP OUT HERE
+                            var guarantorAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == guarantor.GuarantorId && p.OwnerType == ownerType);
+                            if (guarantorAddress == null) {
                                 logger.Log($"Conv: FFPM Guarantor Address not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             if (phone.Type == null) {
-                                ffpmGuarantorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                ffpmGuarantorAddress.Extension = TruncateString(phone.Extension, 10);
+                                guarantorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                guarantorAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
                             }
-
-                            updatedOtherAddresses.Add(ffpmGuarantorAddress);
                             break;
-
                         case "LOC":
-                            var convLocation = convLocations.FirstOrDefault(l => l.Id == phone.PrimaryFileId);
+                            var convLocation = convDbContext.Locations.FirstOrDefault(l => l.Id == phone.PrimaryFileId);
                             if (convLocation == null) {
                                 logger.Log($"Conv: Conv Location not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
-                            var ffpmLocation = locations.FirstOrDefault(l => l.Npi == convLocation.Npi || l.Name == convLocation.LocationName);
+                            var ffpmLocation = ffpmDbContext.BillingLocations.FirstOrDefault(l => l.Npi == convLocation.Npi || l.Name == convLocation.LocationName);
                             if (ffpmLocation == null) {
                                 logger.Log($"Conv: FFPM Location not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             ownerType = 4;
-                            var ffpmLocationAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == ffpmLocation.LocationId && p.OwnerType == ownerType);
+                            // ALSO SWAP OUT HERE
+                            var ffpmLocationAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmLocation.LocationId && p.OwnerType == ownerType);
                             if (ffpmLocationAddress == null) {
                                 logger.Log($"Conv: FFPM Location Address not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-
                             if (phone.Type == null) {
                                 ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                return;
                             }
-                            else {
-                                switch (phone.Type.ToLower()) {
-                                    case "home":
-                                        ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "work":
-                                        ffpmLocationAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "cell":
-                                        ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    default:
-                                        ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                }
+                            switch (phone.Type.ToLower()) {
+                                case "home":
+                                    ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    ffpmLocationAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "cell":
+                                    ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    ffpmLocationAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
                             }
-
-                            updatedOtherAddresses.Add(ffpmLocationAddress);
                             break;
-
                         default:
                             logger.Log($"Conv: Address PrimaryFile is unexpected type of {phone.PrimaryFile} on phone with ID: {phone.Id}");
                             break;
@@ -3335,17 +3359,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the phone with ID: {phone.Id}. Error: {ex.Message}");
                 }
             }
-
-            // Update all modified addresses at once
-            ffpmDbContext.DmgPatientAddresses.UpdateRange(updatedPatientAddresses);
-            ffpmDbContext.DmgOtherAddresses.UpdateRange(updatedOtherAddresses);
             ffpmDbContext.SaveChanges();
-
-            // Clear lists after saving
-            updatedPatientAddresses.Clear();
-            updatedOtherAddresses.Clear();
-            patientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
-            updatedOtherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
@@ -3367,123 +3381,146 @@ namespace Brady_s_Conversion_Program {
             var medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
             var allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
             var contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
+            var diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
+            var diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
+            var visitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
+            var examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
+            var familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
+            var iops = eyeMDDbContext.EmrvisitIops.ToList();
+            var patientNotes = eyeMDDbContext.EmrptNotes.ToList();
+            var planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
+            var procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
+            var procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
+            var refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
+            var rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
+            var surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
+            var techs = eyeMDDbContext.EmrvisitTeches.ToList();
+            var tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
 
-            var newVisits = new List<Emrvisit>();
-            var newVisitOrders = new List<EmrvisitOrder>();
-            var newVisitDoctors = new List<EmrvisitDoctor>();
-            var newMedicalHistories = new List<EmrvisitMedicalHistory>();
-            var newAllergies = new List<EmrvisitAllergy>();
-            var newContactLenses = new List<EmrvisitContactLense>();
 
-
-            /*// not even using this
+            // not even using this
             foreach (var patient in eHRDbContext.Patients) {
                 PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patients converted.\n");
-            });*/
+            });
 
             foreach (var visit in eHRDbContext.Visits) {
-                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, newVisits, eyeMDVisitOrders, newVisitOrders);
+                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders);
             }
-            eyeMDDbContext.AddRange(newVisits);
+            eyeMDDbContext.UpdateRange(visits);
             eyeMDDbContext.SaveChanges();
-            newVisits.Clear();
+            visits = eyeMDDbContext.Emrvisits.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
-            foreach (var visitOrders in eHRDbContext.VisitOrders) {
-                VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, 
-                    eyeMDVisitOrders, newVisitOrders);
+            foreach (var visitOrder in eHRDbContext.VisitOrders) {
+                VisitOrdersConvert(visitOrder, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients,
+                    eyeMDVisitOrders, visitOrders);
             }
-            eyeMDDbContext.AddRange(newVisitOrders);
+            eyeMDDbContext.UpdateRange(visitOrders);
             eyeMDDbContext.SaveChanges();
-            newVisitOrders.Clear();
+            eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit orders converted.\n");
             });
 
             foreach (var visitDoctor in eHRDbContext.VisitDoctors) {
-                VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, newVisitDoctors, ehrVisits, visits, eyeMDPatients);
+                VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
             }
-            eyeMDDbContext.AddRange(newVisitDoctors);
+            eyeMDDbContext.UpdateRange(visitDoctors);
             eyeMDDbContext.SaveChanges();
-            newVisitDoctors.Clear();
+            visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit doctors converted.\n");
             });
 
             foreach (var medicalHistory in eHRDbContext.MedicalHistories) {
-                MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, newMedicalHistories, medicalHistories);
+                MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories);
             }
-            eyeMDDbContext.AddRange(newMedicalHistories);
+            eyeMDDbContext.UpdateRange(medicalHistories);
             eyeMDDbContext.SaveChanges();
-            newMedicalHistories.Clear();
+            medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
             foreach (Allergy allergy in eHRDbContext.Allergies) {
-                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies, newAllergies);
+                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies, visits, eyeMDPatients);
             }
-            eyeMDDbContext.AddRange(newAllergies);
+            eyeMDDbContext.UpdateRange(allergies);
             eyeMDDbContext.SaveChanges();
-            newAllergies.Clear();
+            allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
             });
 
-            /*// only for in in case we need it, we shouldnt
+            // only for in in case we need it, we shouldnt
             foreach (var appointments in eHRDbContext.Appointments) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
-            });*/
+            });
 
             foreach (var contactLens in eHRDbContext.ContactLens) {
-                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses, newContactLenses);
+                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
             }
-            eyeMDDbContext.AddRange(newContactLenses);
+            eyeMDDbContext.UpdateRange(contactLenses);
             eyeMDDbContext.SaveChanges();
-            newContactLenses.Clear();
+            contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
 
             foreach (var diagCodePool in eHRDbContext.DiagCodePools) {
-                DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress);
+                DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
             }
+            eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
+            eyeMDDbContext.SaveChanges();
+            diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag code pools converted.\n");
             });
 
             foreach (var diagTest in eHRDbContext.DiagTests) {
-                DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress);
+                DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagTests);
             }
+            eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
+            eyeMDDbContext.SaveChanges();
+            diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag tests converted.\n");
             });
 
             foreach (var examCondition in eHRDbContext.ExamConditions) {
-                ExamConditionsConvert(examCondition, eHRDbContext, eyeMDDbContext, logger, progress);
+                ExamConditionsConvert(examCondition, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, examConditions);
             }
+            eyeMDDbContext.EmrvisitExamConditions.UpdateRange(examConditions);
+            eyeMDDbContext.SaveChanges();
+            examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Exam conditions converted.\n");
             });
 
             foreach (var familyHistory in eHRDbContext.FamilyHistories) {
-                FamilyHistoriesConvert(familyHistory, eHRDbContext, eyeMDDbContext, logger, progress);
+                FamilyHistoriesConvert(familyHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, familyHistories);
             }
+            eyeMDDbContext.EmrvisitFamilyHistories.UpdateRange(familyHistories);
+            eyeMDDbContext.SaveChanges();
+            familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Family histories converted.\n");
             });
 
             foreach (var iop in eHRDbContext.Iops) {
-                IopsConvert(iop, eHRDbContext, eyeMDDbContext, logger, progress);
+                IopsConvert(iop, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, iops);
             }
+            eyeMDDbContext.EmrvisitIops.UpdateRange(iops);
+            eyeMDDbContext.SaveChanges();
+            iops = eyeMDDbContext.EmrvisitIops.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("IOPs converted.\n");
             });
@@ -3496,36 +3533,51 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var patientNote in eHRDbContext.PatientNotes) {
-                PatientNotesConvert(patientNote, eHRDbContext, eyeMDDbContext, logger, progress);
+                PatientNotesConvert(patientNote, eHRDbContext, eyeMDDbContext, logger, progress, patientNotes, ehrVisits, visits, eyeMDPatients);
             }
+            eyeMDDbContext.EmrptNotes.UpdateRange(patientNotes);
+            eyeMDDbContext.SaveChanges();
+            patientNotes = eyeMDDbContext.EmrptNotes.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient notes converted.\n");
             });
 
             foreach (var planNarrative in eHRDbContext.PlanNarratives) {
-                PlanNarrativesConvert(planNarrative, eHRDbContext, eyeMDDbContext, logger, progress);
+                PlanNarrativesConvert(planNarrative, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, planNarratives);
             }
+            eyeMDDbContext.EmrvisitPlanNarratives.UpdateRange(planNarratives);
+            eyeMDDbContext.SaveChanges();
+            planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Plan narratives converted.\n");
             });
 
             foreach (var procDiagPool in eHRDbContext.ProcDiagPools) {
-                ProcDiagPoolsConvert(procDiagPool, eHRDbContext, eyeMDDbContext, logger, progress);
+                ProcDiagPoolsConvert(procDiagPool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procDiagPools);
             }
+            eyeMDDbContext.EmrvisitProcCodePoolDiags.UpdateRange(procDiagPools);
+            eyeMDDbContext.SaveChanges();
+            procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc diag pools converted.\n");
             });
 
             foreach (var procPool in eHRDbContext.ProcPools) {
-                ProcPoolsConvert(procPool, eHRDbContext, eyeMDDbContext, logger, progress);
+                ProcPoolsConvert(procPool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procCodePools, eyeMDPatients);
             }
+            eyeMDDbContext.EmrvisitProcCodePools.UpdateRange(procCodePools);
+            eyeMDDbContext.SaveChanges();
+            procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc pools converted.\n");
             });
 
             foreach (var refraction in eHRDbContext.Refractions) {
-                RefractionsConvert(refraction, eHRDbContext, eyeMDDbContext, logger, progress);
+                RefractionsConvert(refraction, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, refractions);
             }
+            eyeMDDbContext.EmrvisitRefractions.UpdateRange(refractions);
+            eyeMDDbContext.SaveChanges();
+            refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Refractions converted.\n");
             });
@@ -3538,29 +3590,41 @@ namespace Brady_s_Conversion_Program {
             });
 
             foreach (var rx in eHRDbContext.RxMedications) {
-                RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress);
+                RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
             }
+            eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
+            eyeMDDbContext.SaveChanges();
+            rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Rx medications converted.\n");
             });
 
             foreach (var surgHistory in eHRDbContext.SurgHistories) {
-                SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress);
+                SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
             }
+            eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
+            eyeMDDbContext.SaveChanges();
+            surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Surg histories converted.\n");
             });
 
             foreach (var tech in eHRDbContext.Teches) {
-                TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress);
+                TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, techs);
             }
+            eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
+            eyeMDDbContext.SaveChanges();
+            techs = eyeMDDbContext.EmrvisitTeches.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Techs converted.\n");
             });
 
             foreach (var tech2 in eHRDbContext.Tech2s) {
-                Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress);
+                Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, tech2s);
             }
+            eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
+            eyeMDDbContext.SaveChanges();
+            tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Tech2s converted.\n");
             });
@@ -3573,13 +3637,14 @@ namespace Brady_s_Conversion_Program {
             try {
                 // This is only in case the situation arises where we do eyemd and not ffpm
                 return;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the patient with ID: {patient.Id}. Error: {e.Message}");
             }
         }
 
         public static void AllergiesConvert(ModelsC.Allergy allergy, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitAllergy> allergies, List<EmrvisitAllergy> newAllergies) {
+            List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -3596,7 +3661,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {allergy.Id}");
                 }
                 else if (ptId == null) {
-                    var eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
@@ -3607,7 +3672,7 @@ namespace Brady_s_Conversion_Program {
                 else if (visitId == null) {
                     logger.Log($"EHR: EHR VisitID not found for visit order with ID: {allergy.Id}");
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
                     logger.Log($"EHR: EHR Patient not found for visit order with ID: {allergy.Id}");
                     return;
@@ -3667,16 +3732,15 @@ namespace Brady_s_Conversion_Program {
                         // No add and save as per instruction
                     };
                     allergies.Add(newVisitAllergy);
-                    newAllergies.Add(newVisitAllergy);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
             }
         }
 
-        public static void MedicalHistoriesConvert(ModelsC.MedicalHistory medicalHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, 
-            ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, 
-                List<EmrvisitMedicalHistory> newMedicalHistories) {
+        public static void MedicalHistoriesConvert(ModelsC.MedicalHistory medicalHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
+            ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -3706,7 +3770,6 @@ namespace Brady_s_Conversion_Program {
                 }
                 var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
@@ -3944,7 +4007,6 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedEmpId = lastModifiedEmpId,
                         Location2OnsetVisitId = null
                     };
-                    newMedicalHistories.Add(newMedicalHistory);
                     medicalHistories.Add(newMedicalHistory);
                 }
             }
@@ -3953,15 +4015,14 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, 
-            ProgressBar progress, List<Emrvisit> visits, List<Emrvisit> newVisits, List<EmrvisitOrder> eyeMDVisitOrders, 
-                List<EmrvisitOrder> newVisitOrders) {
+        public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
+            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
             try {
                 int ptId = 0;
-                if (visit.PtId !<= -1) {
+                if (visit.PtId! <= -1) {
                     ptId = visit.PtId;
                 }
                 if (ptId == 0) {
@@ -4266,20 +4327,21 @@ namespace Brady_s_Conversion_Program {
                     TabDrawing = tabDrawing,
                     Wu2visitTypeId = null
                 };
-                newVisits.Add(newVisit);
                 visits.Add(newVisit);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
             }
         }
 
-        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, 
+        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext,
             ILogger logger, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
-                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> newVisitOrders) {
+                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
-            try {DateTime? dosdate = null;
+            try {
+                DateTime? dosdate = null;
                 if (visitOrder.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(visitOrder.Dosdate, dateFormats,
@@ -4302,19 +4364,19 @@ namespace Brady_s_Conversion_Program {
                     return;
                 }
                 int? ptId = null;
-                if (visitOrder.PtId !<= -1) {
+                if (visitOrder.PtId! <= -1) {
                     ptId = visitOrder.PtId;
                 }
                 var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
                     else {
                         logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
                 string description = "";
@@ -4392,7 +4454,7 @@ namespace Brady_s_Conversion_Program {
                     orderRemarks = visitOrder.OrderRemarks;
                 }
                 string insertGUID = Guid.NewGuid().ToString(); // This looks like it is supposed to be some large string. I don't see where it is coming from
-                
+
                 string studyInstanceUID = "";
                 if (visitOrder.StudyInstanceUid != null) {
                     studyInstanceUID = visitOrder.StudyInstanceUid;
@@ -4493,15 +4555,16 @@ namespace Brady_s_Conversion_Program {
                         RefProviderId = refProvId,
                         RefProviderOrganizationName = refProvOrgName
                     };
-                    newVisitOrders.Add(newVisitOrder);
+                    visitOrders.Add(newVisitOrder);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
             }
         }
 
         public static void VisitDoctorsConvert(ModelsC.VisitDoctor visitDoctor, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitDoctor> visitDoctors, List<EmrvisitDoctor> newVisitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4519,7 +4582,7 @@ namespace Brady_s_Conversion_Program {
                     visitId = visitDoctor.VisitId;
                 }
                 int? ptId = null;
-                if (visitDoctor.PtId !<= -1) {
+                if (visitDoctor.PtId! <= -1) {
                     ptId = visitDoctor.PtId;
                 }
 
@@ -4543,7 +4606,7 @@ namespace Brady_s_Conversion_Program {
                 else if (visitId == null) {
                     logger.Log($"EHR: EHR VisitID not found for visit order with ID: {visitDoctor.Id}");
                 }
-                                
+
                 var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
                     eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
@@ -4771,10 +4834,10 @@ namespace Brady_s_Conversion_Program {
                         SentToWebPortal = null,
                         SentToWebPortalDays = null
                     };
-                    newVisitDoctors.Add(newVisitDoctor);
                     visitDoctors.Add(newVisitDoctor);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit doctor with ID: {visitDoctor.Id}. Error: {e.Message}");
             }
         }
@@ -4785,13 +4848,14 @@ namespace Brady_s_Conversion_Program {
             });
             try {
                 // this table is only for the situation where we do eyemd and not ffpm
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the appointment with ID: {appointment.Id}. Error: {e.Message}");
             }
         }
 
         public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses, List<EmrvisitContactLense> newContactLenses) {
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4818,7 +4882,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                 }
                 int ptId = -1;
-                if (contactLens.PtId !<= -1) {
+                if (contactLens.PtId! <= -1) {
                     ptId = contactLens.PtId;
                 }
                 var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
@@ -5480,14 +5544,15 @@ namespace Brady_s_Conversion_Program {
                         OrVaNOs = TruncateString(orVaNOs, 50)
                     };
                     contactLenses.Add(newContactLens);
-                    newContactLenses.Add(newContactLens);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
             }
         }
 
-        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagCodePool> diagCodePools) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -5504,22 +5569,22 @@ namespace Brady_s_Conversion_Program {
                 if (diagCodePool.VisitId != null) {
                     visitId = diagCodePool.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with PTID: {diagCodePool.PtId}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with VisitID: {diagCodePool.VisitId}");
                 }
                 int? ptId = null;
-                if (diagCodePool.PtId !<= -1) {
-                    ptId = diagCodePool.PtId;
+                if (eyeMDVisit != null && diagCodePool.PtId! <= -1) {
+                    ptId = eyeMDVisit.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
@@ -5527,7 +5592,8 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"EHR: EHR Visit not found for diag code pool with ID: {diagCodePool.VisitId}");
                         return;
                     }
-                } else {
+                }
+                else {
                     ptId = diagCodePool.PtId;
                 }
 
@@ -5623,7 +5689,7 @@ namespace Brady_s_Conversion_Program {
                         resolvedRequestedProcId1 = locum;
                     }
                 }
-                DateTime? resolvedDate1 = null; 
+                DateTime? resolvedDate1 = null;
                 if (diagCodePool.ResolvedDate1 != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
@@ -5676,98 +5742,59 @@ namespace Brady_s_Conversion_Program {
                 int? createdEmpId = null;
                 // no createdEmpId
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = diagCodePools.FirstOrDefault(dc => dc.PtId == ptId && dc.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.VisitId = visitId;
-                    ehrOrig.PtId = ptId;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.DiagText = TruncateString(diagText, int.MaxValue);
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.Modifier = TruncateString(modifier, 50);
-                    ehrOrig.SourceField = TruncateString(sourceField, 50);
-                    ehrOrig.IsActive = isactive; // smallint, no truncation needed
-                    ehrOrig.CodeIcd10 = TruncateString(codeICD10, 50);
-                    ehrOrig.CodeSnomed = TruncateString(codeSNOMED, 50);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.RequestedProcedureId = requestedProcId;
-                    ehrOrig.Location1 = TruncateString(location1, 50);
-                    ehrOrig.OnsetMonth1 = TruncateString(onsetMonth1, 10);
-                    ehrOrig.OnsetDay1 = TruncateString(onsetDay1, 10);
-                    ehrOrig.OnsetYear1 = TruncateString(onsetYear1, 10);
-                    ehrOrig.Location2 = TruncateString(location2, 50);
-                    ehrOrig.Location2OnsetVisitId = location2onsetVisitId;
-                    ehrOrig.OnsetMonth2 = TruncateString(onsetMonth2, 10);
-                    ehrOrig.OnsetDay2 = TruncateString(onsetDay2, 10);
-                    ehrOrig.OnsetYear2 = TruncateString(onsetYear2, 10);
-                    ehrOrig.IsResolved1 = isResolved1; // smallint, no truncation needed
-                    ehrOrig.ResolvedVisitId1 = resolvedVisitId1;
-                    ehrOrig.ResolvedRequestedProcedureId1 = resolvedRequestedProcId1;
-                    ehrOrig.ResolvedDate1 = resolvedDate1;
-                    ehrOrig.ResolveType1 = TruncateString(resolveType1, 75);
-                    ehrOrig.IsResolved2 = isResolved2; // smallint, no truncation needed
-                    ehrOrig.ResolvedVisitId2 = resolvedVisitId2;
-                    ehrOrig.ResolvedRequestedProcedureId2 = resolvedRequestedProc2;
-                    ehrOrig.ResolvedDate2 = resolvedDate2;
-                    ehrOrig.ResolveType2 = TruncateString(resolveType2, 75);
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.ConditionId = conditionId;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.Created = created;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.Dosdate = dosDate;
-                    eyeMDDbContext.SaveChanges();
+                    var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        ControlId = controlId,
+                        DiagText = TruncateString(diagText, int.MaxValue),
+                        Code = TruncateString(code, 50),
+                        Modifier = TruncateString(modifier, 50),
+                        SourceField = TruncateString(sourceField, 50),
+                        IsActive = isactive, // smallint, no truncation needed
+                        CodeIcd10 = TruncateString(codeICD10, 50),
+                        CodeSnomed = TruncateString(codeSNOMED, 50),
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        RequestedProcedureId = requestedProcId,
+                        Location1 = TruncateString(location1, 50),
+                        OnsetMonth1 = TruncateString(onsetMonth1, 10),
+                        OnsetDay1 = TruncateString(onsetDay1, 10),
+                        OnsetYear1 = TruncateString(onsetYear1, 10),
+                        Location2 = TruncateString(location2, 50),
+                        Location2OnsetVisitId = location2onsetVisitId,
+                        OnsetMonth2 = TruncateString(onsetMonth2, 10),
+                        OnsetDay2 = TruncateString(onsetDay2, 10),
+                        OnsetYear2 = TruncateString(onsetYear2, 10),
+                        IsResolved1 = isResolved1, // smallint, no truncation needed
+                        ResolvedVisitId1 = resolvedVisitId1,
+                        ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
+                        ResolvedDate1 = resolvedDate1,
+                        ResolveType1 = TruncateString(resolveType1, 75),
+                        IsResolved2 = isResolved2, // smallint, no truncation needed
+                        ResolvedVisitId2 = resolvedVisitId2,
+                        ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
+                        ResolvedDate2 = resolvedDate2,
+                        ResolveType2 = TruncateString(resolveType2, 75),
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        ConditionId = conditionId,
+                        LastModified = lastModified,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        Dosdate = dosDate
+                    };
+
+                    diagCodePools.Add(newDiagCodePool);
                 }
-
-                var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    ControlId = controlId,
-                    DiagText = TruncateString(diagText, int.MaxValue),
-                    Code = TruncateString(code, 50),
-                    Modifier = TruncateString(modifier, 50),
-                    SourceField = TruncateString(sourceField, 50),
-                    IsActive = isactive, // smallint, no truncation needed
-                    CodeIcd10 = TruncateString(codeICD10, 50),
-                    CodeSnomed = TruncateString(codeSNOMED, 50),
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    RequestedProcedureId = requestedProcId,
-                    Location1 = TruncateString(location1, 50),
-                    OnsetMonth1 = TruncateString(onsetMonth1, 10),
-                    OnsetDay1 = TruncateString(onsetDay1, 10),
-                    OnsetYear1 = TruncateString(onsetYear1, 10),
-                    Location2 = TruncateString(location2, 50),
-                    Location2OnsetVisitId = location2onsetVisitId,
-                    OnsetMonth2 = TruncateString(onsetMonth2, 10),
-                    OnsetDay2 = TruncateString(onsetDay2, 10),
-                    OnsetYear2 = TruncateString(onsetYear2, 10),
-                    IsResolved1 = isResolved1, // smallint, no truncation needed
-                    ResolvedVisitId1 = resolvedVisitId1,
-                    ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
-                    ResolvedDate1 = resolvedDate1,
-                    ResolveType1 = TruncateString(resolveType1, 75),
-                    IsResolved2 = isResolved2, // smallint, no truncation needed
-                    ResolvedVisitId2 = resolvedVisitId2,
-                    ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
-                    ResolvedDate2 = resolvedDate2,
-                    ResolveType2 = TruncateString(resolveType2, 75),
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    ConditionId = conditionId,
-                    LastModified = lastModified,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    Dosdate = dosDate
-                };
-
-                eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
             }
         }
 
-        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -5784,26 +5811,31 @@ namespace Brady_s_Conversion_Program {
                 if (diagTest.VisitId != null) {
                     visitId = diagTest.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag test with ID: {diagTest.Id}");
                 }
-                int? ptId = null;
-                if (diagTest.PtId !<= -1) {
-                    ptId = diagTest.PtId;
+                else {
+                    visitId = eyeMDVisit.VisitId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
-
+                int? ptId = null;
+                if (eyeMDVisit != null && diagTest.PtId! <= -1) {
+                    ptId = eyeMDVisit.PtId;
+                }
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                if (eyeMDPatient != null) {
+                    ptId = eyeMDPatient.PtId;
+                }
                 if (ptId == null || ptId <= -1) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
                         return;
                     }
@@ -5993,67 +6025,44 @@ namespace Brady_s_Conversion_Program {
                 #endregion diagTests
 
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = diagTests.FirstOrDefault(dt => dt.PtId == ptId && dt.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50);
-                    ehrOrig.GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50);
-                    ehrOrig.GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50);
-                    ehrOrig.GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50);
-                    ehrOrig.GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50);
-                    ehrOrig.GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50);
-                    ehrOrig.GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50);
-                    ehrOrig.GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50);
-                    ehrOrig.GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50);
-                    ehrOrig.GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50);
-                    ehrOrig.GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50);
-                    ehrOrig.GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50);
-                    ehrOrig.GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50);
-                    ehrOrig.GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50);
-                    ehrOrig.GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50);
-                    ehrOrig.GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50);
-                    ehrOrig.GonioComments = TruncateString(gonioComments, int.MaxValue);
-                    ehrOrig.GonioPigmentOd = TruncateString(gonioPigmentOd, 255);
-                    ehrOrig.GonioPigmentOs = TruncateString(gonioPigmentOs, 255);
-                    // All additional motor balance and sensory motor attributes as detailed above
-                    eyeMDDbContext.SaveChanges();
+                    var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
+                        VisitId = visitId,
+                        PtId = ptId,
+                        Dosdate = dosDate,
+                        GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
+                        GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
+                        GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
+                        GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
+                        GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
+                        GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
+                        GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
+                        GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
+                        GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
+                        GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
+                        GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
+                        GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
+                        GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
+                        GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
+                        GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
+                        GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
+                        GonioComments = TruncateString(gonioComments, int.MaxValue),
+                        GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
+                        GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
+                        // Continue mapping all other properties as needed
+                    };
+                    diagTests.Add(newDiagTest);
                 }
-
-                var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
-                    VisitId = visitId,
-                    PtId = ptId,
-                    Dosdate = dosDate,
-                    GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
-                    GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
-                    GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
-                    GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
-                    GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
-                    GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
-                    GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
-                    GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
-                    GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
-                    GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
-                    GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
-                    GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
-                    GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
-                    GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
-                    GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
-                    GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
-                    GonioComments = TruncateString(gonioComments, int.MaxValue),
-                    GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
-                    GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
-                    // Continue mapping all other properties as needed
-                };
-                eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
             }
         }
 
-        public static void ExamConditionsConvert(ModelsC.ExamCondition examCondition, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ExamConditionsConvert(ModelsC.ExamCondition examCondition, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitExamCondition> examConditions) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6070,22 +6079,21 @@ namespace Brady_s_Conversion_Program {
                 if (examCondition.VisitId != null) {
                     visitId = examCondition.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for exam conditions with ID: {examCondition.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Exam Condition with ID: {examCondition.Id}");
                 }
                 int ptId = -1;
-                if (examCondition.PtId !<= -1) {
+                if (examCondition.PtId! <= -1) {
                     ptId = examCondition.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     }
@@ -6093,7 +6101,8 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"EHR: EHR PatientID not found for Exam Condition with ID: {examCondition.Id}");
                         return;
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6111,46 +6120,39 @@ namespace Brady_s_Conversion_Program {
                 if (examCondition.Eye != null) {
                     if (examCondition.Eye == "R") {
                         eye = "OD";
-                    } else if (examCondition.Eye == "L") {
+                    }
+                    else if (examCondition.Eye == "L") {
                         eye = "OS";
-                    } else {
+                    }
+                    else {
                         eye = examCondition.Eye;
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitExamConditions.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = examConditions.FirstOrDefault(ec => ec.PtId == ptId && ec.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Comment = TruncateString(examCondition.Comment, int.MaxValue);
-                    ehrOrig.Condition = TruncateString(condition, int.MaxValue);
-                    ehrOrig.Laterality = TruncateString(eye, 10);
-                    ehrOrig.ConditionId = conditionId;
-                    ehrOrig.LocationId = locationId;
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
+                        Snomed = null,
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Comment = TruncateString(examCondition.Comment, int.MaxValue),
+                        Condition = TruncateString(condition, int.MaxValue),
+                        Laterality = TruncateString(eye, 10),
+                        ConditionId = conditionId,
+                        LocationId = locationId
+                    };
+                    examConditions.Add(newExamCondition);
                 }
-
-                var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
-                    Snomed = null,
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Comment = TruncateString(examCondition.Comment, int.MaxValue),
-                    Condition = TruncateString(condition, int.MaxValue),
-                    Laterality = TruncateString(eye, 10),
-                    ConditionId = conditionId,
-                    LocationId = locationId
-                };
-                eyeMDDbContext.EmrvisitExamConditions.Add(newExamCondition);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
             }
         }
 
-        public static void FamilyHistoriesConvert(ModelsC.FamilyHistory familyHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void FamilyHistoriesConvert(ModelsC.FamilyHistory familyHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitFamilyHistory> familyHistories) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6159,7 +6161,7 @@ namespace Brady_s_Conversion_Program {
                 if (familyHistory.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(familyHistory.Dosdate, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dosDate = tempDateTime;
                     }
                 }
@@ -6167,28 +6169,29 @@ namespace Brady_s_Conversion_Program {
                 if (familyHistory.VisitId != null) {
                     visitId = familyHistory.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for family history with ID: {familyHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Family History with ID: {familyHistory.Id}");
                 }
                 int? ptId = null;
-                if (familyHistory.PtId !<= -1) {
+                if (familyHistory.PtId! <= -1) {
                     ptId = familyHistory.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Family History with ID: {familyHistory.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6225,44 +6228,32 @@ namespace Brady_s_Conversion_Program {
                     codeSnomed = familyHistory.CodeSnomed;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitFamilyHistories.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = familyHistories.FirstOrDefault(fh => fh.PtId == ptId && fh.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Description = TruncateString(description, 255);
-                    ehrOrig.Relation = TruncateString(relation, 50);
-                    ehrOrig.Comments = TruncateString(comments, int.MaxValue);
-                    ehrOrig.Age = TruncateString(age, 50);
-                    ehrOrig.Status = TruncateString(status, 50);
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.CodeIcd10 = TruncateString(codeIcd10, 50);
-                    ehrOrig.CodeSnomed = TruncateString(codeSnomed, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Description = TruncateString(description, 255),
+                        Relation = TruncateString(relation, 50),
+                        Comments = TruncateString(comments, int.MaxValue),
+                        Age = TruncateString(age, 50),
+                        Status = TruncateString(status, 50),
+                        Code = TruncateString(code, 50),
+                        CodeIcd10 = TruncateString(codeIcd10, 50),
+                        CodeSnomed = TruncateString(codeSnomed, 50)
+                    };
+                    familyHistories.Add(newFamilyHistory);
                 }
-
-                var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Description = TruncateString(description, 255),
-                    Relation = TruncateString(relation, 50),
-                    Comments = TruncateString(comments, int.MaxValue),
-                    Age = TruncateString(age, 50),
-                    Status = TruncateString(status, 50),
-                    Code = TruncateString(code, 50),
-                    CodeIcd10 = TruncateString(codeIcd10, 50),
-                    CodeSnomed = TruncateString(codeSnomed, 50)
-                };
-                eyeMDDbContext.EmrvisitFamilyHistories.Add(newFamilyHistory);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
             }
         }
 
-        public static void IopsConvert(ModelsC.Iop iop, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void IopsConvert(ModelsC.Iop iop, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> patients, List<EmrvisitIop> iops) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6279,28 +6270,29 @@ namespace Brady_s_Conversion_Program {
                 if (iop.VisitId != null) {
                     visitId = iop.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for iop with ID: {iop.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for IOP with ID: {iop.Id}");
                 }
                 int? ptId = null;
-                if (iop.PtId !<= -1) {
+                if (iop.PtId! <= -1) {
                     ptId = iop.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = patients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for IOP with ID: {iop.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6349,41 +6341,27 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitIops.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = iops.FirstOrDefault(i => i.PtId == ptId && i.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.IopOd = TruncateString(iopOd, 50);
-                    ehrOrig.IopOs = TruncateString(iopOs, 50);
-                    ehrOrig.IopdeviceUsed = TruncateString(iopDeviceUsed, 50);
-                    ehrOrig.IoptimeTaken = iopTimeTaken; // datetime, no truncation needed
-                    ehrOrig.Iopnotes = TruncateString(iopNotes, int.MaxValue);
-                    ehrOrig.IopccOd = TruncateString(iopCcOd, 50);
-                    ehrOrig.IopccOs = TruncateString(iopCcOs, 50);
-                    ehrOrig.CornealHysteresisOd = cornealHysteresisOd; // decimal, no truncation needed
-                    ehrOrig.CornealHysteresisOs = cornealHysteresisOs; // decimal, no truncation needed
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        IopOd = TruncateString(iopOd, 50),
+                        IopOs = TruncateString(iopOs, 50),
+                        IopdeviceUsed = TruncateString(iopDeviceUsed, 50),
+                        IoptimeTaken = iopTimeTaken, // datetime, no truncation needed
+                        Iopnotes = TruncateString(iopNotes, int.MaxValue),
+                        IopccOd = TruncateString(iopCcOd, 50),
+                        IopccOs = TruncateString(iopCcOs, 50),
+                        CornealHysteresisOd = cornealHysteresisOd, // decimal, no truncation needed
+                        CornealHysteresisOs = cornealHysteresisOs // decimal, no truncation needed
+                    };
+                    iops.Add(newIop);
                 }
-
-                var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    IopOd = TruncateString(iopOd, 50),
-                    IopOs = TruncateString(iopOs, 50),
-                    IopdeviceUsed = TruncateString(iopDeviceUsed, 50),
-                    IoptimeTaken = iopTimeTaken, // datetime, no truncation needed
-                    Iopnotes = TruncateString(iopNotes, int.MaxValue),
-                    IopccOd = TruncateString(iopCcOd, 50),
-                    IopccOs = TruncateString(iopCcOs, 50),
-                    CornealHysteresisOd = cornealHysteresisOd, // decimal, no truncation needed
-                    CornealHysteresisOs = cornealHysteresisOs // decimal, no truncation needed
-                };
-                eyeMDDbContext.EmrvisitIops.Add(newIop);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
             }
         }
@@ -6401,12 +6379,14 @@ namespace Brady_s_Conversion_Program {
                 // assuming this is a spare table, like patients and appointments
 
                 eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {e.Message}");
             }
         }
 
-        public static void PatientNotesConvert(ModelsC.PatientNote patientNote, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void PatientNotesConvert(ModelsC.PatientNote patientNote, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<EmrptNote> patientNotes, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6415,28 +6395,29 @@ namespace Brady_s_Conversion_Program {
                 if (patientNote.VisitId != null) {
                     visitId = patientNote.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for patient note with ID: {patientNote.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.PtId);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.PtId);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Patient Note with ID: {patientNote.Id}");
                 }
                 int? ptId = null;
-                if (patientNote.PtId !<= -1) {
+                if (patientNote.PtId! <= -1) {
                     ptId = patientNote.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Patient Note with ID: {patientNote.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6465,35 +6446,27 @@ namespace Brady_s_Conversion_Program {
 
                 // there is no showInVisitSummary in the source table, and there is no visit id in the eyemd table
 
-                var ehrOrig = eyeMDDbContext.EmrptNotes.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId);
+                var ehrOrig = patientNotes.FirstOrDefault(pn => pn.PtId == ptId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.CreatedDate = createdDate;
-                    ehrOrig.EmpId = empId;
-                    ehrOrig.ShowInVisitSummary = showInVisitSummary; // smallint, no truncation needed
-                    ehrOrig.InsertGuid = TruncateString(guid, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
+                        PtId = ptId,
+                        Notes = TruncateString(notes, int.MaxValue),
+                        CreatedDate = createdDate,
+                        EmpId = empId,
+                        ShowInVisitSummary = showInVisitSummary, // smallint, no truncation needed
+                        InsertGuid = TruncateString(guid, 50)
+                    };
+                    patientNotes.Add(newPatientNote);
                 }
-
-                var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
-                    PtId = ptId,
-                    Notes = TruncateString(notes, int.MaxValue),
-                    CreatedDate = createdDate,
-                    EmpId = empId,
-                    ShowInVisitSummary = showInVisitSummary, // smallint, no truncation needed
-                    InsertGuid = TruncateString(guid, 50)
-                };
-                eyeMDDbContext.EmrptNotes.Add(newPatientNote);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
             }
         }
 
-        public static void PlanNarrativesConvert(ModelsC.PlanNarrative planNarrative, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void PlanNarrativesConvert(ModelsC.PlanNarrative planNarrative, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitPlanNarrative> planNarratives) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6510,30 +6483,31 @@ namespace Brady_s_Conversion_Program {
                 if (planNarrative.VisitId != null) {
                     visitId = planNarrative.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for plan narrative with ID: {planNarrative.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Plan Narrative with ID: {planNarrative.Id}");
                     return;
                 }
                 int ptId = -1;
-                if (planNarrative.PtId !<= -1) {
+                if (planNarrative.PtId! <= -1) {
                     ptId = planNarrative.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Plan Narrative with ID: {planNarrative.Id}");
                         return;
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6582,48 +6556,34 @@ namespace Brady_s_Conversion_Program {
                 string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitPlanNarratives.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = planNarratives.FirstOrDefault(n => n.PtId == ptId && n.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.VisitDoctorId = visitDoctorId;
-                    ehrOrig.Snomedcode = TruncateString(snomedCode, 50);
-                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
-                    ehrOrig.Icd10code = TruncateString(ICD10Code, 50);
-                    ehrOrig.Icd9code = TruncateString(ICD9Code, 50);
-                    ehrOrig.NarrativeHeader = TruncateString(narrativeHeader, 255);
-                    ehrOrig.NarrativeText = TruncateString(narrativeText, int.MaxValue);
-                    ehrOrig.NarrativeType = TruncateString(narrativeType, 50);
-                    ehrOrig.DisplayOrder = displayOrder;
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        VisitDoctorId = visitDoctorId,
+                        Snomedcode = TruncateString(snomedCode, 50),
+                        VisitDiagCodePoolId = visitDiagCodePoolId,
+                        Icd10code = TruncateString(ICD10Code, 50),
+                        Icd9code = TruncateString(ICD9Code, 50),
+                        NarrativeHeader = TruncateString(narrativeHeader, 255),
+                        NarrativeText = TruncateString(narrativeText, int.MaxValue),
+                        NarrativeType = TruncateString(narrativeType, 50),
+                        DisplayOrder = displayOrder,
+                        InsertGuid = TruncateString(insertGUID, 50)
+                    };
+                    planNarratives.Add(newPlanNarrative);
                 }
-
-                var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    VisitDoctorId = visitDoctorId,
-                    Snomedcode = TruncateString(snomedCode, 50),
-                    VisitDiagCodePoolId = visitDiagCodePoolId,
-                    Icd10code = TruncateString(ICD10Code, 50),
-                    Icd9code = TruncateString(ICD9Code, 50),
-                    NarrativeHeader = TruncateString(narrativeHeader, 255),
-                    NarrativeText = TruncateString(narrativeText, int.MaxValue),
-                    NarrativeType = TruncateString(narrativeType, 50),
-                    DisplayOrder = displayOrder,
-                    InsertGuid = TruncateString(insertGUID, 50)
-                };
-                eyeMDDbContext.EmrvisitPlanNarratives.Add(newPlanNarrative);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
             }
         }
 
-        public static void ProcDiagPoolsConvert(ModelsC.ProcDiagPool procDiagPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ProcDiagPoolsConvert(ModelsC.ProcDiagPool procDiagPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePoolDiag> procDiagPools) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6640,25 +6600,25 @@ namespace Brady_s_Conversion_Program {
                 if (procDiagPool.VisitId != null) {
                     visitId = procDiagPool.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for proc diag code pool with ID: {procDiagPool.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
                     return;
                 }
                 int? ptId = null;
-                if (procDiagPool.PtId !<= -1) {
+                if (procDiagPool.PtId! <= -1) {
                     ptId = procDiagPool.PtId;
                 }
                 if (ptId == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
                     }
                 }
@@ -6686,38 +6646,29 @@ namespace Brady_s_Conversion_Program {
                 string insertGUID = Guid.NewGuid().ToString();
                 // no insertGUID in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitProcCodePoolDiags.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = procDiagPools.FirstOrDefault(pcp => pcp.PtId == ptId && pcp.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.VisitProcCodePoolId = visitProcCodePoolId;
-                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
-                    ehrOrig.RequestedProcedureId = requestedProcId;
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        ControlId = controlId,
+                        VisitProcCodePoolId = visitProcCodePoolId,
+                        VisitDiagCodePoolId = visitDiagCodePoolId,
+                        RequestedProcedureId = requestedProcId,
+                        InsertGuid = TruncateString(insertGUID, 50)
+                    };
+                    procDiagPools.Add(newProcDiagPool);
                 }
-
-                var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    ControlId = controlId,
-                    VisitProcCodePoolId = visitProcCodePoolId,
-                    VisitDiagCodePoolId = visitDiagCodePoolId,
-                    RequestedProcedureId = requestedProcId,
-                    InsertGuid = TruncateString(insertGUID, 50)
-                };
-                eyeMDDbContext.EmrvisitProcCodePoolDiags.Add(newProcDiagPool);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
             }
         }
 
-        public static void ProcPoolsConvert(ModelsC.ProcPool procPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void ProcPoolsConvert(ModelsC.ProcPool procPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePool> procCodePools, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6726,36 +6677,37 @@ namespace Brady_s_Conversion_Program {
                 if (procPool.Dosdate != null) {
                     DateTime tempDateTime;
                     if (DateTime.TryParseExact(procPool.Dosdate, dateFormats,
-                                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                         dosDate = tempDateTime;
                     }
                 }
                 int? ptId = null;
-                if (procPool.PtId !<= -1) {
+                if (procPool.PtId! <= -1) {
                     ptId = procPool.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 int? visitId = null;
                 if (procPool.VisitId != null) {
                     visitId = procPool.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for proc pool with ID: {procPool.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Proc Pool with ID: {procPool.Id}");
                 }
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Proc Pool with ID: {procPool.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -6922,91 +6874,56 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitProcCodePools.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = procCodePools.FirstOrDefault(pc => pc.PtId == ptId && pc.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.ProcText = TruncateString(procText, 255);
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.Modifier = TruncateString(modifier, 50);
-                    ehrOrig.OriginalModifier = TruncateString(originalModifier, 50);
-                    ehrOrig.Location = TruncateString(location, 50);
-                    ehrOrig.SourceField = TruncateString(sourceField, 50);
-                    ehrOrig.IsBilled = isBilled; // smallint, no truncation needed
-                    ehrOrig.ProcLocationType = procLocationType;
-                    ehrOrig.ProcDiagTestComponents = procDiagTestComponents; // smallint, no truncation needed
-                    ehrOrig.NotPorelated = notPoRelated; // smallint, no truncation needed
-                    ehrOrig.ProcType = procType;
-                    ehrOrig.BillMultiProcId = billMultiProcId;
-                    ehrOrig.BillMultiProcControlId = billMultiProcControlId;
-                    ehrOrig.AdditionalModifier = TruncateString(additionalModifier, 50);
-                    ehrOrig.IsQr = isQr; // smallint, no truncation needed
-                    ehrOrig.EyeMdqrnum = TruncateString(eyeMDQRNum, 50);
-                    ehrOrig.Pqrsnum = TruncateString(pqrsNum, 50);
-                    ehrOrig.Nqfnum = TruncateString(nqfNum, 50);
-                    ehrOrig.Numerator = numerator;
-                    ehrOrig.Denominator = denominator;
-                    ehrOrig.IsHidden = isHidden; // smallint, no truncation needed
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.Units = units;
-                    ehrOrig.RequestedProcedureId = requestedProcedureId;
-                    ehrOrig.SentInVisit = sentInVisit; // smallint, no truncation needed
-                    ehrOrig.SourceRecordId = sourceRecordId;
-                    ehrOrig.InitialPatientPopulation = initialPatientPopulation;
-                    ehrOrig.DenominatorExclusion = denominatorExclusion;
-                    ehrOrig.DenominatorException = denominatorException;
-                    ehrOrig.BillingOrder = billingOrder;
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
+                        Qrcomponent = TruncateString(qrComponent, 50),
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        ControlId = controlId,
+                        ProcText = TruncateString(procText, 255),
+                        Code = TruncateString(code, 50),
+                        Modifier = TruncateString(modifier, 50),
+                        OriginalModifier = TruncateString(originalModifier, 50),
+                        Location = TruncateString(location, 50),
+                        SourceField = TruncateString(sourceField, 50),
+                        IsBilled = isBilled, // smallint, no truncation needed
+                        ProcLocationType = procLocationType,
+                        ProcDiagTestComponents = procDiagTestComponents, // smallint, no truncation needed
+                        NotPorelated = notPoRelated, // smallint, no truncation needed
+                        ProcType = procType,
+                        BillMultiProcId = billMultiProcId,
+                        BillMultiProcControlId = billMultiProcControlId,
+                        AdditionalModifier = TruncateString(additionalModifier, 50),
+                        IsQr = isQr, // smallint, no truncation needed
+                        EyeMdqrnum = TruncateString(eyeMDQRNum, 50),
+                        Pqrsnum = TruncateString(pqrsNum, 50),
+                        Nqfnum = TruncateString(nqfNum, 50),
+                        Numerator = numerator,
+                        Denominator = denominator,
+                        IsHidden = isHidden, // smallint, no truncation needed
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        Units = units,
+                        RequestedProcedureId = requestedProcedureId,
+                        SentInVisit = sentInVisit, // smallint, no truncation needed
+                        SourceRecordId = sourceRecordId,
+                        InitialPatientPopulation = initialPatientPopulation,
+                        DenominatorExclusion = denominatorExclusion,
+                        DenominatorException = denominatorException,
+                        BillingOrder = billingOrder
+                    };
+                    procCodePools.Add(newProcPool);
                 }
-
-                var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
-                    Qrcomponent = TruncateString(qrComponent, 50),
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    ControlId = controlId,
-                    ProcText = TruncateString(procText, 255),
-                    Code = TruncateString(code, 50),
-                    Modifier = TruncateString(modifier, 50),
-                    OriginalModifier = TruncateString(originalModifier, 50),
-                    Location = TruncateString(location, 50),
-                    SourceField = TruncateString(sourceField, 50),
-                    IsBilled = isBilled, // smallint, no truncation needed
-                    ProcLocationType = procLocationType,
-                    ProcDiagTestComponents = procDiagTestComponents, // smallint, no truncation needed
-                    NotPorelated = notPoRelated, // smallint, no truncation needed
-                    ProcType = procType,
-                    BillMultiProcId = billMultiProcId,
-                    BillMultiProcControlId = billMultiProcControlId,
-                    AdditionalModifier = TruncateString(additionalModifier, 50),
-                    IsQr = isQr, // smallint, no truncation needed
-                    EyeMdqrnum = TruncateString(eyeMDQRNum, 50),
-                    Pqrsnum = TruncateString(pqrsNum, 50),
-                    Nqfnum = TruncateString(nqfNum, 50),
-                    Numerator = numerator,
-                    Denominator = denominator,
-                    IsHidden = isHidden, // smallint, no truncation needed
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    Units = units,
-                    RequestedProcedureId = requestedProcedureId,
-                    SentInVisit = sentInVisit, // smallint, no truncation needed
-                    SourceRecordId = sourceRecordId,
-                    InitialPatientPopulation = initialPatientPopulation,
-                    DenominatorExclusion = denominatorExclusion,
-                    DenominatorException = denominatorException,
-                    BillingOrder = billingOrder
-                };
-                eyeMDDbContext.EmrvisitProcCodePools.Add(newProcPool);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
             }
         }
 
-        public static void RefractionsConvert(ModelsC.Refraction refraction, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void RefractionsConvert(ModelsC.Refraction refraction, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitRefraction> refractions) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7023,30 +6940,31 @@ namespace Brady_s_Conversion_Program {
                 if (refraction.VisitId != null) {
                     visitId = refraction.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for refraction with ID: {refraction.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Refraction with ID: {refraction.Id}");
                     return;
                 }
                 int ptId = -1;
-                if (refraction.PtId !<= -1) {
+                if (refraction.PtId! <= -1) {
                     ptId = refraction.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Refraction with ID: {refraction.Id}");
                         return;
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -7183,95 +7101,54 @@ namespace Brady_s_Conversion_Program {
                 string prismTypeOs = "";
                 // no prismTypeOs in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitRefractions.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = refractions.FirstOrDefault(r => r.PtId == ptId && r.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.RefractionClass = TruncateString(refractionClass, 5);
-                    ehrOrig.RefractionType = TruncateString(refractionType, 50);
-                    ehrOrig.SphereOd = TruncateString(sphereOd, 50);
-                    ehrOrig.SphereOs = TruncateString(sphereOs, 50);
-                    ehrOrig.CylinderOd = TruncateString(cylinderOd, 50);
-                    ehrOrig.CylinderOs = TruncateString(cylinderOs, 50);
-                    ehrOrig.AxisOd = TruncateString(axisOd, 50);
-                    ehrOrig.AxisOs = TruncateString(axisOs, 50);
-                    ehrOrig.BifocalAddOd = TruncateString(bifocalAddOd, 50);
-                    ehrOrig.BifocalAddOs = TruncateString(bifocalAddOs, 50);
-                    ehrOrig.PrismTypeOd = TruncateString(prismTypeOd, 255);
-                    ehrOrig.PrismTypeOs = TruncateString(prismTypeOs, 255);
-                    ehrOrig.Prism360Od = TruncateString(prism360Od, 50);
-                    ehrOrig.Prism360Os = TruncateString(prism360Os, 50);
-                    ehrOrig.DirectionOd = TruncateString(directionHod, 50);
-                    ehrOrig.DirectionOs = TruncateString(directionHos, 50);
-                    ehrOrig.PdDistOd = TruncateString(pdDistOd, 50);
-                    ehrOrig.PdDistOs = TruncateString(pdDistOs, 50);
-                    ehrOrig.PdNearOd = TruncateString(pdNearOd, 50);
-                    ehrOrig.PdNearOs = TruncateString(pdNearOs, 50);
-                    ehrOrig.Age = TruncateString(age, 50);
-                    ehrOrig.VaDOd = TruncateString(vaDOd, 50);
-                    ehrOrig.VaDOs = TruncateString(vaDOs, 50);
-                    ehrOrig.VaDOu = TruncateString(vaDOu, 50);
-                    ehrOrig.VaNOd = TruncateString(vaNOd, 50);
-                    ehrOrig.VaNOs = TruncateString(vaNOs, 50);
-                    ehrOrig.VaNOu = TruncateString(vaNOu, 50);
-                    ehrOrig.VaIOd = TruncateString(vaIOd, 50);
-                    ehrOrig.VaIOs = TruncateString(vaIOs, 50);
-                    ehrOrig.VaIOu = TruncateString(vaIOu, 50);
-                    ehrOrig.Expires = TruncateString(expires, 50);
-                    ehrOrig.Remarks = TruncateString(remarks, int.MaxValue);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 40);
-                    ehrOrig.Printed = printed; // bit, no truncation needed
-                    ehrOrig.SentToOptical = sentToOptical; // bit, no truncation needed
-                    ehrOrig.EnteredBy = TruncateString(enteredBy, 200);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        RefractionClass = TruncateString(refractionClass, 5),
+                        RefractionType = TruncateString(refractionType, 50),
+                        SphereOd = TruncateString(sphereOd, 50),
+                        SphereOs = TruncateString(sphereOs, 50),
+                        CylinderOd = TruncateString(cylinderOd, 50),
+                        CylinderOs = TruncateString(cylinderOs, 50),
+                        AxisOd = TruncateString(axisOd, 50),
+                        AxisOs = TruncateString(axisOs, 50),
+                        BifocalAddOd = TruncateString(bifocalAddOd, 50),
+                        BifocalAddOs = TruncateString(bifocalAddOs, 50),
+                        PrismTypeOd = TruncateString(prismTypeOd, 255),
+                        PrismTypeOs = TruncateString(prismTypeOs, 255),
+                        Prism360Od = TruncateString(prism360Od, 50),
+                        Prism360Os = TruncateString(prism360Os, 50),
+                        DirectionOd = TruncateString(directionHod, 50),
+                        DirectionOs = TruncateString(directionHos, 50),
+                        PdDistOd = TruncateString(pdDistOd, 50),
+                        PdDistOs = TruncateString(pdDistOs, 50),
+                        PdNearOd = TruncateString(pdNearOd, 50),
+                        PdNearOs = TruncateString(pdNearOs, 50),
+                        Age = TruncateString(age, 50),
+                        VaDOd = TruncateString(vaDOd, 50),
+                        VaDOs = TruncateString(vaDOs, 50),
+                        VaDOu = TruncateString(vaDOu, 50),
+                        VaNOd = TruncateString(vaNOd, 50),
+                        VaNOs = TruncateString(vaNOs, 50),
+                        VaNOu = TruncateString(vaNOu, 50),
+                        VaIOd = TruncateString(vaIOd, 50),
+                        VaIOs = TruncateString(vaIOs, 50),
+                        VaIOu = TruncateString(vaIOu, 50),
+                        Expires = TruncateString(expires, 50),
+                        Remarks = TruncateString(remarks, int.MaxValue),
+                        InsertGuid = TruncateString(insertGUID, 40),
+                        Printed = printed, // bit, no truncation needed
+                        SentToOptical = sentToOptical, // bit, no truncation needed
+                        EnteredBy = TruncateString(enteredBy, 200)
+                    };
+                    refractions.Add(newRefraction);
                 }
-
-                var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    RefractionClass = TruncateString(refractionClass, 5),
-                    RefractionType = TruncateString(refractionType, 50),
-                    SphereOd = TruncateString(sphereOd, 50),
-                    SphereOs = TruncateString(sphereOs, 50),
-                    CylinderOd = TruncateString(cylinderOd, 50),
-                    CylinderOs = TruncateString(cylinderOs, 50),
-                    AxisOd = TruncateString(axisOd, 50),
-                    AxisOs = TruncateString(axisOs, 50),
-                    BifocalAddOd = TruncateString(bifocalAddOd, 50),
-                    BifocalAddOs = TruncateString(bifocalAddOs, 50),
-                    PrismTypeOd = TruncateString(prismTypeOd, 255),
-                    PrismTypeOs = TruncateString(prismTypeOs, 255),
-                    Prism360Od = TruncateString(prism360Od, 50),
-                    Prism360Os = TruncateString(prism360Os, 50),
-                    DirectionOd = TruncateString(directionHod, 50),
-                    DirectionOs = TruncateString(directionHos, 50),
-                    PdDistOd = TruncateString(pdDistOd, 50),
-                    PdDistOs = TruncateString(pdDistOs, 50),
-                    PdNearOd = TruncateString(pdNearOd, 50),
-                    PdNearOs = TruncateString(pdNearOs, 50),
-                    Age = TruncateString(age, 50),
-                    VaDOd = TruncateString(vaDOd, 50),
-                    VaDOs = TruncateString(vaDOs, 50),
-                    VaDOu = TruncateString(vaDOu, 50),
-                    VaNOd = TruncateString(vaNOd, 50),
-                    VaNOs = TruncateString(vaNOs, 50),
-                    VaNOu = TruncateString(vaNOu, 50),
-                    VaIOd = TruncateString(vaIOd, 50),
-                    VaIOs = TruncateString(vaIOs, 50),
-                    VaIOu = TruncateString(vaIOu, 50),
-                    Expires = TruncateString(expires, 50),
-                    Remarks = TruncateString(remarks, int.MaxValue),
-                    InsertGuid = TruncateString(insertGUID, 40),
-                    Printed = printed, // bit, no truncation needed
-                    SentToOptical = sentToOptical, // bit, no truncation needed
-                    EnteredBy = TruncateString(enteredBy, 200)
-                };
-                eyeMDDbContext.EmrvisitRefractions.Add(newRefraction);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
             }
         }
@@ -7316,12 +7193,14 @@ namespace Brady_s_Conversion_Program {
                 eyeMDDbContext.Emrrosdefaults.Add(newRos);
 
                 eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
             }
         }
 
-        public static void RxConvert(ModelsC.RxMedication rx, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void RxConvert(ModelsC.RxMedication rx, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitRxMedication> rxMedications, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7338,28 +7217,29 @@ namespace Brady_s_Conversion_Program {
                 if (rx.VisitId! <= -1) {
                     visitId = rx.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Rx with ID: {rx.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Rx with ID: {rx.Id}");
                 }
                 int ptId = -1;
-                if (rx.PtId !<= -1) {
+                if (rx.PtId! <= -1) {
                     ptId = rx.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Rx with ID: {rx.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -7376,7 +7256,7 @@ namespace Brady_s_Conversion_Program {
                     medDisp = rx.MedDisp;
                 }
                 string medRefill = "";
-                    
+
                 int? medType = null;
                 if (rx.MedType != null) {
                     if (int.TryParse(rx.MedType, out int locum)) {
@@ -7606,124 +7486,72 @@ namespace Brady_s_Conversion_Program {
                     erxStatus = rx.ErxStatus;
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitRxMedications.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = rxMedications.FirstOrDefault(rx => rx.PtId == ptId && rx.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.MedName = TruncateString(medName, 255);
-                    ehrOrig.MedSig = TruncateString(medSig, 255);
-                    ehrOrig.MedDisp = TruncateString(medDisp, 255);
-                    ehrOrig.MedRefill = TruncateString(medRefill, 255);
-                    ehrOrig.MedType = medType;
-                    ehrOrig.BrandMedOnly = brandMedOnly; // smallint, no truncation needed
-                    ehrOrig.DoNotPrintRx = doNotPrintRx; // smallint, no truncation needed
-                    ehrOrig.SampleGiven = sampleGiven; // smallint, no truncation needed
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.Description = TruncateString(description, int.MaxValue);
-                    ehrOrig.MedTableId = medTableId;
-                    ehrOrig.MedDispType = medDispType; // smallint, no truncation needed
-                    ehrOrig.DrugStrength = TruncateString(drugStrength, 100);
-                    ehrOrig.DrugRoute = TruncateString(drugRoute, 100);
-                    ehrOrig.DrugForm = TruncateString(drugForm, 100);
-                    ehrOrig.DrugMappingId = TruncateString(drugMappingId, 100);
-                    ehrOrig.DrugAltMappingId = TruncateString(drugAltMappingId, 100);
-                    ehrOrig.DrugName = TruncateString(drugName, 200);
-                    ehrOrig.DrugNameId = TruncateString(drugNameId, 100);
-                    ehrOrig.ErxGuid = TruncateString(erxGUID, 50);
-                    ehrOrig.ErxPendingTransmit = erxPendingTransmit; // smallint, no truncation needed
-                    ehrOrig.CalledInLocationId = calledInLocationId;
-                    ehrOrig.CalledInProviderEmpId = calledInProviderEmpId;
-                    ehrOrig.MedDispUnitType = TruncateString(medDispUnitType, 100);
-                    ehrOrig.Rxcui = TruncateString(rxcui, 50);
-                    ehrOrig.IsRefill = isRefill; // smallint, no truncation needed
-                    ehrOrig.OriginalMedicationId = TruncateString(originalMedicationId, 255);
-                    ehrOrig.OriginalMedicationDate = TruncateString(originalMedicationDate, 50);
-                    ehrOrig.SentViaErx = sentViaErx; // smallint, no truncation needed
-                    ehrOrig.Snomed = TruncateString(snomed, 50);
-                    ehrOrig.DrugFdastatus = TruncateString(drugFdaStatus, 50);
-                    ehrOrig.DrugDeaclass = TruncateString(drugDeaClass, 25);
-                    ehrOrig.RxRemarks = TruncateString(rxRemarks, 255);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.RecordedEmpRole = recordedEmpRole;
-                    ehrOrig.AdministeredMed = administeredMed; // smallint, no truncation needed
-                    ehrOrig.FormularyChecked = formularyChecked; // smallint, no truncation needed
-                    ehrOrig.PrintedRx = printedRx; // smallint, no truncation needed
-                    ehrOrig.RxStartDate = rxStartDate;
-                    ehrOrig.RxEndDate = rxEndDate;
-                    ehrOrig.RxDurationDays = rxDurationDays;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.VisitDiagCodePoolId = visitDiagCodePoolId;
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.Created = created;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.ErxStatus = TruncateString(erxStatus, 100);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        MedName = TruncateString(medName, 255),
+                        MedSig = TruncateString(medSig, 255),
+                        MedDisp = TruncateString(medDisp, 255),
+                        MedRefill = TruncateString(medRefill, 255),
+                        MedType = medType,
+                        BrandMedOnly = brandMedOnly, // smallint, no truncation needed
+                        DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
+                        SampleGiven = sampleGiven, // smallint, no truncation needed
+                        Notes = TruncateString(notes, int.MaxValue),
+                        Description = TruncateString(description, int.MaxValue),
+                        MedTableId = medTableId,
+                        MedDispType = medDispType, // smallint, no truncation needed
+                        DrugStrength = TruncateString(drugStrength, 100),
+                        DrugRoute = TruncateString(drugRoute, 100),
+                        DrugForm = TruncateString(drugForm, 100),
+                        DrugMappingId = TruncateString(drugMappingId, 100),
+                        DrugAltMappingId = TruncateString(drugAltMappingId, 100),
+                        DrugName = TruncateString(drugName, 200),
+                        DrugNameId = TruncateString(drugNameId, 100),
+                        ErxGuid = TruncateString(erxGUID, 50),
+                        ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
+                        CalledInLocationId = calledInLocationId,
+                        CalledInProviderEmpId = calledInProviderEmpId,
+                        MedDispUnitType = TruncateString(medDispUnitType, 100),
+                        Rxcui = TruncateString(rxcui, 50),
+                        IsRefill = isRefill, // smallint, no truncation needed
+                        OriginalMedicationId = TruncateString(originalMedicationId, 255),
+                        OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
+                        SentViaErx = sentViaErx, // smallint, no truncation needed
+                        Snomed = TruncateString(snomed, 50),
+                        DrugFdastatus = TruncateString(drugFdaStatus, 50),
+                        DrugDeaclass = TruncateString(drugDeaClass, 25),
+                        RxRemarks = TruncateString(rxRemarks, 255),
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        RecordedEmpRole = recordedEmpRole,
+                        AdministeredMed = administeredMed, // smallint, no truncation needed
+                        FormularyChecked = formularyChecked, // smallint, no truncation needed
+                        PrintedRx = printedRx, // smallint, no truncation needed
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        RxStartDate = rxStartDate,
+                        RxEndDate = rxEndDate,
+                        RxDurationDays = rxDurationDays,
+                        LastModified = lastModified,
+                        VisitDiagCodePoolId = visitDiagCodePoolId,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        ErxStatus = TruncateString(erxStatus, 100)
+                    };
+                    rxMedications.Add(newRx);
                 }
-
-                var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    MedName = TruncateString(medName, 255),
-                    MedSig = TruncateString(medSig, 255),
-                    MedDisp = TruncateString(medDisp, 255),
-                    MedRefill = TruncateString(medRefill, 255),
-                    MedType = medType,
-                    BrandMedOnly = brandMedOnly, // smallint, no truncation needed
-                    DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
-                    SampleGiven = sampleGiven, // smallint, no truncation needed
-                    Notes = TruncateString(notes, int.MaxValue),
-                    Description = TruncateString(description, int.MaxValue),
-                    MedTableId = medTableId,
-                    MedDispType = medDispType, // smallint, no truncation needed
-                    DrugStrength = TruncateString(drugStrength, 100),
-                    DrugRoute = TruncateString(drugRoute, 100),
-                    DrugForm = TruncateString(drugForm, 100),
-                    DrugMappingId = TruncateString(drugMappingId, 100),
-                    DrugAltMappingId = TruncateString(drugAltMappingId, 100),
-                    DrugName = TruncateString(drugName, 200),
-                    DrugNameId = TruncateString(drugNameId, 100),
-                    ErxGuid = TruncateString(erxGUID, 50),
-                    ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
-                    CalledInLocationId = calledInLocationId,
-                    CalledInProviderEmpId = calledInProviderEmpId,
-                    MedDispUnitType = TruncateString(medDispUnitType, 100),
-                    Rxcui = TruncateString(rxcui, 50),
-                    IsRefill = isRefill, // smallint, no truncation needed
-                    OriginalMedicationId = TruncateString(originalMedicationId, 255),
-                    OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
-                    SentViaErx = sentViaErx, // smallint, no truncation needed
-                    Snomed = TruncateString(snomed, 50),
-                    DrugFdastatus = TruncateString(drugFdaStatus, 50),
-                    DrugDeaclass = TruncateString(drugDeaClass, 25),
-                    RxRemarks = TruncateString(rxRemarks, 255),
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    RecordedEmpRole = recordedEmpRole,
-                    AdministeredMed = administeredMed, // smallint, no truncation needed
-                    FormularyChecked = formularyChecked, // smallint, no truncation needed
-                    PrintedRx = printedRx, // smallint, no truncation needed
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    RxStartDate = rxStartDate,
-                    RxEndDate = rxEndDate,
-                    RxDurationDays = rxDurationDays,
-                    LastModified = lastModified,
-                    VisitDiagCodePoolId = visitDiagCodePoolId,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    ErxStatus = TruncateString(erxStatus, 100)
-                };
-                eyeMDDbContext.EmrvisitRxMedications.Add(newRx);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
             }
         }
 
-        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Emrvisit> visits, List<EmrvisitSurgicalHistory> surgicalHistories, List<Emrpatient> eyeMDPatients, List<Visit> ehrVisits) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -7740,28 +7568,29 @@ namespace Brady_s_Conversion_Program {
                 if (surgHistory.VisitId != null) {
                     visitId = surgHistory.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Surg History with ID: {surgHistory.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Surg History with ID: {surgHistory.Id}");
                 }
                 int ptId = -1;
-                if (surgHistory.PtId !<= -1) {
+                if (surgHistory.PtId! <= -1) {
                     ptId = surgHistory.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Surg History with ID: {surgHistory.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -7785,7 +7614,7 @@ namespace Brady_s_Conversion_Program {
                 if (surgHistory.Description != null) {
                     description = surgHistory.Description;
                 }
-                int? typeId = null; 
+                int? typeId = null;
                 if (surgHistory.TypeId != null) {
                     if (int.TryParse(surgHistory.TypeId, out int locum)) {
                         typeId = locum;
@@ -7864,7 +7693,7 @@ namespace Brady_s_Conversion_Program {
                 int? performedByEmpId2 = null;
                 if (surgHistory.PerformedbyEmpId2 != null) {
                     if (int.TryParse(surgHistory.PerformedbyEmpId2, out int locum)) {
-                         performedByEmpId2 = locum;
+                        performedByEmpId2 = locum;
                     }
                 }
                 int? performedbyRefProviderId2 = null;
@@ -7882,7 +7711,7 @@ namespace Brady_s_Conversion_Program {
                     notes = surgHistory.Notes;
                 }
                 string insertGUID = Guid.NewGuid().ToString();
-                
+
                 bool doNotReconcile = false;
                 if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes" || surgHistory.DoNotReconcile == "1") {
                     doNotReconcile = true;
@@ -7914,104 +7743,62 @@ namespace Brady_s_Conversion_Program {
                 int? lastModifiedEmpId = null;
                 // no lastModifiedEmpId in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitSurgicalHistories.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = surgicalHistories.FirstOrDefault(s => s.PtId == ptId && s.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.VisitDate = dosDate;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId;
-                    ehrOrig.OrigVisitDate = origVisitDate;
-                    ehrOrig.Description = TruncateString(description, 255);
-                    ehrOrig.TypeId = typeId;
-                    ehrOrig.CodeId = codeId;
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.Modifier = TruncateString(modifier, 50);
-                    ehrOrig.CodeIcd10 = TruncateString(codeICD10, 50);
-                    ehrOrig.CodeSnomed = TruncateString(codeSnomed, 50);
-                    ehrOrig.ComanageEmpId1 = performedByEmpId1;
-                    ehrOrig.ComanageRefProviderId1 = comanageRefProviderId1;
-                    ehrOrig.ComanageFullName1 = TruncateString(comanageFullName1, 100);
-                    ehrOrig.ComanageEmpId2 = performedByEmpId2;
-                    ehrOrig.ComanageRefProviderId2 = performedbyRefProviderId2;
-                    ehrOrig.ComanageFullName2 = TruncateString(comanageFullName2, 100);
-                    ehrOrig.Notes = TruncateString(notes, int.MaxValue);
-                    ehrOrig.Created = created;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.PtDeviceId = ptDeviceId;
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.Location1 = TruncateString(location1, 50);
-                    ehrOrig.ProcedureMonth1 = TruncateString(procedureMonth1, 10);
-                    ehrOrig.ProcedureDay1 = TruncateString(procedureDay1, 10);
-                    ehrOrig.ProcedureYear1 = TruncateString(procedureYear1, 10);
-                    ehrOrig.PerformedbyEmpId1 = performedByEmpId1;
-                    ehrOrig.PerformedbyFullName1 = TruncateString(comanageFullName1, 100);
-                    ehrOrig.PerformedbyRefProviderId1 = performedByRefProvider1;
-                    ehrOrig.Location2 = TruncateString(location2, 50);
-                    ehrOrig.ProcedureMonth2 = TruncateString(procedureMonth2, 10);
-                    ehrOrig.ProcedureDay2 = TruncateString(procedureDay2, 10);
-                    ehrOrig.ProcedureYear2 = TruncateString(procedureYear2, 10);
-                    ehrOrig.PerformedbyEmpId2 = performedByEmpId2;
-                    ehrOrig.PerformedbyFullName2 = TruncateString(comanageFullName2, 100);
-                    ehrOrig.PerformedbyRefProviderId2 = performedbyRefProviderId2;
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        VisitDate = dosDate,
+                        ControlId = controlId,
+                        OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
+                        OrigVisitDate = origVisitDate,
+                        Description = TruncateString(description, 255),
+                        TypeId = typeId,
+                        CodeId = codeId,
+                        Code = TruncateString(code, 50),
+                        Modifier = TruncateString(modifier, 50),
+                        CodeIcd10 = TruncateString(codeICD10, 50),
+                        CodeSnomed = TruncateString(codeSnomed, 50),
+                        ComanageEmpId1 = performedByEmpId1,
+                        ComanageRefProviderId1 = comanageRefProviderId1,
+                        ComanageFullName1 = TruncateString(comanageFullName1, 100),
+                        ComanageEmpId2 = performedByEmpId2,
+                        ComanageRefProviderId2 = performedbyRefProviderId2,
+                        ComanageFullName2 = TruncateString(comanageFullName2, 100),
+                        Notes = TruncateString(notes, int.MaxValue),
+                        Created = created,
+                        LastModified = lastModified,
+                        CreatedEmpId = createdEmpId,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        PtDeviceId = ptDeviceId,
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        Location1 = TruncateString(location1, 50),
+                        ProcedureMonth1 = TruncateString(procedureMonth1, 10),
+                        ProcedureDay1 = TruncateString(procedureDay1, 10),
+                        ProcedureYear1 = TruncateString(procedureYear1, 10),
+                        PerformedbyEmpId1 = performedByEmpId1,
+                        PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
+                        PerformedbyRefProviderId1 = performedByRefProvider1,
+                        Location2 = TruncateString(location2, 50),
+                        ProcedureMonth2 = TruncateString(procedureMonth2, 10),
+                        ProcedureDay2 = TruncateString(procedureDay2, 10),
+                        ProcedureYear2 = TruncateString(procedureYear2, 10),
+                        PerformedbyEmpId2 = performedByEmpId2,
+                        PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
+                        PerformedbyRefProviderId2 = performedbyRefProviderId2
+                    };
+                    surgicalHistories.Add(newSurgHistory);
                 }
-
-                var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    VisitDate = dosDate,
-                    ControlId = controlId,
-                    OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
-                    OrigVisitDate = origVisitDate,
-                    Description = TruncateString(description, 255),
-                    TypeId = typeId,
-                    CodeId = codeId,
-                    Code = TruncateString(code, 50),
-                    Modifier = TruncateString(modifier, 50),
-                    CodeIcd10 = TruncateString(codeICD10, 50),
-                    CodeSnomed = TruncateString(codeSnomed, 50),
-                    ComanageEmpId1 = performedByEmpId1,
-                    ComanageRefProviderId1 = comanageRefProviderId1,
-                    ComanageFullName1 = TruncateString(comanageFullName1, 100),
-                    ComanageEmpId2 = performedByEmpId2,
-                    ComanageRefProviderId2 = performedbyRefProviderId2,
-                    ComanageFullName2 = TruncateString(comanageFullName2, 100),
-                    Notes = TruncateString(notes, int.MaxValue),
-                    Created = created,
-                    LastModified = lastModified,
-                    CreatedEmpId = createdEmpId,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    PtDeviceId = ptDeviceId,
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    Location1 = TruncateString(location1, 50),
-                    ProcedureMonth1 = TruncateString(procedureMonth1, 10),
-                    ProcedureDay1 = TruncateString(procedureDay1, 10),
-                    ProcedureYear1 = TruncateString(procedureYear1, 10),
-                    PerformedbyEmpId1 = performedByEmpId1,
-                    PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
-                    PerformedbyRefProviderId1 = performedByRefProvider1,
-                    Location2 = TruncateString(location2, 50),
-                    ProcedureMonth2 = TruncateString(procedureMonth2, 10),
-                    ProcedureDay2 = TruncateString(procedureDay2, 10),
-                    ProcedureYear2 = TruncateString(procedureYear2, 10),
-                    PerformedbyEmpId2 = performedByEmpId2,
-                    PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
-                    PerformedbyRefProviderId2 = performedbyRefProviderId2
-                };
-                eyeMDDbContext.EmrvisitSurgicalHistories.Add(newSurgHistory);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
             }
         }
 
-        public static void TechsConvert(ModelsC.Tech tech, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void TechsConvert(ModelsC.Tech tech, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech> techs) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -8028,28 +7815,29 @@ namespace Brady_s_Conversion_Program {
                 if (tech.VisitId != null) {
                     visitId = tech.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Tech with ID: {tech.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Tech with ID: {tech.Id}");
                 }
                 int ptId = -1;
-                if (tech.PtId !<= -1) {
+                if (tech.PtId! <= -1) {
                     ptId = tech.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
-                    } else {
+                    }
+                    else {
                         logger.Log($"EHR: EHR PatientID not found for Tech with ID: {tech.Id}");
                     }
-                } else {
+                }
+                else {
                     ptId = eyeMDPatient.PtId;
                 }
 
@@ -8256,257 +8044,144 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var ehrOrig = eyeMDDbContext.EmrvisitTeches.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = techs.FirstOrDefault(t => t.PtId == ptId && t.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Pmhsmoking = pmhSmoking;
-                    ehrOrig.Pmhalcohol = pmhAlcohol;
-                    ehrOrig.Pmhdrugs = pmhDrugs;
-                    ehrOrig.WuvaCcType = wuvaCcType;
-                    ehrOrig.WorkupMdreviewed = workupMdReviewed; // smallint, no truncation needed
-                    ehrOrig.WorkupMdreviewedDate = workupMdReviewedDate;
-                    ehrOrig.WorkupMdreviewedEmpId = workupMdReviewedEmpId;
-                    ehrOrig.WucvfAbute = wucvfAbute; // smallint, no truncation needed
-                    ehrOrig.Wudilated = wuDilated; // smallint, no truncation needed
-                    ehrOrig.VitalsBmipercentile = vitalsBmiPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsHofcpercentile = vitalsHofcPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsInhaled02Concentration = vitalsInhaled02Concentration; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsPulseOximetry = vitalsPulseOximetry; // decimal(9, 8), no truncation needed
-                    ehrOrig.VitalsWflpercentile = vitalsWflPercentile; // decimal(9, 8), no truncation needed
-                    ehrOrig.HistoryMdreviewed = historyReviewed; // smallint, no truncation needed
-                    ehrOrig.HistoryMdreviewedDate = historyMdReviewedDate;
-                    ehrOrig.HistoryMdreviewedEmpId = historyMdReviewedEmpId;
-                    ehrOrig.Created = created;
-                    ehrOrig.WudilatedTime = wuDilatedTime;
-                    ehrOrig.WudilatedTimeZone = wuDilatedTimeZone; // smallint, no truncation needed
-                    ehrOrig.IntakeReconciled = intakeReconciled; // bit, no truncation needed
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.LastModifiedEmpId = lastModifiedEmpId;
-                    ehrOrig.MedRecNotPerformed = medRecNotPerformed; // smallint, no truncation needed
-                    ehrOrig.Wumood = wuMood; // smallint, no truncation needed
-                    ehrOrig.Wuextpan = wuextPan; // int, no truncation needed
-                    ehrOrig.WuiopAbute = wuiopAbute; // smallint, no truncation needed
-                    ehrOrig.WuorientPerson = wuOrientPerson; // int, no truncation needed
-                    ehrOrig.WuorientPlace = wuOrientPlace; // int, no truncation needed
-                    ehrOrig.WuorientTime = wuOrientTime; // int, no truncation needed
-                    ehrOrig.WuorientSituation = wuOrientSituation; // int, no truncation needed
-                    ehrOrig.Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue);
-                    ehrOrig.PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50);
-                    ehrOrig.PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50);
-                    ehrOrig.PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50);
-                    ehrOrig.PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50);
-                    ehrOrig.PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue);
-                    ehrOrig.PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50);
-                    ehrOrig.PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50);
-                    ehrOrig.PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50);
-                    ehrOrig.HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255);
-                    ehrOrig.Hpilocation1 = TruncateString(tech.Hpilocation1, 255);
-                    ehrOrig.Hpiquality1 = TruncateString(tech.Hpiquality1, 255);
-                    ehrOrig.Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255);
-                    ehrOrig.Hpitiming1 = TruncateString(tech.Hpitiming1, 255);
-                    ehrOrig.Hpiduration1 = TruncateString(tech.Hpiduration1, 255);
-                    ehrOrig.Hpicontext1 = TruncateString(tech.Hpicontext1, 255);
-                    ehrOrig.HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255);
-                    ehrOrig.HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255);
-                    ehrOrig.Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue);
-                    ehrOrig.WuvaCcOd = TruncateString(tech.Wuvaccod, 50);
-                    ehrOrig.WuvaCcOs = TruncateString(tech.Wuvaccos, 50);
-                    ehrOrig.WuvaCcOu = TruncateString(tech.Wuvaccou, 50);
-                    ehrOrig.WuvaPhOd = TruncateString(tech.Wuvaphod, 50);
-                    ehrOrig.WuvaPhOs = TruncateString(tech.Wuvaphos, 50);
-                    ehrOrig.WuvaScOd = TruncateString(tech.Wuvascod, 50);
-                    ehrOrig.WuvaScOs = TruncateString(tech.Wuvascos, 50);
-                    ehrOrig.WuvaScOu = TruncateString(tech.Wuvascou, 50);
-                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50);
-                    ehrOrig.WunCcOd = TruncateString(tech.Wunccod, 50);
-                    ehrOrig.WunCcOs = TruncateString(tech.Wunccos, 50);
-                    ehrOrig.WunCcOu = TruncateString(tech.Wunccou, 50);
-                    ehrOrig.Wunotes = TruncateString(tech.Wunotes, int.MaxValue);
-                    ehrOrig.WunScOd = TruncateString(tech.Wunscod, 50);
-                    ehrOrig.WunScOs = TruncateString(tech.Wunscos, 50);
-                    ehrOrig.WunScOu = TruncateString(tech.Wunscou, 50);
-                    ehrOrig.WudomEye = TruncateString(tech.WudomEye, 50);
-                    ehrOrig.WutcvfOd = TruncateString(tech.Wutcvfod, 50);
-                    ehrOrig.WutcvfOs = TruncateString(tech.Wutcvfos, 50);
-                    ehrOrig.WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue);
-                    ehrOrig.WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue);
-                    ehrOrig.WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50);
-                    ehrOrig.WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50);
-                    ehrOrig.WueomMedialOd = TruncateString(tech.WueommedialOd, 50);
-                    ehrOrig.WueomMedialOs = TruncateString(tech.WueommedialOs, 50);
-                    ehrOrig.WueomInNaOs = TruncateString(tech.WueominNaOs, 50);
-                    ehrOrig.WueomInNaOd = TruncateString(tech.WueominNaOd, 50);
-                    ehrOrig.WueomInTmOd = TruncateString(tech.WueominTmOd, 50);
-                    ehrOrig.WueomInTmOs = TruncateString(tech.WueominTmOs, 50);
-                    ehrOrig.WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50);
-                    ehrOrig.WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50);
-                    ehrOrig.WupupilNearOd = TruncateString(tech.WupupilNearOd, 50);
-                    ehrOrig.WupupilNearOs = TruncateString(tech.WupupilNearOs, 50);
-                    ehrOrig.WuamslerOd = TruncateString(tech.WuamslerOd, 255);
-                    ehrOrig.WuamslerOs = TruncateString(tech.WuamslerOs, 255);
-                    ehrOrig.WudilatedAgent = TruncateString(tech.WudilatedAgent, 255);
-                    ehrOrig.WudilatedEye = TruncateString(tech.WudilatedEye, 50);
-                    ehrOrig.WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255);
-                    ehrOrig.VitalsTemp = TruncateString(tech.VitalsTemp, 50);
-                    ehrOrig.VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50);
-                    ehrOrig.VitalsPulse = TruncateString(tech.VitalsPulse, 50);
-                    ehrOrig.VitalsBpsys = TruncateString(tech.VitalsBpsys, 50);
-                    ehrOrig.VitalsBpdia = TruncateString(tech.VitalsBpdia, 50);
-                    ehrOrig.VitalsRespRate = TruncateString(tech.VitalsRespRate, 255);
-                    ehrOrig.VitalsWeight = TruncateString(tech.VitalsWeight, 50);
-                    ehrOrig.VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50);
-                    ehrOrig.VitalsHeight = TruncateString(tech.VitalsHeight, 50);
-                    ehrOrig.VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50);
-                    ehrOrig.VitalsBmi = TruncateString(tech.VitalsBmi, 50);
-                    ehrOrig.VitalsBgl = TruncateString(tech.VitalsBgl, 50);
-                    ehrOrig.VitalsBglunits = TruncateString(tech.VitalsBglunits, 50);
-                    ehrOrig.PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100);
-                    ehrOrig.WuvaCcOu = TruncateString(tech.Wuvaccou, 50);
-                    ehrOrig.WuvaScOu = TruncateString(tech.Wuvascou, 50);
-                    ehrOrig.WunCcOu = TruncateString(tech.Wunccou, 50);
-                    ehrOrig.WunScOu = TruncateString(tech.Wunscou, 50);
-                    ehrOrig.WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50);
-                    ehrOrig.WueomType = TruncateString(tech.Wueomtype, 255);
-                    ehrOrig.HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Pmhsmoking = pmhSmoking,
+                        Pmhalcohol = pmhAlcohol,
+                        Pmhdrugs = pmhDrugs,
+                        WuvaCcType = wuvaCcType,
+                        Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
+                        PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
+                        PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
+                        PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
+                        PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
+                        PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
+                        PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
+                        PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
+                        PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
+                        HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
+                        Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
+                        Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
+                        Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
+                        Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
+                        Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
+                        Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
+                        HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
+                        HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
+                        Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
+                        WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
+                        WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
+                        WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
+                        WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
+                        WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
+                        WuvaScOd = TruncateString(tech.Wuvascod, 50),
+                        WuvaScOs = TruncateString(tech.Wuvascos, 50),
+                        WuvaScOu = TruncateString(tech.Wuvascou, 50),
+                        WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
+                        WunCcOd = TruncateString(tech.Wunccod, 50),
+                        WunCcOs = TruncateString(tech.Wunccos, 50),
+                        WunCcOu = TruncateString(tech.Wunccou, 50),
+                        Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
+                        WunScOd = TruncateString(tech.Wunscod, 50),
+                        WunScOs = TruncateString(tech.Wunscos, 50),
+                        WunScOu = TruncateString(tech.Wunscou, 50),
+                        WudomEye = TruncateString(tech.WudomEye, 50),
+                        WutcvfOd = TruncateString(tech.Wutcvfod, 50),
+                        WutcvfOs = TruncateString(tech.Wutcvfos, 50),
+                        WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
+                        WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
+                        WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
+                        WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
+                        WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
+                        WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
+                        WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
+                        WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
+                        WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
+                        WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
+                        WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
+                        WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
+                        WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
+                        WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
+                        WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
+                        WorkupMdreviewedDate = workupMdReviewedDate,
+                        WorkupMdreviewedEmpId = workupMdReviewedEmpId,
+                        WuamslerOd = TruncateString(tech.WuamslerOd, 255),
+                        WuamslerOs = TruncateString(tech.WuamslerOs, 255),
+                        WucvfAbute = wucvfAbute, // smallint, no truncation needed
+                        Wudilated = wuDilated, // smallint, no truncation needed
+                        WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
+                        WudilatedEye = TruncateString(tech.WudilatedEye, 50),
+                        WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
+                        VitalsTemp = TruncateString(tech.VitalsTemp, 50),
+                        VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
+                        VitalsPulse = TruncateString(tech.VitalsPulse, 50),
+                        VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
+                        VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
+                        VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
+                        VitalsWeight = TruncateString(tech.VitalsWeight, 50),
+                        VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
+                        VitalsHeight = TruncateString(tech.VitalsHeight, 50),
+                        VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
+                        VitalsBmi = TruncateString(tech.VitalsBmi, 50),
+                        VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
+                        VitalsBgl = TruncateString(tech.VitalsBgl, 50),
+                        VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
+                        VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
+                        VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
+                        VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
+                        VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
+                        HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
+                        HistoryMdreviewedDate = historyMdReviewedDate,
+                        HistoryMdreviewedEmpId = historyMdReviewedEmpId,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
+                        WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
+                        WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
+                        WudilatedTime = wuDilatedTime,
+                        WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
+                        WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
+                        WueomType = TruncateString(tech.Wueomtype, 255),
+                        Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
+                        Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
+                        PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
+                        WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
+                        WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
+                        WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
+                        WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
+                        WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
+                        WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
+                        WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
+                        WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
+                        HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
+                        IntakeReconciled = intakeReconciled, // bit, no truncation needed
+                        LastModified = lastModified,
+                        LastModifiedEmpId = lastModifiedEmpId,
+                        MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
+                        UpsizeTs = null,
+                        Wumood = wuMood, // smallint, no truncation needed
+                        Wuextpan = wuextPan, // int, no truncation needed
+                        WuiopAbute = wuiopAbute, // smallint, no truncation needed
+                        WuorientPerson = wuOrientPerson, // int, no truncation needed
+                        WuorientPlace = wuOrientPlace, // int, no truncation needed
+                        WuorientTime = wuOrientTime, // int, no truncation needed
+                        WuorientSituation = wuOrientSituation // int, no truncation needed
+                    };
+                    techs.Add(newTech);
                 }
-
-                var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Pmhsmoking = pmhSmoking,
-                    Pmhalcohol = pmhAlcohol,
-                    Pmhdrugs = pmhDrugs,
-                    WuvaCcType = wuvaCcType,
-                    Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
-                    PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
-                    PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
-                    PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
-                    PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
-                    PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
-                    PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
-                    PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
-                    PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
-                    HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
-                    Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
-                    Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
-                    Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
-                    Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
-                    Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
-                    Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
-                    HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
-                    HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
-                    Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
-                    WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
-                    WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
-                    WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
-                    WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
-                    WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
-                    WuvaScOd = TruncateString(tech.Wuvascod, 50),
-                    WuvaScOs = TruncateString(tech.Wuvascos, 50),
-                    WuvaScOu = TruncateString(tech.Wuvascou, 50),
-                    WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
-                    WunCcOd = TruncateString(tech.Wunccod, 50),
-                    WunCcOs = TruncateString(tech.Wunccos, 50),
-                    WunCcOu = TruncateString(tech.Wunccou, 50),
-                    Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
-                    WunScOd = TruncateString(tech.Wunscod, 50),
-                    WunScOs = TruncateString(tech.Wunscos, 50),
-                    WunScOu = TruncateString(tech.Wunscou, 50),
-                    WudomEye = TruncateString(tech.WudomEye, 50),
-                    WutcvfOd = TruncateString(tech.Wutcvfod, 50),
-                    WutcvfOs = TruncateString(tech.Wutcvfos, 50),
-                    WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
-                    WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
-                    WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
-                    WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
-                    WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
-                    WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
-                    WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
-                    WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
-                    WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
-                    WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
-                    WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
-                    WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
-                    WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
-                    WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
-                    WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
-                    WorkupMdreviewedDate = workupMdReviewedDate,
-                    WorkupMdreviewedEmpId = workupMdReviewedEmpId,
-                    WuamslerOd = TruncateString(tech.WuamslerOd, 255),
-                    WuamslerOs = TruncateString(tech.WuamslerOs, 255),
-                    WucvfAbute = wucvfAbute, // smallint, no truncation needed
-                    Wudilated = wuDilated, // smallint, no truncation needed
-                    WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
-                    WudilatedEye = TruncateString(tech.WudilatedEye, 50),
-                    WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
-                    VitalsTemp = TruncateString(tech.VitalsTemp, 50),
-                    VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
-                    VitalsPulse = TruncateString(tech.VitalsPulse, 50),
-                    VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
-                    VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
-                    VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
-                    VitalsWeight = TruncateString(tech.VitalsWeight, 50),
-                    VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
-                    VitalsHeight = TruncateString(tech.VitalsHeight, 50),
-                    VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
-                    VitalsBmi = TruncateString(tech.VitalsBmi, 50),
-                    VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
-                    VitalsBgl = TruncateString(tech.VitalsBgl, 50),
-                    VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
-                    VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
-                    VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
-                    VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
-                    VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
-                    HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
-                    HistoryMdreviewedDate = historyMdReviewedDate,
-                    HistoryMdreviewedEmpId = historyMdReviewedEmpId,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
-                    WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
-                    WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
-                    WudilatedTime = wuDilatedTime,
-                    WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
-                    WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
-                    WueomType = TruncateString(tech.Wueomtype, 255),
-                    Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
-                    Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
-                    PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
-                    WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
-                    WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
-                    WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
-                    WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
-                    WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
-                    WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
-                    WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
-                    WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
-                    HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
-                    IntakeReconciled = intakeReconciled, // bit, no truncation needed
-                    LastModified = lastModified,
-                    LastModifiedEmpId = lastModifiedEmpId,
-                    MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
-                    UpsizeTs = null,
-                    Wumood = wuMood, // smallint, no truncation needed
-                    Wuextpan = wuextPan, // int, no truncation needed
-                    WuiopAbute = wuiopAbute, // smallint, no truncation needed
-                    WuorientPerson = wuOrientPerson, // int, no truncation needed
-                    WuorientPlace = wuOrientPlace, // int, no truncation needed
-                    WuorientTime = wuOrientTime, // int, no truncation needed
-                    WuorientSituation = wuOrientSituation // int, no truncation needed
-                };
-                eyeMDDbContext.EmrvisitTeches.Add(newTech);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
             }
         }
 
-        public static void Tech2sConvert(ModelsC.Tech2 tech2, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void Tech2sConvert(ModelsC.Tech2 tech2, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech2> tech2s) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -8523,12 +8198,12 @@ namespace Brady_s_Conversion_Program {
                 if (tech2.VisitId != null) {
                     visitId = tech2.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for Tech2 with ID: {tech2.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR VisitID not found for Tech2 with ID: {tech2.Id}");
                 }
@@ -8536,9 +8211,8 @@ namespace Brady_s_Conversion_Program {
                 if (tech2.PtId! <= -1) {
                     ptId = tech2.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
                     if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
                         ptId = (int)eyeMDVisit.PtId;
                     }
@@ -8607,175 +8281,94 @@ namespace Brady_s_Conversion_Program {
                 byte[]? upsizets = null;
                 // no upsizets in source table
 
-                var ehrOrig = eyeMDDbContext.EmrvisitTech2s.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = tech2s.FirstOrDefault(t2 => t2.PtId == ptId && t2.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.Wu2vaOrxOd = tech2.Wu2vaorxOd;
-                    ehrOrig.Wu2vaOrxOs = tech2.Wu2vaorxOs;
-                    ehrOrig.Wu2kmaxOd = wu2kmaxOd;
-                    ehrOrig.Wu2kmaxOs = wu2kmaxOs;
-                    ehrOrig.Wu2kminOd = wu2kminOd;
-                    ehrOrig.Wu2kminOs = wu2kminOs;
-                    ehrOrig.Wu2kminDegOd = wu2kminDegOd;
-                    ehrOrig.Wu2kminDegOs = wu2kminDegOs;
-                    ehrOrig.Wu2kmaxDegOd = wu2kmaxDegOd;
-                    ehrOrig.Wu2kmaxDegOs = wu2kmaxDegOs;
-                    ehrOrig.UpsizeTs = upsizets;
-                    ehrOrig.Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd;
-                    ehrOrig.Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs;
-                    ehrOrig.Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult;
-                    ehrOrig.Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue);
-                    ehrOrig.Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50);
-                    ehrOrig.Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue);
-                    ehrOrig.Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50);
-                    ehrOrig.Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue);
-                    ehrOrig.Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50);
-                    ehrOrig.Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue);
-                    ehrOrig.Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50);
-                    ehrOrig.Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue);
-                    ehrOrig.Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50);
-                    ehrOrig.Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue);
-                    ehrOrig.Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50);
-                    ehrOrig.Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue);
-                    ehrOrig.Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50);
-                    ehrOrig.Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue);
-                    ehrOrig.Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50);
-                    ehrOrig.Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue);
-                    ehrOrig.Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50);
-                    ehrOrig.Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue);
-                    ehrOrig.Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50);
-                    ehrOrig.Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue);
-                    ehrOrig.Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50);
-                    ehrOrig.Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue);
-                    ehrOrig.Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50);
-                    ehrOrig.Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue);
-                    ehrOrig.Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50);
-                    ehrOrig.Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue);
-                    ehrOrig.Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50);
-                    ehrOrig.Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue);
-                    ehrOrig.Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50);
-                    ehrOrig.Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue);
-                    ehrOrig.Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50);
-                    ehrOrig.Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue);
-                    ehrOrig.Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50);
-                    ehrOrig.Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue);
-                    ehrOrig.Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50);
-                    ehrOrig.Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue);
-                    ehrOrig.Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50);
-                    ehrOrig.Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue);
-                    ehrOrig.Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50);
-                    ehrOrig.Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue);
-                    ehrOrig.Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50);
-                    ehrOrig.Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue);
-                    ehrOrig.Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50);
-                    ehrOrig.Wu2GlareHighOd = tech2.Wu2glareHighOd;
-                    ehrOrig.Wu2GlareHighOs = tech2.Wu2glareHighOs;
-                    ehrOrig.Wu2GlareLowOd = tech2.Wu2glareLowOd;
-                    ehrOrig.Wu2GlareLowOs = tech2.Wu2glareLowOs;
-                    ehrOrig.Wu2GlareMedOd = tech2.Wu2glareMedOd;
-                    ehrOrig.Wu2GlareMedOs = tech2.Wu2glareMedOs;
-                    ehrOrig.Wu2GlareType = TruncateString(tech2.Wu2glareType, 50);
-                    ehrOrig.Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100);
-                    ehrOrig.Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100);
-                    ehrOrig.Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100);
-                    ehrOrig.Wu2ktype = TruncateString(tech2.Wu2ktype, 255);
-                    ehrOrig.Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50);
-                    ehrOrig.Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50);
-                    ehrOrig.Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50);
-                    ehrOrig.Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50);
-                    ehrOrig.Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue);
-                    ehrOrig.Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50);
-                    ehrOrig.Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50);
-                    eyeMDDbContext.SaveChanges();
-                    return;
+                    var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        Dosdate = dosDate,
+                        Wu2vaOrxOd = tech2.Wu2vaorxOd,
+                        Wu2vaOrxOs = tech2.Wu2vaorxOs,
+                        Wu2kmaxOd = wu2kmaxOd,
+                        Wu2kmaxOs = wu2kmaxOs,
+                        Wu2kminOd = wu2kminOd,
+                        Wu2kminOs = wu2kminOs,
+                        Wu2kminDegOd = wu2kminDegOd,
+                        Wu2kminDegOs = wu2kminDegOs,
+                        Wu2kmaxDegOd = wu2kmaxDegOd,
+                        Wu2kmaxDegOs = wu2kmaxDegOs,
+                        UpsizeTs = upsizets,
+                        Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
+                        Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
+                        Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
+                        Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
+                        Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
+                        Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
+                        Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
+                        Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
+                        Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
+                        Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
+                        Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
+                        Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
+                        Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
+                        Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
+                        Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
+                        Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
+                        Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
+                        Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
+                        Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
+                        Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
+                        Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
+                        Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
+                        Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
+                        Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
+                        Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
+                        Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
+                        Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
+                        Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
+                        Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
+                        Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
+                        Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
+                        Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
+                        Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
+                        Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
+                        Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
+                        Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
+                        Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
+                        Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
+                        Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
+                        Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
+                        Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
+                        Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
+                        Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
+                        Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
+                        Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
+                        Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
+                        Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
+                        Wu2GlareHighOd = tech2.Wu2glareHighOd,
+                        Wu2GlareHighOs = tech2.Wu2glareHighOs,
+                        Wu2GlareLowOd = tech2.Wu2glareLowOd,
+                        Wu2GlareLowOs = tech2.Wu2glareLowOs,
+                        Wu2GlareMedOd = tech2.Wu2glareMedOd,
+                        Wu2GlareMedOs = tech2.Wu2glareMedOs,
+                        Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
+                        Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
+                        Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
+                        Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
+                        Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
+                        Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
+                        Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
+                        Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
+                        Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
+                        Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
+                        Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
+                        Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
+                    };
+                    tech2s.Add(newTech2);
                 }
-
-                var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    Dosdate = dosDate,
-                    Wu2vaOrxOd = tech2.Wu2vaorxOd,
-                    Wu2vaOrxOs = tech2.Wu2vaorxOs,
-                    Wu2kmaxOd = wu2kmaxOd,
-                    Wu2kmaxOs = wu2kmaxOs,
-                    Wu2kminOd = wu2kminOd,
-                    Wu2kminOs = wu2kminOs,
-                    Wu2kminDegOd = wu2kminDegOd,
-                    Wu2kminDegOs = wu2kminDegOs,
-                    Wu2kmaxDegOd = wu2kmaxDegOd,
-                    Wu2kmaxDegOs = wu2kmaxDegOs,
-                    UpsizeTs = upsizets,
-                    Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
-                    Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
-                    Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
-                    Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
-                    Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
-                    Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
-                    Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
-                    Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
-                    Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
-                    Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
-                    Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
-                    Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
-                    Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
-                    Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
-                    Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
-                    Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
-                    Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
-                    Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
-                    Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
-                    Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
-                    Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
-                    Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
-                    Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
-                    Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
-                    Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
-                    Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
-                    Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
-                    Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
-                    Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
-                    Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
-                    Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
-                    Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
-                    Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
-                    Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
-                    Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
-                    Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
-                    Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
-                    Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
-                    Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
-                    Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
-                    Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
-                    Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
-                    Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
-                    Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
-                    Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
-                    Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
-                    Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
-                    Wu2GlareHighOd = tech2.Wu2glareHighOd,
-                    Wu2GlareHighOs = tech2.Wu2glareHighOs,
-                    Wu2GlareLowOd = tech2.Wu2glareLowOd,
-                    Wu2GlareLowOs = tech2.Wu2glareLowOs,
-                    Wu2GlareMedOd = tech2.Wu2glareMedOd,
-                    Wu2GlareMedOs = tech2.Wu2glareMedOs,
-                    Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
-                    Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
-                    Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
-                    Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
-                    Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
-                    Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
-                    Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
-                    Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
-                    Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
-                    Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
-                    Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
-                    Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
-                };
-                eyeMDDbContext.EmrvisitTech2s.Add(newTech2);
-
-                eyeMDDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
             }
         }
@@ -8974,7 +8567,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.ClnsBrands.Add(newClbrand);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
             }
         }
@@ -9126,7 +8720,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.ClnsInventories.Add(newClInventory);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
             }
         }
@@ -9281,7 +8876,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.ClnsContactLens.Add(newClLens);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
             }
         }
@@ -9391,7 +8987,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.CptGroupMappings.Add(newCptmapping);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
             }
         }
@@ -9459,7 +9056,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 bool ndcActive = false;
-                if (cpt.Ndcactive != null && cpt.Ndcactive.ToLower() == "yes" || cpt.Ndcactive== "1") {
+                if (cpt.Ndcactive != null && cpt.Ndcactive.ToLower() == "yes" || cpt.Ndcactive == "1") {
                     ndcActive = true;
                 }
                 decimal? ndcCost = null;
@@ -9601,7 +9198,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameCategories.Add(newFrameCategory);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
             }
         }
@@ -9644,7 +9242,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameCollections.Add(newFrameCollection);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
             }
         }
@@ -9684,7 +9283,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameColors.Add(newFrameColor);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
             }
         }
@@ -9737,7 +9337,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameShapes.Add(newFrameShape);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
             }
         }
@@ -9753,7 +9354,7 @@ namespace Brady_s_Conversion_Program {
                 }
 
                 var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
-                
+
                 if (invList != null) {
                     invList.Description = TruncateString(frameStatus.Description, 100);
                     invList.LabCode = TruncateString(frameStatus.LabCode, 25);
@@ -9769,7 +9370,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameStatuses.Add(newFrameStatus);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
             }
         }
@@ -9801,7 +9403,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
             }
         }
@@ -9833,7 +9436,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameEtypes.Add(newFrameEType);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
             }
         }
@@ -9865,7 +9469,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameFtypes.Add(newFrameFType);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
             }
         }
@@ -10084,7 +9689,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameDblensColors.Add(newFrameLensColor);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
             }
         }
@@ -10136,7 +9742,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameMaterials.Add(newFrameMaterial);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
             }
         }
@@ -10188,7 +9795,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameMounts.Add(newFrameMount);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
             }
         }
@@ -10266,7 +9874,7 @@ namespace Brady_s_Conversion_Program {
                         b = locum;
                     }
                 }
-                decimal ed = -1;   
+                decimal ed = -1;
                 if (frameOrder.Ed != null) {
                     if (decimal.TryParse(frameOrder.Ed, out decimal locum)) {
                         ed = locum;
@@ -10343,7 +9951,8 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.FrameOrderInfos.Add(newFrameOrder);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
             }
         }
@@ -10352,7 +9961,7 @@ namespace Brady_s_Conversion_Program {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
-            try { 
+            try {
                 string upc = "";
                 if (frame.Upc != null) {
                     upc = frame.Upc;
@@ -10444,13 +10053,15 @@ namespace Brady_s_Conversion_Program {
                 bool? styleNew = null;
                 if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes" || frame.StyleNew == "1") {
                     styleNew = true;
-                } else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
+                }
+                else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
                     styleNew = false;
                 }
                 bool? changedPrice = null;
                 if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes" || frame.ChangedPrice == "1") {
                     changedPrice = true;
-                } else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
+                }
+                else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
                     changedPrice = false;
                 }
                 long? manufacturerId = null;
@@ -10546,7 +10157,8 @@ namespace Brady_s_Conversion_Program {
                 bool? active = null;
                 if (frame.Active != null && frame.Active.ToLower() == "yes" || frame.Active == "1") {
                     active = true;
-                } else if (frame.Active != null && frame.Active.ToLower() == "no") {
+                }
+                else if (frame.Active != null && frame.Active.ToLower() == "no") {
                     active = false;
                 }
                 DateTime? dateAdded = null;
@@ -10558,7 +10170,7 @@ namespace Brady_s_Conversion_Program {
                 }
                 DateTime? lastUpdated = null;
                 if (frame.LastUpdated != null) {
-                    if (DateTime.TryParseExact(frame.LastUpdated, dateFormats, 
+                    if (DateTime.TryParseExact(frame.LastUpdated, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
                         lastUpdated = locum;
                     }
@@ -10613,11 +10225,12 @@ namespace Brady_s_Conversion_Program {
                 ffpmDbContext.Frames.Add(newFrame);
 
                 ffpmDbContext.SaveChanges();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
             }
         }
-        
+
         #endregion InvConversion
     }
 }
