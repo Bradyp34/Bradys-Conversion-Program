@@ -1704,7 +1704,7 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == guarantor.GuarantorId);
+                            var otherAddress = otherAddresses.FirstOrDefault(p => p.OwnerId == guarantor.GuarantorId && p.OwnerType == 0);
 
                             if (otherAddress == null) {
                                 var newOtherAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
@@ -1749,8 +1749,6 @@ namespace Brady_s_Conversion_Program {
                                 AddressType = addressType,
                                 OwnerType = 1
                             };
-                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
-                            ffpmDbContext.SaveChanges();
                             otherAddresses.Add(newDmgOtherAddress);
                             ffpmLocation.AddressId = otherAddressId;
                             otherAddressId++;
@@ -1811,7 +1809,7 @@ namespace Brady_s_Conversion_Program {
                                 AddressType = addressType,
                                 OwnerType = 1
                             };
-                            newOtherAddresses.Add(newDmgOtherAddress3);
+                            otherAddresses.Add(newDmgOtherAddress3);
                             // appears to only be connected by the address and not the referring provider
                             break;
                         case "emp":
