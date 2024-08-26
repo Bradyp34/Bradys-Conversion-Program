@@ -1529,7 +1529,7 @@ namespace Brady_s_Conversion_Program {
                             IsGuarantorExistingPatient = guarantorIsPatient,
                             LastModifiedBy = null
                         };
-                        guarantors.Add(newGuarantor);
+                        newGuarantors.Add(newGuarantor);
                     }
                 }
                 catch (Exception ex) {
