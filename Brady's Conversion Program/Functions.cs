@@ -1687,7 +1687,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Guarantor not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            convPatient = convPatients.FirstOrDefault(cp => cp.Id == convGuarantor.PatientId);
+                            convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == convGuarantor.PatientId.ToString());
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
@@ -1716,7 +1716,7 @@ namespace Brady_s_Conversion_Program {
                                     Zip = TruncateString(zipCode, 10),
                                     IsActive = isActive,
                                     AddressType = addressType,
-                                    OwnerType = 0
+                                    OwnerType = 1
                                 };
                                 otherAddresses.Add(newOtherAddress);
                                 guarantor.AddressId = otherAddressId;
@@ -1746,7 +1746,7 @@ namespace Brady_s_Conversion_Program {
                                 Zip = TruncateString(zipCode, 10),
                                 IsActive = isActive,
                                 AddressType = addressType,
-                                OwnerType = 1
+                                OwnerType = 2
                             };
                             otherAddresses.Add(newDmgOtherAddress);
                             ffpmLocation.AddressId = otherAddressId;
@@ -1776,7 +1776,7 @@ namespace Brady_s_Conversion_Program {
                                 Zip = TruncateString(zipCode, 10),
                                 IsActive = isActive,
                                 AddressType = addressType,
-                                OwnerType = 1
+                                OwnerType = 3
                             };
                             otherAddresses.Add(newDmgOtherAddress2);
                             ffpmProvider.ProviderAddressId = otherAddressId;
@@ -1806,7 +1806,7 @@ namespace Brady_s_Conversion_Program {
                                 Zip = TruncateString(zipCode, 10),
                                 IsActive = isActive,
                                 AddressType = addressType,
-                                OwnerType = 1
+                                OwnerType = 4
                             };
                             otherAddresses.Add(newDmgOtherAddress3);
                             // appears to only be connected by the address and not the referring provider
@@ -1839,7 +1839,7 @@ namespace Brady_s_Conversion_Program {
                                 Zip = TruncateString(zipCode, 10),
                                 IsActive = isActive,
                                 AddressType = addressType,
-                                OwnerType = 1
+                                OwnerType = 5
                             };
                             otherAddresses.Add(newOtherAddress4);
                             ffpmPatientAdditional2.EmployerAddressId = otherAddressId;
@@ -3199,7 +3199,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Provider not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            short ownerType = 1;
+                            short ownerType = 3;
                             /*
                              SWAP OUT THE OWNER TYPE SHORTS
                             I need the table or reference for the owner types first
@@ -3245,7 +3245,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Referral not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            ownerType = 2;
+                            ownerType = 4;
                             // ALSO SWAP OUT HERE
                             var ffpmReferralAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.ProviderId && p.OwnerType == ownerType);
                             if (ffpmReferralAddress == null) {
@@ -3297,7 +3297,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            ownerType = 3;
+                            ownerType = 1;
                             // ALSO SWAP OUT HERE
                             var guarantorAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == guarantor.GuarantorId && p.OwnerType == ownerType);
                             if (guarantorAddress == null) {
@@ -3321,7 +3321,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: FFPM Location not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            ownerType = 4;
+                            ownerType = 2;
                             // ALSO SWAP OUT HERE
                             var ffpmLocationAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmLocation.LocationId && p.OwnerType == ownerType);
                             if (ffpmLocationAddress == null) {
