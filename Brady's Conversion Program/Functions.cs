@@ -3382,102 +3382,104 @@ namespace Brady_s_Conversion_Program {
             var medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
             var allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
             var contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
-
-            var newVisits = new List<Emrvisit>();
-            var newVisitOrders = new List<EmrvisitOrder>();
-            var newVisitDoctors = new List<EmrvisitDoctor>();
-            var newMedicalHistories = new List<EmrvisitMedicalHistory>();
-            var newAllergies = new List<EmrvisitAllergy>();
-            var newContactLenses = new List<EmrvisitContactLense>();
+            var diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
+            var diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
+            var visitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
 
 
-            /*// not even using this
+            // not even using this
             foreach (var patient in eHRDbContext.Patients) {
                 PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patients converted.\n");
-            });*/
+            });
 
             foreach (var visit in eHRDbContext.Visits) {
-                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, newVisits, eyeMDVisitOrders, newVisitOrders);
+                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders);
             }
-            eyeMDDbContext.AddRange(newVisits);
+            eyeMDDbContext.UpdateRange(visits);
             eyeMDDbContext.SaveChanges();
-            newVisits.Clear();
+            visits = eyeMDDbContext.Emrvisits.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
-            foreach (var visitOrders in eHRDbContext.VisitOrders) {
-                VisitOrdersConvert(visitOrders, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, 
-                    eyeMDVisitOrders, newVisitOrders);
+            foreach (var visitOrder in eHRDbContext.VisitOrders) {
+                VisitOrdersConvert(visitOrder, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, 
+                    eyeMDVisitOrders, visitOrders);
             }
-            eyeMDDbContext.AddRange(newVisitOrders);
+            eyeMDDbContext.UpdateRange(visitOrders);
             eyeMDDbContext.SaveChanges();
-            newVisitOrders.Clear();
+            eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit orders converted.\n");
             });
 
             foreach (var visitDoctor in eHRDbContext.VisitDoctors) {
-                VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, newVisitDoctors, ehrVisits, visits, eyeMDPatients);
+                VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
             }
-            eyeMDDbContext.AddRange(newVisitDoctors);
+            eyeMDDbContext.UpdateRange(visitDoctors);
             eyeMDDbContext.SaveChanges();
-            newVisitDoctors.Clear();
+            visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit doctors converted.\n");
             });
 
             foreach (var medicalHistory in eHRDbContext.MedicalHistories) {
-                MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, newMedicalHistories, medicalHistories);
+                MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories);
             }
-            eyeMDDbContext.AddRange(newMedicalHistories);
+            eyeMDDbContext.UpdateRange(medicalHistories);
             eyeMDDbContext.SaveChanges();
-            newMedicalHistories.Clear();
+            medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
             foreach (Allergy allergy in eHRDbContext.Allergies) {
-                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies, newAllergies);
+                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies);
             }
-            eyeMDDbContext.AddRange(newAllergies);
+            eyeMDDbContext.UpdateRange(allergies);
             eyeMDDbContext.SaveChanges();
-            newAllergies.Clear();
+            allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
             });
 
-            /*// only for in in case we need it, we shouldnt
+            // only for in in case we need it, we shouldnt
             foreach (var appointments in eHRDbContext.Appointments) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
-            });*/
+            });
 
             foreach (var contactLens in eHRDbContext.ContactLens) {
-                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses, newContactLenses);
+                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
             }
-            eyeMDDbContext.AddRange(newContactLenses);
+            eyeMDDbContext.UpdateRange(contactLenses);
             eyeMDDbContext.SaveChanges();
-            newContactLenses.Clear();
+            contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
 
             foreach (var diagCodePool in eHRDbContext.DiagCodePools) {
-                DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress);
+                DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
             }
+            eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
+            eyeMDDbContext.SaveChanges();
+            diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag code pools converted.\n");
             });
 
             foreach (var diagTest in eHRDbContext.DiagTests) {
-                DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress);
+                DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagTests);
             }
+            eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
+            eyeMDDbContext.SaveChanges();
+            diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag tests converted.\n");
             });
@@ -3594,7 +3596,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void AllergiesConvert(ModelsC.Allergy allergy, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitAllergy> allergies, List<EmrvisitAllergy> newAllergies) {
+            List<EmrvisitAllergy> allergies) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -3682,7 +3684,6 @@ namespace Brady_s_Conversion_Program {
                         // No add and save as per instruction
                     };
                     allergies.Add(newVisitAllergy);
-                    newAllergies.Add(newVisitAllergy);
                 }
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
@@ -3690,8 +3691,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void MedicalHistoriesConvert(ModelsC.MedicalHistory medicalHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, 
-            ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, 
-                List<EmrvisitMedicalHistory> newMedicalHistories) {
+            ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -3959,7 +3959,6 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedEmpId = lastModifiedEmpId,
                         Location2OnsetVisitId = null
                     };
-                    newMedicalHistories.Add(newMedicalHistory);
                     medicalHistories.Add(newMedicalHistory);
                 }
             }
@@ -3969,8 +3968,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, 
-            ProgressBar progress, List<Emrvisit> visits, List<Emrvisit> newVisits, List<EmrvisitOrder> eyeMDVisitOrders, 
-                List<EmrvisitOrder> newVisitOrders) {
+            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4281,7 +4279,6 @@ namespace Brady_s_Conversion_Program {
                     TabDrawing = tabDrawing,
                     Wu2visitTypeId = null
                 };
-                newVisits.Add(newVisit);
                 visits.Add(newVisit);
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
@@ -4290,7 +4287,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, 
             ILogger logger, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
-                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> newVisitOrders) {
+                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4508,7 +4505,7 @@ namespace Brady_s_Conversion_Program {
                         RefProviderId = refProvId,
                         RefProviderOrganizationName = refProvOrgName
                     };
-                    newVisitOrders.Add(newVisitOrder);
+                    visitOrders.Add(newVisitOrder);
                 }
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
@@ -4516,7 +4513,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void VisitDoctorsConvert(ModelsC.VisitDoctor visitDoctor, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitDoctor> visitDoctors, List<EmrvisitDoctor> newVisitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4558,7 +4555,7 @@ namespace Brady_s_Conversion_Program {
                 else if (visitId == null) {
                     logger.Log($"EHR: EHR VisitID not found for visit order with ID: {visitDoctor.Id}");
                 }
-                                
+                
                 var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
                     eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
@@ -4786,7 +4783,6 @@ namespace Brady_s_Conversion_Program {
                         SentToWebPortal = null,
                         SentToWebPortalDays = null
                     };
-                    newVisitDoctors.Add(newVisitDoctor);
                     visitDoctors.Add(newVisitDoctor);
                 }
             } catch (Exception e) {
@@ -4806,7 +4802,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses, List<EmrvisitContactLense> newContactLenses) {
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -5502,7 +5498,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagCodePool> diagCodePools) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -5519,22 +5516,22 @@ namespace Brady_s_Conversion_Program {
                 if (diagCodePool.VisitId != null) {
                     visitId = diagCodePool.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with PTID: {diagCodePool.PtId}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag code pool with VisitID: {diagCodePool.VisitId}");
                 }
                 int? ptId = null;
-                if (diagCodePool.PtId !<= -1) {
-                    ptId = diagCodePool.PtId;
+                if (eyeMDVisit != null && diagCodePool.PtId !<= -1) {
+                    ptId = eyeMDVisit.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == ptId.ToString());
                 if (eyeMDPatient == null) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     }
@@ -5691,98 +5688,58 @@ namespace Brady_s_Conversion_Program {
                 int? createdEmpId = null;
                 // no createdEmpId
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagCodePools.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = diagCodePools.FirstOrDefault(dc => dc.PtId == ptId && dc.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.VisitId = visitId;
-                    ehrOrig.PtId = ptId;
-                    ehrOrig.ControlId = controlId;
-                    ehrOrig.DiagText = TruncateString(diagText, int.MaxValue);
-                    ehrOrig.Code = TruncateString(code, 50);
-                    ehrOrig.Modifier = TruncateString(modifier, 50);
-                    ehrOrig.SourceField = TruncateString(sourceField, 50);
-                    ehrOrig.IsActive = isactive; // smallint, no truncation needed
-                    ehrOrig.CodeIcd10 = TruncateString(codeICD10, 50);
-                    ehrOrig.CodeSnomed = TruncateString(codeSNOMED, 50);
-                    ehrOrig.InsertGuid = TruncateString(insertGUID, 50);
-                    ehrOrig.RequestedProcedureId = requestedProcId;
-                    ehrOrig.Location1 = TruncateString(location1, 50);
-                    ehrOrig.OnsetMonth1 = TruncateString(onsetMonth1, 10);
-                    ehrOrig.OnsetDay1 = TruncateString(onsetDay1, 10);
-                    ehrOrig.OnsetYear1 = TruncateString(onsetYear1, 10);
-                    ehrOrig.Location2 = TruncateString(location2, 50);
-                    ehrOrig.Location2OnsetVisitId = location2onsetVisitId;
-                    ehrOrig.OnsetMonth2 = TruncateString(onsetMonth2, 10);
-                    ehrOrig.OnsetDay2 = TruncateString(onsetDay2, 10);
-                    ehrOrig.OnsetYear2 = TruncateString(onsetYear2, 10);
-                    ehrOrig.IsResolved1 = isResolved1; // smallint, no truncation needed
-                    ehrOrig.ResolvedVisitId1 = resolvedVisitId1;
-                    ehrOrig.ResolvedRequestedProcedureId1 = resolvedRequestedProcId1;
-                    ehrOrig.ResolvedDate1 = resolvedDate1;
-                    ehrOrig.ResolveType1 = TruncateString(resolveType1, 75);
-                    ehrOrig.IsResolved2 = isResolved2; // smallint, no truncation needed
-                    ehrOrig.ResolvedVisitId2 = resolvedVisitId2;
-                    ehrOrig.ResolvedRequestedProcedureId2 = resolvedRequestedProc2;
-                    ehrOrig.ResolvedDate2 = resolvedDate2;
-                    ehrOrig.ResolveType2 = TruncateString(resolveType2, 75);
-                    ehrOrig.DoNotReconcile = doNotReconcile; // bit, no truncation needed
-                    ehrOrig.ConditionId = conditionId;
-                    ehrOrig.LastModified = lastModified;
-                    ehrOrig.Created = created;
-                    ehrOrig.CreatedEmpId = createdEmpId;
-                    ehrOrig.Dosdate = dosDate;
-                    eyeMDDbContext.SaveChanges();
+                    var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
+                        PtId = ptId,
+                        VisitId = visitId,
+                        ControlId = controlId,
+                        DiagText = TruncateString(diagText, int.MaxValue),
+                        Code = TruncateString(code, 50),
+                        Modifier = TruncateString(modifier, 50),
+                        SourceField = TruncateString(sourceField, 50),
+                        IsActive = isactive, // smallint, no truncation needed
+                        CodeIcd10 = TruncateString(codeICD10, 50),
+                        CodeSnomed = TruncateString(codeSNOMED, 50),
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        RequestedProcedureId = requestedProcId,
+                        Location1 = TruncateString(location1, 50),
+                        OnsetMonth1 = TruncateString(onsetMonth1, 10),
+                        OnsetDay1 = TruncateString(onsetDay1, 10),
+                        OnsetYear1 = TruncateString(onsetYear1, 10),
+                        Location2 = TruncateString(location2, 50),
+                        Location2OnsetVisitId = location2onsetVisitId,
+                        OnsetMonth2 = TruncateString(onsetMonth2, 10),
+                        OnsetDay2 = TruncateString(onsetDay2, 10),
+                        OnsetYear2 = TruncateString(onsetYear2, 10),
+                        IsResolved1 = isResolved1, // smallint, no truncation needed
+                        ResolvedVisitId1 = resolvedVisitId1,
+                        ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
+                        ResolvedDate1 = resolvedDate1,
+                        ResolveType1 = TruncateString(resolveType1, 75),
+                        IsResolved2 = isResolved2, // smallint, no truncation needed
+                        ResolvedVisitId2 = resolvedVisitId2,
+                        ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
+                        ResolvedDate2 = resolvedDate2,
+                        ResolveType2 = TruncateString(resolveType2, 75),
+                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                        ConditionId = conditionId,
+                        LastModified = lastModified,
+                        Created = created,
+                        CreatedEmpId = createdEmpId,
+                        Dosdate = dosDate
+                    };
+
+                    diagCodePools.Add(newDiagCodePool);
                 }
-
-                var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
-                    PtId = ptId,
-                    VisitId = visitId,
-                    ControlId = controlId,
-                    DiagText = TruncateString(diagText, int.MaxValue),
-                    Code = TruncateString(code, 50),
-                    Modifier = TruncateString(modifier, 50),
-                    SourceField = TruncateString(sourceField, 50),
-                    IsActive = isactive, // smallint, no truncation needed
-                    CodeIcd10 = TruncateString(codeICD10, 50),
-                    CodeSnomed = TruncateString(codeSNOMED, 50),
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    RequestedProcedureId = requestedProcId,
-                    Location1 = TruncateString(location1, 50),
-                    OnsetMonth1 = TruncateString(onsetMonth1, 10),
-                    OnsetDay1 = TruncateString(onsetDay1, 10),
-                    OnsetYear1 = TruncateString(onsetYear1, 10),
-                    Location2 = TruncateString(location2, 50),
-                    Location2OnsetVisitId = location2onsetVisitId,
-                    OnsetMonth2 = TruncateString(onsetMonth2, 10),
-                    OnsetDay2 = TruncateString(onsetDay2, 10),
-                    OnsetYear2 = TruncateString(onsetYear2, 10),
-                    IsResolved1 = isResolved1, // smallint, no truncation needed
-                    ResolvedVisitId1 = resolvedVisitId1,
-                    ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
-                    ResolvedDate1 = resolvedDate1,
-                    ResolveType1 = TruncateString(resolveType1, 75),
-                    IsResolved2 = isResolved2, // smallint, no truncation needed
-                    ResolvedVisitId2 = resolvedVisitId2,
-                    ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
-                    ResolvedDate2 = resolvedDate2,
-                    ResolveType2 = TruncateString(resolveType2, 75),
-                    DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                    ConditionId = conditionId,
-                    LastModified = lastModified,
-                    Created = created,
-                    CreatedEmpId = createdEmpId,
-                    Dosdate = dosDate
-                };
-
-                eyeMDDbContext.EmrvisitDiagCodePools.Add(newDiagCodePool);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
             }
         }
 
-        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -5799,23 +5756,27 @@ namespace Brady_s_Conversion_Program {
                 if (diagTest.VisitId != null) {
                     visitId = diagTest.VisitId;
                 }
-                var convVisit = eHRDbContext.Visits.Find(visitId);
+                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
                 if (convVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
                     return;
                 }
-                var eyeMDVisit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
                 if (eyeMDVisit == null) {
                     logger.Log($"EHR: EHR Visit not found for diag test with ID: {diagTest.Id}");
+                } else {
+                    visitId = eyeMDVisit.VisitId;
                 }
                 int? ptId = null;
-                if (diagTest.PtId !<= -1) {
-                    ptId = diagTest.PtId;
+                if (eyeMDVisit != null && diagTest.PtId !<= -1) {
+                    ptId = eyeMDVisit.PtId;
                 }
-                var eyeMDPatient = eyeMDDbContext.Emrpatients.Find(ptId);
-
+                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                if (eyeMDPatient != null) {
+                    ptId = eyeMDPatient.PtId;
+                }
                 if (ptId == null || ptId <= -1) {
-                    eyeMDVisit = eyeMDDbContext.Emrvisits.Find(visitId);
+                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                     if (eyeMDVisit != null) {
                         ptId = eyeMDVisit.PtId;
                     } else {
@@ -6008,61 +5969,36 @@ namespace Brady_s_Conversion_Program {
                 #endregion diagTests
 
 
-                var ehrOrig = eyeMDDbContext.EmrvisitDiagTests.FirstOrDefault(eyeMDDbContext => eyeMDDbContext.PtId == ptId && eyeMDDbContext.VisitId == visitId);
+                var ehrOrig = diagTests.FirstOrDefault(dt => dt.PtId == ptId && dt.VisitId == visitId);
 
                 if (ehrOrig == null) {
-                    ehrOrig.Dosdate = dosDate;
-                    ehrOrig.GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50);
-                    ehrOrig.GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50);
-                    ehrOrig.GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50);
-                    ehrOrig.GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50);
-                    ehrOrig.GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50);
-                    ehrOrig.GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50);
-                    ehrOrig.GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50);
-                    ehrOrig.GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50);
-                    ehrOrig.GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50);
-                    ehrOrig.GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50);
-                    ehrOrig.GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50);
-                    ehrOrig.GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50);
-                    ehrOrig.GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50);
-                    ehrOrig.GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50);
-                    ehrOrig.GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50);
-                    ehrOrig.GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50);
-                    ehrOrig.GonioComments = TruncateString(gonioComments, int.MaxValue);
-                    ehrOrig.GonioPigmentOd = TruncateString(gonioPigmentOd, 255);
-                    ehrOrig.GonioPigmentOs = TruncateString(gonioPigmentOs, 255);
-                    // All additional motor balance and sensory motor attributes as detailed above
-                    eyeMDDbContext.SaveChanges();
+                    var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
+                        VisitId = visitId,
+                        PtId = ptId,
+                        Dosdate = dosDate,
+                        GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
+                        GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
+                        GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
+                        GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
+                        GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
+                        GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
+                        GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
+                        GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
+                        GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
+                        GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
+                        GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
+                        GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
+                        GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
+                        GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
+                        GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
+                        GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
+                        GonioComments = TruncateString(gonioComments, int.MaxValue),
+                        GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
+                        GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
+                        // Continue mapping all other properties as needed
+                    };
+                    diagTests.Add(newDiagTest);
                 }
-
-                var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
-                    VisitId = visitId,
-                    PtId = ptId,
-                    Dosdate = dosDate,
-                    GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
-                    GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
-                    GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
-                    GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
-                    GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
-                    GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
-                    GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
-                    GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
-                    GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
-                    GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
-                    GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
-                    GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
-                    GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
-                    GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
-                    GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
-                    GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
-                    GonioComments = TruncateString(gonioComments, int.MaxValue),
-                    GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
-                    GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
-                    // Continue mapping all other properties as needed
-                };
-                eyeMDDbContext.EmrvisitDiagTests.Add(newDiagTest);
-
-                eyeMDDbContext.SaveChanges();
             } catch (Exception e) {
                 logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
             }
