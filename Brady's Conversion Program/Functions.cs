@@ -2253,7 +2253,7 @@ namespace Brady_s_Conversion_Program {
                     List<MntRelationship> relationshipXrefs, List<DmgSubscriber> subscribers) {
             long subscriberId = 1;
             if (ffpmDbContext.DmgSubscribers.Any())
-                subscriberId = ffpmDbContext.DmgSubscribers.Max(p => p.SubscriberId);
+                subscriberId = ffpmDbContext.DmgSubscribers.Max(p => p.SubscriberId) + 1;
             
             foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
