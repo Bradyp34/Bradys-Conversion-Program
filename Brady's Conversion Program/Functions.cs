@@ -411,7 +411,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -550,7 +550,7 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Addresses Converted\n";
             });
-*/
+
 
             ConvertPhone(phones, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convGuarantors, guarantors, convProviders, newProviders,
                 otherAddresses, convReferrals, convLocations, locations);
