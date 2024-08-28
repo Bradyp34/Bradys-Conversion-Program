@@ -3605,7 +3605,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("Tech2s converted.\n");
             });
         }
-
+/*
         public static void PatientsConvert(List<ModelsC.Patient> ehrPatients, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
             foreach (var ehrPatient in ehrPatients) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -3619,7 +3619,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the patient with ID: {ehrPatient.Id}. Error: {e.Message}");
                 }
             }
-        }
+        }*/
 
         public static void AllergiesConvert(List<ModelsC.Allergy> ehrAllergies, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<DmgPatient> ffpmPatients) {
@@ -6356,12 +6356,12 @@ namespace Brady_s_Conversion_Program {
                         iopNotes = iop.Iopnotes;
                     }
                     string iopCcOd = "";
-                    if (iop.IopccOd != null) {
-                        iopCcOd = iop.IopccOd;
+                    if (iop.Iopccod != null) {
+                        iopCcOd = iop.Iopccod;
                     }
                     string iopCcOs = "";
-                    if (iop.IopccOs != null) {
-                        iopCcOs = iop.IopccOs;
+                    if (iop.Iopccos != null) {
+                        iopCcOs = iop.Iopccos;
                     }
                     decimal? cornealHysteresisOd = null;
                     if (iop.CornealHysteresisOd != null) {
@@ -7891,8 +7891,8 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     int? visitId = null;
-                    if (tech.VisitId != null) {
-                        visitId = tech.VisitId;
+                    if (tech.OldVisitId != null) {
+                        visitId = tech.OldVisitId;
                     }
                     var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                     if (convVisit == null) {
@@ -8279,8 +8279,8 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     int? visitId = null;
-                    if (tech2.VisitId != null) {
-                        visitId = tech2.VisitId;
+                    if (tech2.OldVisitId != null) {
+                        visitId = tech2.OldVisitId;
                     }
                     var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
                     if (convVisit == null) {
