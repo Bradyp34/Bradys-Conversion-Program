@@ -74,6 +74,7 @@ namespace Brady_s_Conversion_Program
             progressBar1.Show();
             backgroundWorker1.RunWorkerAsync();
             DBBeginButton.Enabled = false;
+            ResultsBox.Text = string.Empty;
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
