@@ -3291,7 +3291,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            convPatient = convPatients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
+                            convPatient = convPatients.FirstOrDefault(p => p.OldPatientAccountNumber == convGuarantor.PatientId.ToString()); // Trying with different values
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3414,1455 +3414,1440 @@ namespace Brady_s_Conversion_Program {
             var techs = eyeMDDbContext.EmrvisitTeches.ToList();
             var tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            var ehrMedicalHistories = eHRDbContext.MedicalHistories.ToList();
+            var ehrAllergies = eHRDbContext.Allergies.ToList();
+            var ehrContactLenses = eHRDbContext.ContactLens.ToList();
+            var ehrDiagCodePools = eHRDbContext.DiagCodePools.ToList();
+            var ehrDiagTests = eHRDbContext.DiagTests.ToList();
+            var ehrVisitOrders = eHRDbContext.VisitOrders.ToList();
+            var ehrVisitDoctors = eHRDbContext.VisitDoctors.ToList();
+            var ehrExamConditions = eHRDbContext.ExamConditions.ToList();
+            var ehrFamilyHistories = eHRDbContext.FamilyHistories.ToList();
+            var ehrIops = eHRDbContext.Iops.ToList();
+            var ehrPatientNotes = eHRDbContext.PatientNotes.ToList();
+            var ehrPlanNarratives = eHRDbContext.PlanNarratives.ToList();
+            var ehrProcDiagPools = eHRDbContext.ProcDiagPools.ToList();
+            var ehrProcPools = eHRDbContext.ProcPools.ToList();
+            var ehrRefractions = eHRDbContext.Refractions.ToList();
+            var ehrRos = eHRDbContext.Ros.ToList();
+            var ehrRxMedications = eHRDbContext.RxMedications.ToList();
+            var ehrSurgHistories = eHRDbContext.SurgHistories.ToList();
+            var ehrRxs = eHRDbContext.RxMedications.ToList();
+            var ehrTechs = eHRDbContext.Teches.ToList();
+            var ehrTech2s = eHRDbContext.Tech2s.ToList();
+            var ross = eyeMDDbContext.Emrrosdefaults.ToList();
+
 
 
             // not even using this
-            foreach (var patient in eHRDbContext.Patients) {
-                PatientsConvert(patient, eHRDbContext, eyeMDDbContext, logger, progress);
-            }
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.AppendText("Patients converted.\n");
-            });
+            // PatientsConvert(ehrPatients, eHRDbContext, eyeMDDbContext, logger, progress);
+            
+            //resultsBox.Invoke((MethodInvoker)delegate {
+            //    resultsBox.AppendText("Patients converted.\n");
+            //});
 
-            foreach (var visit in eHRDbContext.Visits) {
-                VisitsConvert(visit, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders, ffpmPatients, eyeMDPatients);
-            }
-            eyeMDDbContext.UpdateRange(visits);
-            eyeMDDbContext.SaveChanges();
-            visits = eyeMDDbContext.Emrvisits.ToList();
+            
+            VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders, ffpmPatients, eyeMDPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
-            foreach (var visitOrder in eHRDbContext.VisitOrders) {
-                VisitOrdersConvert(visitOrder, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients,
+            
+            VisitOrdersConvert(ehrVisitOrders, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients,
                     eyeMDVisitOrders, visitOrders, ffpmPatients);
-            }
-            eyeMDDbContext.UpdateRange(visitOrders);
-            eyeMDDbContext.SaveChanges();
-            eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit orders converted.\n");
             });
 
-            foreach (var visitDoctor in eHRDbContext.VisitDoctors) {
-                VisitDoctorsConvert(visitDoctor, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
-            }
-            eyeMDDbContext.UpdateRange(visitDoctors);
-            eyeMDDbContext.SaveChanges();
-            visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
+            
+            VisitDoctorsConvert(ehrVisitDoctors, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit doctors converted.\n");
             });
 
-            foreach (var medicalHistory in eHRDbContext.MedicalHistories) {
-                MedicalHistoriesConvert(medicalHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories, ffpmPatients);
-            }
-            eyeMDDbContext.UpdateRange(medicalHistories);
-            eyeMDDbContext.SaveChanges();
-            medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
+            
+            MedicalHistoriesConvert(ehrMedicalHistories, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories, ffpmPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
-            foreach (Allergy allergy in eHRDbContext.Allergies) {
-                AllergiesConvert(allergy, eHRDbContext, eyeMDDbContext, logger, progress, allergies, visits, eyeMDPatients, ffpmPatients);
-            }
-            eyeMDDbContext.UpdateRange(allergies);
-            eyeMDDbContext.SaveChanges();
-            allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
+            
+            AllergiesConvert(ehrAllergies, eHRDbContext, eyeMDDbContext, logger, progress, allergies, visits, eyeMDPatients, ffpmPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
             });
 
             // only for in in case we need it, we shouldnt
-            foreach (var appointments in eHRDbContext.Appointments) {
+            /*foreach (var appointments in eHRDbContext.Appointments) {
                 AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
-            });
+            });*/
 
-            foreach (var contactLens in eHRDbContext.ContactLens) {
-                ContactLensesConvert(contactLens, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
-            }
-            eyeMDDbContext.UpdateRange(contactLenses);
-            eyeMDDbContext.SaveChanges();
-            contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
+
+            ContactLensesConvert(ehrContactLenses, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
 
-            foreach (var diagCodePool in eHRDbContext.DiagCodePools) {
-                DiagCodePoolsConvert(diagCodePool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
-            }
-            eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
-            eyeMDDbContext.SaveChanges();
-            diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
+
+            DiagCodePoolsConvert(ehrDiagCodePools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag code pools converted.\n");
             });
 
-            foreach (var diagTest in eHRDbContext.DiagTests) {
-                DiagTestsConvert(diagTest, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagTests);
-            }
-            eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
-            eyeMDDbContext.SaveChanges();
-            diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
+            
+            DiagTestsConvert(ehrDiagTests, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagTests);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag tests converted.\n");
             });
 
-            foreach (var examCondition in eHRDbContext.ExamConditions) {
-                ExamConditionsConvert(examCondition, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, examConditions);
-            }
-            eyeMDDbContext.EmrvisitExamConditions.UpdateRange(examConditions);
-            eyeMDDbContext.SaveChanges();
-            examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
+            
+            ExamConditionsConvert(ehrExamConditions, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, examConditions);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Exam conditions converted.\n");
             });
 
-            foreach (var familyHistory in eHRDbContext.FamilyHistories) {
-                FamilyHistoriesConvert(familyHistory, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, familyHistories);
-            }
-            eyeMDDbContext.EmrvisitFamilyHistories.UpdateRange(familyHistories);
-            eyeMDDbContext.SaveChanges();
-            familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
+
+            FamilyHistoriesConvert(ehrFamilyHistories, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, familyHistories);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Family histories converted.\n");
             });
 
-            foreach (var iop in eHRDbContext.Iops) {
-                IopsConvert(iop, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, iops);
-            }
-            eyeMDDbContext.EmrvisitIops.UpdateRange(iops);
-            eyeMDDbContext.SaveChanges();
-            iops = eyeMDDbContext.EmrvisitIops.ToList();
+
+            IopsConvert(ehrIops, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, iops);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("IOPs converted.\n");
             });
 
-            foreach (var patientDocument in eHRDbContext.PatientDocuments) {
-                PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, progress);
-            }
+            
+           /* PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient documents converted.\n");
-            });
+            });*/
 
-            foreach (var patientNote in eHRDbContext.PatientNotes) {
-                PatientNotesConvert(patientNote, eHRDbContext, eyeMDDbContext, logger, progress, patientNotes, ehrVisits, visits, eyeMDPatients);
-            }
-            eyeMDDbContext.EmrptNotes.UpdateRange(patientNotes);
-            eyeMDDbContext.SaveChanges();
-            patientNotes = eyeMDDbContext.EmrptNotes.ToList();
+            
+            PatientNotesConvert(ehrPatientNotes, eHRDbContext, eyeMDDbContext, logger, progress, patientNotes, ehrVisits, visits, eyeMDPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient notes converted.\n");
             });
-
-            foreach (var planNarrative in eHRDbContext.PlanNarratives) {
-                PlanNarrativesConvert(planNarrative, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, planNarratives);
-            }
-            eyeMDDbContext.EmrvisitPlanNarratives.UpdateRange(planNarratives);
-            eyeMDDbContext.SaveChanges();
-            planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
+            
+            PlanNarrativesConvert(ehrPlanNarratives, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, planNarratives);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Plan narratives converted.\n");
             });
 
-            foreach (var procDiagPool in eHRDbContext.ProcDiagPools) {
-                ProcDiagPoolsConvert(procDiagPool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procDiagPools);
-            }
-            eyeMDDbContext.EmrvisitProcCodePoolDiags.UpdateRange(procDiagPools);
-            eyeMDDbContext.SaveChanges();
-            procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
+            ProcDiagPoolsConvert(ehrProcDiagPools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procDiagPools);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc diag pools converted.\n");
             });
 
-            foreach (var procPool in eHRDbContext.ProcPools) {
-                ProcPoolsConvert(procPool, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procCodePools, eyeMDPatients);
-            }
-            eyeMDDbContext.EmrvisitProcCodePools.UpdateRange(procCodePools);
-            eyeMDDbContext.SaveChanges();
-            procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
+            ProcPoolsConvert(ehrProcPools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procCodePools, eyeMDPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc pools converted.\n");
             });
 
-            foreach (var refraction in eHRDbContext.Refractions) {
-                RefractionsConvert(refraction, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, refractions);
-            }
-            eyeMDDbContext.EmrvisitRefractions.UpdateRange(refractions);
-            eyeMDDbContext.SaveChanges();
-            refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
+            RefractionsConvert(ehrRefractions, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, refractions);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Refractions converted.\n");
             });
 
-            foreach (var ros in eHRDbContext.Ros) {
-                RosConvert(ros, eHRDbContext, eyeMDDbContext, logger, progress);
-            }
+            RosConvert(ehrRos, eHRDbContext, eyeMDDbContext, logger, progress, ross);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("ROS converted.\n");
             });
 
-            foreach (var rx in eHRDbContext.RxMedications) {
-                RxConvert(rx, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
-            }
-            eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
-            eyeMDDbContext.SaveChanges();
-            rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
+
+            RxConvert(ehrRxs, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Rx medications converted.\n");
             });
 
-            foreach (var surgHistory in eHRDbContext.SurgHistories) {
-                SurgHistoriesConvert(surgHistory, eHRDbContext, eyeMDDbContext, logger, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
-            }
-            eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
-            eyeMDDbContext.SaveChanges();
-            surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
+
+            SurgHistoriesConvert(ehrSurgHistories, eHRDbContext, eyeMDDbContext, logger, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Surg histories converted.\n");
             });
 
-            foreach (var tech in eHRDbContext.Teches) {
-                TechsConvert(tech, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, techs);
-            }
-            eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
-            eyeMDDbContext.SaveChanges();
-            techs = eyeMDDbContext.EmrvisitTeches.ToList();
+
+            TechsConvert(ehrTechs, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, techs);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Techs converted.\n");
             });
+            
 
-            foreach (var tech2 in eHRDbContext.Tech2s) {
-                Tech2sConvert(tech2, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, tech2s);
-            }
-            eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
-            eyeMDDbContext.SaveChanges();
-            tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
+            Tech2sConvert(ehrTech2s, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, tech2s);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Tech2s converted.\n");
             });
         }
 
-        public static void PatientsConvert(ModelsC.Patient patient, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                // This is only in case the situation arises where we do eyemd and not ffpm
-                return;
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the patient with ID: {patient.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void AllergiesConvert(ModelsC.Allergy allergy, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<DmgPatient> ffpmPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int? visitId = null;
-                if (allergy.VisitId != null) {
-                    visitId = allergy.VisitId;
-                }
-                int? ptId = null;
-                if (allergy.PtId !<= 0) {
-                    ptId = allergy.PtId;
-                }
-                if (ptId == null && visitId == null) {
-                    logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {allergy.Id}");
-                }
-                else if (ptId == null) {
-                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
-                    if (eyeMDVisit != null) {
-                        ptId = eyeMDVisit.PtId;
-                    }
-                    else {
-                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {allergy.Id}");
-                    }
-                }
-                else if (visitId == null) {
-                    logger.Log($"EHR: EHR VisitID not found for visit order with ID: {allergy.Id}");
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    logger.Log($"EHR: EHR Patient not found for visit order with ID: {allergy.Id}");
+        public static void PatientsConvert(List<ModelsC.Patient> ehrPatients, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+            foreach (var ehrPatient in ehrPatients) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    // This is only in case the situation arises where we do eyemd and not ffpm
                     return;
                 }
-                ptId = eyeMDPatient.PtId;
-
-                DateTime? dosDate = null;
-                if (allergy.Dosdate != null && allergy.Dosdate != "" && !int.TryParse(allergy.Dosdate, out int dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(allergy.Dosdate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the patient with ID: {ehrPatient.Id}. Error: {e.Message}");
                 }
-                short? inactive = -1;
-                if (allergy.Inactive != null) {
-                    if (short.TryParse(allergy.Inactive, out short locum)) {
-                        inactive = locum;
-                    }
-                }
-                DateTime? created = null;
-                if (allergy.Created != null && allergy.Created != "" && !int.TryParse(allergy.Created, out dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(allergy.Created, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        created = tempDateTime;
-                    }
-                }
-                int? empId = null;
-                if (allergy.CreatedEmpId != null) {
-                    if (int.TryParse(allergy.CreatedEmpId, out int locum)) {
-                        empId = locum;
-                    }
-                }
-
-                var ehrOrig = allergies.FirstOrDefault(a => a.PtId == ptId && a.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
-                        AllergyName = TruncateString(allergy.AllergyName, 255),
-                        VisitId = visitId,
-                        PtId = ptId,
-                        Dosdate = dosDate,
-                        Severity = TruncateString(allergy.Severity, 100),
-                        Reaction = TruncateString(allergy.Reaction, 100),
-                        Inactive = inactive,
-                        StartDate = allergy.StartDate,
-                        Created = created,
-                        CreatedEmpId = empId,
-                        Snomedtype = null,
-                        AllergyConceptId = null,
-                        AllergyMappingId = null,
-                        InsertGuid = null,
-                        LastModified = null,
-                        Rxcui = null,
-                        Snomed = null,
-                        LastModifiedEmpId = null
-                        // No add and save as per instruction
-                    };
-                    allergies.Add(newVisitAllergy);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
             }
         }
 
-        public static void MedicalHistoriesConvert(ModelsC.MedicalHistory medicalHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
+        public static void AllergiesConvert(List<ModelsC.Allergy> ehrAllergies, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<DmgPatient> ffpmPatients) {
+            foreach (var allergy in ehrAllergies) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int? visitId = null;
+                    if (allergy.VisitId != null) {
+                        visitId = allergy.VisitId;
+                    }
+                    int? ptId = null;
+                    if (allergy.PtId! <= 0) {
+                        ptId = allergy.PtId;
+                    }
+                    if (ptId == null && visitId == null) {
+                        logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {allergy.Id}");
+                    }
+                    else if (ptId == null) {
+                        var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for visit order with ID: {allergy.Id}");
+                        }
+                    }
+                    else if (visitId == null) {
+                        logger.Log($"EHR: EHR VisitID not found for visit order with ID: {allergy.Id}");
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {allergy.Id}");
+                        return;
+                    }
+                    ptId = eyeMDPatient.PtId;
+
+                    DateTime? dosDate = null;
+                    if (allergy.Dosdate != null && allergy.Dosdate != "" && !int.TryParse(allergy.Dosdate, out int dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(allergy.Dosdate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    short? inactive = -1;
+                    if (allergy.Inactive != null) {
+                        if (short.TryParse(allergy.Inactive, out short locum)) {
+                            inactive = locum;
+                        }
+                    }
+                    DateTime? created = null;
+                    if (allergy.Created != null && allergy.Created != "" && !int.TryParse(allergy.Created, out dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(allergy.Created, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            created = tempDateTime;
+                        }
+                    }
+                    int? empId = null;
+                    if (allergy.CreatedEmpId != null) {
+                        if (int.TryParse(allergy.CreatedEmpId, out int locum)) {
+                            empId = locum;
+                        }
+                    }
+
+                    var ehrOrig = allergies.FirstOrDefault(a => a.PtId == ptId && a.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newVisitAllergy = new Brady_s_Conversion_Program.ModelsB.EmrvisitAllergy {
+                            AllergyName = TruncateString(allergy.AllergyName, 255),
+                            VisitId = visitId,
+                            PtId = ptId,
+                            Dosdate = dosDate,
+                            Severity = TruncateString(allergy.Severity, 100),
+                            Reaction = TruncateString(allergy.Reaction, 100),
+                            Inactive = inactive,
+                            StartDate = allergy.StartDate,
+                            Created = created,
+                            CreatedEmpId = empId,
+                            Snomedtype = null,
+                            AllergyConceptId = null,
+                            AllergyMappingId = null,
+                            InsertGuid = null,
+                            LastModified = null,
+                            Rxcui = null,
+                            Snomed = null,
+                            LastModifiedEmpId = null
+                            // No add and save as per instruction
+                        };
+                        allergies.Add(newVisitAllergy);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.UpdateRange(allergies);
+            eyeMDDbContext.SaveChanges();
+            allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
+        }
+
+        public static void MedicalHistoriesConvert(List<ModelsC.MedicalHistory> ehrMedicalHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
             ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, 
                 List<DmgPatient> ffpmPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && !int.TryParse(medicalHistory.Dosdate, out int dontCare)) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.Dosdate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var medicalHistory in ehrMedicalHistories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && !int.TryParse(medicalHistory.Dosdate, out int dontCare)) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(medicalHistory.Dosdate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (medicalHistory.VisitId != null) {
-                    visitId = medicalHistory.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for visit order with ID: {medicalHistory.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                int? ptId = null;
-                if (medicalHistory.PtId !<= 0) {
-                    ptId = medicalHistory.PtId;
-                    visitId = medicalHistory.VisitId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null) {
-                        ptId = eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (medicalHistory.VisitId != null) {
+                        visitId = medicalHistory.VisitId;
                     }
-                    else {
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
+                    if (convVisit == null) {
                         logger.Log($"EHR: EHR Visit not found for visit order with ID: {medicalHistory.Id}");
-                    }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-
-                int? controlId = null;
-                if (medicalHistory.ControlId != null) {
-                    if (int.TryParse(medicalHistory.ControlId, out int locum)) {
-                        controlId = locum;
-                    }
-                }
-                int? origVisMedHisID = null;
-                if (medicalHistory.OrigVisitMedicalHistoryId != null) {
-                    if (int.TryParse(medicalHistory.OrigVisitMedicalHistoryId, out int locum)) {
-                        origVisMedHisID = locum;
-                    }
-                }
-                int? origVisDiagCodePoolID = null;
-                if (medicalHistory.OrigVisitDiagCodePoolId != null) {
-                    if (int.TryParse(medicalHistory.OrigVisitDiagCodePoolId, out int locum)) {
-                        origVisDiagCodePoolID = locum;
-                    }
-                }
-                DateTime? origDosDate = null;
-                // No origDosDate
-                string description = "";
-                if (medicalHistory.Description != null) {
-                    description = medicalHistory.Description;
-                }
-                string code = "";
-                if (medicalHistory.Code != null) {
-                    code = medicalHistory.Code;
-                }
-                string modifier = "";
-                if (medicalHistory.Modifier != null) {
-                    modifier = medicalHistory.Modifier;
-                }
-                string codeICD10 = "";
-                if (medicalHistory.CodeIcd10 != null) {
-                    codeICD10 = medicalHistory.CodeIcd10;
-                }
-                string codeSnomed = "";
-                if (medicalHistory.CodeSnomed != null) {
-                    codeSnomed = medicalHistory.CodeSnomed;
-                }
-                int? typeId = null;
-                if (medicalHistory.TypeId != null) {
-                    if (int.TryParse(medicalHistory.TypeId, out int locum)) {
-                        typeId = locum;
-                    }
-                }
-                string location1 = "";
-                if (medicalHistory.Location1 != null) {
-                    location1 = medicalHistory.Location1;
-                }
-                short? severity1 = null;
-                if (short.TryParse(medicalHistory.Severity1, out short temp)) {
-                    severity1 = temp;
-                }
-                string onsetMonth1 = "";
-                if (medicalHistory.OnsetMonth1 != null) {
-                    onsetMonth1 = medicalHistory.OnsetMonth1;
-                }
-                string onsetDay1 = "";
-                if (medicalHistory.OnsetDay1 != null) {
-                    onsetDay1 = medicalHistory.OnsetDay1;
-                }
-                string onsetYear1 = "";
-                if (medicalHistory.OnsetYear1 != null) {
-                    onsetYear1 = medicalHistory.OnsetYear1;
-                }
-                string location2 = "";
-                if (medicalHistory.Location2 != null) {
-                    location2 = medicalHistory.Location2;
-                }
-                short? severity2 = null;
-                if (short.TryParse(medicalHistory.Severity2, out temp)) {
-                    severity2 = temp;
-                }
-                string onsetMonth2 = "";
-                if (medicalHistory.OnsetMonth2 != null) {
-                    onsetMonth2 = medicalHistory.OnsetMonth2;
-                }
-                string onsetDay2 = "";
-                if (medicalHistory.OnsetDay2 != null) {
-                    onsetDay2 = medicalHistory.OnsetDay2;
-                }
-                string onsetYear2 = "";
-                if (medicalHistory.OnsetYear2 != null) {
-                    onsetYear2 = medicalHistory.OnsetYear2;
-                }
-                short? isResolved1 = null;
-                if (short.TryParse(medicalHistory.IsResolved1, out temp)) {
-                    isResolved1 = temp;
-                }
-                int? resolvedVisitID1 = null;
-                if (medicalHistory.ResolvedVisitId1 != null) {
-                    if (int.TryParse(medicalHistory.ResolvedVisitId1, out int locum)) {
-                        resolvedVisitID1 = locum;
-                    }
-                }
-                int? resolvedReqProcID1 = null;
-                if (medicalHistory.ResolvedRequestedProcedureId1 != null) {
-                    if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId1, out int locum)) {
-                        resolvedReqProcID1 = locum;
-                    }
-                }
-                DateTime? resolvedDate1 = null;
-                if (medicalHistory.ResolvedDate1 != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.ResolvedDate1, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        resolvedDate1 = tempDateTime;
-                    }
-                }
-                string resolveType1 = "";
-                if (medicalHistory.ResolveType1 != null) {
-                    resolveType1 = medicalHistory.ResolveType1;
-                }
-                short isResolved2 = 0;
-                if (short.TryParse(medicalHistory.IsResolved2, out temp)) {
-                    isResolved2 = temp;
-                }
-                int? resolvedVisitID2 = null;
-                if (medicalHistory.ResolvedVisitId2 != null) {
-                    if (int.TryParse(medicalHistory.ResolvedVisitId2, out int locum)) {
-                        resolvedVisitID2 = locum;
-                    }
-                }
-                int? resolvedReqProcID2 = null;
-                if (medicalHistory.ResolvedRequestedProcedureId2 != null) {
-                    if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId2, out int locum)) {
-                        resolvedReqProcID2 = locum;
-                    }
-                }
-                DateTime? resolvedDate2 = null;
-                if (medicalHistory.ResolvedDate2 != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.ResolvedDate2, dateFormats,
-                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        resolvedDate2 = tempDateTime;
-                    }
-                }
-                string resolveType2 = "";
-                if (medicalHistory.ResolveType2 != null) {
-                    resolveType2 = medicalHistory.ResolveType2;
-                }
-                string notes = "";
-                if (medicalHistory.Notes != null) {
-                    notes = medicalHistory.Notes;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                bool doNotReconcile = false;
-                if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes" || medicalHistory.DoNotReconcile == "1") {
-                    doNotReconcile = true;
-                }
-                DateTime? lastModified = null;
-                if (medicalHistory.LastModified != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.LastModified, dateFormats,
-                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        lastModified = tempDateTime;
-                    }
-                }
-                DateTime? created = null;
-                if (medicalHistory.Created != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(medicalHistory.Created, dateFormats,
-                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        created = tempDateTime;
-                    }
-                }
-                int? createdEmpId = null;
-                if (medicalHistory.CreatedEmpId != null) {
-                    if (int.TryParse(medicalHistory.CreatedEmpId, out int locum)) {
-                        createdEmpId = locum;
-                    }
-                }
-                int? lastModifiedEmpId = null;
-                if (medicalHistory.LastModifiedEmpId != null) {
-                    if (int.TryParse(medicalHistory.LastModifiedEmpId, out int locum)) {
-                        lastModifiedEmpId = locum;
-                    }
-                }
-
-                var ehrOrig = medicalHistories.FirstOrDefault(mh => mh.PtId == ptId && mh.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newMedicalHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitMedicalHistory {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        ControlId = controlId,
-                        Dosdate = dosDate,
-                        OrigVisitMedicalHistoryId = origVisMedHisID,
-                        OrigVisitDiagCodePoolId = origVisDiagCodePoolID,
-                        OrigDosdate = origDosDate,
-                        Description = TruncateString(description, 255),
-                        Code = TruncateString(code, 50),
-                        Modifier = TruncateString(modifier, 50),
-                        CodeIcd10 = TruncateString(codeICD10, 50),
-                        CodeSnomed = TruncateString(codeSnomed, 50),
-                        TypeId = typeId,
-                        Location1 = TruncateString(location1, 50),
-                        Severity1 = severity1,
-                        OnsetMonth1 = TruncateString(onsetMonth1, 10),
-                        OnsetDay1 = TruncateString(onsetDay1, 10),
-                        OnsetYear1 = TruncateString(onsetYear1, 10),
-                        Location2 = TruncateString(location2, 50),
-                        Severity2 = severity2,
-                        OnsetMonth2 = TruncateString(onsetMonth2, 10),
-                        OnsetDay2 = TruncateString(onsetDay2, 10),
-                        OnsetYear2 = TruncateString(onsetYear2, 10),
-                        IsResolved1 = isResolved1,
-                        ResolvedVisitId1 = resolvedVisitID1,
-                        ResolvedRequestedProcedureId1 = resolvedReqProcID1,
-                        ResolvedDate1 = resolvedDate1,
-                        ResolveType1 = TruncateString(resolveType1, 75),
-                        IsResolved2 = isResolved2,
-                        ResolvedVisitId2 = resolvedVisitID2,
-                        ResolvedRequestedProcedureId2 = resolvedReqProcID2,
-                        ResolvedDate2 = resolvedDate2,
-                        ResolveType2 = TruncateString(resolveType2, 75),
-                        Notes = notes,
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        DoNotReconcile = doNotReconcile,
-                        LastModified = lastModified,
-                        Created = created,
-                        CreatedEmpId = createdEmpId,
-                        LastModifiedEmpId = lastModifiedEmpId,
-                        Location2OnsetVisitId = null
-                    };
-                    medicalHistories.Add(newMedicalHistory);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the medical history with ID: {medicalHistory.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void VisitsConvert(ModelsC.Visit visit, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
-            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders, List<DmgPatient> ffpmPatients, List<Emrpatient> eyeMDPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int ptId = -1;
-                if (visit.PtId > 0) {
-                    ptId = visit.PtId;
-                } else {
-                    logger.Log($"EHR: EHR Patient ID not found for visit with ID: {visit.Id}");
-                    return;
-                }
-                var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ptId.ToString());
-                if (ffpmPatient == null) {
-                    logger.Log($"EHR: FFPM Patient not found for visit with ID: {visit.Id}");
-                    return;
-                }
-
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ffpmPatient.PatientId.ToString());
-                if (eyeMDPatient == null) {
-                    logger.Log($"EHR: EHR Patient not found for visit with ID: {visit.Id}");
-                    return;
-                }
-                ptId = eyeMDPatient.PtId;
-
-                short tabPOHPMH = -1;
-                // no tabPOHPMH
-                short tabROS = -1;
-                // no tabROS
-                short tabCCHPI = -1;
-                // no tabCCHPI
-                short Workup = -1;
-                // no Workup
-                short tabWorkup2 = -1;
-                // no tabWorkup2
-                short tabMBalance = -1;
-                // no tabMBalance
-                short tabGonio = -1;
-                // no tabGonio
-                short tabSLE = -1;
-                // no tabSLE
-                short tabDFE = -1;
-                // no tabDFE
-                short tabLensRx = -1;
-                // no tabLensRx
-                short tabDiag = -1;
-                // no tabDiag
-                short tabPlan = -1;
-                // no tabPlan
-                short tabCoding = -1;
-                // no tabCoding
-                short MDSignedOff = -1;
-                if (short.TryParse(visit.MdsignedOff, out short temp)) {
-                    MDSignedOff = temp;
-                }
-
-                int? ClientSoftwareApptId = null;
-                if (visit.ClientSoftwareApptId != null) {
-                    if (int.TryParse(visit.ClientSoftwareApptId, out int locum)) {
-                        ClientSoftwareApptId = locum;
-                    }
-                }
-                int? clientSoftwarePtId = null;
-                if (eyeMDPatient != null && eyeMDPatient.ClientSoftwarePtId != null) {
-                    if (int.TryParse(eyeMDPatient.ClientSoftwarePtId, out int locum)) {
-                        clientSoftwarePtId = locum;
-                    }
-                }
-                int? locationId = null;
-                // no location id
-                int? providerEmpId = null;
-                if (visit.InitialSignedOffEmpId != null) {
-                    if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
-                        providerEmpId = locum;
-                    }
-                }
-                int? examTypeId = null;
-                // no exam type id
-                DateTime? dosDate = null;
-                if (visit.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visit.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
-                }
-                int? visitTech = null;
-                if (visit.VisitTech != null) {
-                    if (int.TryParse(visit.VisitTech, out int locum)) {
-                        visitTech = locum;
-                    }
-                }
-                int? visitDoctor = null;
-                if (visit.VisitDoctor != null) {
-                    if (int.TryParse(visit.VisitDoctor, out int locum)) {
-                        visitDoctor = locum;
-                    }
-                }
-                int? visitRefProviderId = null;
-                if (visit.VisitRefProviderId != null) {
-                    if (int.TryParse(visit.VisitRefProviderId, out int locum)) {
-                        visitRefProviderId = locum;
-                    }
-                }
-                int? visitPriCareProviderId = null;
-                if (visit.VisitPriCareProviderId != null) {
-                    if (int.TryParse(visit.VisitPriCareProviderId, out int locum)) {
-                        visitPriCareProviderId = locum;
-                    }
-                }
-                string visitType = "";
-                if (visit.VisitType != null) {
-                    visitType = visit.VisitType;
-                }
-                int? visitTypeId = null;
-                if (visit.VisitTypeId != null) {
-                    if (int.TryParse(visit.VisitTypeId, out int locum)) {
-                        visitTypeId = locum;
-                    }
-                }
-                int? visitClassId = null;
-                if (visit.VisitClassId != null) {
-                    if (int.TryParse(visit.VisitClassId, out int locum)) {
-                        visitClassId = locum;
-                    }
-                }
-                int? linkedProcVisitId = null;
-                if (visit.LinkedProcedureVisitId != null) {
-                    if (int.TryParse(visit.LinkedProcedureVisitId, out int locum)) {
-                        linkedProcVisitId = locum;
-                    }
-                }
-                string locationSpecific = "";
-                // not in incoming table
-                DateTime? mdSignedOffDate = null;
-                if (visit.MdsignedOffDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visit.MdsignedOffDate, dateFormats,
-                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        mdSignedOffDate = tempDateTime;
-                    }
-                }
-                int? mdSignedOffEmpId = null;
-                if (visit.MdsignedOffEmpId != null) {
-                    if (int.TryParse(visit.MdsignedOffEmpId, out int locum)) {
-                        mdSignedOffEmpId = locum;
-                    }
-                }
-                int? codeId = null;
-                // no codeId
-                int? procVisitTypeId = null;
-                // no procVisitTypeId
-                short? tabVitals = null;
-                // no tabVitals
-                int? visitEyeCareProvId = null;
-                if (visit.VisitEyeCareProviderId != null) {
-                    if (int.TryParse(visit.VisitEyeCareProviderId, out int locum)) {
-                        visitEyeCareProvId = locum;
-                    }
-                }
-                short? techIsDirty = null;
-                // no techIsDirty
-                string techDirtyInfo = "";
-                // no techDirtyInfo
-                short? techWU2IsDirty = null;
-                // no techWU2IsDirty
-                string techWU2DirtyInfo = "";
-                // no techWU2DirtyInfo
-                short? techROSIsDirty = null;
-                // no techROSIsDirty
-                string techROSDirtyInfo = "";
-                // no techROSDirtyInfo
-                short? diagTestIsDirty = null;
-                // no diagTestIsDirty
-                string diagTestDirtyInfo = "";
-                // no diagTestDirtyInfo
-                short? doctorIsDirty = null;
-                // no doctorIsDirty
-                string doctorDirtyInfo = "";
-                // no doctorDirtyInfo
-                short? providedPtEducation = null;
-                if (visit.ProvidedPtEducation != null) {
-                    if (short.TryParse(visit.ProvidedPtEducation, out short locum)) {
-                        providedPtEducation = locum;
-                    }
-                }
-                short? tabImmunizations = null;
-                // no tabImmunizations
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID
-                short? procIsDirty = null;
-                // no procIsDirty
-                string procDirtyInfo = "";
-                // no procDirtyInfo
-                short? excludedVisit = null;
-                if (visit.ExcludeVisit != null) {
-                    if (short.TryParse(visit.ExcludeVisit, out short locum)) {
-                        excludedVisit = locum;
-                    }
-                }
-                string clrefNoteRemember = "";
-                if (visit.ClrefNoteRemember != null) {
-                    clrefNoteRemember = visit.ClrefNoteRemember;
-                }
-                int? serviceType = null;
-                if (visit.ServiceType != null) {
-                    if (int.TryParse(visit.ServiceType, out int locum)) {
-                        serviceType = locum;
-                    }
-                }
-                string initialSignedOffRole = "";
-                if (visit.InitialSignedOffRole != null) {
-                    initialSignedOffRole = visit.InitialSignedOffRole;
-                }
-                short? initialSignedOff = null;
-                if (visit.InitialSignedOff != null) {
-                    if (short.TryParse(visit.InitialSignedOff, out short locum)) {
-                        initialSignedOff = locum;
-                    }
-                }
-                DateTime? initialSignedOffDate = null;
-                if (visit.InitialSignedOffDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visit.InitialSignedOffDate, dateFormats,
-                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        initialSignedOffDate = tempDateTime;
-                    }
-                }
-                int? initialSignedOffEmpId = null;
-                if (visit.InitialSignedOffEmpId != null) {
-                    if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
-                        initialSignedOffEmpId = locum;
-                    }
-                }
-                short? tabExam = null;
-                // no tabExam
-                short? tabDrawing = null;
-                // no tabDrawing
-                bool reconciledCCDA = false;
-                if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes" || visit.ReconciledCcda == "1") {
-                    reconciledCCDA = true;
-                }
-
-                // one patient can have multiple visits, so I wont check this one
-
-
-
-
-                var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
-                    // non nullable fields
-                    TabPohpmh = tabPOHPMH,
-                    TabRos = tabROS,
-                    TabCchpi = tabCCHPI,
-                    TabWorkup = Workup,
-                    TabWorkUp2 = tabWorkup2,
-                    TabMbalance = tabMBalance,
-                    TabGonio = tabGonio,
-                    TabSle = tabSLE,
-                    TabDfe = tabDFE,
-                    TabLensRx = tabLensRx,
-                    TabDiag = tabDiag,
-                    TabPlan = tabPlan,
-                    TabCoding = tabCoding,
-                    MdsignedOff = MDSignedOff,
-
-                    // nullable fields
-                    PtId = ptId,
-                    ClientSoftwareApptId = ClientSoftwareApptId,
-                    ClientSoftwarePtId = clientSoftwarePtId,
-                    LocationId = locationId,
-                    ProviderEmpId = providerEmpId,
-                    ExamType = examTypeId,
-                    Dosdate = dosDate,
-                    VisitTech = visitTech,
-                    VisitDoctor = visitDoctor,
-                    VisitRefProviderId = visitRefProviderId,
-                    VisitPriCareProviderId = visitPriCareProviderId,
-                    VisitType = TruncateString(visitType, 50),
-                    VisitTypeId = visitTypeId,
-                    VisitClassId = visitClassId,
-                    LinkedProcedureVisitId = linkedProcVisitId,
-                    LocationSpecific = TruncateString(locationSpecific, 50),
-                    MdsignedOffDate = mdSignedOffDate,
-                    MdsignedOffEmpId = mdSignedOffEmpId,
-                    CodeId = codeId,
-                    ProcVisitTypeId = procVisitTypeId,
-                    TabVitals = tabVitals,
-                    VisitEyeCareProviderId = visitEyeCareProvId,
-                    TechIsDirty = techIsDirty,
-                    TechDirtyInfo = TruncateString(techDirtyInfo, 255),
-                    TechWu2isDirty = techWU2IsDirty,
-                    TechWu2dirtyInfo = TruncateString(techWU2DirtyInfo, 255),
-                    TechRosisDirty = techROSIsDirty,
-                    TechRosdirtyInfo = TruncateString(techROSDirtyInfo, 255),
-                    DiagTestIsDirty = diagTestIsDirty,
-                    DiagTestDirtyInfo = TruncateString(diagTestDirtyInfo, 255),
-                    DoctorIsDirty = doctorIsDirty,
-                    DoctorDirtyInfo = TruncateString(doctorDirtyInfo, 255),
-                    ReconciledCcda = reconciledCCDA,
-                    ProvidedPtEducation = providedPtEducation,
-                    TabImmunizations = tabImmunizations,
-                    InsertGuid = TruncateString(insertGUID, 50),
-                    ProcIsDirty = procIsDirty,
-                    ProcDirtyInfo = TruncateString(procDirtyInfo, 255),
-                    ExcludeVisit = excludedVisit,
-                    ClrefNoteRemember = clrefNoteRemember,
-                    ServiceType = serviceType,
-                    InitialSignedOffRole = TruncateString(initialSignedOffRole, 50),
-                    InitialSignedOff = initialSignedOff,
-                    InitialSignedOffDate = initialSignedOffDate,
-                    InitialSignedOffEmpId = initialSignedOffEmpId,
-                    TabExam = tabExam,
-                    TabDrawing = tabDrawing,
-                    Wu2visitTypeId = null
-                };
-                visits.Add(newVisit);
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void VisitOrdersConvert(ModelsC.VisitOrder visitOrder, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext,
-            ILogger logger, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
-                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders, List<DmgPatient> ffpmPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosdate = null;
-                if (visitOrder.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visitOrder.Dosdate, dateFormats,
-                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosdate = tempDateTime;
-                    }
-                }
-                int? visitId = null;
-                if (visitOrder.VisitId != null) {
-                    visitId = visitOrder.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
-                    return;
-                }
-                int? ptId = null;
-                if (visitOrder.PtId !<= 0) {
-                    ptId = visitOrder.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null) {
-                        ptId = eyeMDVisit.PtId;
-                    }
-                    else {
-                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
-                    }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-                string description = "";
-                if (visitOrder.OrderDescription != null) {
-                    description = visitOrder.OrderDescription;
-                }
-                string orderWhen = "";
-                if (visitOrder.OrderWhen != null) {
-                    orderWhen = visitOrder.OrderWhen;
-                }
-                string orderScheduledDate = "";
-                if (visitOrder.OrderScheduledDate != null) {
-                    orderScheduledDate = visitOrder.OrderScheduledDate;
-                }
-                short doNotPrintRx = -1;
-                if (short.TryParse(visitOrder.DoNotPrintRx, out short temp)) {
-                    doNotPrintRx = temp;
-                }
-                int? addedbyFastPlanId = null;
-                if (visitOrder.AddedbyFastPlanId != null) {
-                    if (int.TryParse(visitOrder.AddedbyFastPlanId, out int locum)) {
-                        addedbyFastPlanId = locum;
-                    }
-                }
-                int? orderTypeId = null;
-                if (visitOrder.OrderTypeId != null) {
-                    if (int.TryParse(visitOrder.OrderTypeId, out int locum)) {
-                        orderTypeId = locum;
-                    }
-                }
-                short? orderHasSpecimen = null;
-                if (short.TryParse(visitOrder.OrderHasSpecimen, out temp)) {
-                    orderHasSpecimen = temp;
-                }
-                string orderSpecimenType = "";
-                if (visitOrder.OrderSpecimenType != null) {
-                    orderSpecimenType = visitOrder.OrderSpecimenType;
-                }
-                string orderSpecimenId = "";
-                if (visitOrder.OrderSpecimenId != null) {
-                    orderSpecimenId = visitOrder.OrderSpecimenId;
-                }
-                DateTime? orderLabResultFulfilledDate = null;
-                if (visitOrder.OrderLabResultFulfilledDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visitOrder.OrderLabResultFulfilledDate, dateFormats,
-                                                                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        orderLabResultFulfilledDate = tempDateTime;
-                    }
-                }
-                int? orderLabResultId = null;
-                if (visitOrder.OrderLabResultId != null) {
-                    if (int.TryParse(visitOrder.OrderLabResultId, out int locum)) {
-                        orderLabResultId = locum;
-                    }
-                }
-                short? orderNeedsFollowUp = null;
-                if (short.TryParse(visitOrder.OrderNeedsFollowup, out temp)) {
-                    orderNeedsFollowUp = temp;
-                }
-                short? orderWasFollowedUp = null;
-                if (short.TryParse(visitOrder.OrderWasFollowedup, out temp)) {
-                    orderWasFollowedUp = temp;
-                }
-                string orderNotes = "";
-                if (visitOrder.OrderNotes != null) {
-                    orderNotes = visitOrder.OrderNotes;
-                }
-                short? summarySent = null;
-                if (short.TryParse(visitOrder.SummarySent, out temp)) {
-                    summarySent = temp;
-                }
-                string orderRemarks = "";
-                if (visitOrder.OrderRemarks != null) {
-                    orderRemarks = visitOrder.OrderRemarks;
-                }
-                string insertGUID = Guid.NewGuid().ToString(); // This looks like it is supposed to be some large string. I don't see where it is coming from
-
-                string studyInstanceUID = "";
-                if (visitOrder.StudyInstanceUid != null) {
-                    studyInstanceUID = visitOrder.StudyInstanceUid;
-                }
-                string dicomRequestedProc = "";
-                if (visitOrder.DicomrequestedProcedureId != null) {
-                    dicomRequestedProc = visitOrder.DicomrequestedProcedureId;
-                }
-                string dicomScheduledProcStepId = "";
-                if (visitOrder.DicomscheduledProcedureStepId != null) {
-                    dicomScheduledProcStepId = visitOrder.DicomscheduledProcedureStepId;
-                }
-                int? orderModality = null;
-                if (visitOrder.OrderModalityId != null) {
-                    if (int.TryParse(visitOrder.OrderModalityId, out int locum)) {
-                        orderModality = locum;
-                    }
-                }
-                string scheduledAE = "";
-                if (visitOrder.ScheduledAe != null) {
-                    scheduledAE = visitOrder.ScheduledAe;
-                }
-                string CodeCPT = "";
-                if (visitOrder.CodeCpt != null) {
-                    CodeCPT = visitOrder.CodeCpt;
-                }
-                string CodeSNOMED = "";
-                if (visitOrder.CodeSnomed != null) {
-                    CodeSNOMED = visitOrder.CodeSnomed;
-                }
-                int? recordedEmpRole = null;
-                if (visitOrder.RecordedEmpRole != null) {
-                    if (int.TryParse(visitOrder.RecordedEmpRole, out int locum)) {
-                        recordedEmpRole = locum;
-                    }
-                }
-                short? summaryTransmitted = null;
-                if (short.TryParse(visitOrder.SummaryTransmitted, out temp)) {
-                    summaryTransmitted = temp;
-                }
-                string codeLOINC = "";
-                if (visitOrder.CodeLoinc != null) {
-                    codeLOINC = visitOrder.CodeLoinc;
-                }
-                string RefProvFirst = "";
-                if (visitOrder.RefProviderFirstName != null) {
-                    RefProvFirst = visitOrder.RefProviderFirstName;
-                }
-                string RefProvLast = "";
-                if (visitOrder.RefProviderLastName != null) {
-                    RefProvLast = visitOrder.RefProviderLastName;
-                }
-                string refProvId = "";
-                if (visitOrder.RefProviderId != null) {
-                    refProvId = visitOrder.RefProviderId;
-                }
-                string refProvOrgName = "";
-                if (visitOrder.RefProviderOrganizationName != null) {
-                    refProvOrgName = visitOrder.RefProviderOrganizationName;
-                }
-
-                var ehrOrig = eyeMDVisitOrders.FirstOrDefault(vo => vo.PtId == ptId && vo.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
-                        VisitId = visitId,
-                        PtId = ptId,
-                        Dosdate = dosdate,
-                        OrderDescription = description, // Assuming NVARCHAR(MAX), no truncation needed
-                        OrderWhen = TruncateString(orderWhen, 255),
-                        OrderScheduledDate = orderScheduledDate, // Assuming the date is stored as string
-                        DoNotPrintRx = doNotPrintRx,
-                        AddedbyFastPlanId = addedbyFastPlanId,
-                        OrderTypeId = orderTypeId,
-                        OrderHasSpecimen = orderHasSpecimen,
-                        OrderSpecimenType = orderSpecimenType, // Assuming NVARCHAR(MAX), no truncation needed
-                        OrderSpecimenId = orderSpecimenId, // Assuming NVARCHAR(MAX), no truncation needed
-                        OrderLabResultFulfilledDate = orderLabResultFulfilledDate,
-                        OrderLabResultId = orderLabResultId,
-                        OrderNeedsFollowup = orderNeedsFollowUp,
-                        OrderWasFollowedup = orderWasFollowedUp,
-                        OrderNotes = orderNotes, // Assuming NVARCHAR(MAX), no truncation needed
-                        SummarySent = summarySent,
-                        OrderRemarks = TruncateString(orderRemarks, 255),
-                        InsertGuid = insertGUID,
-                        StudyInstanceUid = studyInstanceUID,
-                        DicomrequestedProcedureId = dicomRequestedProc,
-                        DicomscheduledProcedureStepId = dicomScheduledProcStepId,
-                        OrderModalityId = orderModality,
-                        ScheduledAe = scheduledAE,
-                        CodeCpt = CodeCPT,
-                        CodeSnomed = CodeSNOMED,
-                        RecordedEmpRole = recordedEmpRole,
-                        SummaryTransmitted = summaryTransmitted,
-                        CodeLoinc = codeLOINC,
-                        RefProviderFirstName = RefProvFirst,
-                        RefProviderLastName = RefProvLast,
-                        RefProviderId = refProvId,
-                        RefProviderOrganizationName = refProvOrgName
-                    };
-                    visitOrders.Add(newVisitOrder);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void VisitDoctorsConvert(ModelsC.VisitDoctor visitDoctor, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosdate = null;
-                if (visitDoctor.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(visitDoctor.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosdate = tempDateTime;
-                    }
-                }
-                int? visitId = null;
-                if (visitDoctor.OldVisitId != null) {
-                    visitId = visitDoctor.OldVisitId;
-                }
-                int? ptId = null;
-                if (visitDoctor.PtId !<= 0) {
-                    ptId = visitDoctor.PtId;
-                }
-
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
-                if (eyeMDVisit != null) {
-                    ptId = eyeMDVisit.PtId;
-                }
-                if (ptId == null || ptId !<= 0) {
-                    if (eyeMDVisit != null) {
-                        ptId = eyeMDVisit.PtId;
-                    }
-                    else {
-                        logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
-                    }
-                }
-                else if (visitId == null) {
-                    logger.Log($"EHR: EHR VisitID not found for visit order with ID: {visitDoctor.Id}");
-                }
-
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
-                    if (eyeMDPatient == null) {
-                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitDoctor.Id}");
                         return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    int? ptId = null;
+                    if (medicalHistory.PtId! <= 0) {
+                        ptId = medicalHistory.PtId;
+                        visitId = medicalHistory.VisitId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for visit order with ID: {medicalHistory.Id}");
+                        }
                     }
                     else {
                         ptId = eyeMDPatient.PtId;
                     }
+
+                    int? controlId = null;
+                    if (medicalHistory.ControlId != null) {
+                        if (int.TryParse(medicalHistory.ControlId, out int locum)) {
+                            controlId = locum;
+                        }
+                    }
+                    int? origVisMedHisID = null;
+                    if (medicalHistory.OrigVisitMedicalHistoryId != null) {
+                        if (int.TryParse(medicalHistory.OrigVisitMedicalHistoryId, out int locum)) {
+                            origVisMedHisID = locum;
+                        }
+                    }
+                    int? origVisDiagCodePoolID = null;
+                    if (medicalHistory.OrigVisitDiagCodePoolId != null) {
+                        if (int.TryParse(medicalHistory.OrigVisitDiagCodePoolId, out int locum)) {
+                            origVisDiagCodePoolID = locum;
+                        }
+                    }
+                    DateTime? origDosDate = null;
+                    // No origDosDate
+                    string description = "";
+                    if (medicalHistory.Description != null) {
+                        description = medicalHistory.Description;
+                    }
+                    string code = "";
+                    if (medicalHistory.Code != null) {
+                        code = medicalHistory.Code;
+                    }
+                    string modifier = "";
+                    if (medicalHistory.Modifier != null) {
+                        modifier = medicalHistory.Modifier;
+                    }
+                    string codeICD10 = "";
+                    if (medicalHistory.CodeIcd10 != null) {
+                        codeICD10 = medicalHistory.CodeIcd10;
+                    }
+                    string codeSnomed = "";
+                    if (medicalHistory.CodeSnomed != null) {
+                        codeSnomed = medicalHistory.CodeSnomed;
+                    }
+                    int? typeId = null;
+                    if (medicalHistory.TypeId != null) {
+                        if (int.TryParse(medicalHistory.TypeId, out int locum)) {
+                            typeId = locum;
+                        }
+                    }
+                    string location1 = "";
+                    if (medicalHistory.Location1 != null) {
+                        location1 = medicalHistory.Location1;
+                    }
+                    short? severity1 = null;
+                    if (short.TryParse(medicalHistory.Severity1, out short temp)) {
+                        severity1 = temp;
+                    }
+                    string onsetMonth1 = "";
+                    if (medicalHistory.OnsetMonth1 != null) {
+                        onsetMonth1 = medicalHistory.OnsetMonth1;
+                    }
+                    string onsetDay1 = "";
+                    if (medicalHistory.OnsetDay1 != null) {
+                        onsetDay1 = medicalHistory.OnsetDay1;
+                    }
+                    string onsetYear1 = "";
+                    if (medicalHistory.OnsetYear1 != null) {
+                        onsetYear1 = medicalHistory.OnsetYear1;
+                    }
+                    string location2 = "";
+                    if (medicalHistory.Location2 != null) {
+                        location2 = medicalHistory.Location2;
+                    }
+                    short? severity2 = null;
+                    if (short.TryParse(medicalHistory.Severity2, out temp)) {
+                        severity2 = temp;
+                    }
+                    string onsetMonth2 = "";
+                    if (medicalHistory.OnsetMonth2 != null) {
+                        onsetMonth2 = medicalHistory.OnsetMonth2;
+                    }
+                    string onsetDay2 = "";
+                    if (medicalHistory.OnsetDay2 != null) {
+                        onsetDay2 = medicalHistory.OnsetDay2;
+                    }
+                    string onsetYear2 = "";
+                    if (medicalHistory.OnsetYear2 != null) {
+                        onsetYear2 = medicalHistory.OnsetYear2;
+                    }
+                    short? isResolved1 = null;
+                    if (short.TryParse(medicalHistory.IsResolved1, out temp)) {
+                        isResolved1 = temp;
+                    }
+                    int? resolvedVisitID1 = null;
+                    if (medicalHistory.ResolvedVisitId1 != null) {
+                        if (int.TryParse(medicalHistory.ResolvedVisitId1, out int locum)) {
+                            resolvedVisitID1 = locum;
+                        }
+                    }
+                    int? resolvedReqProcID1 = null;
+                    if (medicalHistory.ResolvedRequestedProcedureId1 != null) {
+                        if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId1, out int locum)) {
+                            resolvedReqProcID1 = locum;
+                        }
+                    }
+                    DateTime? resolvedDate1 = null;
+                    if (medicalHistory.ResolvedDate1 != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(medicalHistory.ResolvedDate1, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            resolvedDate1 = tempDateTime;
+                        }
+                    }
+                    string resolveType1 = "";
+                    if (medicalHistory.ResolveType1 != null) {
+                        resolveType1 = medicalHistory.ResolveType1;
+                    }
+                    short isResolved2 = 0;
+                    if (short.TryParse(medicalHistory.IsResolved2, out temp)) {
+                        isResolved2 = temp;
+                    }
+                    int? resolvedVisitID2 = null;
+                    if (medicalHistory.ResolvedVisitId2 != null) {
+                        if (int.TryParse(medicalHistory.ResolvedVisitId2, out int locum)) {
+                            resolvedVisitID2 = locum;
+                        }
+                    }
+                    int? resolvedReqProcID2 = null;
+                    if (medicalHistory.ResolvedRequestedProcedureId2 != null) {
+                        if (int.TryParse(medicalHistory.ResolvedRequestedProcedureId2, out int locum)) {
+                            resolvedReqProcID2 = locum;
+                        }
+                    }
+                    DateTime? resolvedDate2 = null;
+                    if (medicalHistory.ResolvedDate2 != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(medicalHistory.ResolvedDate2, dateFormats,
+                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            resolvedDate2 = tempDateTime;
+                        }
+                    }
+                    string resolveType2 = "";
+                    if (medicalHistory.ResolveType2 != null) {
+                        resolveType2 = medicalHistory.ResolveType2;
+                    }
+                    string notes = "";
+                    if (medicalHistory.Notes != null) {
+                        notes = medicalHistory.Notes;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    bool doNotReconcile = false;
+                    if (medicalHistory.DoNotReconcile != null && medicalHistory.DoNotReconcile.ToLower() == "yes" || medicalHistory.DoNotReconcile == "1") {
+                        doNotReconcile = true;
+                    }
+                    DateTime? lastModified = null;
+                    if (medicalHistory.LastModified != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(medicalHistory.LastModified, dateFormats,
+                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            lastModified = tempDateTime;
+                        }
+                    }
+                    DateTime? created = null;
+                    if (medicalHistory.Created != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(medicalHistory.Created, dateFormats,
+                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            created = tempDateTime;
+                        }
+                    }
+                    int? createdEmpId = null;
+                    if (medicalHistory.CreatedEmpId != null) {
+                        if (int.TryParse(medicalHistory.CreatedEmpId, out int locum)) {
+                            createdEmpId = locum;
+                        }
+                    }
+                    int? lastModifiedEmpId = null;
+                    if (medicalHistory.LastModifiedEmpId != null) {
+                        if (int.TryParse(medicalHistory.LastModifiedEmpId, out int locum)) {
+                            lastModifiedEmpId = locum;
+                        }
+                    }
+
+                    var ehrOrig = medicalHistories.FirstOrDefault(mh => mh.PtId == ptId && mh.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newMedicalHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitMedicalHistory {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            ControlId = controlId,
+                            Dosdate = dosDate,
+                            OrigVisitMedicalHistoryId = origVisMedHisID,
+                            OrigVisitDiagCodePoolId = origVisDiagCodePoolID,
+                            OrigDosdate = origDosDate,
+                            Description = TruncateString(description, 255),
+                            Code = TruncateString(code, 50),
+                            Modifier = TruncateString(modifier, 50),
+                            CodeIcd10 = TruncateString(codeICD10, 50),
+                            CodeSnomed = TruncateString(codeSnomed, 50),
+                            TypeId = typeId,
+                            Location1 = TruncateString(location1, 50),
+                            Severity1 = severity1,
+                            OnsetMonth1 = TruncateString(onsetMonth1, 10),
+                            OnsetDay1 = TruncateString(onsetDay1, 10),
+                            OnsetYear1 = TruncateString(onsetYear1, 10),
+                            Location2 = TruncateString(location2, 50),
+                            Severity2 = severity2,
+                            OnsetMonth2 = TruncateString(onsetMonth2, 10),
+                            OnsetDay2 = TruncateString(onsetDay2, 10),
+                            OnsetYear2 = TruncateString(onsetYear2, 10),
+                            IsResolved1 = isResolved1,
+                            ResolvedVisitId1 = resolvedVisitID1,
+                            ResolvedRequestedProcedureId1 = resolvedReqProcID1,
+                            ResolvedDate1 = resolvedDate1,
+                            ResolveType1 = TruncateString(resolveType1, 75),
+                            IsResolved2 = isResolved2,
+                            ResolvedVisitId2 = resolvedVisitID2,
+                            ResolvedRequestedProcedureId2 = resolvedReqProcID2,
+                            ResolvedDate2 = resolvedDate2,
+                            ResolveType2 = TruncateString(resolveType2, 75),
+                            Notes = notes,
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            DoNotReconcile = doNotReconcile,
+                            LastModified = lastModified,
+                            Created = created,
+                            CreatedEmpId = createdEmpId,
+                            LastModifiedEmpId = lastModifiedEmpId,
+                            Location2OnsetVisitId = null
+                        };
+                        medicalHistories.Add(newMedicalHistory);
+                    }
                 }
-                else {
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the medical history with ID: {medicalHistory.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.UpdateRange(medicalHistories);
+            eyeMDDbContext.SaveChanges();
+            medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
+        }
+
+        public static void VisitsConvert(List<Visit> ehrVisits, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
+            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders, List<DmgPatient> ffpmPatients, List<Emrpatient> eyeMDPatients) {
+            foreach (var visit in ehrVisits) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int ptId = -1;
+                    if (visit.PtId > 0) {
+                        ptId = visit.PtId;
+                    }
+                    else {
+                        logger.Log($"EHR: EHR Patient ID not found for visit with ID: {visit.Id}");
+                        return;
+                    }
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ptId.ToString());
+                    if (ffpmPatient == null) {
+                        logger.Log($"EHR: FFPM Patient not found for visit with ID: {visit.Id}");
+                        return;
+                    }
+
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ffpmPatient.PatientId.ToString());
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EHR Patient not found for visit with ID: {visit.Id}");
+                        return;
+                    }
                     ptId = eyeMDPatient.PtId;
-                }
 
-                string sleDiagOd = "";
-                if (visitDoctor.SlediagOd != null) {
-                    sleDiagOd = visitDoctor.SlediagOd;
-                }
-                string sleDiagOs = "";
-                if (visitDoctor.SlediagOs != null) {
-                    sleDiagOs = visitDoctor.SlediagOs;
-                }
-                string sleComments = "";
-                if (visitDoctor.Slecomments != null) {
-                    sleComments = visitDoctor.Slecomments;
-                }
-                string dfeCdRatioVertOd = "";
-                if (visitDoctor.DfecdratioVertOd != null) {
-                    dfeCdRatioVertOd = visitDoctor.DfecdratioVertOd;
-                }
-                string dfeCdRatioVertOs = "";
-                if (visitDoctor.DfecdratioVertOs != null) {
-                    dfeCdRatioVertOs = visitDoctor.DfecdratioVertOs;
-                }
-                string dfeCdRatioHorizOd = "";
-                if (visitDoctor.DfecdratioHorizOd != null) {
-                    dfeCdRatioHorizOd = visitDoctor.DfecdratioHorizOd;
-                }
-                string dfeCdRatioHorizOs = "";
-                if (visitDoctor.DfecdratioHorizOs != null) {
-                    dfeCdRatioHorizOs = visitDoctor.DfecdratioHorizOs;
-                }
-                string dfeDiagOd = "";
-                if (visitDoctor.DfediagOd != null) {
-                    dfeDiagOd = visitDoctor.DfediagOd;
-                }
-                string dfeDIagOs = "";
-                if (visitDoctor.DfediagOs != null) {
-                    dfeDIagOs = visitDoctor.DfediagOs;
-                }
-                string dfeComments = "";
-                if (visitDoctor.Dfecomments != null) {
-                    dfeComments = visitDoctor.Dfecomments;
-                }
-                string diagOtherDiagnoses = "";
-                if (visitDoctor.DiagOtherDiagnoses != null) {
-                    diagOtherDiagnoses = visitDoctor.DiagOtherDiagnoses;
-                }
-                string planStaffOrderComments = "";
-                if (visitDoctor.PlanStaffOrderComments != null) {
-                    planStaffOrderComments = visitDoctor.PlanStaffOrderComments;
-                }
-                string planRTOWhen = "";
-                if (visitDoctor.PlanRtowhen != null) {
-                    planRTOWhen = visitDoctor.PlanRtowhen;
-                }
-                string PlanRTOReason = "";
-                if (visitDoctor.PlanRtoreason != null) {
-                    PlanRTOReason = visitDoctor.PlanRtoreason;
-                }
-                short planDictateReferingDoc = -1;
-                if (short.TryParse(visitDoctor.PlanDictateReferingDoc, out short temp)) {
-                    planDictateReferingDoc = temp;
-                }
-                short planDictatePriCareDoc = -1;
-                if (short.TryParse(visitDoctor.PlanDictatePriCareDoc, out temp)) {
-                    planDictatePriCareDoc = temp;
-                }
-                short planDictatePatient = -1;
-                if (short.TryParse(visitDoctor.PlanDictatePatient, out temp)) {
-                    planDictatePatient = temp;
-                }
-                string planNextScheduledAppt = "";
-                if (visitDoctor.PlanNextScheduledAppt != null) {
-                    planNextScheduledAppt = visitDoctor.PlanNextScheduledAppt;
-                }
-                int? codingMDM = null;
-                if (visitDoctor.CodingMdm != null) {
-                    if (int.TryParse(visitDoctor.CodingMdm, out int locum)) {
-                        codingMDM = locum;
+                    short tabPOHPMH = -1;
+                    // no tabPOHPMH
+                    short tabROS = -1;
+                    // no tabROS
+                    short tabCCHPI = -1;
+                    // no tabCCHPI
+                    short Workup = -1;
+                    // no Workup
+                    short tabWorkup2 = -1;
+                    // no tabWorkup2
+                    short tabMBalance = -1;
+                    // no tabMBalance
+                    short tabGonio = -1;
+                    // no tabGonio
+                    short tabSLE = -1;
+                    // no tabSLE
+                    short tabDFE = -1;
+                    // no tabDFE
+                    short tabLensRx = -1;
+                    // no tabLensRx
+                    short tabDiag = -1;
+                    // no tabDiag
+                    short tabPlan = -1;
+                    // no tabPlan
+                    short tabCoding = -1;
+                    // no tabCoding
+                    short MDSignedOff = -1;
+                    if (short.TryParse(visit.MdsignedOff, out short temp)) {
+                        MDSignedOff = temp;
                     }
-                }
-                string codingAdditionalProcs = "";
-                if (visitDoctor.CodingAdditionalProcedures != null) {
-                    codingAdditionalProcs = visitDoctor.CodingAdditionalProcedures;
-                }
-                string planRxMedRemarks = "";
-                if (visitDoctor.PlanRxMedRemarks != null) {
-                    planRxMedRemarks = visitDoctor.PlanRxMedRemarks;
-                }
-                string planRxOrdersRemarks = "";
-                if (visitDoctor.PlanRxOrdersRemarks != null) {
-                    planRxOrdersRemarks = visitDoctor.PlanRxOrdersRemarks;
-                }
-                short? dfeExtOpth = null;
-                if (visitDoctor.DfeextOpth != null) {
-                    if (short.TryParse(visitDoctor.DfeextOpth, out short locum)) {
-                        dfeExtOpth = locum;
-                    }
-                }
-                string dfeLensUsed = "";
-                if (visitDoctor.DfelensUsed != null) {
-                    dfeLensUsed = visitDoctor.DfelensUsed;
-                }
-                string planTargetIOPOd = "";
-                if (visitDoctor.PlanTargetIopod != null) {
-                    planTargetIOPOd = visitDoctor.PlanTargetIopod;
-                }
-                string planTargetIOPOs = "";
-                if (visitDoctor.PlanTargetIopos != null) {
-                    planTargetIOPOs = visitDoctor.PlanTargetIopos;
-                }
-                string dfeDilatedPupilSizeOd = "";
-                if (visitDoctor.DfedilatedPupilSizeOd != null) {
-                    dfeDilatedPupilSizeOd = visitDoctor.DfedilatedPupilSizeOd;
-                }
-                string dfeDilatedPupilSizeOs = "";
-                if (visitDoctor.DfedilatedPupilSizeOs != null) {
-                    dfeDilatedPupilSizeOs = visitDoctor.DfedilatedPupilSizeOs;
-                }
-                short? planDictateEyeCareDoc = null;
-                if (visitDoctor.PlanDictateEyeCareDoc != null) {
-                    if (short.TryParse(visitDoctor.PlanDictateEyeCareDoc, out short locum)) {
-                        planDictateEyeCareDoc = locum;
-                    }
-                }
-                string planLensRxNotes = "";
-                if (visitDoctor.PlanLensRxNotes != null) {
-                    planLensRxNotes = visitDoctor.PlanLensRxNotes;
-                }
-                short? providedClinicalSummary = null;
-                if (visitDoctor.ProvidedClinicalSummary != null) {
-                    if (short.TryParse(visitDoctor.ProvidedClinicalSummary, out short locum)) {
-                        providedClinicalSummary = locum;
-                    }
-                }
-                int? providedClinicalSummaryDays = null;
-                if (visitDoctor.ProvidedClinicalSummaryDays != null) {
-                    if (int.TryParse(visitDoctor.ProvidedClinicalSummaryDays, out int locum)) {
-                        providedClinicalSummaryDays = locum;
-                    }
-                }
-                short? sleAbutehl = null;
-                if (visitDoctor.Sleabutehl != null) {
-                    if (short.TryParse(visitDoctor.Sleabutehl, out short locum)) {
-                        sleAbutehl = locum;
-                    }
-                }
-                int? scribeEmpId = null;
-                if (visitDoctor.ScribeEmpId != null) {
-                    if (int.TryParse(visitDoctor.ScribeEmpId, out int locum)) {
-                        scribeEmpId = locum;
-                    }
-                }
-                int? codingC3EMLevel = null;
-                if (visitDoctor.CodingC3emlevel != null) {
-                    if (int.TryParse(visitDoctor.CodingC3emlevel, out int locum)) {
-                        codingC3EMLevel = locum;
-                    }
-                }
-                int? codingC3EyeCareLevel = null;
-                if (visitDoctor.CodingC3eyeCareLevel != null) {
-                    if (int.TryParse(visitDoctor.CodingC3eyeCareLevel, out int locum)) {
-                        codingC3EyeCareLevel = locum;
-                    }
-                }
-                string pdDistOu = "";
-                if (visitDoctor.PddistOu != null) {
-                    pdDistOu = visitDoctor.PddistOu;
-                }
-                string pdNearOu = "";
-                if (visitDoctor.PdnearOu != null) {
-                    pdNearOu = visitDoctor.PdnearOu;
-                }
 
-                var ehrOrig = visitDoctors.FirstOrDefault(vd => vd.PtId == ptId && vd.VisitId == visitId);
+                    int? ClientSoftwareApptId = null;
+                    if (visit.ClientSoftwareApptId != null) {
+                        if (int.TryParse(visit.ClientSoftwareApptId, out int locum)) {
+                            ClientSoftwareApptId = locum;
+                        }
+                    }
+                    int? clientSoftwarePtId = null;
+                    if (eyeMDPatient != null && eyeMDPatient.ClientSoftwarePtId != null) {
+                        if (int.TryParse(eyeMDPatient.ClientSoftwarePtId, out int locum)) {
+                            clientSoftwarePtId = locum;
+                        }
+                    }
+                    int? locationId = null;
+                    // no location id
+                    int? providerEmpId = null;
+                    if (visit.InitialSignedOffEmpId != null) {
+                        if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
+                            providerEmpId = locum;
+                        }
+                    }
+                    int? examTypeId = null;
+                    // no exam type id
+                    DateTime? dosDate = null;
+                    if (visit.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visit.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    int? visitTech = null;
+                    if (visit.VisitTech != null) {
+                        if (int.TryParse(visit.VisitTech, out int locum)) {
+                            visitTech = locum;
+                        }
+                    }
+                    int? visitDoctor = null;
+                    if (visit.VisitDoctor != null) {
+                        if (int.TryParse(visit.VisitDoctor, out int locum)) {
+                            visitDoctor = locum;
+                        }
+                    }
+                    int? visitRefProviderId = null;
+                    if (visit.VisitRefProviderId != null) {
+                        if (int.TryParse(visit.VisitRefProviderId, out int locum)) {
+                            visitRefProviderId = locum;
+                        }
+                    }
+                    int? visitPriCareProviderId = null;
+                    if (visit.VisitPriCareProviderId != null) {
+                        if (int.TryParse(visit.VisitPriCareProviderId, out int locum)) {
+                            visitPriCareProviderId = locum;
+                        }
+                    }
+                    string visitType = "";
+                    if (visit.VisitType != null) {
+                        visitType = visit.VisitType;
+                    }
+                    int? visitTypeId = null;
+                    if (visit.VisitTypeId != null) {
+                        if (int.TryParse(visit.VisitTypeId, out int locum)) {
+                            visitTypeId = locum;
+                        }
+                    }
+                    int? visitClassId = null;
+                    if (visit.VisitClassId != null) {
+                        if (int.TryParse(visit.VisitClassId, out int locum)) {
+                            visitClassId = locum;
+                        }
+                    }
+                    int? linkedProcVisitId = null;
+                    if (visit.LinkedProcedureVisitId != null) {
+                        if (int.TryParse(visit.LinkedProcedureVisitId, out int locum)) {
+                            linkedProcVisitId = locum;
+                        }
+                    }
+                    string locationSpecific = "";
+                    // not in incoming table
+                    DateTime? mdSignedOffDate = null;
+                    if (visit.MdsignedOffDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visit.MdsignedOffDate, dateFormats,
+                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            mdSignedOffDate = tempDateTime;
+                        }
+                    }
+                    int? mdSignedOffEmpId = null;
+                    if (visit.MdsignedOffEmpId != null) {
+                        if (int.TryParse(visit.MdsignedOffEmpId, out int locum)) {
+                            mdSignedOffEmpId = locum;
+                        }
+                    }
+                    int? codeId = null;
+                    // no codeId
+                    int? procVisitTypeId = null;
+                    // no procVisitTypeId
+                    short? tabVitals = null;
+                    // no tabVitals
+                    int? visitEyeCareProvId = null;
+                    if (visit.VisitEyeCareProviderId != null) {
+                        if (int.TryParse(visit.VisitEyeCareProviderId, out int locum)) {
+                            visitEyeCareProvId = locum;
+                        }
+                    }
+                    short? techIsDirty = null;
+                    // no techIsDirty
+                    string techDirtyInfo = "";
+                    // no techDirtyInfo
+                    short? techWU2IsDirty = null;
+                    // no techWU2IsDirty
+                    string techWU2DirtyInfo = "";
+                    // no techWU2DirtyInfo
+                    short? techROSIsDirty = null;
+                    // no techROSIsDirty
+                    string techROSDirtyInfo = "";
+                    // no techROSDirtyInfo
+                    short? diagTestIsDirty = null;
+                    // no diagTestIsDirty
+                    string diagTestDirtyInfo = "";
+                    // no diagTestDirtyInfo
+                    short? doctorIsDirty = null;
+                    // no doctorIsDirty
+                    string doctorDirtyInfo = "";
+                    // no doctorDirtyInfo
+                    short? providedPtEducation = null;
+                    if (visit.ProvidedPtEducation != null) {
+                        if (short.TryParse(visit.ProvidedPtEducation, out short locum)) {
+                            providedPtEducation = locum;
+                        }
+                    }
+                    short? tabImmunizations = null;
+                    // no tabImmunizations
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID
+                    short? procIsDirty = null;
+                    // no procIsDirty
+                    string procDirtyInfo = "";
+                    // no procDirtyInfo
+                    short? excludedVisit = null;
+                    if (visit.ExcludeVisit != null) {
+                        if (short.TryParse(visit.ExcludeVisit, out short locum)) {
+                            excludedVisit = locum;
+                        }
+                    }
+                    string clrefNoteRemember = "";
+                    if (visit.ClrefNoteRemember != null) {
+                        clrefNoteRemember = visit.ClrefNoteRemember;
+                    }
+                    int? serviceType = null;
+                    if (visit.ServiceType != null) {
+                        if (int.TryParse(visit.ServiceType, out int locum)) {
+                            serviceType = locum;
+                        }
+                    }
+                    string initialSignedOffRole = "";
+                    if (visit.InitialSignedOffRole != null) {
+                        initialSignedOffRole = visit.InitialSignedOffRole;
+                    }
+                    short? initialSignedOff = null;
+                    if (visit.InitialSignedOff != null) {
+                        if (short.TryParse(visit.InitialSignedOff, out short locum)) {
+                            initialSignedOff = locum;
+                        }
+                    }
+                    DateTime? initialSignedOffDate = null;
+                    if (visit.InitialSignedOffDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visit.InitialSignedOffDate, dateFormats,
+                                                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            initialSignedOffDate = tempDateTime;
+                        }
+                    }
+                    int? initialSignedOffEmpId = null;
+                    if (visit.InitialSignedOffEmpId != null) {
+                        if (int.TryParse(visit.InitialSignedOffEmpId, out int locum)) {
+                            initialSignedOffEmpId = locum;
+                        }
+                    }
+                    short? tabExam = null;
+                    // no tabExam
+                    short? tabDrawing = null;
+                    // no tabDrawing
+                    bool reconciledCCDA = false;
+                    if (visit.ReconciledCcda != null && visit.ReconciledCcda.ToLower() == "yes" || visit.ReconciledCcda == "1") {
+                        reconciledCCDA = true;
+                    }
 
-                if (ehrOrig == null) {
-                    var newVisitDoctor = new Brady_s_Conversion_Program.ModelsB.EmrvisitDoctor {
-                        VisitId = visitId,
+                    // one patient can have multiple visits, so I wont check this one
+
+
+
+
+                    var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
+                        // non nullable fields
+                        TabPohpmh = tabPOHPMH,
+                        TabRos = tabROS,
+                        TabCchpi = tabCCHPI,
+                        TabWorkup = Workup,
+                        TabWorkUp2 = tabWorkup2,
+                        TabMbalance = tabMBalance,
+                        TabGonio = tabGonio,
+                        TabSle = tabSLE,
+                        TabDfe = tabDFE,
+                        TabLensRx = tabLensRx,
+                        TabDiag = tabDiag,
+                        TabPlan = tabPlan,
+                        TabCoding = tabCoding,
+                        MdsignedOff = MDSignedOff,
+
+                        // nullable fields
                         PtId = ptId,
-                        Dosdate = dosdate,
-                        SleDiagOd = TruncateString(sleDiagOd, int.MaxValue),
-                        SleDiagOs = TruncateString(sleDiagOs, int.MaxValue),
-                        Slecomments = TruncateString(sleComments, int.MaxValue),
-                        DfeCdratioVertOd = TruncateString(dfeCdRatioVertOd, 255),
-                        DfeCdratioVertOs = TruncateString(dfeCdRatioVertOs, 255),
-                        DfeCdratioHorizOd = TruncateString(dfeCdRatioHorizOd, 255),
-                        DfeCdratioHorizOs = TruncateString(dfeCdRatioHorizOs, 255),
-                        DfeDiagOd = TruncateString(dfeDiagOd, int.MaxValue),
-                        DfeDiagOs = TruncateString(dfeDIagOs, int.MaxValue),
-                        Dfecomments = TruncateString(dfeComments, int.MaxValue),
-                        DiagOtherDiagnoses = TruncateString(diagOtherDiagnoses, int.MaxValue),
-                        PlanStaffOrderComments = TruncateString(planStaffOrderComments, int.MaxValue),
-                        PlanRtowhen = TruncateString(planRTOWhen, 255),
-                        PlanRtoreason = TruncateString(PlanRTOReason, 255),
-                        PlanNextScheduledAppt = TruncateString(planNextScheduledAppt, 255),
-                        CodingMdm = codingMDM,
-                        CodingAdditionalProcedures = TruncateString(codingAdditionalProcs, 255),
-                        PlanRxMedRemarks = TruncateString(planRxMedRemarks, int.MaxValue),
-                        PlanRxOrdersRemarks = TruncateString(planRxOrdersRemarks, int.MaxValue),
-                        DfeextOpth = dfeExtOpth,
-                        DfelensUsed = TruncateString(dfeLensUsed, 255),
-                        PlanTargetIopOd = TruncateString(planTargetIOPOd, 50),
-                        PlanTargetIopOs = TruncateString(planTargetIOPOs, 50),
-                        DfedilatedPupilSizeOd = TruncateString(dfeDilatedPupilSizeOd, 50),
-                        DfedilatedPupilSizeOs = TruncateString(dfeDilatedPupilSizeOs, 50),
-                        PlanDictateEyeCareDoc = planDictateEyeCareDoc,
-                        SleAbutehl = sleAbutehl,
-                        ScribeEmpId = scribeEmpId,
-                        // Further details and assignments as necessary
-                        CodingQrautoCheckStatus = null,
-                        CodingChargesSent = null,
-                        SentToWebPortal = null,
-                        SentToWebPortalDays = null
+                        ClientSoftwareApptId = ClientSoftwareApptId,
+                        ClientSoftwarePtId = clientSoftwarePtId,
+                        LocationId = locationId,
+                        ProviderEmpId = providerEmpId,
+                        ExamType = examTypeId,
+                        Dosdate = dosDate,
+                        VisitTech = visitTech,
+                        VisitDoctor = visitDoctor,
+                        VisitRefProviderId = visitRefProviderId,
+                        VisitPriCareProviderId = visitPriCareProviderId,
+                        VisitType = TruncateString(visitType, 50),
+                        VisitTypeId = visitTypeId,
+                        VisitClassId = visitClassId,
+                        LinkedProcedureVisitId = linkedProcVisitId,
+                        LocationSpecific = TruncateString(locationSpecific, 50),
+                        MdsignedOffDate = mdSignedOffDate,
+                        MdsignedOffEmpId = mdSignedOffEmpId,
+                        CodeId = codeId,
+                        ProcVisitTypeId = procVisitTypeId,
+                        TabVitals = tabVitals,
+                        VisitEyeCareProviderId = visitEyeCareProvId,
+                        TechIsDirty = techIsDirty,
+                        TechDirtyInfo = TruncateString(techDirtyInfo, 255),
+                        TechWu2isDirty = techWU2IsDirty,
+                        TechWu2dirtyInfo = TruncateString(techWU2DirtyInfo, 255),
+                        TechRosisDirty = techROSIsDirty,
+                        TechRosdirtyInfo = TruncateString(techROSDirtyInfo, 255),
+                        DiagTestIsDirty = diagTestIsDirty,
+                        DiagTestDirtyInfo = TruncateString(diagTestDirtyInfo, 255),
+                        DoctorIsDirty = doctorIsDirty,
+                        DoctorDirtyInfo = TruncateString(doctorDirtyInfo, 255),
+                        ReconciledCcda = reconciledCCDA,
+                        ProvidedPtEducation = providedPtEducation,
+                        TabImmunizations = tabImmunizations,
+                        InsertGuid = TruncateString(insertGUID, 50),
+                        ProcIsDirty = procIsDirty,
+                        ProcDirtyInfo = TruncateString(procDirtyInfo, 255),
+                        ExcludeVisit = excludedVisit,
+                        ClrefNoteRemember = clrefNoteRemember,
+                        ServiceType = serviceType,
+                        InitialSignedOffRole = TruncateString(initialSignedOffRole, 50),
+                        InitialSignedOff = initialSignedOff,
+                        InitialSignedOffDate = initialSignedOffDate,
+                        InitialSignedOffEmpId = initialSignedOffEmpId,
+                        TabExam = tabExam,
+                        TabDrawing = tabDrawing,
+                        Wu2visitTypeId = null
                     };
-                    visitDoctors.Add(newVisitDoctor);
+                    visits.Add(newVisit);
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the visit doctor with ID: {visitDoctor.Id}. Error: {e.Message}");
+            eyeMDDbContext.UpdateRange(visits);
+            eyeMDDbContext.SaveChanges();
+            visits = eyeMDDbContext.Emrvisits.ToList();
+        }
+
+        public static void VisitOrdersConvert(List<ModelsC.VisitOrder> ehrVisitOrders, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext,
+            ILogger logger, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
+                List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders, List<DmgPatient> ffpmPatients) {
+            foreach (var visitOrder in ehrVisitOrders) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosdate = null;
+                    if (visitOrder.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visitOrder.Dosdate, dateFormats,
+                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosdate = tempDateTime;
+                        }
+                    }
+                    int? visitId = null;
+                    if (visitOrder.VisitId != null) {
+                        visitId = visitOrder.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
+                        return;
+                    }
+                    int? ptId = null;
+                    if (visitOrder.PtId! <= 0) {
+                        ptId = visitOrder.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for visit order with ID: {visitOrder.Id}");
+                        }
+                    }
+                    else {
+                        ptId = eyeMDPatient.PtId;
+                    }
+                    string description = "";
+                    if (visitOrder.OrderDescription != null) {
+                        description = visitOrder.OrderDescription;
+                    }
+                    string orderWhen = "";
+                    if (visitOrder.OrderWhen != null) {
+                        orderWhen = visitOrder.OrderWhen;
+                    }
+                    string orderScheduledDate = "";
+                    if (visitOrder.OrderScheduledDate != null) {
+                        orderScheduledDate = visitOrder.OrderScheduledDate;
+                    }
+                    short doNotPrintRx = -1;
+                    if (short.TryParse(visitOrder.DoNotPrintRx, out short temp)) {
+                        doNotPrintRx = temp;
+                    }
+                    int? addedbyFastPlanId = null;
+                    if (visitOrder.AddedbyFastPlanId != null) {
+                        if (int.TryParse(visitOrder.AddedbyFastPlanId, out int locum)) {
+                            addedbyFastPlanId = locum;
+                        }
+                    }
+                    int? orderTypeId = null;
+                    if (visitOrder.OrderTypeId != null) {
+                        if (int.TryParse(visitOrder.OrderTypeId, out int locum)) {
+                            orderTypeId = locum;
+                        }
+                    }
+                    short? orderHasSpecimen = null;
+                    if (short.TryParse(visitOrder.OrderHasSpecimen, out temp)) {
+                        orderHasSpecimen = temp;
+                    }
+                    string orderSpecimenType = "";
+                    if (visitOrder.OrderSpecimenType != null) {
+                        orderSpecimenType = visitOrder.OrderSpecimenType;
+                    }
+                    string orderSpecimenId = "";
+                    if (visitOrder.OrderSpecimenId != null) {
+                        orderSpecimenId = visitOrder.OrderSpecimenId;
+                    }
+                    DateTime? orderLabResultFulfilledDate = null;
+                    if (visitOrder.OrderLabResultFulfilledDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visitOrder.OrderLabResultFulfilledDate, dateFormats,
+                                                                             CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            orderLabResultFulfilledDate = tempDateTime;
+                        }
+                    }
+                    int? orderLabResultId = null;
+                    if (visitOrder.OrderLabResultId != null) {
+                        if (int.TryParse(visitOrder.OrderLabResultId, out int locum)) {
+                            orderLabResultId = locum;
+                        }
+                    }
+                    short? orderNeedsFollowUp = null;
+                    if (short.TryParse(visitOrder.OrderNeedsFollowup, out temp)) {
+                        orderNeedsFollowUp = temp;
+                    }
+                    short? orderWasFollowedUp = null;
+                    if (short.TryParse(visitOrder.OrderWasFollowedup, out temp)) {
+                        orderWasFollowedUp = temp;
+                    }
+                    string orderNotes = "";
+                    if (visitOrder.OrderNotes != null) {
+                        orderNotes = visitOrder.OrderNotes;
+                    }
+                    short? summarySent = null;
+                    if (short.TryParse(visitOrder.SummarySent, out temp)) {
+                        summarySent = temp;
+                    }
+                    string orderRemarks = "";
+                    if (visitOrder.OrderRemarks != null) {
+                        orderRemarks = visitOrder.OrderRemarks;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString(); // This looks like it is supposed to be some large string. I don't see where it is coming from
+
+                    string studyInstanceUID = "";
+                    if (visitOrder.StudyInstanceUid != null) {
+                        studyInstanceUID = visitOrder.StudyInstanceUid;
+                    }
+                    string dicomRequestedProc = "";
+                    if (visitOrder.DicomrequestedProcedureId != null) {
+                        dicomRequestedProc = visitOrder.DicomrequestedProcedureId;
+                    }
+                    string dicomScheduledProcStepId = "";
+                    if (visitOrder.DicomscheduledProcedureStepId != null) {
+                        dicomScheduledProcStepId = visitOrder.DicomscheduledProcedureStepId;
+                    }
+                    int? orderModality = null;
+                    if (visitOrder.OrderModalityId != null) {
+                        if (int.TryParse(visitOrder.OrderModalityId, out int locum)) {
+                            orderModality = locum;
+                        }
+                    }
+                    string scheduledAE = "";
+                    if (visitOrder.ScheduledAe != null) {
+                        scheduledAE = visitOrder.ScheduledAe;
+                    }
+                    string CodeCPT = "";
+                    if (visitOrder.CodeCpt != null) {
+                        CodeCPT = visitOrder.CodeCpt;
+                    }
+                    string CodeSNOMED = "";
+                    if (visitOrder.CodeSnomed != null) {
+                        CodeSNOMED = visitOrder.CodeSnomed;
+                    }
+                    int? recordedEmpRole = null;
+                    if (visitOrder.RecordedEmpRole != null) {
+                        if (int.TryParse(visitOrder.RecordedEmpRole, out int locum)) {
+                            recordedEmpRole = locum;
+                        }
+                    }
+                    short? summaryTransmitted = null;
+                    if (short.TryParse(visitOrder.SummaryTransmitted, out temp)) {
+                        summaryTransmitted = temp;
+                    }
+                    string codeLOINC = "";
+                    if (visitOrder.CodeLoinc != null) {
+                        codeLOINC = visitOrder.CodeLoinc;
+                    }
+                    string RefProvFirst = "";
+                    if (visitOrder.RefProviderFirstName != null) {
+                        RefProvFirst = visitOrder.RefProviderFirstName;
+                    }
+                    string RefProvLast = "";
+                    if (visitOrder.RefProviderLastName != null) {
+                        RefProvLast = visitOrder.RefProviderLastName;
+                    }
+                    string refProvId = "";
+                    if (visitOrder.RefProviderId != null) {
+                        refProvId = visitOrder.RefProviderId;
+                    }
+                    string refProvOrgName = "";
+                    if (visitOrder.RefProviderOrganizationName != null) {
+                        refProvOrgName = visitOrder.RefProviderOrganizationName;
+                    }
+
+                    var ehrOrig = eyeMDVisitOrders.FirstOrDefault(vo => vo.PtId == ptId && vo.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newVisitOrder = new Brady_s_Conversion_Program.ModelsB.EmrvisitOrder {
+                            VisitId = visitId,
+                            PtId = ptId,
+                            Dosdate = dosdate,
+                            OrderDescription = description, // Assuming NVARCHAR(MAX), no truncation needed
+                            OrderWhen = TruncateString(orderWhen, 255),
+                            OrderScheduledDate = orderScheduledDate, // Assuming the date is stored as string
+                            DoNotPrintRx = doNotPrintRx,
+                            AddedbyFastPlanId = addedbyFastPlanId,
+                            OrderTypeId = orderTypeId,
+                            OrderHasSpecimen = orderHasSpecimen,
+                            OrderSpecimenType = orderSpecimenType, // Assuming NVARCHAR(MAX), no truncation needed
+                            OrderSpecimenId = orderSpecimenId, // Assuming NVARCHAR(MAX), no truncation needed
+                            OrderLabResultFulfilledDate = orderLabResultFulfilledDate,
+                            OrderLabResultId = orderLabResultId,
+                            OrderNeedsFollowup = orderNeedsFollowUp,
+                            OrderWasFollowedup = orderWasFollowedUp,
+                            OrderNotes = orderNotes, // Assuming NVARCHAR(MAX), no truncation needed
+                            SummarySent = summarySent,
+                            OrderRemarks = TruncateString(orderRemarks, 255),
+                            InsertGuid = insertGUID,
+                            StudyInstanceUid = studyInstanceUID,
+                            DicomrequestedProcedureId = dicomRequestedProc,
+                            DicomscheduledProcedureStepId = dicomScheduledProcStepId,
+                            OrderModalityId = orderModality,
+                            ScheduledAe = scheduledAE,
+                            CodeCpt = CodeCPT,
+                            CodeSnomed = CodeSNOMED,
+                            RecordedEmpRole = recordedEmpRole,
+                            SummaryTransmitted = summaryTransmitted,
+                            CodeLoinc = codeLOINC,
+                            RefProviderFirstName = RefProvFirst,
+                            RefProviderLastName = RefProvLast,
+                            RefProviderId = refProvId,
+                            RefProviderOrganizationName = refProvOrgName
+                        };
+                        visitOrders.Add(newVisitOrder);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
+                }
             }
+            eyeMDDbContext.UpdateRange(visitOrders);
+            eyeMDDbContext.SaveChanges();
+            eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
+        }
+
+        public static void VisitDoctorsConvert(List<ModelsC.VisitDoctor> ehrVisitDoctors, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            foreach (var visitDoctor in ehrVisitDoctors) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosdate = null;
+                    if (visitDoctor.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(visitDoctor.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosdate = tempDateTime;
+                        }
+                    }
+                    int? visitId = null;
+                    if (visitDoctor.OldVisitId != null) {
+                        visitId = visitDoctor.OldVisitId;
+                    }
+                    int? ptId = null;
+                    if (visitDoctor.PtId! <= 0) {
+                        ptId = visitDoctor.PtId;
+                    }
+
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
+                    if (eyeMDVisit != null) {
+                        ptId = eyeMDVisit.PtId;
+                    }
+                    if (ptId == null || ptId! <= 0) {
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for visit doctor with ID: {visitDoctor.Id}");
+                        }
+                    }
+                    else if (visitId == null) {
+                        logger.Log($"EHR: EHR VisitID not found for visit order with ID: {visitDoctor.Id}");
+                    }
+
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
+                        if (eyeMDPatient == null) {
+                            logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitDoctor.Id}");
+                            return;
+                        }
+                        else {
+                            ptId = eyeMDPatient.PtId;
+                        }
+                    }
+                    else {
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+                    string sleDiagOd = "";
+                    if (visitDoctor.SlediagOd != null) {
+                        sleDiagOd = visitDoctor.SlediagOd;
+                    }
+                    string sleDiagOs = "";
+                    if (visitDoctor.SlediagOs != null) {
+                        sleDiagOs = visitDoctor.SlediagOs;
+                    }
+                    string sleComments = "";
+                    if (visitDoctor.Slecomments != null) {
+                        sleComments = visitDoctor.Slecomments;
+                    }
+                    string dfeCdRatioVertOd = "";
+                    if (visitDoctor.DfecdratioVertOd != null) {
+                        dfeCdRatioVertOd = visitDoctor.DfecdratioVertOd;
+                    }
+                    string dfeCdRatioVertOs = "";
+                    if (visitDoctor.DfecdratioVertOs != null) {
+                        dfeCdRatioVertOs = visitDoctor.DfecdratioVertOs;
+                    }
+                    string dfeCdRatioHorizOd = "";
+                    if (visitDoctor.DfecdratioHorizOd != null) {
+                        dfeCdRatioHorizOd = visitDoctor.DfecdratioHorizOd;
+                    }
+                    string dfeCdRatioHorizOs = "";
+                    if (visitDoctor.DfecdratioHorizOs != null) {
+                        dfeCdRatioHorizOs = visitDoctor.DfecdratioHorizOs;
+                    }
+                    string dfeDiagOd = "";
+                    if (visitDoctor.DfediagOd != null) {
+                        dfeDiagOd = visitDoctor.DfediagOd;
+                    }
+                    string dfeDIagOs = "";
+                    if (visitDoctor.DfediagOs != null) {
+                        dfeDIagOs = visitDoctor.DfediagOs;
+                    }
+                    string dfeComments = "";
+                    if (visitDoctor.Dfecomments != null) {
+                        dfeComments = visitDoctor.Dfecomments;
+                    }
+                    string diagOtherDiagnoses = "";
+                    if (visitDoctor.DiagOtherDiagnoses != null) {
+                        diagOtherDiagnoses = visitDoctor.DiagOtherDiagnoses;
+                    }
+                    string planStaffOrderComments = "";
+                    if (visitDoctor.PlanStaffOrderComments != null) {
+                        planStaffOrderComments = visitDoctor.PlanStaffOrderComments;
+                    }
+                    string planRTOWhen = "";
+                    if (visitDoctor.PlanRtowhen != null) {
+                        planRTOWhen = visitDoctor.PlanRtowhen;
+                    }
+                    string PlanRTOReason = "";
+                    if (visitDoctor.PlanRtoreason != null) {
+                        PlanRTOReason = visitDoctor.PlanRtoreason;
+                    }
+                    short planDictateReferingDoc = -1;
+                    if (short.TryParse(visitDoctor.PlanDictateReferingDoc, out short temp)) {
+                        planDictateReferingDoc = temp;
+                    }
+                    short planDictatePriCareDoc = -1;
+                    if (short.TryParse(visitDoctor.PlanDictatePriCareDoc, out temp)) {
+                        planDictatePriCareDoc = temp;
+                    }
+                    short planDictatePatient = -1;
+                    if (short.TryParse(visitDoctor.PlanDictatePatient, out temp)) {
+                        planDictatePatient = temp;
+                    }
+                    string planNextScheduledAppt = "";
+                    if (visitDoctor.PlanNextScheduledAppt != null) {
+                        planNextScheduledAppt = visitDoctor.PlanNextScheduledAppt;
+                    }
+                    int? codingMDM = null;
+                    if (visitDoctor.CodingMdm != null) {
+                        if (int.TryParse(visitDoctor.CodingMdm, out int locum)) {
+                            codingMDM = locum;
+                        }
+                    }
+                    string codingAdditionalProcs = "";
+                    if (visitDoctor.CodingAdditionalProcedures != null) {
+                        codingAdditionalProcs = visitDoctor.CodingAdditionalProcedures;
+                    }
+                    string planRxMedRemarks = "";
+                    if (visitDoctor.PlanRxMedRemarks != null) {
+                        planRxMedRemarks = visitDoctor.PlanRxMedRemarks;
+                    }
+                    string planRxOrdersRemarks = "";
+                    if (visitDoctor.PlanRxOrdersRemarks != null) {
+                        planRxOrdersRemarks = visitDoctor.PlanRxOrdersRemarks;
+                    }
+                    short? dfeExtOpth = null;
+                    if (visitDoctor.DfeextOpth != null) {
+                        if (short.TryParse(visitDoctor.DfeextOpth, out short locum)) {
+                            dfeExtOpth = locum;
+                        }
+                    }
+                    string dfeLensUsed = "";
+                    if (visitDoctor.DfelensUsed != null) {
+                        dfeLensUsed = visitDoctor.DfelensUsed;
+                    }
+                    string planTargetIOPOd = "";
+                    if (visitDoctor.PlanTargetIopod != null) {
+                        planTargetIOPOd = visitDoctor.PlanTargetIopod;
+                    }
+                    string planTargetIOPOs = "";
+                    if (visitDoctor.PlanTargetIopos != null) {
+                        planTargetIOPOs = visitDoctor.PlanTargetIopos;
+                    }
+                    string dfeDilatedPupilSizeOd = "";
+                    if (visitDoctor.DfedilatedPupilSizeOd != null) {
+                        dfeDilatedPupilSizeOd = visitDoctor.DfedilatedPupilSizeOd;
+                    }
+                    string dfeDilatedPupilSizeOs = "";
+                    if (visitDoctor.DfedilatedPupilSizeOs != null) {
+                        dfeDilatedPupilSizeOs = visitDoctor.DfedilatedPupilSizeOs;
+                    }
+                    short? planDictateEyeCareDoc = null;
+                    if (visitDoctor.PlanDictateEyeCareDoc != null) {
+                        if (short.TryParse(visitDoctor.PlanDictateEyeCareDoc, out short locum)) {
+                            planDictateEyeCareDoc = locum;
+                        }
+                    }
+                    string planLensRxNotes = "";
+                    if (visitDoctor.PlanLensRxNotes != null) {
+                        planLensRxNotes = visitDoctor.PlanLensRxNotes;
+                    }
+                    short? providedClinicalSummary = null;
+                    if (visitDoctor.ProvidedClinicalSummary != null) {
+                        if (short.TryParse(visitDoctor.ProvidedClinicalSummary, out short locum)) {
+                            providedClinicalSummary = locum;
+                        }
+                    }
+                    int? providedClinicalSummaryDays = null;
+                    if (visitDoctor.ProvidedClinicalSummaryDays != null) {
+                        if (int.TryParse(visitDoctor.ProvidedClinicalSummaryDays, out int locum)) {
+                            providedClinicalSummaryDays = locum;
+                        }
+                    }
+                    short? sleAbutehl = null;
+                    if (visitDoctor.Sleabutehl != null) {
+                        if (short.TryParse(visitDoctor.Sleabutehl, out short locum)) {
+                            sleAbutehl = locum;
+                        }
+                    }
+                    int? scribeEmpId = null;
+                    if (visitDoctor.ScribeEmpId != null) {
+                        if (int.TryParse(visitDoctor.ScribeEmpId, out int locum)) {
+                            scribeEmpId = locum;
+                        }
+                    }
+                    int? codingC3EMLevel = null;
+                    if (visitDoctor.CodingC3emlevel != null) {
+                        if (int.TryParse(visitDoctor.CodingC3emlevel, out int locum)) {
+                            codingC3EMLevel = locum;
+                        }
+                    }
+                    int? codingC3EyeCareLevel = null;
+                    if (visitDoctor.CodingC3eyeCareLevel != null) {
+                        if (int.TryParse(visitDoctor.CodingC3eyeCareLevel, out int locum)) {
+                            codingC3EyeCareLevel = locum;
+                        }
+                    }
+                    string pdDistOu = "";
+                    if (visitDoctor.PddistOu != null) {
+                        pdDistOu = visitDoctor.PddistOu;
+                    }
+                    string pdNearOu = "";
+                    if (visitDoctor.PdnearOu != null) {
+                        pdNearOu = visitDoctor.PdnearOu;
+                    }
+
+                    var ehrOrig = visitDoctors.FirstOrDefault(vd => vd.PtId == ptId && vd.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newVisitDoctor = new Brady_s_Conversion_Program.ModelsB.EmrvisitDoctor {
+                            VisitId = visitId,
+                            PtId = ptId,
+                            Dosdate = dosdate,
+                            SleDiagOd = TruncateString(sleDiagOd, int.MaxValue),
+                            SleDiagOs = TruncateString(sleDiagOs, int.MaxValue),
+                            Slecomments = TruncateString(sleComments, int.MaxValue),
+                            DfeCdratioVertOd = TruncateString(dfeCdRatioVertOd, 255),
+                            DfeCdratioVertOs = TruncateString(dfeCdRatioVertOs, 255),
+                            DfeCdratioHorizOd = TruncateString(dfeCdRatioHorizOd, 255),
+                            DfeCdratioHorizOs = TruncateString(dfeCdRatioHorizOs, 255),
+                            DfeDiagOd = TruncateString(dfeDiagOd, int.MaxValue),
+                            DfeDiagOs = TruncateString(dfeDIagOs, int.MaxValue),
+                            Dfecomments = TruncateString(dfeComments, int.MaxValue),
+                            DiagOtherDiagnoses = TruncateString(diagOtherDiagnoses, int.MaxValue),
+                            PlanStaffOrderComments = TruncateString(planStaffOrderComments, int.MaxValue),
+                            PlanRtowhen = TruncateString(planRTOWhen, 255),
+                            PlanRtoreason = TruncateString(PlanRTOReason, 255),
+                            PlanNextScheduledAppt = TruncateString(planNextScheduledAppt, 255),
+                            CodingMdm = codingMDM,
+                            CodingAdditionalProcedures = TruncateString(codingAdditionalProcs, 255),
+                            PlanRxMedRemarks = TruncateString(planRxMedRemarks, int.MaxValue),
+                            PlanRxOrdersRemarks = TruncateString(planRxOrdersRemarks, int.MaxValue),
+                            DfeextOpth = dfeExtOpth,
+                            DfelensUsed = TruncateString(dfeLensUsed, 255),
+                            PlanTargetIopOd = TruncateString(planTargetIOPOd, 50),
+                            PlanTargetIopOs = TruncateString(planTargetIOPOs, 50),
+                            DfedilatedPupilSizeOd = TruncateString(dfeDilatedPupilSizeOd, 50),
+                            DfedilatedPupilSizeOs = TruncateString(dfeDilatedPupilSizeOs, 50),
+                            PlanDictateEyeCareDoc = planDictateEyeCareDoc,
+                            SleAbutehl = sleAbutehl,
+                            ScribeEmpId = scribeEmpId,
+                            // Further details and assignments as necessary
+                            CodingQrautoCheckStatus = null,
+                            CodingChargesSent = null,
+                            SentToWebPortal = null,
+                            SentToWebPortalDays = null
+                        };
+                        visitDoctors.Add(newVisitDoctor);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the visit doctor with ID: {visitDoctor.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.UpdateRange(visitDoctors);
+            eyeMDDbContext.SaveChanges();
+            visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
         }
 
         public static void AppointmentsConvert(ModelsC.Appointment appointment, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
@@ -4877,1516 +4862,1546 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ContactLensesConvert(ModelsC.ContactLen contactLens, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ContactLensesConvert(List<ModelsC.ContactLen> ehrContactLenses, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime dosdate = minAcceptableDate;
-                if (contactLens.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(contactLens.Dosdate, dateFormats,
-                                                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosdate = tempDateTime;
+            foreach (var contactLens in ehrContactLenses) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime dosdate = minAcceptableDate;
+                    if (contactLens.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(contactLens.Dosdate, dateFormats,
+                                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosdate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (contactLens.VisitId != null) {
-                    visitId = contactLens.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
-                }
-                int ptId = -1;
-                if (contactLens.PtId !<= 0) {
-                    ptId = contactLens.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (ptId == -1) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (contactLens.VisitId != null) {
+                        visitId = contactLens.VisitId;
                     }
-                    else {
-                        logger.Log($"EHR: EHR PatientID not found for contact lens with ID: {contactLens.Id}");
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
                         return;
                     }
-                }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosdate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for contact lens with ID: {contactLens.Id}");
+                    }
+                    int ptId = -1;
+                    if (contactLens.PtId! <= 0) {
+                        ptId = contactLens.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (ptId == -1) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for contact lens with ID: {contactLens.Id}");
+                            return;
+                        }
+                    }
 
-                int? rxId = null;
-                if (contactLens.RxId != null) {
-                    if (int.TryParse(contactLens.RxId, out int locum)) {
-                        rxId = locum;
+                    int? rxId = null;
+                    if (contactLens.RxId != null) {
+                        if (int.TryParse(contactLens.RxId, out int locum)) {
+                            rxId = locum;
+                        }
                     }
-                }
-                string contactClass = "";
-                if (contactLens.ContactClass != null) {
-                    contactClass = contactLens.ContactClass;
-                }
-                string lensType = "";
-                if (contactLens.LensType != null) {
-                    lensType = contactLens.LensType;
-                }
-                string powerOd = "";
-                if (contactLens.PowerOd != null) {
-                    powerOd = contactLens.PowerOd;
-                }
-                string powerOs = "";
-                if (contactLens.PowerOs != null) {
-                    powerOs = contactLens.PowerOs;
-                }
-                string cylinderOd = "";
-                if (contactLens.CylinderOd != null) {
-                    cylinderOd = contactLens.CylinderOd;
-                }
-                string cylinderOs = "";
-                if (contactLens.CylinderOs != null) {
-                    cylinderOs = contactLens.CylinderOs;
-                }
-                string axisOd = "";
-                if (contactLens.AxisOd != null) {
-                    axisOd = contactLens.AxisOd;
-                }
-                string axisOs = "";
-                if (contactLens.AxisOs != null) {
-                    axisOs = contactLens.AxisOs;
-                }
-                string bcOd = "";
-                if (contactLens.Bcod != null) {
-                    bcOd = contactLens.Bcod;
-                }
-                string bcOs = "";
-                if (contactLens.Bcos != null) {
-                    bcOs = contactLens.Bcos;
-                }
-                string addOd = "";
-                if (contactLens.AddOd != null) {
-                    addOd = contactLens.AddOd;
-                }
-                string addOs = "";
-                if (contactLens.AddOs != null) {
-                    addOs = contactLens.AddOs;
-                }
-                string colorOd = "";
-                if (contactLens.ColorOd != null) {
-                    colorOd = contactLens.ColorOd;
-                }
-                string colorOs = "";
-                if (contactLens.ColorOs != null) {
-                    colorOs = contactLens.ColorOs;
-                }
-                string pupilOd = "";
-                if (contactLens.PupilOd != null) {
-                    pupilOd = contactLens.PupilOd;
-                }
-                string pupilOs = "";
-                if (contactLens.PupilOs != null) {
-                    pupilOs = contactLens.PupilOs;
-                }
-                string vaDOd = "";
-                if (contactLens.VaDod != null) {
-                    vaDOd = contactLens.VaDod;
-                }
-                string vaDOs = "";
-                if (contactLens.VaDos != null) {
-                    vaDOs = contactLens.VaDos;
-                }
-                string vaDOu = "";
-                if (contactLens.VaDou != null) {
-                    vaDOu = contactLens.VaDou;
-                }
-                string VaNOd = "";
-                if (contactLens.VaNod != null) {
-                    VaNOd = contactLens.VaNod;
-                }
-                string VaNOs = "";
-                if (contactLens.VaNos != null) {
-                    VaNOs = contactLens.VaNos;
-                }
-                string VaNOu = "";
-                if (contactLens.VaNou != null) {
-                    VaNOu = contactLens.VaNou;
-                }
-                string vaIOd = "";
-                if (contactLens.VaIod != null) {
-                    vaIOd = contactLens.VaIod;
-                }
-                string vaIOs = "";
-                if (contactLens.VaIos != null) {
-                    vaIOs = contactLens.VaIos;
-                }
-                string vaIOu = "";
-                if (contactLens.VaIou != null) {
-                    vaIOu = contactLens.VaIou;
-                }
-                string comfortOd = "";
-                if (contactLens.ComfortOd != null) {
-                    comfortOd = contactLens.ComfortOd;
-                }
-                string comfortOs = "";
-                if (contactLens.ComfortOs != null) {
-                    comfortOs = contactLens.ComfortOs;
-                }
-                string centrationOd = "";
-                if (contactLens.CentrationOd != null) {
-                    centrationOd = contactLens.CentrationOd;
-                }
-                string centrationOs = "";
-                if (contactLens.CentrationOs != null) {
-                    centrationOs = contactLens.CentrationOs;
-                }
-                string coverageOd = "";
-                if (contactLens.CoverageOd != null) {
-                    coverageOd = contactLens.CoverageOd;
-                }
-                string coverageOs = "";
-                if (contactLens.CoverageOs != null) {
-                    coverageOs = contactLens.CoverageOs;
-                }
-                string movementOd = "";
-                if (contactLens.MovementOd != null) {
-                    movementOd = contactLens.MovementOd;
-                }
-                string movementOs = "";
-                if (contactLens.MovementOs != null) {
-                    movementOs = contactLens.MovementOs;
-                }
-                string diameterOd = "";
-                if (contactLens.DiameterOd != null) {
-                    diameterOd = contactLens.DiameterOd;
-                }
-                string diameterOs = "";
-                if (contactLens.DiameterOs != null) {
-                    diameterOs = contactLens.DiameterOs;
-                }
-                string rotationDegOd = "";
-                if (contactLens.RotationDegOd != null) {
-                    rotationDegOd = contactLens.RotationDegOd;
-                }
-                string rotationDegOs = "";
-                if (contactLens.RotationDegOs != null) {
-                    rotationDegOs = contactLens.RotationDegOs;
-                }
-                string kOd = "";
-                if (contactLens.Kod != null) {
-                    kOd = contactLens.Kod;
-                }
-                string kOs = "";
-                if (contactLens.Kos != null) {
-                    kOs = contactLens.Kos;
-                }
-                string edgeLiftOd = "";
-                if (contactLens.EdgeLiftOd != null) {
-                    edgeLiftOd = contactLens.EdgeLiftOd;
-                }
-                string edgeLiftOs = "";
-                if (contactLens.EdgeLiftOs != null) {
-                    edgeLiftOs = contactLens.EdgeLiftOs;
-                }
-                string distNearOd = "";
-                if (contactLens.DistNearOd != null) {
-                    distNearOd = contactLens.DistNearOd;
-                }
-                string distNearOs = "";
-                if (contactLens.DistNearOs != null) {
-                    distNearOs = contactLens.DistNearOs;
-                }
-                short? ptInsertedRemoved = null;
-                if (short.TryParse(contactLens.PtInsertedRemoved, out short temp)) {
-                    ptInsertedRemoved = temp;
-                }
-                string wAgeOd = "";
-                if (contactLens.WageOd != null) {
-                    wAgeOd = contactLens.WageOd;
-                }
-                string wAgeOs = "";
-                if (contactLens.WageOs != null) {
-                    wAgeOs = contactLens.WageOs;
-                }
-                string wTimeTodayOd = "";
-                if (contactLens.WtimeTodayOd != null) {
-                    wTimeTodayOd = contactLens.WtimeTodayOd;
-                }
-                string wTimeTodayOs = "";
-                if (contactLens.WtimeTodayOs != null) {
-                    wTimeTodayOs = contactLens.WtimeTodayOs;
-                }
-                string wAvgWearTimeOd = "";
-                if (contactLens.WavgWearTimeOd != null) {
-                    wAvgWearTimeOd = contactLens.WavgWearTimeOd;
-                }
-                string wAvgWearTimeOs = "";
-                if (contactLens.WavgWearTimeOs != null) {
-                    wAvgWearTimeOs = contactLens.WavgWearTimeOs;
-                }
-                string solution = "";
-                if (contactLens.Solution != null) {
-                    solution = contactLens.Solution;
-                }
-                string productOd = "";
-                if (contactLens.ProductOd != null) {
-                    productOd = contactLens.ProductOd;
-                }
-                string productOs = "";
-                if (contactLens.ProductOs != null) {
-                    productOs = contactLens.ProductOs;
-                }
-                string lensDesignOd = "";
-                if (contactLens.LensDesignOd != null) {
-                    lensDesignOd = contactLens.LensDesignOd;
-                }
-                string lensDesignOs = "";
-                if (contactLens.LensDesignOs != null) {
-                    lensDesignOs = contactLens.LensDesignOs;
-                }
-                string materialOd = "";
-                if (contactLens.MaterialOd != null) {
-                    materialOd = contactLens.MaterialOd;
-                }
-                string materialOs = "";
-                if (contactLens.MaterialOs != null) {
-                    materialOs = contactLens.MaterialOs;
-                }
-                string replacementSchedule = "";
-                if (contactLens.ReplacementSchedule != null) {
-                    replacementSchedule = contactLens.ReplacementSchedule;
-                }
-                string wearingInstructions = "";
-                if (contactLens.WearingInstructions != null) {
-                    wearingInstructions = contactLens.WearingInstructions;
-                }
-                string expires = "";
-                if (contactLens.Expires != null) {
-                    expires = contactLens.Expires;
-                }
-                int? rgpLayoutOd = null;
-                if (contactLens.RgplayoutOd != null) {
-                    if (int.TryParse(contactLens.RgplayoutOd, out int locum)) {
-                        rgpLayoutOd = locum;
+                    string contactClass = "";
+                    if (contactLens.ContactClass != null) {
+                        contactClass = contactLens.ContactClass;
                     }
-                }
-                int? rgpLayoutOs = null;
-                if (contactLens.RgplayoutOs != null) {
-                    if (int.TryParse(contactLens.RgplayoutOs, out int locum)) {
-                        rgpLayoutOs = locum;
+                    string lensType = "";
+                    if (contactLens.LensType != null) {
+                        lensType = contactLens.LensType;
                     }
-                }
-                string power2Od = "";
-                if (contactLens.Power2Od != null) {
-                    power2Od = contactLens.Power2Od;
-                }
-                string power2Os = "";
-                if (contactLens.Power2Os != null) {
-                    power2Os = contactLens.Power2Os;
-                }
-                string cylinder2Od = "";
-                if (contactLens.Cylinder2Od != null) {
-                    cylinder2Od = contactLens.Cylinder2Od;
-                }
-                string cylinder2Os = "";
-                if (contactLens.Cylinder2Os != null) {
-                    cylinder2Os = contactLens.Cylinder2Os;
-                }
-                string axis2Od = "";
-                if (contactLens.Axis2Od != null) {
-                    axis2Od = contactLens.Axis2Od;
-                }
-                string axis2Os = "";
-                if (contactLens.Axis2Os != null) {
-                    axis2Os = contactLens.Axis2Os;
-                }
-                string bc2Od = "";
-                if (contactLens.Bc2od != null) {
-                    bc2Od = contactLens.Bc2od;
-                }
-                string bc2Os = "";
-                if (contactLens.Bc2os != null) {
-                    bc2Os = contactLens.Bc2os;
-                }
-                string diameter2Od = "";
-                if (contactLens.Diameter2Od != null) {
-                    diameter2Od = contactLens.Diameter2Od;
-                }
-                string diameter2Os = "";
-                if (contactLens.Diameter2Os != null) {
-                    diameter2Os = contactLens.Diameter2Os;
-                }
-                string periphCurveOd = "";
-                if (contactLens.PeriphCurveOd != null) {
-                    periphCurveOd = contactLens.PeriphCurveOd;
-                }
-                string periphCurveOs = "";
-                if (contactLens.PeriphCurveOs != null) {
-                    periphCurveOs = contactLens.PeriphCurveOs;
-                }
-                string peripheralCurve2Od = "";
-                if (contactLens.PeriphCurve2Od != null) {
-                    peripheralCurve2Od = contactLens.PeriphCurve2Od;
-                }
-                string peripheralCurve2Os = "";
-                if (contactLens.PeriphCurve2Os != null) {
-                    peripheralCurve2Os = contactLens.PeriphCurve2Os;
-                }
-                string secondaryCurveOd = "";
-                if (contactLens.SecondaryCurveOd != null) {
-                    secondaryCurveOd = contactLens.SecondaryCurveOd;
-                }
-                string secondaryCurveOs = "";
-                if (contactLens.SecondaryCurveOs != null) {
-                    secondaryCurveOs = contactLens.SecondaryCurveOs;
-                }
-                string equivalentCurveOd = "";
-                if (contactLens.EquivalentCurveOd != null) {
-                    equivalentCurveOd = contactLens.EquivalentCurveOd;
-                }
-                string equivalentCurveOs = "";
-                if (contactLens.EquivalentCurveOs != null) {
-                    equivalentCurveOs = contactLens.EquivalentCurveOs;
-                }
-                string centerThicknessOd = "";
-                if (contactLens.CenterThicknessOd != null) {
-                    centerThicknessOd = contactLens.CenterThicknessOd;
-                }
-                string centerThicknessOs = "";
-                if (contactLens.CenterThicknessOs != null) {
-                    centerThicknessOs = contactLens.CenterThicknessOs;
-                }
-                string opticalZoneDiaOd = "";
-                if (contactLens.OpticalZoneDiaOd != null) {
-                    opticalZoneDiaOd = contactLens.OpticalZoneDiaOd;
-                }
-                string opticalZoneDiaOs = "";
-                if (contactLens.OpticalZoneDiaOs != null) {
-                    opticalZoneDiaOs = contactLens.OpticalZoneDiaOs;
-                }
-                string edgeOd = "";
-                if (contactLens.EdgeOd != null) {
-                    edgeOd = contactLens.EdgeOd;
-                }
-                string edgeOs = "";
-                if (contactLens.EdgeOs != null) {
-                    edgeOs = contactLens.EdgeOs;
-                }
-                string blendOd = "";
-                if (contactLens.BlendOd != null) {
-                    blendOd = contactLens.BlendOd;
-                }
-                string blendOs = "";
-                if (contactLens.BlendOs != null) {
-                    blendOs = contactLens.BlendOs;
-                }
-                string naFlPatternOd = "";
-                if (contactLens.NaFlPatternOd != null) {
-                    naFlPatternOd = contactLens.NaFlPatternOd;
-                }
-                string naFlPatternOs = "";
-                if (contactLens.NaFlPatternOs != null) {
-                    naFlPatternOs = contactLens.NaFlPatternOs;
-                }
-                string surfaceWettingOd = "";
-                if (contactLens.SurfaceWettingOd != null) {
-                    surfaceWettingOd = contactLens.SurfaceWettingOd;
-                }
-                string surfaceWettingOs = "";
-                if (contactLens.SurfaceWettingOs != null) {
-                    surfaceWettingOs = contactLens.SurfaceWettingOs;
-                }
-                string dkOd = "";
-                if (contactLens.DkOd != null) {
-                    dkOd = contactLens.DkOd;
-                }
-                string dkOs = "";
-                if (contactLens.DkOs != null) {
-                    dkOs = contactLens.DkOs;
-                }
-                string segHeightOd = "";
-                if (contactLens.SegHeightOd != null) {
-                    segHeightOd = contactLens.SegHeightOd;
-                }
-                string segHeightOs = "";
-                if (contactLens.SegHeightOs != null) {
-                    segHeightOs = contactLens.SegHeightOs;
-                }
-                string specialInstructionsOd = "";
-                if (contactLens.SpecialInstructionsOd != null) {
-                    specialInstructionsOd = contactLens.SpecialInstructionsOd;
-                }
-                string specialInstructionsOs = "";
-                if (contactLens.SpecialInstructionsOs != null) {
-                    specialInstructionsOs = contactLens.SpecialInstructionsOs;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID, where does this always come from?
-                int? treeviewTableIdOd = null;
-                // no treeviewTableIdOd
-                int? treeviewTableIdOs = null;
-                // no treeviewTableIdOs
-                string notes = "";
-                if (contactLens.Notes != null) {
-                    notes = contactLens.Notes;
-                }
-                string remarks = "";
-                if (contactLens.Remarks != null) {
-                    remarks = contactLens.Remarks;
-                }
-                bool printed = false;
-                // no printed
-                bool sentToOptical = false;
-                // no sentToOptical
-                string upcOd = "";
-                if (contactLens.Upcod != null) {
-                    upcOd = contactLens.Upcod;
-                }
-                string upcOs = "";
-                if (contactLens.Upcos != null) {
-                    upcOs = contactLens.Upcos;
-                }
-                int? catalogSource = null;
-                if (contactLens.CatalogSource != null) {
-                    if (int.TryParse(contactLens.CatalogSource, out int locum)) {
-                        catalogSource = locum;
+                    string powerOd = "";
+                    if (contactLens.PowerOd != null) {
+                        powerOd = contactLens.PowerOd;
                     }
-                }
-                string catalogManufacturerIdOd = "";
-                if (contactLens.CatalogManufacturerIdod != null) {
-                    catalogManufacturerIdOd = contactLens.CatalogManufacturerIdod;
-                }
-                string catalogManufacturerIdOs = "";
-                if (contactLens.CatalogManufacturerIdos != null) {
-                    catalogManufacturerIdOs = contactLens.CatalogManufacturerIdos;
-                }
-                string catalogBrandIdOd = "";
-                if (contactLens.CatalogBrandIdod != null) {
-                    catalogBrandIdOd = contactLens.CatalogBrandIdod;
-                }
-                string catalogBrandIdOs = "";
-                if (contactLens.CatalogBrandIdos != null) {
-                    catalogBrandIdOs = contactLens.CatalogBrandIdos;
-                }
-                string catalogProductIdOd = "";
-                if (contactLens.CatalogProductIdod != null) {
-                    catalogProductIdOd = contactLens.CatalogProductIdod;
-                }
-                string catalogProductIdOs = "";
-                if (contactLens.CatalogProductIdos != null) {
-                    catalogProductIdOs = contactLens.CatalogProductIdos;
-                }
-                string trialNumber = "";
-                if (contactLens.TrialNumber != null) {
-                    trialNumber = contactLens.TrialNumber;
-                }
-                string orSphereOd = "";
-                if (contactLens.OrsphereOd != null) {
-                    orSphereOd = contactLens.OrsphereOd;
-                }
-                string orSphereOs = "";
-                if (contactLens.OrsphereOs != null) {
-                    orSphereOs = contactLens.OrsphereOs;
-                }
-                string orCylinderOd = "";
-                if (contactLens.OrcylinderOd != null) {
-                    orCylinderOd = contactLens.OrcylinderOd;
-                }
-                string orCylinderOs = "";
-                if (contactLens.OrcylinderOs != null) {
-                    orCylinderOs = contactLens.OrcylinderOs;
-                }
-                string orAxisOd = "";
-                if (contactLens.OraxisOd != null) {
-                    orAxisOd = contactLens.OraxisOd;
-                }
-                string orAxisOs = "";
-                if (contactLens.OraxisOs != null) {
-                    orAxisOs = contactLens.OraxisOs;
-                }
-                string orVaDOd = "";
-                if (contactLens.OrvaDod != null) {
-                    orVaDOd = contactLens.OrvaDod;
-                }
-                string orVaDOs = "";
-                if (contactLens.OrvaDos != null) {
-                    orVaDOs = contactLens.OrvaDos;
-                }
-                string orVaNOd = "";
-                if (contactLens.OrvaNod != null) {
-                    orVaNOd = contactLens.OrvaNod;
-                }
-                string orVaNOs = "";
-                if (contactLens.OrvaNos != null) {
-                    orVaNOs = contactLens.OrvaNos;
-                }
-                string rotationDirectionOd = "";
-                if (contactLens.RotationDirectionOd != null) {
-                    rotationDirectionOd = contactLens.RotationDirectionOd;
-                }
-                string rotationDirectionOs = "";
-                if (contactLens.RotationDirectionOs != null) {
-                    rotationDirectionOs = contactLens.RotationDirectionOs;
-                }
+                    string powerOs = "";
+                    if (contactLens.PowerOs != null) {
+                        powerOs = contactLens.PowerOs;
+                    }
+                    string cylinderOd = "";
+                    if (contactLens.CylinderOd != null) {
+                        cylinderOd = contactLens.CylinderOd;
+                    }
+                    string cylinderOs = "";
+                    if (contactLens.CylinderOs != null) {
+                        cylinderOs = contactLens.CylinderOs;
+                    }
+                    string axisOd = "";
+                    if (contactLens.AxisOd != null) {
+                        axisOd = contactLens.AxisOd;
+                    }
+                    string axisOs = "";
+                    if (contactLens.AxisOs != null) {
+                        axisOs = contactLens.AxisOs;
+                    }
+                    string bcOd = "";
+                    if (contactLens.Bcod != null) {
+                        bcOd = contactLens.Bcod;
+                    }
+                    string bcOs = "";
+                    if (contactLens.Bcos != null) {
+                        bcOs = contactLens.Bcos;
+                    }
+                    string addOd = "";
+                    if (contactLens.AddOd != null) {
+                        addOd = contactLens.AddOd;
+                    }
+                    string addOs = "";
+                    if (contactLens.AddOs != null) {
+                        addOs = contactLens.AddOs;
+                    }
+                    string colorOd = "";
+                    if (contactLens.ColorOd != null) {
+                        colorOd = contactLens.ColorOd;
+                    }
+                    string colorOs = "";
+                    if (contactLens.ColorOs != null) {
+                        colorOs = contactLens.ColorOs;
+                    }
+                    string pupilOd = "";
+                    if (contactLens.PupilOd != null) {
+                        pupilOd = contactLens.PupilOd;
+                    }
+                    string pupilOs = "";
+                    if (contactLens.PupilOs != null) {
+                        pupilOs = contactLens.PupilOs;
+                    }
+                    string vaDOd = "";
+                    if (contactLens.VaDod != null) {
+                        vaDOd = contactLens.VaDod;
+                    }
+                    string vaDOs = "";
+                    if (contactLens.VaDos != null) {
+                        vaDOs = contactLens.VaDos;
+                    }
+                    string vaDOu = "";
+                    if (contactLens.VaDou != null) {
+                        vaDOu = contactLens.VaDou;
+                    }
+                    string VaNOd = "";
+                    if (contactLens.VaNod != null) {
+                        VaNOd = contactLens.VaNod;
+                    }
+                    string VaNOs = "";
+                    if (contactLens.VaNos != null) {
+                        VaNOs = contactLens.VaNos;
+                    }
+                    string VaNOu = "";
+                    if (contactLens.VaNou != null) {
+                        VaNOu = contactLens.VaNou;
+                    }
+                    string vaIOd = "";
+                    if (contactLens.VaIod != null) {
+                        vaIOd = contactLens.VaIod;
+                    }
+                    string vaIOs = "";
+                    if (contactLens.VaIos != null) {
+                        vaIOs = contactLens.VaIos;
+                    }
+                    string vaIOu = "";
+                    if (contactLens.VaIou != null) {
+                        vaIOu = contactLens.VaIou;
+                    }
+                    string comfortOd = "";
+                    if (contactLens.ComfortOd != null) {
+                        comfortOd = contactLens.ComfortOd;
+                    }
+                    string comfortOs = "";
+                    if (contactLens.ComfortOs != null) {
+                        comfortOs = contactLens.ComfortOs;
+                    }
+                    string centrationOd = "";
+                    if (contactLens.CentrationOd != null) {
+                        centrationOd = contactLens.CentrationOd;
+                    }
+                    string centrationOs = "";
+                    if (contactLens.CentrationOs != null) {
+                        centrationOs = contactLens.CentrationOs;
+                    }
+                    string coverageOd = "";
+                    if (contactLens.CoverageOd != null) {
+                        coverageOd = contactLens.CoverageOd;
+                    }
+                    string coverageOs = "";
+                    if (contactLens.CoverageOs != null) {
+                        coverageOs = contactLens.CoverageOs;
+                    }
+                    string movementOd = "";
+                    if (contactLens.MovementOd != null) {
+                        movementOd = contactLens.MovementOd;
+                    }
+                    string movementOs = "";
+                    if (contactLens.MovementOs != null) {
+                        movementOs = contactLens.MovementOs;
+                    }
+                    string diameterOd = "";
+                    if (contactLens.DiameterOd != null) {
+                        diameterOd = contactLens.DiameterOd;
+                    }
+                    string diameterOs = "";
+                    if (contactLens.DiameterOs != null) {
+                        diameterOs = contactLens.DiameterOs;
+                    }
+                    string rotationDegOd = "";
+                    if (contactLens.RotationDegOd != null) {
+                        rotationDegOd = contactLens.RotationDegOd;
+                    }
+                    string rotationDegOs = "";
+                    if (contactLens.RotationDegOs != null) {
+                        rotationDegOs = contactLens.RotationDegOs;
+                    }
+                    string kOd = "";
+                    if (contactLens.Kod != null) {
+                        kOd = contactLens.Kod;
+                    }
+                    string kOs = "";
+                    if (contactLens.Kos != null) {
+                        kOs = contactLens.Kos;
+                    }
+                    string edgeLiftOd = "";
+                    if (contactLens.EdgeLiftOd != null) {
+                        edgeLiftOd = contactLens.EdgeLiftOd;
+                    }
+                    string edgeLiftOs = "";
+                    if (contactLens.EdgeLiftOs != null) {
+                        edgeLiftOs = contactLens.EdgeLiftOs;
+                    }
+                    string distNearOd = "";
+                    if (contactLens.DistNearOd != null) {
+                        distNearOd = contactLens.DistNearOd;
+                    }
+                    string distNearOs = "";
+                    if (contactLens.DistNearOs != null) {
+                        distNearOs = contactLens.DistNearOs;
+                    }
+                    short? ptInsertedRemoved = null;
+                    if (short.TryParse(contactLens.PtInsertedRemoved, out short temp)) {
+                        ptInsertedRemoved = temp;
+                    }
+                    string wAgeOd = "";
+                    if (contactLens.WageOd != null) {
+                        wAgeOd = contactLens.WageOd;
+                    }
+                    string wAgeOs = "";
+                    if (contactLens.WageOs != null) {
+                        wAgeOs = contactLens.WageOs;
+                    }
+                    string wTimeTodayOd = "";
+                    if (contactLens.WtimeTodayOd != null) {
+                        wTimeTodayOd = contactLens.WtimeTodayOd;
+                    }
+                    string wTimeTodayOs = "";
+                    if (contactLens.WtimeTodayOs != null) {
+                        wTimeTodayOs = contactLens.WtimeTodayOs;
+                    }
+                    string wAvgWearTimeOd = "";
+                    if (contactLens.WavgWearTimeOd != null) {
+                        wAvgWearTimeOd = contactLens.WavgWearTimeOd;
+                    }
+                    string wAvgWearTimeOs = "";
+                    if (contactLens.WavgWearTimeOs != null) {
+                        wAvgWearTimeOs = contactLens.WavgWearTimeOs;
+                    }
+                    string solution = "";
+                    if (contactLens.Solution != null) {
+                        solution = contactLens.Solution;
+                    }
+                    string productOd = "";
+                    if (contactLens.ProductOd != null) {
+                        productOd = contactLens.ProductOd;
+                    }
+                    string productOs = "";
+                    if (contactLens.ProductOs != null) {
+                        productOs = contactLens.ProductOs;
+                    }
+                    string lensDesignOd = "";
+                    if (contactLens.LensDesignOd != null) {
+                        lensDesignOd = contactLens.LensDesignOd;
+                    }
+                    string lensDesignOs = "";
+                    if (contactLens.LensDesignOs != null) {
+                        lensDesignOs = contactLens.LensDesignOs;
+                    }
+                    string materialOd = "";
+                    if (contactLens.MaterialOd != null) {
+                        materialOd = contactLens.MaterialOd;
+                    }
+                    string materialOs = "";
+                    if (contactLens.MaterialOs != null) {
+                        materialOs = contactLens.MaterialOs;
+                    }
+                    string replacementSchedule = "";
+                    if (contactLens.ReplacementSchedule != null) {
+                        replacementSchedule = contactLens.ReplacementSchedule;
+                    }
+                    string wearingInstructions = "";
+                    if (contactLens.WearingInstructions != null) {
+                        wearingInstructions = contactLens.WearingInstructions;
+                    }
+                    string expires = "";
+                    if (contactLens.Expires != null) {
+                        expires = contactLens.Expires;
+                    }
+                    int? rgpLayoutOd = null;
+                    if (contactLens.RgplayoutOd != null) {
+                        if (int.TryParse(contactLens.RgplayoutOd, out int locum)) {
+                            rgpLayoutOd = locum;
+                        }
+                    }
+                    int? rgpLayoutOs = null;
+                    if (contactLens.RgplayoutOs != null) {
+                        if (int.TryParse(contactLens.RgplayoutOs, out int locum)) {
+                            rgpLayoutOs = locum;
+                        }
+                    }
+                    string power2Od = "";
+                    if (contactLens.Power2Od != null) {
+                        power2Od = contactLens.Power2Od;
+                    }
+                    string power2Os = "";
+                    if (contactLens.Power2Os != null) {
+                        power2Os = contactLens.Power2Os;
+                    }
+                    string cylinder2Od = "";
+                    if (contactLens.Cylinder2Od != null) {
+                        cylinder2Od = contactLens.Cylinder2Od;
+                    }
+                    string cylinder2Os = "";
+                    if (contactLens.Cylinder2Os != null) {
+                        cylinder2Os = contactLens.Cylinder2Os;
+                    }
+                    string axis2Od = "";
+                    if (contactLens.Axis2Od != null) {
+                        axis2Od = contactLens.Axis2Od;
+                    }
+                    string axis2Os = "";
+                    if (contactLens.Axis2Os != null) {
+                        axis2Os = contactLens.Axis2Os;
+                    }
+                    string bc2Od = "";
+                    if (contactLens.Bc2od != null) {
+                        bc2Od = contactLens.Bc2od;
+                    }
+                    string bc2Os = "";
+                    if (contactLens.Bc2os != null) {
+                        bc2Os = contactLens.Bc2os;
+                    }
+                    string diameter2Od = "";
+                    if (contactLens.Diameter2Od != null) {
+                        diameter2Od = contactLens.Diameter2Od;
+                    }
+                    string diameter2Os = "";
+                    if (contactLens.Diameter2Os != null) {
+                        diameter2Os = contactLens.Diameter2Os;
+                    }
+                    string periphCurveOd = "";
+                    if (contactLens.PeriphCurveOd != null) {
+                        periphCurveOd = contactLens.PeriphCurveOd;
+                    }
+                    string periphCurveOs = "";
+                    if (contactLens.PeriphCurveOs != null) {
+                        periphCurveOs = contactLens.PeriphCurveOs;
+                    }
+                    string peripheralCurve2Od = "";
+                    if (contactLens.PeriphCurve2Od != null) {
+                        peripheralCurve2Od = contactLens.PeriphCurve2Od;
+                    }
+                    string peripheralCurve2Os = "";
+                    if (contactLens.PeriphCurve2Os != null) {
+                        peripheralCurve2Os = contactLens.PeriphCurve2Os;
+                    }
+                    string secondaryCurveOd = "";
+                    if (contactLens.SecondaryCurveOd != null) {
+                        secondaryCurveOd = contactLens.SecondaryCurveOd;
+                    }
+                    string secondaryCurveOs = "";
+                    if (contactLens.SecondaryCurveOs != null) {
+                        secondaryCurveOs = contactLens.SecondaryCurveOs;
+                    }
+                    string equivalentCurveOd = "";
+                    if (contactLens.EquivalentCurveOd != null) {
+                        equivalentCurveOd = contactLens.EquivalentCurveOd;
+                    }
+                    string equivalentCurveOs = "";
+                    if (contactLens.EquivalentCurveOs != null) {
+                        equivalentCurveOs = contactLens.EquivalentCurveOs;
+                    }
+                    string centerThicknessOd = "";
+                    if (contactLens.CenterThicknessOd != null) {
+                        centerThicknessOd = contactLens.CenterThicknessOd;
+                    }
+                    string centerThicknessOs = "";
+                    if (contactLens.CenterThicknessOs != null) {
+                        centerThicknessOs = contactLens.CenterThicknessOs;
+                    }
+                    string opticalZoneDiaOd = "";
+                    if (contactLens.OpticalZoneDiaOd != null) {
+                        opticalZoneDiaOd = contactLens.OpticalZoneDiaOd;
+                    }
+                    string opticalZoneDiaOs = "";
+                    if (contactLens.OpticalZoneDiaOs != null) {
+                        opticalZoneDiaOs = contactLens.OpticalZoneDiaOs;
+                    }
+                    string edgeOd = "";
+                    if (contactLens.EdgeOd != null) {
+                        edgeOd = contactLens.EdgeOd;
+                    }
+                    string edgeOs = "";
+                    if (contactLens.EdgeOs != null) {
+                        edgeOs = contactLens.EdgeOs;
+                    }
+                    string blendOd = "";
+                    if (contactLens.BlendOd != null) {
+                        blendOd = contactLens.BlendOd;
+                    }
+                    string blendOs = "";
+                    if (contactLens.BlendOs != null) {
+                        blendOs = contactLens.BlendOs;
+                    }
+                    string naFlPatternOd = "";
+                    if (contactLens.NaFlPatternOd != null) {
+                        naFlPatternOd = contactLens.NaFlPatternOd;
+                    }
+                    string naFlPatternOs = "";
+                    if (contactLens.NaFlPatternOs != null) {
+                        naFlPatternOs = contactLens.NaFlPatternOs;
+                    }
+                    string surfaceWettingOd = "";
+                    if (contactLens.SurfaceWettingOd != null) {
+                        surfaceWettingOd = contactLens.SurfaceWettingOd;
+                    }
+                    string surfaceWettingOs = "";
+                    if (contactLens.SurfaceWettingOs != null) {
+                        surfaceWettingOs = contactLens.SurfaceWettingOs;
+                    }
+                    string dkOd = "";
+                    if (contactLens.DkOd != null) {
+                        dkOd = contactLens.DkOd;
+                    }
+                    string dkOs = "";
+                    if (contactLens.DkOs != null) {
+                        dkOs = contactLens.DkOs;
+                    }
+                    string segHeightOd = "";
+                    if (contactLens.SegHeightOd != null) {
+                        segHeightOd = contactLens.SegHeightOd;
+                    }
+                    string segHeightOs = "";
+                    if (contactLens.SegHeightOs != null) {
+                        segHeightOs = contactLens.SegHeightOs;
+                    }
+                    string specialInstructionsOd = "";
+                    if (contactLens.SpecialInstructionsOd != null) {
+                        specialInstructionsOd = contactLens.SpecialInstructionsOd;
+                    }
+                    string specialInstructionsOs = "";
+                    if (contactLens.SpecialInstructionsOs != null) {
+                        specialInstructionsOs = contactLens.SpecialInstructionsOs;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID, where does this always come from?
+                    int? treeviewTableIdOd = null;
+                    // no treeviewTableIdOd
+                    int? treeviewTableIdOs = null;
+                    // no treeviewTableIdOs
+                    string notes = "";
+                    if (contactLens.Notes != null) {
+                        notes = contactLens.Notes;
+                    }
+                    string remarks = "";
+                    if (contactLens.Remarks != null) {
+                        remarks = contactLens.Remarks;
+                    }
+                    bool printed = false;
+                    // no printed
+                    bool sentToOptical = false;
+                    // no sentToOptical
+                    string upcOd = "";
+                    if (contactLens.Upcod != null) {
+                        upcOd = contactLens.Upcod;
+                    }
+                    string upcOs = "";
+                    if (contactLens.Upcos != null) {
+                        upcOs = contactLens.Upcos;
+                    }
+                    int? catalogSource = null;
+                    if (contactLens.CatalogSource != null) {
+                        if (int.TryParse(contactLens.CatalogSource, out int locum)) {
+                            catalogSource = locum;
+                        }
+                    }
+                    string catalogManufacturerIdOd = "";
+                    if (contactLens.CatalogManufacturerIdod != null) {
+                        catalogManufacturerIdOd = contactLens.CatalogManufacturerIdod;
+                    }
+                    string catalogManufacturerIdOs = "";
+                    if (contactLens.CatalogManufacturerIdos != null) {
+                        catalogManufacturerIdOs = contactLens.CatalogManufacturerIdos;
+                    }
+                    string catalogBrandIdOd = "";
+                    if (contactLens.CatalogBrandIdod != null) {
+                        catalogBrandIdOd = contactLens.CatalogBrandIdod;
+                    }
+                    string catalogBrandIdOs = "";
+                    if (contactLens.CatalogBrandIdos != null) {
+                        catalogBrandIdOs = contactLens.CatalogBrandIdos;
+                    }
+                    string catalogProductIdOd = "";
+                    if (contactLens.CatalogProductIdod != null) {
+                        catalogProductIdOd = contactLens.CatalogProductIdod;
+                    }
+                    string catalogProductIdOs = "";
+                    if (contactLens.CatalogProductIdos != null) {
+                        catalogProductIdOs = contactLens.CatalogProductIdos;
+                    }
+                    string trialNumber = "";
+                    if (contactLens.TrialNumber != null) {
+                        trialNumber = contactLens.TrialNumber;
+                    }
+                    string orSphereOd = "";
+                    if (contactLens.OrsphereOd != null) {
+                        orSphereOd = contactLens.OrsphereOd;
+                    }
+                    string orSphereOs = "";
+                    if (contactLens.OrsphereOs != null) {
+                        orSphereOs = contactLens.OrsphereOs;
+                    }
+                    string orCylinderOd = "";
+                    if (contactLens.OrcylinderOd != null) {
+                        orCylinderOd = contactLens.OrcylinderOd;
+                    }
+                    string orCylinderOs = "";
+                    if (contactLens.OrcylinderOs != null) {
+                        orCylinderOs = contactLens.OrcylinderOs;
+                    }
+                    string orAxisOd = "";
+                    if (contactLens.OraxisOd != null) {
+                        orAxisOd = contactLens.OraxisOd;
+                    }
+                    string orAxisOs = "";
+                    if (contactLens.OraxisOs != null) {
+                        orAxisOs = contactLens.OraxisOs;
+                    }
+                    string orVaDOd = "";
+                    if (contactLens.OrvaDod != null) {
+                        orVaDOd = contactLens.OrvaDod;
+                    }
+                    string orVaDOs = "";
+                    if (contactLens.OrvaDos != null) {
+                        orVaDOs = contactLens.OrvaDos;
+                    }
+                    string orVaNOd = "";
+                    if (contactLens.OrvaNod != null) {
+                        orVaNOd = contactLens.OrvaNod;
+                    }
+                    string orVaNOs = "";
+                    if (contactLens.OrvaNos != null) {
+                        orVaNOs = contactLens.OrvaNos;
+                    }
+                    string rotationDirectionOd = "";
+                    if (contactLens.RotationDirectionOd != null) {
+                        rotationDirectionOd = contactLens.RotationDirectionOd;
+                    }
+                    string rotationDirectionOs = "";
+                    if (contactLens.RotationDirectionOs != null) {
+                        rotationDirectionOs = contactLens.RotationDirectionOs;
+                    }
 
-                var ehrOrig = contactLenses.FirstOrDefault(x => x.PtId == ptId);
+                    var ehrOrig = contactLenses.FirstOrDefault(x => x.PtId == ptId);
 
-                if (ehrOrig == null) {
-                    var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
-                        VisitId = visitId,
-                        PtId = ptId,
-                        Dosdate = dosdate,
-                        RxId = rxId,
-                        ContactClass = TruncateString(contactClass, 50),
-                        LensType = TruncateString(lensType, 50),
-                        PowerOd = TruncateString(powerOd, 50),
-                        PowerOs = TruncateString(powerOs, 50),
-                        CylinderOd = TruncateString(cylinderOd, 50),
-                        CylinderOs = TruncateString(cylinderOs, 50),
-                        AxisOd = TruncateString(axisOd, 50),
-                        AxisOs = TruncateString(axisOs, 50),
-                        BcOd = TruncateString(bcOd, 50),
-                        BcOs = TruncateString(bcOs, 50),
-                        AddOd = TruncateString(addOd, 50),
-                        AddOs = TruncateString(addOs, 50),
-                        ColorOd = TruncateString(colorOd, 50),
-                        ColorOs = TruncateString(colorOs, 50),
-                        PupilOd = TruncateString(pupilOd, 50),
-                        PupilOs = TruncateString(pupilOs, 50),
-                        VaDOd = TruncateString(vaDOd, 50),
-                        VaDOs = TruncateString(vaDOs, 50),
-                        VaDOu = TruncateString(vaDOu, 50),
-                        VaNOd = TruncateString(VaNOd, 50),
-                        VaNOs = TruncateString(VaNOs, 50),
-                        VaNOu = TruncateString(VaNOu, 50),
-                        VaIOd = TruncateString(vaIOd, 50),
-                        VaIOs = TruncateString(vaIOs, 50),
-                        VaIOu = TruncateString(vaIOu, 50),
-                        ComfortOd = TruncateString(comfortOd, 50),
-                        ComfortOs = TruncateString(comfortOs, 50),
-                        CentrationOd = TruncateString(centrationOd, 50),
-                        CentrationOs = TruncateString(centrationOs, 50),
-                        CoverageOd = TruncateString(coverageOd, 50),
-                        CoverageOs = TruncateString(coverageOs, 50),
-                        MovementOd = TruncateString(movementOd, 50),
-                        MovementOs = TruncateString(movementOs, 50),
-                        DiameterOd = TruncateString(diameterOd, 50),
-                        DiameterOs = TruncateString(diameterOs, 50),
-                        RotationDegOd = TruncateString(rotationDegOd, 20),
-                        RotationDegOs = TruncateString(rotationDegOs, 20),
-                        RotationDirectionOd = TruncateString(rotationDirectionOd, 50),
-                        RotationDirectionOs = TruncateString(rotationDirectionOs, 50),
-                        KOd = TruncateString(kOd, 50),
-                        KOs = TruncateString(kOs, 50),
-                        EdgeLiftOd = TruncateString(edgeLiftOd, 50),
-                        EdgeLiftOs = TruncateString(edgeLiftOs, 50),
-                        DistNearOd = TruncateString(distNearOd, 10),
-                        DistNearOs = TruncateString(distNearOs, 10),
-                        PtInsertedRemoved = ptInsertedRemoved, // smallint, no truncation needed
-                        WAgeOd = TruncateString(wAgeOd, 50),
-                        WAgeOs = TruncateString(wAgeOs, 50),
-                        WTimeTodayOd = TruncateString(wTimeTodayOd, 50),
-                        WTimeTodayOs = TruncateString(wTimeTodayOs, 50),
-                        WAvgWearTimeOd = TruncateString(wAvgWearTimeOd, 50),
-                        WAvgWearTimeOs = TruncateString(wAvgWearTimeOs, 50),
-                        Solution = TruncateString(solution, 50),
-                        ProductOd = TruncateString(productOd, 255),
-                        ProductOs = TruncateString(productOs, 255),
-                        LensDesignOd = TruncateString(lensDesignOd, 50),
-                        LensDesignOs = TruncateString(lensDesignOs, 50),
-                        MaterialOd = TruncateString(materialOd, 50),
-                        MaterialOs = TruncateString(materialOs, 50),
-                        ReplacementSchedule = TruncateString(replacementSchedule, 50),
-                        WearingInstructions = TruncateString(wearingInstructions, 255),
-                        Expires = TruncateString(expires, 50),
-                        RgpLayoutOd = rgpLayoutOd, // int, no truncation needed
-                        RgpLayoutOs = rgpLayoutOs, // int, no truncation needed
-                        Power2Od = TruncateString(power2Od, 50),
-                        Power2Os = TruncateString(power2Os, 50),
-                        Cylinder2Od = TruncateString(cylinder2Od, 50),
-                        Cylinder2Os = TruncateString(cylinder2Os, 50),
-                        Axis2Od = TruncateString(axis2Od, 50),
-                        Axis2Os = TruncateString(axis2Os, 50),
-                        Bc2Od = TruncateString(bc2Od, 50),
-                        Bc2Os = TruncateString(bc2Os, 50),
-                        Diameter2Od = TruncateString(diameter2Od, 50),
-                        Diameter2Os = TruncateString(diameter2Os, 50),
-                        PeriphCurveOd = TruncateString(periphCurveOd, 50),
-                        PeriphCurveOs = TruncateString(periphCurveOs, 50),
-                        PeriphCurve2Od = TruncateString(peripheralCurve2Od, 50),
-                        PeriphCurve2Os = TruncateString(peripheralCurve2Os, 50),
-                        SecondaryCurveOd = TruncateString(secondaryCurveOd, 20),
-                        SecondaryCurveOs = TruncateString(secondaryCurveOs, 20),
-                        EquivalentCurveOd = TruncateString(equivalentCurveOd, 50),
-                        EquivalentCurveOs = TruncateString(equivalentCurveOs, 50),
-                        CenterThicknessOd = TruncateString(centerThicknessOd, 50),
-                        CenterThicknessOs = TruncateString(centerThicknessOs, 50),
-                        OpticalZoneDiaOd = TruncateString(opticalZoneDiaOd, 50),
-                        OpticalZoneDiaOs = TruncateString(opticalZoneDiaOs, 50),
-                        EdgeOd = TruncateString(edgeOd, 50),
-                        EdgeOs = TruncateString(edgeOs, 50),
-                        BlendOd = TruncateString(blendOd, 50),
-                        BlendOs = TruncateString(blendOs, 50),
-                        NaFlPatternOd = TruncateString(naFlPatternOd, 50),
-                        NaFlPatternOs = TruncateString(naFlPatternOs, 50),
-                        SurfaceWettingOd = TruncateString(surfaceWettingOd, 50),
-                        SurfaceWettingOs = TruncateString(surfaceWettingOs, 50),
-                        DkOd = TruncateString(dkOd, 50),
-                        DkOs = TruncateString(dkOs, 50),
-                        SegHeightOd = TruncateString(segHeightOd, 50),
-                        SegHeightOs = TruncateString(segHeightOs, 50),
-                        SpecialInstructionsOd = TruncateString(specialInstructionsOd, 100),
-                        SpecialInstructionsOs = TruncateString(specialInstructionsOs, 100),
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        TreeviewTableIdOd = treeviewTableIdOd, // int, no truncation needed
-                        TreeviewTableIdOs = treeviewTableIdOs, // int, no truncation needed
-                        Notes = TruncateString(notes, int.MaxValue),
-                        Remarks = TruncateString(remarks, int.MaxValue),
-                        Printed = printed, // bit, no truncation needed
-                        SentToOptical = sentToOptical, // bit, no truncation needed
-                        UpcOd = TruncateString(upcOd, 50),
-                        UpcOs = TruncateString(upcOs, 50),
-                        CatalogSource = catalogSource, // int, no truncation needed
-                        CatalogManufacturerIdOd = TruncateString(catalogManufacturerIdOd, 50),
-                        CatalogManufacturerIdOs = TruncateString(catalogManufacturerIdOs, 50),
-                        CatalogBrandIdOd = TruncateString(catalogBrandIdOd, 50),
-                        CatalogBrandIdOs = TruncateString(catalogBrandIdOs, 50),
-                        CatalogProductIdOd = TruncateString(catalogProductIdOd, 50),
-                        CatalogProductIdOs = TruncateString(catalogProductIdOs, 50),
-                        TrialNumber = TruncateString(trialNumber, 100),
-                        OrSphereOd = TruncateString(orSphereOd, 50),
-                        OrSphereOs = TruncateString(orSphereOs, 50),
-                        OrCylinderOd = TruncateString(orCylinderOd, 50),
-                        OrCylinderOs = TruncateString(orCylinderOs, 50),
-                        OrAxisOd = TruncateString(orAxisOd, 50),
-                        OrAxisOs = TruncateString(orAxisOs, 50),
-                        OrVaDOd = TruncateString(orVaDOd, 50),
-                        OrVaDOs = TruncateString(orVaDOs, 50),
-                        OrVaNOd = TruncateString(orVaNOd, 50),
-                        OrVaNOs = TruncateString(orVaNOs, 50)
-                    };
-                    contactLenses.Add(newContactLens);
+                    if (ehrOrig == null) {
+                        var newContactLens = new Brady_s_Conversion_Program.ModelsB.EmrvisitContactLense {
+                            VisitId = visitId,
+                            PtId = ptId,
+                            Dosdate = dosdate,
+                            RxId = rxId,
+                            ContactClass = TruncateString(contactClass, 50),
+                            LensType = TruncateString(lensType, 50),
+                            PowerOd = TruncateString(powerOd, 50),
+                            PowerOs = TruncateString(powerOs, 50),
+                            CylinderOd = TruncateString(cylinderOd, 50),
+                            CylinderOs = TruncateString(cylinderOs, 50),
+                            AxisOd = TruncateString(axisOd, 50),
+                            AxisOs = TruncateString(axisOs, 50),
+                            BcOd = TruncateString(bcOd, 50),
+                            BcOs = TruncateString(bcOs, 50),
+                            AddOd = TruncateString(addOd, 50),
+                            AddOs = TruncateString(addOs, 50),
+                            ColorOd = TruncateString(colorOd, 50),
+                            ColorOs = TruncateString(colorOs, 50),
+                            PupilOd = TruncateString(pupilOd, 50),
+                            PupilOs = TruncateString(pupilOs, 50),
+                            VaDOd = TruncateString(vaDOd, 50),
+                            VaDOs = TruncateString(vaDOs, 50),
+                            VaDOu = TruncateString(vaDOu, 50),
+                            VaNOd = TruncateString(VaNOd, 50),
+                            VaNOs = TruncateString(VaNOs, 50),
+                            VaNOu = TruncateString(VaNOu, 50),
+                            VaIOd = TruncateString(vaIOd, 50),
+                            VaIOs = TruncateString(vaIOs, 50),
+                            VaIOu = TruncateString(vaIOu, 50),
+                            ComfortOd = TruncateString(comfortOd, 50),
+                            ComfortOs = TruncateString(comfortOs, 50),
+                            CentrationOd = TruncateString(centrationOd, 50),
+                            CentrationOs = TruncateString(centrationOs, 50),
+                            CoverageOd = TruncateString(coverageOd, 50),
+                            CoverageOs = TruncateString(coverageOs, 50),
+                            MovementOd = TruncateString(movementOd, 50),
+                            MovementOs = TruncateString(movementOs, 50),
+                            DiameterOd = TruncateString(diameterOd, 50),
+                            DiameterOs = TruncateString(diameterOs, 50),
+                            RotationDegOd = TruncateString(rotationDegOd, 20),
+                            RotationDegOs = TruncateString(rotationDegOs, 20),
+                            RotationDirectionOd = TruncateString(rotationDirectionOd, 50),
+                            RotationDirectionOs = TruncateString(rotationDirectionOs, 50),
+                            KOd = TruncateString(kOd, 50),
+                            KOs = TruncateString(kOs, 50),
+                            EdgeLiftOd = TruncateString(edgeLiftOd, 50),
+                            EdgeLiftOs = TruncateString(edgeLiftOs, 50),
+                            DistNearOd = TruncateString(distNearOd, 10),
+                            DistNearOs = TruncateString(distNearOs, 10),
+                            PtInsertedRemoved = ptInsertedRemoved, // smallint, no truncation needed
+                            WAgeOd = TruncateString(wAgeOd, 50),
+                            WAgeOs = TruncateString(wAgeOs, 50),
+                            WTimeTodayOd = TruncateString(wTimeTodayOd, 50),
+                            WTimeTodayOs = TruncateString(wTimeTodayOs, 50),
+                            WAvgWearTimeOd = TruncateString(wAvgWearTimeOd, 50),
+                            WAvgWearTimeOs = TruncateString(wAvgWearTimeOs, 50),
+                            Solution = TruncateString(solution, 50),
+                            ProductOd = TruncateString(productOd, 255),
+                            ProductOs = TruncateString(productOs, 255),
+                            LensDesignOd = TruncateString(lensDesignOd, 50),
+                            LensDesignOs = TruncateString(lensDesignOs, 50),
+                            MaterialOd = TruncateString(materialOd, 50),
+                            MaterialOs = TruncateString(materialOs, 50),
+                            ReplacementSchedule = TruncateString(replacementSchedule, 50),
+                            WearingInstructions = TruncateString(wearingInstructions, 255),
+                            Expires = TruncateString(expires, 50),
+                            RgpLayoutOd = rgpLayoutOd, // int, no truncation needed
+                            RgpLayoutOs = rgpLayoutOs, // int, no truncation needed
+                            Power2Od = TruncateString(power2Od, 50),
+                            Power2Os = TruncateString(power2Os, 50),
+                            Cylinder2Od = TruncateString(cylinder2Od, 50),
+                            Cylinder2Os = TruncateString(cylinder2Os, 50),
+                            Axis2Od = TruncateString(axis2Od, 50),
+                            Axis2Os = TruncateString(axis2Os, 50),
+                            Bc2Od = TruncateString(bc2Od, 50),
+                            Bc2Os = TruncateString(bc2Os, 50),
+                            Diameter2Od = TruncateString(diameter2Od, 50),
+                            Diameter2Os = TruncateString(diameter2Os, 50),
+                            PeriphCurveOd = TruncateString(periphCurveOd, 50),
+                            PeriphCurveOs = TruncateString(periphCurveOs, 50),
+                            PeriphCurve2Od = TruncateString(peripheralCurve2Od, 50),
+                            PeriphCurve2Os = TruncateString(peripheralCurve2Os, 50),
+                            SecondaryCurveOd = TruncateString(secondaryCurveOd, 20),
+                            SecondaryCurveOs = TruncateString(secondaryCurveOs, 20),
+                            EquivalentCurveOd = TruncateString(equivalentCurveOd, 50),
+                            EquivalentCurveOs = TruncateString(equivalentCurveOs, 50),
+                            CenterThicknessOd = TruncateString(centerThicknessOd, 50),
+                            CenterThicknessOs = TruncateString(centerThicknessOs, 50),
+                            OpticalZoneDiaOd = TruncateString(opticalZoneDiaOd, 50),
+                            OpticalZoneDiaOs = TruncateString(opticalZoneDiaOs, 50),
+                            EdgeOd = TruncateString(edgeOd, 50),
+                            EdgeOs = TruncateString(edgeOs, 50),
+                            BlendOd = TruncateString(blendOd, 50),
+                            BlendOs = TruncateString(blendOs, 50),
+                            NaFlPatternOd = TruncateString(naFlPatternOd, 50),
+                            NaFlPatternOs = TruncateString(naFlPatternOs, 50),
+                            SurfaceWettingOd = TruncateString(surfaceWettingOd, 50),
+                            SurfaceWettingOs = TruncateString(surfaceWettingOs, 50),
+                            DkOd = TruncateString(dkOd, 50),
+                            DkOs = TruncateString(dkOs, 50),
+                            SegHeightOd = TruncateString(segHeightOd, 50),
+                            SegHeightOs = TruncateString(segHeightOs, 50),
+                            SpecialInstructionsOd = TruncateString(specialInstructionsOd, 100),
+                            SpecialInstructionsOs = TruncateString(specialInstructionsOs, 100),
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            TreeviewTableIdOd = treeviewTableIdOd, // int, no truncation needed
+                            TreeviewTableIdOs = treeviewTableIdOs, // int, no truncation needed
+                            Notes = TruncateString(notes, int.MaxValue),
+                            Remarks = TruncateString(remarks, int.MaxValue),
+                            Printed = printed, // bit, no truncation needed
+                            SentToOptical = sentToOptical, // bit, no truncation needed
+                            UpcOd = TruncateString(upcOd, 50),
+                            UpcOs = TruncateString(upcOs, 50),
+                            CatalogSource = catalogSource, // int, no truncation needed
+                            CatalogManufacturerIdOd = TruncateString(catalogManufacturerIdOd, 50),
+                            CatalogManufacturerIdOs = TruncateString(catalogManufacturerIdOs, 50),
+                            CatalogBrandIdOd = TruncateString(catalogBrandIdOd, 50),
+                            CatalogBrandIdOs = TruncateString(catalogBrandIdOs, 50),
+                            CatalogProductIdOd = TruncateString(catalogProductIdOd, 50),
+                            CatalogProductIdOs = TruncateString(catalogProductIdOs, 50),
+                            TrialNumber = TruncateString(trialNumber, 100),
+                            OrSphereOd = TruncateString(orSphereOd, 50),
+                            OrSphereOs = TruncateString(orSphereOs, 50),
+                            OrCylinderOd = TruncateString(orCylinderOd, 50),
+                            OrCylinderOs = TruncateString(orCylinderOs, 50),
+                            OrAxisOd = TruncateString(orAxisOd, 50),
+                            OrAxisOs = TruncateString(orAxisOs, 50),
+                            OrVaDOd = TruncateString(orVaDOd, 50),
+                            OrVaDOs = TruncateString(orVaDOs, 50),
+                            OrVaNOd = TruncateString(orVaNOd, 50),
+                            OrVaNOs = TruncateString(orVaNOs, 50)
+                        };
+                        contactLenses.Add(newContactLens);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.UpdateRange(contactLenses);
+            eyeMDDbContext.SaveChanges();
+            contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
         }
 
-        public static void DiagCodePoolsConvert(ModelsC.DiagCodePool diagCodePool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void DiagCodePoolsConvert(List<ModelsC.DiagCodePool> ehrDiagCodePools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagCodePool> diagCodePools) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (diagCodePool.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var diagCodePool in ehrDiagCodePools) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (diagCodePool.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (diagCodePool.VisitId != null) {
-                    visitId = diagCodePool.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for diag code pool with PTID: {diagCodePool.PtId}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for diag code pool with VisitID: {diagCodePool.VisitId}");
-                }
-                int? ptId = null;
-                if (eyeMDVisit != null && diagCodePool.PtId !<= 0) {
-                    ptId = eyeMDVisit.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
-                    if (eyeMDVisit != null) {
-                        ptId = eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (diagCodePool.VisitId != null) {
+                        visitId = diagCodePool.VisitId;
                     }
-                    else {
-                        logger.Log($"EHR: EHR Visit not found for diag code pool with ID: {diagCodePool.VisitId}");
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for diag code pool with PTID: {diagCodePool.PtId}");
                         return;
                     }
-                }
-                else {
-                    ptId = diagCodePool.PtId;
-                }
-
-                int? controlId = null;
-                // no controlId
-                string diagText = "";
-                if (diagCodePool.DiagText != null) {
-                    diagText = diagCodePool.DiagText;
-                }
-                string code = "";
-                if (diagCodePool.Code != null) {
-                    code = diagCodePool.Code;
-                }
-                string modifier = "";
-                if (diagCodePool.Modifier != null) {
-                    modifier = diagCodePool.Modifier;
-                }
-                string sourceField = "";
-                if (diagCodePool.SourceField != null) {
-                    sourceField = diagCodePool.SourceField;
-                }
-                short isactive = -1;
-                if (short.TryParse(diagCodePool.Active, out short temp)) {
-                    isactive = temp;
-                }
-                string codeICD10 = "";
-                if (diagCodePool.CodeIcd10 != null) {
-                    codeICD10 = diagCodePool.CodeIcd10;
-                }
-                string codeSNOMED = "";
-                if (diagCodePool.CodeSnomed != null) {
-                    codeSNOMED = diagCodePool.CodeSnomed;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID
-                int? requestedProcId = null;
-                if (diagCodePool.RequestedProcedureId != null) {
-                    if (int.TryParse(diagCodePool.RequestedProcedureId, out int locum)) {
-                        requestedProcId = locum;
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for diag code pool with VisitID: {diagCodePool.VisitId}");
                     }
-                }
-                string location1 = "";
-                if (diagCodePool.Location1 != null) {
-                    location1 = diagCodePool.Location1;
-                }
-                string onsetMonth1 = "";
-                if (diagCodePool.OnsetMonth1 != null) {
-                    onsetMonth1 = diagCodePool.OnsetMonth1;
-                }
-                string onsetDay1 = "";
-                if (diagCodePool.OnsetDay1 != null) {
-                    onsetDay1 = diagCodePool.OnsetDay1;
-                }
-                string onsetYear1 = "";
-                if (diagCodePool.OnsetYear1 != null) {
-                    onsetYear1 = diagCodePool.OnsetYear1;
-                }
-                string location2 = "";
-                if (diagCodePool.Location2 != null) {
-                    location2 = diagCodePool.Location2;
-                }
-                int? location2onsetVisitId = null;
-                if (diagCodePool.Location2OnsetVisitId != null) {
-                    if (int.TryParse(diagCodePool.Location2OnsetVisitId, out int locum)) {
-                        location2onsetVisitId = locum;
-                    }
-                }
-                string onsetMonth2 = "";
-                if (diagCodePool.OnsetMonth2 != null) {
-                    onsetMonth2 = diagCodePool.OnsetMonth2;
-                }
-                string onsetDay2 = "";
-                if (diagCodePool.OnsetDay2 != null) {
-                    onsetDay2 = diagCodePool.OnsetDay2;
-                }
-                string onsetYear2 = "";
-                if (diagCodePool.OnsetYear2 != null) {
-                    onsetYear2 = diagCodePool.OnsetYear2;
-                }
-                short isResolved1 = -1;
-                if (short.TryParse(diagCodePool.IsResolved1, out short foo)) {
-                    isResolved1 = foo;
-                }
-                int? resolvedVisitId1 = null;
-                if (diagCodePool.ResolvedVisitId1 != null) {
-                    if (int.TryParse(diagCodePool.ResolvedVisitId1, out int locum)) {
-                        resolvedVisitId1 = locum;
-                    }
-                }
-                int? resolvedRequestedProcId1 = null;
-                if (diagCodePool.ResolvedRequestedProcedureId1 != null) {
-                    if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId1, out int locum)) {
-                        resolvedRequestedProcId1 = locum;
-                    }
-                }
-                DateTime? resolvedDate1 = null;
-                if (diagCodePool.ResolvedDate1 != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        resolvedDate1 = tempDateTime;
-                    }
-                }
-                string resolveType1 = "";
-                if (diagCodePool.ResolveType1 != null) {
-                    resolveType1 = diagCodePool.ResolveType1;
-                }
-                short isResolved2 = -1;
-                if (short.TryParse(diagCodePool.IsResolved2, out short temp2)) {
-                    isResolved2 = temp2;
-                }
-                int? resolvedVisitId2 = null;
-                if (diagCodePool.ResolvedVisitId2 != null) {
-                    if (int.TryParse(diagCodePool.ResolvedVisitId2, out int locum)) {
-                        resolvedVisitId2 = locum;
-                    }
-                }
-                int? resolvedRequestedProc2 = null;
-                if (diagCodePool.ResolvedRequestedProcedureId2 != null) {
-                    if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId2, out int locum)) {
-                        resolvedRequestedProc2 = locum;
-                    }
-                }
-                DateTime? resolvedDate2 = null;
-                if (diagCodePool.ResolvedDate2 != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        resolvedDate2 = tempDateTime;
-                    }
-                }
-                string resolveType2 = "";
-                if (diagCodePool.ResolveType2 != null) {
-                    resolveType2 = diagCodePool.ResolveType2;
-                }
-                bool doNotReconcile = false;
-                if (diagCodePool.DoNotReconcile != null && diagCodePool.DoNotReconcile.ToLower() == "yes" || diagCodePool.DoNotReconcile == "1") {
-                    doNotReconcile = true;
-                }
-                int? conditionId = null;
-                // no conditionId
-                DateTime? lastModified = null;
-                // no lastModified
-                DateTime? created = null;
-                // no created
-                int? createdEmpId = null;
-                // no createdEmpId
-
-                var ehrOrig = diagCodePools.FirstOrDefault(dc => dc.PtId == ptId && dc.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        ControlId = controlId,
-                        DiagText = TruncateString(diagText, int.MaxValue),
-                        Code = TruncateString(code, 50),
-                        Modifier = TruncateString(modifier, 50),
-                        SourceField = TruncateString(sourceField, 50),
-                        IsActive = isactive, // smallint, no truncation needed
-                        CodeIcd10 = TruncateString(codeICD10, 50),
-                        CodeSnomed = TruncateString(codeSNOMED, 50),
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        RequestedProcedureId = requestedProcId,
-                        Location1 = TruncateString(location1, 50),
-                        OnsetMonth1 = TruncateString(onsetMonth1, 10),
-                        OnsetDay1 = TruncateString(onsetDay1, 10),
-                        OnsetYear1 = TruncateString(onsetYear1, 10),
-                        Location2 = TruncateString(location2, 50),
-                        Location2OnsetVisitId = location2onsetVisitId,
-                        OnsetMonth2 = TruncateString(onsetMonth2, 10),
-                        OnsetDay2 = TruncateString(onsetDay2, 10),
-                        OnsetYear2 = TruncateString(onsetYear2, 10),
-                        IsResolved1 = isResolved1, // smallint, no truncation needed
-                        ResolvedVisitId1 = resolvedVisitId1,
-                        ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
-                        ResolvedDate1 = resolvedDate1,
-                        ResolveType1 = TruncateString(resolveType1, 75),
-                        IsResolved2 = isResolved2, // smallint, no truncation needed
-                        ResolvedVisitId2 = resolvedVisitId2,
-                        ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
-                        ResolvedDate2 = resolvedDate2,
-                        ResolveType2 = TruncateString(resolveType2, 75),
-                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                        ConditionId = conditionId,
-                        LastModified = lastModified,
-                        Created = created,
-                        CreatedEmpId = createdEmpId,
-                        Dosdate = dosDate
-                    };
-
-                    diagCodePools.Add(newDiagCodePool);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
-            }
-        }
-
-        public static void DiagTestsConvert(ModelsC.DiagTest diagTest, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (diagTest.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(diagTest.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
-                }
-                int? visitId = null;
-                if (diagTest.VisitId != null) {
-                    visitId = diagTest.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for diag test with ID: {diagTest.Id}");
-                }
-                else {
-                    visitId = eyeMDVisit.VisitId;
-                }
-                int? ptId = null;
-                if (eyeMDVisit != null && diagTest.PtId !<= 0) {
-                    ptId = eyeMDVisit.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient != null) {
-                    ptId = eyeMDPatient.PtId;
-                }
-                if (ptId == null || ptId !<= 0) {
-                    if (eyeMDVisit != null) {
+                    int? ptId = null;
+                    if (eyeMDVisit != null && diagCodePool.PtId! <= 0) {
                         ptId = eyeMDVisit.PtId;
                     }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(ep => ep.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for diag code pool with ID: {diagCodePool.VisitId}");
+                            return;
+                        }
+                    }
                     else {
+                        ptId = diagCodePool.PtId;
+                    }
+
+                    int? controlId = null;
+                    // no controlId
+                    string diagText = "";
+                    if (diagCodePool.DiagText != null) {
+                        diagText = diagCodePool.DiagText;
+                    }
+                    string code = "";
+                    if (diagCodePool.Code != null) {
+                        code = diagCodePool.Code;
+                    }
+                    string modifier = "";
+                    if (diagCodePool.Modifier != null) {
+                        modifier = diagCodePool.Modifier;
+                    }
+                    string sourceField = "";
+                    if (diagCodePool.SourceField != null) {
+                        sourceField = diagCodePool.SourceField;
+                    }
+                    short isactive = -1;
+                    if (short.TryParse(diagCodePool.Active, out short temp)) {
+                        isactive = temp;
+                    }
+                    string codeICD10 = "";
+                    if (diagCodePool.CodeIcd10 != null) {
+                        codeICD10 = diagCodePool.CodeIcd10;
+                    }
+                    string codeSNOMED = "";
+                    if (diagCodePool.CodeSnomed != null) {
+                        codeSNOMED = diagCodePool.CodeSnomed;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID
+                    int? requestedProcId = null;
+                    if (diagCodePool.RequestedProcedureId != null) {
+                        if (int.TryParse(diagCodePool.RequestedProcedureId, out int locum)) {
+                            requestedProcId = locum;
+                        }
+                    }
+                    string location1 = "";
+                    if (diagCodePool.Location1 != null) {
+                        location1 = diagCodePool.Location1;
+                    }
+                    string onsetMonth1 = "";
+                    if (diagCodePool.OnsetMonth1 != null) {
+                        onsetMonth1 = diagCodePool.OnsetMonth1;
+                    }
+                    string onsetDay1 = "";
+                    if (diagCodePool.OnsetDay1 != null) {
+                        onsetDay1 = diagCodePool.OnsetDay1;
+                    }
+                    string onsetYear1 = "";
+                    if (diagCodePool.OnsetYear1 != null) {
+                        onsetYear1 = diagCodePool.OnsetYear1;
+                    }
+                    string location2 = "";
+                    if (diagCodePool.Location2 != null) {
+                        location2 = diagCodePool.Location2;
+                    }
+                    int? location2onsetVisitId = null;
+                    if (diagCodePool.Location2OnsetVisitId != null) {
+                        if (int.TryParse(diagCodePool.Location2OnsetVisitId, out int locum)) {
+                            location2onsetVisitId = locum;
+                        }
+                    }
+                    string onsetMonth2 = "";
+                    if (diagCodePool.OnsetMonth2 != null) {
+                        onsetMonth2 = diagCodePool.OnsetMonth2;
+                    }
+                    string onsetDay2 = "";
+                    if (diagCodePool.OnsetDay2 != null) {
+                        onsetDay2 = diagCodePool.OnsetDay2;
+                    }
+                    string onsetYear2 = "";
+                    if (diagCodePool.OnsetYear2 != null) {
+                        onsetYear2 = diagCodePool.OnsetYear2;
+                    }
+                    short isResolved1 = -1;
+                    if (short.TryParse(diagCodePool.IsResolved1, out short foo)) {
+                        isResolved1 = foo;
+                    }
+                    int? resolvedVisitId1 = null;
+                    if (diagCodePool.ResolvedVisitId1 != null) {
+                        if (int.TryParse(diagCodePool.ResolvedVisitId1, out int locum)) {
+                            resolvedVisitId1 = locum;
+                        }
+                    }
+                    int? resolvedRequestedProcId1 = null;
+                    if (diagCodePool.ResolvedRequestedProcedureId1 != null) {
+                        if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId1, out int locum)) {
+                            resolvedRequestedProcId1 = locum;
+                        }
+                    }
+                    DateTime? resolvedDate1 = null;
+                    if (diagCodePool.ResolvedDate1 != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            resolvedDate1 = tempDateTime;
+                        }
+                    }
+                    string resolveType1 = "";
+                    if (diagCodePool.ResolveType1 != null) {
+                        resolveType1 = diagCodePool.ResolveType1;
+                    }
+                    short isResolved2 = -1;
+                    if (short.TryParse(diagCodePool.IsResolved2, out short temp2)) {
+                        isResolved2 = temp2;
+                    }
+                    int? resolvedVisitId2 = null;
+                    if (diagCodePool.ResolvedVisitId2 != null) {
+                        if (int.TryParse(diagCodePool.ResolvedVisitId2, out int locum)) {
+                            resolvedVisitId2 = locum;
+                        }
+                    }
+                    int? resolvedRequestedProc2 = null;
+                    if (diagCodePool.ResolvedRequestedProcedureId2 != null) {
+                        if (int.TryParse(diagCodePool.ResolvedRequestedProcedureId2, out int locum)) {
+                            resolvedRequestedProc2 = locum;
+                        }
+                    }
+                    DateTime? resolvedDate2 = null;
+                    if (diagCodePool.ResolvedDate2 != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            resolvedDate2 = tempDateTime;
+                        }
+                    }
+                    string resolveType2 = "";
+                    if (diagCodePool.ResolveType2 != null) {
+                        resolveType2 = diagCodePool.ResolveType2;
+                    }
+                    bool doNotReconcile = false;
+                    if (diagCodePool.DoNotReconcile != null && diagCodePool.DoNotReconcile.ToLower() == "yes" || diagCodePool.DoNotReconcile == "1") {
+                        doNotReconcile = true;
+                    }
+                    int? conditionId = null;
+                    // no conditionId
+                    DateTime? lastModified = null;
+                    // no lastModified
+                    DateTime? created = null;
+                    // no created
+                    int? createdEmpId = null;
+                    // no createdEmpId
+
+                    var ehrOrig = diagCodePools.FirstOrDefault(dc => dc.PtId == ptId && dc.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newDiagCodePool = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagCodePool {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            ControlId = controlId,
+                            DiagText = TruncateString(diagText, int.MaxValue),
+                            Code = TruncateString(code, 50),
+                            Modifier = TruncateString(modifier, 50),
+                            SourceField = TruncateString(sourceField, 50),
+                            IsActive = isactive, // smallint, no truncation needed
+                            CodeIcd10 = TruncateString(codeICD10, 50),
+                            CodeSnomed = TruncateString(codeSNOMED, 50),
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            RequestedProcedureId = requestedProcId,
+                            Location1 = TruncateString(location1, 50),
+                            OnsetMonth1 = TruncateString(onsetMonth1, 10),
+                            OnsetDay1 = TruncateString(onsetDay1, 10),
+                            OnsetYear1 = TruncateString(onsetYear1, 10),
+                            Location2 = TruncateString(location2, 50),
+                            Location2OnsetVisitId = location2onsetVisitId,
+                            OnsetMonth2 = TruncateString(onsetMonth2, 10),
+                            OnsetDay2 = TruncateString(onsetDay2, 10),
+                            OnsetYear2 = TruncateString(onsetYear2, 10),
+                            IsResolved1 = isResolved1, // smallint, no truncation needed
+                            ResolvedVisitId1 = resolvedVisitId1,
+                            ResolvedRequestedProcedureId1 = resolvedRequestedProcId1,
+                            ResolvedDate1 = resolvedDate1,
+                            ResolveType1 = TruncateString(resolveType1, 75),
+                            IsResolved2 = isResolved2, // smallint, no truncation needed
+                            ResolvedVisitId2 = resolvedVisitId2,
+                            ResolvedRequestedProcedureId2 = resolvedRequestedProc2,
+                            ResolvedDate2 = resolvedDate2,
+                            ResolveType2 = TruncateString(resolveType2, 75),
+                            DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                            ConditionId = conditionId,
+                            LastModified = lastModified,
+                            Created = created,
+                            CreatedEmpId = createdEmpId,
+                            Dosdate = dosDate
+                        };
+
+                        diagCodePools.Add(newDiagCodePool);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
+            eyeMDDbContext.SaveChanges();
+            diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
+        }
+
+        public static void DiagTestsConvert(List<ModelsC.DiagTest> ehrDiagTests, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
+            foreach (var diagTest in ehrDiagTests) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (diagTest.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(diagTest.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    int? visitId = null;
+                    if (diagTest.VisitId != null) {
+                        visitId = diagTest.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.OldVisitId == visitId.ToString());
+                    if (convVisit == null) {
                         logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
                         return;
                     }
-                }
-                ptId = diagTest.PtId;
-
-
-                #region diagTests
-                string gonioAngleDepthSuOd = diagTest.GonioAngleDepthSuOd ?? "";
-                string gonioAngleDepthMedialOd = diagTest.GonioAngleDepthMedialOd ?? "";
-                string gonioAngleDepthInOd = diagTest.GonioAngleDepthInOd ?? "";
-                string gonioAngleDepthTemporalOd = diagTest.GonioAngleDepthTemporalOd ?? "";
-                string gonioAngleStructureSuOd = diagTest.GonioAngleStructureSuOd ?? "";
-                string gonioAngleStructureMedialOd = diagTest.GonioAngleStructureMedialOd ?? "";
-                string gonioAngleStructureInOd = diagTest.GonioAngleStructureInOd ?? "";
-                string gonioAngleStructureTemporalOd = diagTest.GonioAngleStructureTemporalOd ?? "";
-                string gonioAngleDepthSuOs = diagTest.GonioAngleDepthSuOs ?? "";
-                string gonioAngleDepthMedialOs = diagTest.GonioAngleDepthMedialOs ?? "";
-                string gonioAngleDepthInOs = diagTest.GonioAngleDepthInOs ?? "";
-                string gonioAngleDepthTemporalOs = diagTest.GonioAngleDepthTemporalOs ?? "";
-                string gonioAngleStructureSuOs = diagTest.GonioAngleStructureSuOs ?? "";
-                string gonioAngleStructureMedialOs = diagTest.GonioAngleStructureMedialOs ?? "";
-                string gonioAngleStructureInOs = diagTest.GonioAngleStructureInOs ?? "";
-                string gonioAngleStructureTemporalOs = diagTest.GonioAngleStructureTemporalOs ?? "";
-                string gonioComments = diagTest.GonioComments ?? "";
-
-                short mBalanceScOrtho = short.TryParse(diagTest.MbalanceScortho, out short temp) ? temp : (short)-1;
-                string mBalanceHorizScPriGaze = diagTest.MbalanceHorizScpriGaze ?? "";
-                string mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScpriGaze ?? "";
-                string mBalanceVertScPriGaze = diagTest.MbalanceVertScpriGaze ?? "";
-                string mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScpriGaze ?? "";
-                string mBalanceHorizScupGaze = diagTest.MbalanceHorizScupGaze ?? "";
-                string mBalanceHorizTypeScupGaze = diagTest.MbalanceHorizTypeScupGaze ?? "";
-                string mBalanceVertScupGaze = diagTest.MbalanceVertScupGaze ?? "";
-                string mBalanceVertTypeScupGaze = diagTest.MbalanceVertTypeScupGaze ?? "";
-                string mBalanceHorizScdownGaze = diagTest.MbalanceHorizScdownGaze ?? "";
-                string mBalanceHorizTypeScdownGaze = diagTest.MbalanceHorizTypeScdownGaze ?? "";
-                string mBalanceVertScdownGaze = diagTest.MbalanceVertScdownGaze ?? "";
-                string mBalanceVertTypeScdownGaze = diagTest.MbalanceVertTypeScdownGaze ?? "";
-                string mBalanceHorizScRtGaze = diagTest.MbalanceHorizScrtGaze ?? "";
-                string mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScrtGaze ?? "";
-                string mBalanceVertScRtGaze = diagTest.MbalanceVertScrtGaze ?? "";
-                string mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScrtGaze ?? "";
-                string mBalanceHorizScLtGaze = diagTest.MbalanceHorizScltGaze ?? "";
-                string mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScltGaze ?? "";
-                string mBalanceVertScLtGaze = diagTest.MbalanceVertScltGaze ?? "";
-                string mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScltGaze ?? "";
-
-                short mBalanceCCOrtho = short.TryParse(diagTest.MbalanceCcortho, out short temp3) ? temp3 : (short)-1;
-                string mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcpriGaze ?? "";
-                string mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcpriGaze ?? "";
-                string mBalanceVertCcPriGaze = diagTest.MbalanceVertCcpriGaze ?? "";
-                string mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcpriGaze ?? "";
-                string mBalanceHorizCcupGaze = diagTest.MbalanceHorizCcupGaze ?? "";
-                string mBalanceHorizTypeCcupGaze = diagTest.MbalanceHorizTypeCcupGaze ?? "";
-                string mBalanceVertCcupGaze = diagTest.MbalanceVertCcupGaze ?? "";
-                string mBalanceVertTypeCcupGaze = diagTest.MbalanceVertTypeCcupGaze ?? "";
-                string mBalanceHorizCcdownGaze = diagTest.MbalanceHorizCcdownGaze ?? "";
-                string mBalanceHorizTypeCcdownGaze = diagTest.MbalanceHorizTypeCcdownGaze ?? "";
-                string mBalanceVertCcdownGaze = diagTest.MbalanceVertCcdownGaze ?? "";
-                string mBalanceVertTypeCcdownGaze = diagTest.MbalanceVertTypeCcdownGaze ?? "";
-                string mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcrtGaze ?? "";
-                string mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcrtGaze ?? "";
-                string mBalanceVertCcRtGaze = diagTest.MbalanceVertCcrtGaze ?? "";
-                string mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcrtGaze ?? "";
-                string mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcltGaze ?? "";
-                string mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcltGaze ?? "";
-                string mBalanceVertCcLtGaze = diagTest.MbalanceVertCcltGaze ?? "";
-                string mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze ?? "";
-
-                string mBalanceMethod = diagTest.MbalanceMethod ?? "";
-                string gonioPigmentOd = diagTest.GonioPigmentOd ?? "";
-                string gonioPigmentOs = diagTest.GonioPigmentOs ?? "";
-                string mBalanceScType = diagTest.MbalanceSctype ?? "";
-                string mBalanceCcType = diagTest.MbalanceCctype ?? "";
-                string mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze ?? "";
-                string mBalancehorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
-                string mBalanceVertScupRtGaze = diagTest.MbalanceVertScupRtGaze ?? "";
-                string mBalanceVertTypeScupRtGaze = diagTest.MbalanceVertTypeScupRtGaze ?? "";
-                string mBalanceHorizScupLtGaze = diagTest.MbalanceHorizScupLtGaze ?? "";
-                string mBalanceHorizTypeScupLtGaze = diagTest.MbalanceHorizTypeScupLtGaze ?? "";
-                string mBalanceVertScupLtGaze = diagTest.MbalanceVertScupLtGaze ?? "";
-                string mBalanceVertTypeScupLtGaze = diagTest.MbalanceVertTypeScupLtGaze ?? "";
-                string mBalanceHorizScdownRtGaze = diagTest.MbalanceHorizScdownRtGaze ?? "";
-                string mBalanceHorizTypeScdownRtGaze = diagTest.MbalanceHorizTypeScdownRtGaze ?? "";
-                string mBalanceVertScdownRtGaze = diagTest.MbalanceVertScdownRtGaze ?? "";
-                string mBalanceVertTypeScdownRtGaze = diagTest.MbalanceVertTypeScdownRtGaze ?? "";
-                string mBalanceHorizScdownLtGaze = diagTest.MbalanceHorizScdownLtGaze ?? "";
-                string mBalanceHorizTypeScdownLtGaze = diagTest.MbalanceHorizTypeScdownLtGaze ?? "";
-                string mBalanceVertScdownLtGaze = diagTest.MbalanceVertScdownLtGaze ?? "";
-                string mBalanceVertTypeScdownLtGaze = diagTest.MbalanceVertTypeScdownLtGaze ?? "";
-                string mBalanceHorizCcupRtGaze = diagTest.MbalanceHorizCcupRtGaze ?? "";
-                string mBalanceHorizTypeCcupRtGaze = diagTest.MbalanceHorizTypeCcupRtGaze ?? "";
-                string mBalanceVertCcupRtGaze = diagTest.MbalanceVertCcupRtGaze ?? "";
-                string mBalanceVertTypeCcupRtGaze = diagTest.MbalanceVertTypeCcupRtGaze ?? "";
-                string mBalanceHorizCcupLtGaze = diagTest.MbalanceHorizCcupLtGaze ?? "";
-                string mBalanceHorizTypeCcupLtGaze = diagTest.MbalanceHorizTypeCcupLtGaze ?? "";
-                string mBalanceVertCcupLtGaze = diagTest.MbalanceVertCcupLtGaze ?? "";
-                string mBalanceVertTypeCcupLtGaze = diagTest.MbalanceVertTypeCcupLtGaze ?? "";
-                string mBalanceHorizCcdownRtGaze = diagTest.MbalanceHorizCcdownRtGaze ?? "";
-                string mBalanceHorizTypeCcdownRtGaze = diagTest.MbalanceHorizTypeCcdownRtGaze ?? "";
-                string mBalanceVertCcdownRtGaze = diagTest.MbalanceVertCcdownRtGaze ?? "";
-                string mBalanceVertTypeCcdownRtGaze = diagTest.MbalanceVertTypeCcdownRtGaze ?? "";
-                string mBalanceHorizCcdownLtGaze = diagTest.MbalanceHorizCcdownLtGaze ?? "";
-                string mBalanceHorizTypeCcdownLtGaze = diagTest.MbalanceHorizTypeCcdownLtGaze ?? "";
-                string mBalanceVertCcdownLtGaze = diagTest.MbalanceVertCcdownLtGaze ?? "";
-                string mBalanceVertTypeCcdownLtGaze = diagTest.MbalanceVertTypeCcdownLtGaze ?? "";
-
-                string smotorFixPrefDist = diagTest.SmotorFixPrefDist ?? "";
-                string smotorFixPrefNear = diagTest.SmotorFixPrefNear ?? "";
-                string smotorNystagmus = diagTest.SmotorNystagmus ?? "";
-                string smotorFrisby = diagTest.SmotorFrisby ?? "";
-                string smotorLang = diagTest.SmotorLang ?? "";
-                string smotorTitmusStereoFly = diagTest.SmotorTitmusStereoFly ?? "";
-                string smotorTitmusStereoCircles = diagTest.SmotorTitmusStereoCircles ?? "";
-                string smotorTitmusStereoAnimals = diagTest.SmotorTitmusStereoAnimals ?? "";
-                string smotorRandotCircles = diagTest.SmotorRandotCircles ?? "";
-                string smotorWorth4DotDist = diagTest.SmotorWorth4DotDist ?? "";
-                string smotorWorth4DotNear = diagTest.SmotorWorth4DotNear ?? "";
-                string smotorAvPattern = diagTest.SmotorAvpattern ?? "";
-                string smotorDistStereo = diagTest.SmotorDistStereo ?? "";
-                string smotorDistVectograph = diagTest.SmotorDistVectograph ?? "";
-                string smotorNPC = diagTest.SmotorNpc ?? "";
-                string smotorHorizVergBobreak = diagTest.SmotorHorizVergBobreak ?? "";
-                string smotorHorizVergBorecover = diagTest.SmotorHorizVergBorecover ?? "";
-                string smotorHorizVergBibreak = diagTest.SmotorHorizVergBibreak ?? "";
-                string smotorHorizVergBirecover = diagTest.SmotorHorizVergBirecover ?? "";
-                string smotorVertVergBubreak = diagTest.SmotorVertVergBubreak ?? "";
-                string smotorVertVergBurecover = diagTest.SmotorVertVergBurecover ?? "";
-                string smotorVertVergBdbreak = diagTest.SmotorVertVergBdbreak ?? "";
-                string smotorVertVergBdrecover = diagTest.SmotorVertVergBdrecover ?? "";
-                string smotorDMadRodOd = diagTest.SmotorDmadRodOd ?? "";
-                string smotorDMadRodOs = diagTest.SmotorDmadRodOs ?? "";
-                string smotorDMadRodTorsionOd = diagTest.SmotorDmadRodTorsionOd ?? "";
-                string smotorMadRodTorsionOs = diagTest.SmotorDmadRodTorsionOs ?? "";
-                string smotorColorVisionOd = diagTest.SmotorColorVisionOd ?? "";
-                string smotorColorVisionOs = diagTest.SmotorColorVisionOs ?? "";
-                string smotorColorVisionType = diagTest.SmotorColorVisionType ?? "";
-
-                short? smotorAbute = short.TryParse(diagTest.SmotorAbute, out short temp4) ? temp4 : (short?)null;
-                string smotorHtrtHorizSc = diagTest.SmotorHtrtHorizSc ?? "";
-                string smotorHtrtHorizTypeSc = diagTest.SmotorHtrtHorizTypeSc ?? "";
-                string smotorHtrtVertSc = diagTest.SmotorHtrtVertSc ?? "";
-                string smotorHtrtVertTypeSc = diagTest.SmotorHtrtVertTypeSc ?? "";
-                string smotorHtltHorizSc = diagTest.SmotorHtltHorizSc ?? "";
-                string smotorHtltHorizTypeSc = diagTest.SmotorHtltHorizTypeSc ?? "";
-                string smotorHtltVertSc = diagTest.SmotorHtltVertSc ?? "";
-                string smotorHtltVertTypeSc = diagTest.SmotorHtltVertTypeSc ?? "";
-                string smotorHtrtHorizCc = diagTest.SmotorHtrtHorizCc ?? "";
-                string smotorHtrtHorizTypeCc = diagTest.SmotorHtrtHorizTypeCc ?? "";
-                string smotorHtrtVertCc = diagTest.SmotorHtrtVertCc ?? "";
-                string smotorHtrtVertTypeCc = diagTest.SmotorHtrtVertTypeCc ?? "";
-                string smotorHtltHorizCc = diagTest.SmotorHtltHorizCc ?? "";
-                string smotorHtltHorizTypeCc = diagTest.SmotorHtltHorizTypeCc ?? "";
-                string smotorHtltVertCc = diagTest.SmotorHtltVertCc ?? "";
-                string smotorHtltVertTypeCc = diagTest.SmotorHtltVertTypeCc ?? "";
-
-                string smotorHtrtHorizScnear = diagTest.SmotorHtrtHorizSc ?? "";
-                string smotorHtrtHorizTypeScnear = diagTest.SmotorHtrtHorizTypeSc ?? "";
-                string smotorVertScnear = diagTest.SmotorVertScnear ?? "";
-                string smotorVertTypeScnear = diagTest.SmotorVertTypeScnear ?? "";
-                string smotorHorizCcnear = diagTest.SmotorHorizCcnear ?? "";
-                string smotorHorizTypeCcnear = diagTest.SmotorHorizTypeCcnear ?? "";
-                string smotorVertCcnear = diagTest.SmotorVertCcnear ?? "";
-                string smotorVertTypeCcnear = diagTest.SmotorVertTypeCcnear ?? "";
-                string smotorHorizScdist = diagTest.SmotorHorizScdist ?? "";
-                string smotorHorizTypeScdist = diagTest.SmotorHorizTypeScdist ?? "";
-                string smotorVertScdist = diagTest.SmotorVertScdist ?? "";
-                string smotorVertTypeScdist = diagTest.SmotorVertTypeScdist ?? "";
-                string smotorHorizCcdist = diagTest.SmotorHorizCcdist ?? "";
-                string smotorHorizTypeCcdist = diagTest.SmotorHorizTypeCcdist ?? "";
-                string smotorVertCcdist = diagTest.SmotorVertCcdist ?? "";
-                string smotorVertTypeCcdist = diagTest.SmotorVertTypeCcdist ?? "";
-                string mbalanceMethodSc = diagTest.MbalanceMethodSc ?? "";
-                string mbalanceMethodCc = diagTest.MbalanceMethodCc ?? "";
-                string smotorPrismOd = diagTest.SmotorPrismOd ?? "";
-                string smotorPrismOs = diagTest.SmotorPrismOs ?? "";
-                string smotorDirectionOd = diagTest.SmotorDirectionOd ?? "";
-                string smotorDirectionOs = diagTest.SmotorDirectionOs ?? "";
-                string smotorComments = diagTest.SmotorComments ?? "";
-                string mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
-                string smotorHorizCcnear3Plus = diagTest.SmotorHorizCcnear3Plus ?? "";
-                string smotorHorizScnear = diagTest.SmotorHorizScnear ?? "";
-                string smotorHorizTypeScnear = diagTest.SmotorHorizTypeScnear ?? "";
-                string smotorVertCcnear3Plus = diagTest.SmotorVertCcnear3Plus ?? "";
-                string smotorVertTypeCcnear3Plus = diagTest.SmotorVertTypeCcnear3Plus ?? "";
-                #endregion diagTests
-
-
-                var ehrOrig = diagTests.FirstOrDefault(dt => dt.PtId == ptId && dt.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
-                        VisitId = visitId,
-                        PtId = ptId,
-                        Dosdate = dosDate,
-                        GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
-                        GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
-                        GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
-                        GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
-                        GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
-                        GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
-                        GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
-                        GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
-                        GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
-                        GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
-                        GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
-                        GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
-                        GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
-                        GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
-                        GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
-                        GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
-                        GonioComments = TruncateString(gonioComments, int.MaxValue),
-                        GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
-                        GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
-                        // Continue mapping all other properties as needed
-                    };
-                    diagTests.Add(newDiagTest);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void ExamConditionsConvert(ModelsC.ExamCondition examCondition, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitExamCondition> examConditions) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime dosDate = minAcceptableDate;
-                if (examCondition.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(examCondition.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
-                }
-                int? visitId = null;
-                if (examCondition.VisitId != null) {
-                    visitId = examCondition.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for exam conditions with ID: {examCondition.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Exam Condition with ID: {examCondition.Id}");
-                }
-                int ptId = -1;
-                if (examCondition.PtId !<= 0) {
-                    ptId = examCondition.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for diag test with ID: {diagTest.Id}");
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Exam Condition with ID: {examCondition.Id}");
+                        visitId = eyeMDVisit.VisitId;
+                    }
+                    int? ptId = null;
+                    if (eyeMDVisit != null && diagTest.PtId! <= 0) {
+                        ptId = eyeMDVisit.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient != null) {
+                        ptId = eyeMDPatient.PtId;
+                    }
+                    if (ptId == null || ptId! <= 0) {
+                        if (eyeMDVisit != null) {
+                            ptId = eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR Visit not found for diag diag test with ID: {diagTest.Id}");
+                            return;
+                        }
+                    }
+                    ptId = diagTest.PtId;
+
+
+                    #region diagTests
+                    string gonioAngleDepthSuOd = diagTest.GonioAngleDepthSuOd ?? "";
+                    string gonioAngleDepthMedialOd = diagTest.GonioAngleDepthMedialOd ?? "";
+                    string gonioAngleDepthInOd = diagTest.GonioAngleDepthInOd ?? "";
+                    string gonioAngleDepthTemporalOd = diagTest.GonioAngleDepthTemporalOd ?? "";
+                    string gonioAngleStructureSuOd = diagTest.GonioAngleStructureSuOd ?? "";
+                    string gonioAngleStructureMedialOd = diagTest.GonioAngleStructureMedialOd ?? "";
+                    string gonioAngleStructureInOd = diagTest.GonioAngleStructureInOd ?? "";
+                    string gonioAngleStructureTemporalOd = diagTest.GonioAngleStructureTemporalOd ?? "";
+                    string gonioAngleDepthSuOs = diagTest.GonioAngleDepthSuOs ?? "";
+                    string gonioAngleDepthMedialOs = diagTest.GonioAngleDepthMedialOs ?? "";
+                    string gonioAngleDepthInOs = diagTest.GonioAngleDepthInOs ?? "";
+                    string gonioAngleDepthTemporalOs = diagTest.GonioAngleDepthTemporalOs ?? "";
+                    string gonioAngleStructureSuOs = diagTest.GonioAngleStructureSuOs ?? "";
+                    string gonioAngleStructureMedialOs = diagTest.GonioAngleStructureMedialOs ?? "";
+                    string gonioAngleStructureInOs = diagTest.GonioAngleStructureInOs ?? "";
+                    string gonioAngleStructureTemporalOs = diagTest.GonioAngleStructureTemporalOs ?? "";
+                    string gonioComments = diagTest.GonioComments ?? "";
+
+                    short mBalanceScOrtho = short.TryParse(diagTest.MbalanceScortho, out short temp) ? temp : (short)-1;
+                    string mBalanceHorizScPriGaze = diagTest.MbalanceHorizScpriGaze ?? "";
+                    string mBalanceHorizTypeScPriGaze = diagTest.MbalanceHorizTypeScpriGaze ?? "";
+                    string mBalanceVertScPriGaze = diagTest.MbalanceVertScpriGaze ?? "";
+                    string mBalanceVertTypeScPriGaze = diagTest.MbalanceVertTypeScpriGaze ?? "";
+                    string mBalanceHorizScupGaze = diagTest.MbalanceHorizScupGaze ?? "";
+                    string mBalanceHorizTypeScupGaze = diagTest.MbalanceHorizTypeScupGaze ?? "";
+                    string mBalanceVertScupGaze = diagTest.MbalanceVertScupGaze ?? "";
+                    string mBalanceVertTypeScupGaze = diagTest.MbalanceVertTypeScupGaze ?? "";
+                    string mBalanceHorizScdownGaze = diagTest.MbalanceHorizScdownGaze ?? "";
+                    string mBalanceHorizTypeScdownGaze = diagTest.MbalanceHorizTypeScdownGaze ?? "";
+                    string mBalanceVertScdownGaze = diagTest.MbalanceVertScdownGaze ?? "";
+                    string mBalanceVertTypeScdownGaze = diagTest.MbalanceVertTypeScdownGaze ?? "";
+                    string mBalanceHorizScRtGaze = diagTest.MbalanceHorizScrtGaze ?? "";
+                    string mBalanceHorizTypeScRtGaze = diagTest.MbalanceHorizTypeScrtGaze ?? "";
+                    string mBalanceVertScRtGaze = diagTest.MbalanceVertScrtGaze ?? "";
+                    string mBalanceVertTypeScRtGaze = diagTest.MbalanceVertTypeScrtGaze ?? "";
+                    string mBalanceHorizScLtGaze = diagTest.MbalanceHorizScltGaze ?? "";
+                    string mBalanceHorizTypeScLtGaze = diagTest.MbalanceHorizTypeScltGaze ?? "";
+                    string mBalanceVertScLtGaze = diagTest.MbalanceVertScltGaze ?? "";
+                    string mBalanceVertTypeScLtGaze = diagTest.MbalanceVertTypeScltGaze ?? "";
+
+                    short mBalanceCCOrtho = short.TryParse(diagTest.MbalanceCcortho, out short temp3) ? temp3 : (short)-1;
+                    string mBalanceHorizCcPriGaze = diagTest.MbalanceHorizCcpriGaze ?? "";
+                    string mBalanceHorizTypeCcPriGaze = diagTest.MbalanceHorizTypeCcpriGaze ?? "";
+                    string mBalanceVertCcPriGaze = diagTest.MbalanceVertCcpriGaze ?? "";
+                    string mBalanceVertTypeCcPriGaze = diagTest.MbalanceVertTypeCcpriGaze ?? "";
+                    string mBalanceHorizCcupGaze = diagTest.MbalanceHorizCcupGaze ?? "";
+                    string mBalanceHorizTypeCcupGaze = diagTest.MbalanceHorizTypeCcupGaze ?? "";
+                    string mBalanceVertCcupGaze = diagTest.MbalanceVertCcupGaze ?? "";
+                    string mBalanceVertTypeCcupGaze = diagTest.MbalanceVertTypeCcupGaze ?? "";
+                    string mBalanceHorizCcdownGaze = diagTest.MbalanceHorizCcdownGaze ?? "";
+                    string mBalanceHorizTypeCcdownGaze = diagTest.MbalanceHorizTypeCcdownGaze ?? "";
+                    string mBalanceVertCcdownGaze = diagTest.MbalanceVertCcdownGaze ?? "";
+                    string mBalanceVertTypeCcdownGaze = diagTest.MbalanceVertTypeCcdownGaze ?? "";
+                    string mBalanceHorizCcRtGaze = diagTest.MbalanceHorizCcrtGaze ?? "";
+                    string mBalanceHorizTypeCcRtGaze = diagTest.MbalanceHorizTypeCcrtGaze ?? "";
+                    string mBalanceVertCcRtGaze = diagTest.MbalanceVertCcrtGaze ?? "";
+                    string mBalanceVertTypeCcRtGaze = diagTest.MbalanceVertTypeCcrtGaze ?? "";
+                    string mBalanceHorizCcLtGaze = diagTest.MbalanceHorizCcltGaze ?? "";
+                    string mBalanceHorizTypeCcLtGaze = diagTest.MbalanceHorizTypeCcltGaze ?? "";
+                    string mBalanceVertCcLtGaze = diagTest.MbalanceVertCcltGaze ?? "";
+                    string mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze ?? "";
+
+                    string mBalanceMethod = diagTest.MbalanceMethod ?? "";
+                    string gonioPigmentOd = diagTest.GonioPigmentOd ?? "";
+                    string gonioPigmentOs = diagTest.GonioPigmentOs ?? "";
+                    string mBalanceScType = diagTest.MbalanceSctype ?? "";
+                    string mBalanceCcType = diagTest.MbalanceCctype ?? "";
+                    string mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze ?? "";
+                    string mBalancehorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
+                    string mBalanceVertScupRtGaze = diagTest.MbalanceVertScupRtGaze ?? "";
+                    string mBalanceVertTypeScupRtGaze = diagTest.MbalanceVertTypeScupRtGaze ?? "";
+                    string mBalanceHorizScupLtGaze = diagTest.MbalanceHorizScupLtGaze ?? "";
+                    string mBalanceHorizTypeScupLtGaze = diagTest.MbalanceHorizTypeScupLtGaze ?? "";
+                    string mBalanceVertScupLtGaze = diagTest.MbalanceVertScupLtGaze ?? "";
+                    string mBalanceVertTypeScupLtGaze = diagTest.MbalanceVertTypeScupLtGaze ?? "";
+                    string mBalanceHorizScdownRtGaze = diagTest.MbalanceHorizScdownRtGaze ?? "";
+                    string mBalanceHorizTypeScdownRtGaze = diagTest.MbalanceHorizTypeScdownRtGaze ?? "";
+                    string mBalanceVertScdownRtGaze = diagTest.MbalanceVertScdownRtGaze ?? "";
+                    string mBalanceVertTypeScdownRtGaze = diagTest.MbalanceVertTypeScdownRtGaze ?? "";
+                    string mBalanceHorizScdownLtGaze = diagTest.MbalanceHorizScdownLtGaze ?? "";
+                    string mBalanceHorizTypeScdownLtGaze = diagTest.MbalanceHorizTypeScdownLtGaze ?? "";
+                    string mBalanceVertScdownLtGaze = diagTest.MbalanceVertScdownLtGaze ?? "";
+                    string mBalanceVertTypeScdownLtGaze = diagTest.MbalanceVertTypeScdownLtGaze ?? "";
+                    string mBalanceHorizCcupRtGaze = diagTest.MbalanceHorizCcupRtGaze ?? "";
+                    string mBalanceHorizTypeCcupRtGaze = diagTest.MbalanceHorizTypeCcupRtGaze ?? "";
+                    string mBalanceVertCcupRtGaze = diagTest.MbalanceVertCcupRtGaze ?? "";
+                    string mBalanceVertTypeCcupRtGaze = diagTest.MbalanceVertTypeCcupRtGaze ?? "";
+                    string mBalanceHorizCcupLtGaze = diagTest.MbalanceHorizCcupLtGaze ?? "";
+                    string mBalanceHorizTypeCcupLtGaze = diagTest.MbalanceHorizTypeCcupLtGaze ?? "";
+                    string mBalanceVertCcupLtGaze = diagTest.MbalanceVertCcupLtGaze ?? "";
+                    string mBalanceVertTypeCcupLtGaze = diagTest.MbalanceVertTypeCcupLtGaze ?? "";
+                    string mBalanceHorizCcdownRtGaze = diagTest.MbalanceHorizCcdownRtGaze ?? "";
+                    string mBalanceHorizTypeCcdownRtGaze = diagTest.MbalanceHorizTypeCcdownRtGaze ?? "";
+                    string mBalanceVertCcdownRtGaze = diagTest.MbalanceVertCcdownRtGaze ?? "";
+                    string mBalanceVertTypeCcdownRtGaze = diagTest.MbalanceVertTypeCcdownRtGaze ?? "";
+                    string mBalanceHorizCcdownLtGaze = diagTest.MbalanceHorizCcdownLtGaze ?? "";
+                    string mBalanceHorizTypeCcdownLtGaze = diagTest.MbalanceHorizTypeCcdownLtGaze ?? "";
+                    string mBalanceVertCcdownLtGaze = diagTest.MbalanceVertCcdownLtGaze ?? "";
+                    string mBalanceVertTypeCcdownLtGaze = diagTest.MbalanceVertTypeCcdownLtGaze ?? "";
+
+                    string smotorFixPrefDist = diagTest.SmotorFixPrefDist ?? "";
+                    string smotorFixPrefNear = diagTest.SmotorFixPrefNear ?? "";
+                    string smotorNystagmus = diagTest.SmotorNystagmus ?? "";
+                    string smotorFrisby = diagTest.SmotorFrisby ?? "";
+                    string smotorLang = diagTest.SmotorLang ?? "";
+                    string smotorTitmusStereoFly = diagTest.SmotorTitmusStereoFly ?? "";
+                    string smotorTitmusStereoCircles = diagTest.SmotorTitmusStereoCircles ?? "";
+                    string smotorTitmusStereoAnimals = diagTest.SmotorTitmusStereoAnimals ?? "";
+                    string smotorRandotCircles = diagTest.SmotorRandotCircles ?? "";
+                    string smotorWorth4DotDist = diagTest.SmotorWorth4DotDist ?? "";
+                    string smotorWorth4DotNear = diagTest.SmotorWorth4DotNear ?? "";
+                    string smotorAvPattern = diagTest.SmotorAvpattern ?? "";
+                    string smotorDistStereo = diagTest.SmotorDistStereo ?? "";
+                    string smotorDistVectograph = diagTest.SmotorDistVectograph ?? "";
+                    string smotorNPC = diagTest.SmotorNpc ?? "";
+                    string smotorHorizVergBobreak = diagTest.SmotorHorizVergBobreak ?? "";
+                    string smotorHorizVergBorecover = diagTest.SmotorHorizVergBorecover ?? "";
+                    string smotorHorizVergBibreak = diagTest.SmotorHorizVergBibreak ?? "";
+                    string smotorHorizVergBirecover = diagTest.SmotorHorizVergBirecover ?? "";
+                    string smotorVertVergBubreak = diagTest.SmotorVertVergBubreak ?? "";
+                    string smotorVertVergBurecover = diagTest.SmotorVertVergBurecover ?? "";
+                    string smotorVertVergBdbreak = diagTest.SmotorVertVergBdbreak ?? "";
+                    string smotorVertVergBdrecover = diagTest.SmotorVertVergBdrecover ?? "";
+                    string smotorDMadRodOd = diagTest.SmotorDmadRodOd ?? "";
+                    string smotorDMadRodOs = diagTest.SmotorDmadRodOs ?? "";
+                    string smotorDMadRodTorsionOd = diagTest.SmotorDmadRodTorsionOd ?? "";
+                    string smotorMadRodTorsionOs = diagTest.SmotorDmadRodTorsionOs ?? "";
+                    string smotorColorVisionOd = diagTest.SmotorColorVisionOd ?? "";
+                    string smotorColorVisionOs = diagTest.SmotorColorVisionOs ?? "";
+                    string smotorColorVisionType = diagTest.SmotorColorVisionType ?? "";
+
+                    short? smotorAbute = short.TryParse(diagTest.SmotorAbute, out short temp4) ? temp4 : (short?)null;
+                    string smotorHtrtHorizSc = diagTest.SmotorHtrtHorizSc ?? "";
+                    string smotorHtrtHorizTypeSc = diagTest.SmotorHtrtHorizTypeSc ?? "";
+                    string smotorHtrtVertSc = diagTest.SmotorHtrtVertSc ?? "";
+                    string smotorHtrtVertTypeSc = diagTest.SmotorHtrtVertTypeSc ?? "";
+                    string smotorHtltHorizSc = diagTest.SmotorHtltHorizSc ?? "";
+                    string smotorHtltHorizTypeSc = diagTest.SmotorHtltHorizTypeSc ?? "";
+                    string smotorHtltVertSc = diagTest.SmotorHtltVertSc ?? "";
+                    string smotorHtltVertTypeSc = diagTest.SmotorHtltVertTypeSc ?? "";
+                    string smotorHtrtHorizCc = diagTest.SmotorHtrtHorizCc ?? "";
+                    string smotorHtrtHorizTypeCc = diagTest.SmotorHtrtHorizTypeCc ?? "";
+                    string smotorHtrtVertCc = diagTest.SmotorHtrtVertCc ?? "";
+                    string smotorHtrtVertTypeCc = diagTest.SmotorHtrtVertTypeCc ?? "";
+                    string smotorHtltHorizCc = diagTest.SmotorHtltHorizCc ?? "";
+                    string smotorHtltHorizTypeCc = diagTest.SmotorHtltHorizTypeCc ?? "";
+                    string smotorHtltVertCc = diagTest.SmotorHtltVertCc ?? "";
+                    string smotorHtltVertTypeCc = diagTest.SmotorHtltVertTypeCc ?? "";
+
+                    string smotorHtrtHorizScnear = diagTest.SmotorHtrtHorizSc ?? "";
+                    string smotorHtrtHorizTypeScnear = diagTest.SmotorHtrtHorizTypeSc ?? "";
+                    string smotorVertScnear = diagTest.SmotorVertScnear ?? "";
+                    string smotorVertTypeScnear = diagTest.SmotorVertTypeScnear ?? "";
+                    string smotorHorizCcnear = diagTest.SmotorHorizCcnear ?? "";
+                    string smotorHorizTypeCcnear = diagTest.SmotorHorizTypeCcnear ?? "";
+                    string smotorVertCcnear = diagTest.SmotorVertCcnear ?? "";
+                    string smotorVertTypeCcnear = diagTest.SmotorVertTypeCcnear ?? "";
+                    string smotorHorizScdist = diagTest.SmotorHorizScdist ?? "";
+                    string smotorHorizTypeScdist = diagTest.SmotorHorizTypeScdist ?? "";
+                    string smotorVertScdist = diagTest.SmotorVertScdist ?? "";
+                    string smotorVertTypeScdist = diagTest.SmotorVertTypeScdist ?? "";
+                    string smotorHorizCcdist = diagTest.SmotorHorizCcdist ?? "";
+                    string smotorHorizTypeCcdist = diagTest.SmotorHorizTypeCcdist ?? "";
+                    string smotorVertCcdist = diagTest.SmotorVertCcdist ?? "";
+                    string smotorVertTypeCcdist = diagTest.SmotorVertTypeCcdist ?? "";
+                    string mbalanceMethodSc = diagTest.MbalanceMethodSc ?? "";
+                    string mbalanceMethodCc = diagTest.MbalanceMethodCc ?? "";
+                    string smotorPrismOd = diagTest.SmotorPrismOd ?? "";
+                    string smotorPrismOs = diagTest.SmotorPrismOs ?? "";
+                    string smotorDirectionOd = diagTest.SmotorDirectionOd ?? "";
+                    string smotorDirectionOs = diagTest.SmotorDirectionOs ?? "";
+                    string smotorComments = diagTest.SmotorComments ?? "";
+                    string mBalanceHorizTypeScupRtGaze = diagTest.MbalanceHorizTypeScupRtGaze ?? "";
+                    string smotorHorizCcnear3Plus = diagTest.SmotorHorizCcnear3Plus ?? "";
+                    string smotorHorizScnear = diagTest.SmotorHorizScnear ?? "";
+                    string smotorHorizTypeScnear = diagTest.SmotorHorizTypeScnear ?? "";
+                    string smotorVertCcnear3Plus = diagTest.SmotorVertCcnear3Plus ?? "";
+                    string smotorVertTypeCcnear3Plus = diagTest.SmotorVertTypeCcnear3Plus ?? "";
+                    #endregion diagTests
+
+
+                    var ehrOrig = diagTests.FirstOrDefault(dt => dt.PtId == ptId && dt.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newDiagTest = new Brady_s_Conversion_Program.ModelsB.EmrvisitDiagTest {
+                            VisitId = visitId,
+                            PtId = ptId,
+                            Dosdate = dosDate,
+                            GonioAngleDepthInOd = TruncateString(gonioAngleDepthInOd, 50),
+                            GonioAngleDepthInOs = TruncateString(gonioAngleDepthInOs, 50),
+                            GonioAngleDepthMedialOd = TruncateString(gonioAngleDepthMedialOd, 50),
+                            GonioAngleDepthMedialOs = TruncateString(gonioAngleDepthMedialOs, 50),
+                            GonioAngleDepthSuOd = TruncateString(gonioAngleDepthSuOd, 50),
+                            GonioAngleDepthSuOs = TruncateString(gonioAngleDepthSuOs, 50),
+                            GonioAngleDepthTemporalOd = TruncateString(gonioAngleDepthTemporalOd, 50),
+                            GonioAngleDepthTemporalOs = TruncateString(gonioAngleDepthTemporalOs, 50),
+                            GonioAngleStructureInOd = TruncateString(gonioAngleStructureInOd, 50),
+                            GonioAngleStructureInOs = TruncateString(gonioAngleStructureInOs, 50),
+                            GonioAngleStructureMedialOd = TruncateString(gonioAngleStructureMedialOd, 50),
+                            GonioAngleStructureMedialOs = TruncateString(gonioAngleStructureMedialOs, 50),
+                            GonioAngleStructureSuOd = TruncateString(gonioAngleStructureSuOd, 50),
+                            GonioAngleStructureSuOs = TruncateString(gonioAngleStructureSuOs, 50),
+                            GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
+                            GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
+                            GonioComments = TruncateString(gonioComments, int.MaxValue),
+                            GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
+                            GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
+                            // Continue mapping all other properties as needed
+                        };
+                        diagTests.Add(newDiagTest);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
+            eyeMDDbContext.SaveChanges();
+            diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
+        }
+
+        public static void ExamConditionsConvert(List<ModelsC.ExamCondition> ehrExamConditions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitExamCondition> examConditions) {
+            foreach (var examCondition in ehrExamConditions) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime dosDate = minAcceptableDate;
+                    if (examCondition.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(examCondition.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    int? visitId = null;
+                    if (examCondition.VisitId != null) {
+                        visitId = examCondition.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for exam conditions with ID: {examCondition.Id}");
                         return;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-
-
-                int? locationId = null;
-                // no locationId, but this is used
-                int? conditionId = null;
-                // conditionID is always -888 or -999, dont know what they mean, dont know where this comes from
-                // also have an unused [condition value] field in the source table
-                string condition = "";
-                if (examCondition.Condition != null) {
-                    condition = examCondition.Condition;
-                }
-                string? eye = "";
-                if (examCondition.Eye != null) {
-                    if (examCondition.Eye == "R") {
-                        eye = "OD";
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Exam Condition with ID: {examCondition.Id}");
                     }
-                    else if (examCondition.Eye == "L") {
-                        eye = "OS";
+                    int ptId = -1;
+                    if (examCondition.PtId! <= 0) {
+                        ptId = examCondition.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Exam Condition with ID: {examCondition.Id}");
+                            return;
+                        }
                     }
                     else {
-                        eye = examCondition.Eye;
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+
+                    int? locationId = null;
+                    // no locationId, but this is used
+                    int? conditionId = null;
+                    // conditionID is always -888 or -999, dont know what they mean, dont know where this comes from
+                    // also have an unused [condition value] field in the source table
+                    string condition = "";
+                    if (examCondition.Condition != null) {
+                        condition = examCondition.Condition;
+                    }
+                    string? eye = "";
+                    if (examCondition.Eye != null) {
+                        if (examCondition.Eye == "R") {
+                            eye = "OD";
+                        }
+                        else if (examCondition.Eye == "L") {
+                            eye = "OS";
+                        }
+                        else {
+                            eye = examCondition.Eye;
+                        }
+                    }
+
+                    var ehrOrig = examConditions.FirstOrDefault(ec => ec.PtId == ptId && ec.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
+                            Snomed = null,
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            Comment = TruncateString(examCondition.Comment, int.MaxValue),
+                            Condition = TruncateString(condition, int.MaxValue),
+                            Laterality = TruncateString(eye, 10),
+                            ConditionId = conditionId,
+                            LocationId = locationId
+                        };
+                        examConditions.Add(newExamCondition);
                     }
                 }
-
-                var ehrOrig = examConditions.FirstOrDefault(ec => ec.PtId == ptId && ec.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newExamCondition = new Brady_s_Conversion_Program.ModelsB.EmrvisitExamCondition {
-                        Snomed = null,
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        Comment = TruncateString(examCondition.Comment, int.MaxValue),
-                        Condition = TruncateString(condition, int.MaxValue),
-                        Laterality = TruncateString(eye, 10),
-                        ConditionId = conditionId,
-                        LocationId = locationId
-                    };
-                    examConditions.Add(newExamCondition);
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitExamConditions.UpdateRange(examConditions);
+            eyeMDDbContext.SaveChanges();
+            examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
         }
 
-        public static void FamilyHistoriesConvert(ModelsC.FamilyHistory familyHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void FamilyHistoriesConvert(List<ModelsC.FamilyHistory> ehrFamilyHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitFamilyHistory> familyHistories) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (familyHistory.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(familyHistory.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var familyHistory in ehrFamilyHistories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (familyHistory.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(familyHistory.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (familyHistory.VisitId != null) {
-                    visitId = familyHistory.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for family history with ID: {familyHistory.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Family History with ID: {familyHistory.Id}");
-                }
-                int? ptId = null;
-                if (familyHistory.PtId !<= 0) {
-                    ptId = familyHistory.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (familyHistory.VisitId != null) {
+                        visitId = familyHistory.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for family history with ID: {familyHistory.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Family History with ID: {familyHistory.Id}");
+                    }
+                    int? ptId = null;
+                    if (familyHistory.PtId! <= 0) {
+                        ptId = familyHistory.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Family History with ID: {familyHistory.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Family History with ID: {familyHistory.Id}");
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+                    string description = "";
+                    if (familyHistory.Description != null) {
+                        description = familyHistory.Description;
+                    }
+                    string relation = "";
+                    if (familyHistory.Relation != null) {
+                        relation = familyHistory.Relation;
+                    }
+                    string comments = "";
+                    if (familyHistory.Comments != null) {
+                        comments = familyHistory.Comments;
+                    }
+                    string age = "";
+                    if (familyHistory.Age != null) {
+                        age = familyHistory.Age;
+                    }
+                    string status = "";
+                    if (familyHistory.Status != null) {
+                        status = familyHistory.Status;
+                    }
+                    string code = "";
+                    if (familyHistory.CodeIcd9 != null) {
+                        code = familyHistory.CodeIcd9;
+                    }
+                    string codeIcd10 = "";
+                    if (familyHistory.CodeIcd10 != null) {
+                        codeIcd10 = familyHistory.CodeIcd10;
+                    }
+                    string codeSnomed = "";
+                    if (familyHistory.CodeSnomed != null) {
+                        codeSnomed = familyHistory.CodeSnomed;
+                    }
+
+                    var ehrOrig = familyHistories.FirstOrDefault(fh => fh.PtId == ptId && fh.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            Description = TruncateString(description, 255),
+                            Relation = TruncateString(relation, 50),
+                            Comments = TruncateString(comments, int.MaxValue),
+                            Age = TruncateString(age, 50),
+                            Status = TruncateString(status, 50),
+                            Code = TruncateString(code, 50),
+                            CodeIcd10 = TruncateString(codeIcd10, 50),
+                            CodeSnomed = TruncateString(codeSnomed, 50)
+                        };
+                        familyHistories.Add(newFamilyHistory);
                     }
                 }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-
-                string description = "";
-                if (familyHistory.Description != null) {
-                    description = familyHistory.Description;
-                }
-                string relation = "";
-                if (familyHistory.Relation != null) {
-                    relation = familyHistory.Relation;
-                }
-                string comments = "";
-                if (familyHistory.Comments != null) {
-                    comments = familyHistory.Comments;
-                }
-                string age = "";
-                if (familyHistory.Age != null) {
-                    age = familyHistory.Age;
-                }
-                string status = "";
-                if (familyHistory.Status != null) {
-                    status = familyHistory.Status;
-                }
-                string code = "";
-                if (familyHistory.CodeIcd9 != null) {
-                    code = familyHistory.CodeIcd9;
-                }
-                string codeIcd10 = "";
-                if (familyHistory.CodeIcd10 != null) {
-                    codeIcd10 = familyHistory.CodeIcd10;
-                }
-                string codeSnomed = "";
-                if (familyHistory.CodeSnomed != null) {
-                    codeSnomed = familyHistory.CodeSnomed;
-                }
-
-                var ehrOrig = familyHistories.FirstOrDefault(fh => fh.PtId == ptId && fh.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newFamilyHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitFamilyHistory {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        Description = TruncateString(description, 255),
-                        Relation = TruncateString(relation, 50),
-                        Comments = TruncateString(comments, int.MaxValue),
-                        Age = TruncateString(age, 50),
-                        Status = TruncateString(status, 50),
-                        Code = TruncateString(code, 50),
-                        CodeIcd10 = TruncateString(codeIcd10, 50),
-                        CodeSnomed = TruncateString(codeSnomed, 50)
-                    };
-                    familyHistories.Add(newFamilyHistory);
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitFamilyHistories.UpdateRange(familyHistories);
+            eyeMDDbContext.SaveChanges();
+            familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
         }
 
-        public static void IopsConvert(ModelsC.Iop iop, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void IopsConvert(List<ModelsC.Iop> ehrIops, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> patients, List<EmrvisitIop> iops) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (iop.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(iop.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var iop in ehrIops) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (iop.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(iop.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (iop.VisitId != null) {
-                    visitId = iop.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for iop with ID: {iop.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for IOP with ID: {iop.Id}");
-                }
-                int? ptId = null;
-                if (iop.PtId !<= 0) {
-                    ptId = iop.PtId;
-                }
-                var eyeMDPatient = patients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (iop.VisitId != null) {
+                        visitId = iop.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for iop with ID: {iop.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for IOP with ID: {iop.Id}");
+                    }
+                    int? ptId = null;
+                    if (iop.PtId! <= 0) {
+                        ptId = iop.PtId;
+                    }
+                    var eyeMDPatient = patients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for IOP with ID: {iop.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for IOP with ID: {iop.Id}");
+                        ptId = eyeMDPatient.PtId;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
 
-                string iopOd = "";
-                if (iop.Iopod != null) {
-                    iopOd = iop.Iopod;
-                }
-                string iopOs = "";
-                if (iop.Iopos != null) {
-                    iopOs = iop.Iopos;
-                }
-                string iopDeviceUsed = "";
-                if (iop.IopdeviceUsed != null) {
-                    iopDeviceUsed = iop.IopdeviceUsed;
-                }
-                DateTime? iopTimeTaken = null;
-                if (iop.IoptimeTaken != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(iop.IoptimeTaken, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        iopTimeTaken = tempDateTime;
+                    string iopOd = "";
+                    if (iop.Iopod != null) {
+                        iopOd = iop.Iopod;
                     }
-                }
-                string iopNotes = "";
-                if (iop.Iopnotes != null) {
-                    iopNotes = iop.Iopnotes;
-                }
-                string iopCcOd = "";
-                if (iop.IopccOd != null) {
-                    iopCcOd = iop.IopccOd;
-                }
-                string iopCcOs = "";
-                if (iop.IopccOs != null) {
-                    iopCcOs = iop.IopccOs;
-                }
-                decimal? cornealHysteresisOd = null;
-                if (iop.CornealHysteresisOd != null) {
-                    if (decimal.TryParse(iop.CornealHysteresisOd, out decimal locum)) {
-                        cornealHysteresisOd = locum;
+                    string iopOs = "";
+                    if (iop.Iopos != null) {
+                        iopOs = iop.Iopos;
                     }
-                }
-                decimal? cornealHysteresisOs = null;
-                if (iop.CornealHysteresisOs != null) {
-                    if (decimal.TryParse(iop.CornealHysteresisOs, out decimal locum)) {
-                        cornealHysteresisOs = locum;
+                    string iopDeviceUsed = "";
+                    if (iop.IopdeviceUsed != null) {
+                        iopDeviceUsed = iop.IopdeviceUsed;
                     }
-                }
+                    DateTime? iopTimeTaken = null;
+                    if (iop.IoptimeTaken != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(iop.IoptimeTaken, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            iopTimeTaken = tempDateTime;
+                        }
+                    }
+                    string iopNotes = "";
+                    if (iop.Iopnotes != null) {
+                        iopNotes = iop.Iopnotes;
+                    }
+                    string iopCcOd = "";
+                    if (iop.IopccOd != null) {
+                        iopCcOd = iop.IopccOd;
+                    }
+                    string iopCcOs = "";
+                    if (iop.IopccOs != null) {
+                        iopCcOs = iop.IopccOs;
+                    }
+                    decimal? cornealHysteresisOd = null;
+                    if (iop.CornealHysteresisOd != null) {
+                        if (decimal.TryParse(iop.CornealHysteresisOd, out decimal locum)) {
+                            cornealHysteresisOd = locum;
+                        }
+                    }
+                    decimal? cornealHysteresisOs = null;
+                    if (iop.CornealHysteresisOs != null) {
+                        if (decimal.TryParse(iop.CornealHysteresisOs, out decimal locum)) {
+                            cornealHysteresisOs = locum;
+                        }
+                    }
 
-                var ehrOrig = iops.FirstOrDefault(i => i.PtId == ptId && i.VisitId == visitId);
+                    var ehrOrig = iops.FirstOrDefault(i => i.PtId == ptId && i.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        IopOd = TruncateString(iopOd, 50),
-                        IopOs = TruncateString(iopOs, 50),
-                        IopdeviceUsed = TruncateString(iopDeviceUsed, 50),
-                        IoptimeTaken = iopTimeTaken, // datetime, no truncation needed
-                        Iopnotes = TruncateString(iopNotes, int.MaxValue),
-                        IopccOd = TruncateString(iopCcOd, 50),
-                        IopccOs = TruncateString(iopCcOs, 50),
-                        CornealHysteresisOd = cornealHysteresisOd, // decimal, no truncation needed
-                        CornealHysteresisOs = cornealHysteresisOs // decimal, no truncation needed
-                    };
-                    iops.Add(newIop);
+                    if (ehrOrig == null) {
+                        var newIop = new Brady_s_Conversion_Program.ModelsB.EmrvisitIop {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            IopOd = TruncateString(iopOd, 50),
+                            IopOs = TruncateString(iopOs, 50),
+                            IopdeviceUsed = TruncateString(iopDeviceUsed, 50),
+                            IoptimeTaken = iopTimeTaken, // datetime, no truncation needed
+                            Iopnotes = TruncateString(iopNotes, int.MaxValue),
+                            IopccOd = TruncateString(iopCcOd, 50),
+                            IopccOs = TruncateString(iopCcOs, 50),
+                            CornealHysteresisOd = cornealHysteresisOd, // decimal, no truncation needed
+                            CornealHysteresisOs = cornealHysteresisOs // decimal, no truncation needed
+                        };
+                        iops.Add(newIop);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitIops.UpdateRange(iops);
+            eyeMDDbContext.SaveChanges();
+            iops = eyeMDDbContext.EmrvisitIops.ToList();
         }
 
         public static void PatientDocumentsConvert(ModelsC.PatientDocument patientDocument, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
@@ -6408,1992 +6423,2041 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void PatientNotesConvert(ModelsC.PatientNote patientNote, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void PatientNotesConvert(List<ModelsC.PatientNote> ehrPatientNotes, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<EmrptNote> patientNotes, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try { // assuming this is also spare, but will give it conversion functionality since it is small and easy, save for guid
-                int? visitId = null;
-                if (patientNote.VisitId != null) {
-                    visitId = patientNote.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for patient note with ID: {patientNote.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.PtId);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Patient Note with ID: {patientNote.Id}");
-                }
-                int? ptId = null;
-                if (patientNote.PtId !<= 0) {
-                    ptId = patientNote.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+            foreach (var patientNote in ehrPatientNotes) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try { // assuming this is also spare, but will give it conversion functionality since it is small and easy, save for guid
+                    int? visitId = null;
+                    if (patientNote.VisitId != null) {
+                        visitId = patientNote.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for patient note with ID: {patientNote.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.PtId);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Patient Note with ID: {patientNote.Id}");
+                    }
+                    int? ptId = null;
+                    if (patientNote.PtId! <= 0) {
+                        ptId = patientNote.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Patient Note with ID: {patientNote.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Patient Note with ID: {patientNote.Id}");
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+                    string notes = "";
+                    if (patientNote.Notes != null) {
+                        notes = patientNote.Notes;
+                    }
+                    DateTime? createdDate = null;
+                    if (patientNote.Created != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(patientNote.Created, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            createdDate = tempDateTime;
+                        }
+                    }
+                    int? empId = null;
+                    if (patientNote.EmpId != null) {
+                        if (int.TryParse(patientNote.EmpId, out int locum)) {
+                            empId = locum;
+                        }
+                    }
+                    short? showInVisitSummary = null;
+                    // no showInVisitSummary in source table
+                    string guid = "";
+                    // no guid in source table
+
+                    // there is no showInVisitSummary in the source table, and there is no visit id in the eyemd table
+
+                    var ehrOrig = patientNotes.FirstOrDefault(pn => pn.PtId == ptId);
+
+                    if (ehrOrig == null) {
+                        var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
+                            PtId = ptId,
+                            Notes = TruncateString(notes, int.MaxValue),
+                            CreatedDate = createdDate,
+                            EmpId = empId,
+                            ShowInVisitSummary = showInVisitSummary, // smallint, no truncation needed
+                            InsertGuid = TruncateString(guid, 50)
+                        };
+                        patientNotes.Add(newPatientNote);
                     }
                 }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-
-                string notes = "";
-                if (patientNote.Notes != null) {
-                    notes = patientNote.Notes;
-                }
-                DateTime? createdDate = null;
-                if (patientNote.Created != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(patientNote.Created, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        createdDate = tempDateTime;
-                    }
-                }
-                int? empId = null;
-                if (patientNote.EmpId != null) {
-                    if (int.TryParse(patientNote.EmpId, out int locum)) {
-                        empId = locum;
-                    }
-                }
-                short? showInVisitSummary = null;
-                // no showInVisitSummary in source table
-                string guid = "";
-                // no guid in source table
-
-                // there is no showInVisitSummary in the source table, and there is no visit id in the eyemd table
-
-                var ehrOrig = patientNotes.FirstOrDefault(pn => pn.PtId == ptId);
-
-                if (ehrOrig == null) {
-                    var newPatientNote = new Brady_s_Conversion_Program.ModelsB.EmrptNote {
-                        PtId = ptId,
-                        Notes = TruncateString(notes, int.MaxValue),
-                        CreatedDate = createdDate,
-                        EmpId = empId,
-                        ShowInVisitSummary = showInVisitSummary, // smallint, no truncation needed
-                        InsertGuid = TruncateString(guid, 50)
-                    };
-                    patientNotes.Add(newPatientNote);
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrptNotes.UpdateRange(patientNotes);
+            eyeMDDbContext.SaveChanges();
+            patientNotes = eyeMDDbContext.EmrptNotes.ToList();
         }
 
-        public static void PlanNarrativesConvert(ModelsC.PlanNarrative planNarrative, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void PlanNarrativesConvert(List<ModelsC.PlanNarrative> ehrPlanNarratives, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitPlanNarrative> planNarratives) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (planNarrative.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(planNarrative.Dosdate, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var planNarrative in ehrPlanNarratives) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (planNarrative.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(planNarrative.Dosdate, dateFormats,
+                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (planNarrative.VisitId != null) {
-                    visitId = planNarrative.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for plan narrative with ID: {planNarrative.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Plan Narrative with ID: {planNarrative.Id}");
-                    return;
-                }
-                int ptId = -1;
-                if (planNarrative.PtId !<= 0) {
-                    ptId = planNarrative.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (planNarrative.VisitId != null) {
+                        visitId = planNarrative.VisitId;
                     }
-                    else {
-                        logger.Log($"EHR: EHR PatientID not found for Plan Narrative with ID: {planNarrative.Id}");
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for plan narrative with ID: {planNarrative.Id}");
                         return;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Plan Narrative with ID: {planNarrative.Id}");
+                        return;
+                    }
+                    int ptId = -1;
+                    if (planNarrative.PtId! <= 0) {
+                        ptId = planNarrative.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Plan Narrative with ID: {planNarrative.Id}");
+                            return;
+                        }
+                    }
+                    else {
+                        ptId = eyeMDPatient.PtId;
+                    }
 
-                int? visitDoctorId = null;
-                if (planNarrative.VisitDoctorId != null) {
-                    if (int.TryParse(planNarrative.VisitDoctorId, out int locum)) {
-                        visitDoctorId = locum;
+                    int? visitDoctorId = null;
+                    if (planNarrative.VisitDoctorId != null) {
+                        if (int.TryParse(planNarrative.VisitDoctorId, out int locum)) {
+                            visitDoctorId = locum;
+                        }
+                    }
+                    string snomedCode = "";
+                    if (planNarrative.Snomedcode != null) {
+                        snomedCode = planNarrative.Snomedcode;
+                    }
+                    int? visitDiagCodePoolId = null;
+                    if (planNarrative.VisitDiagCodePoolId != null) {
+                        if (int.TryParse(planNarrative.VisitDiagCodePoolId, out int locum)) {
+                            visitDiagCodePoolId = locum;
+                        }
+                    }
+                    string ICD10Code = "";
+                    if (planNarrative.Icd10code != null) {
+                        ICD10Code = planNarrative.Icd10code;
+                    }
+                    string ICD9Code = "";
+                    if (planNarrative.Icd9code != null) {
+                        ICD9Code = planNarrative.Icd9code;
+                    }
+                    string narrativeHeader = "";
+                    if (planNarrative.NarrativeHeader != null) {
+                        narrativeHeader = planNarrative.NarrativeHeader;
+                    }
+                    string narrativeText = "";
+                    if (planNarrative.NarrativeText != null) {
+                        narrativeText = planNarrative.NarrativeText;
+                    }
+                    string narrativeType = "";
+                    if (planNarrative.NarrativeType != null) {
+                        narrativeType = planNarrative.NarrativeType;
+                    }
+                    int displayOrder = -1;
+                    if (planNarrative.DisplayOrder != null) {
+                        if (int.TryParse(planNarrative.DisplayOrder, out int locum)) {
+                            displayOrder = locum;
+                        }
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID in source table
+
+                    var ehrOrig = planNarratives.FirstOrDefault(n => n.PtId == ptId && n.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            VisitDoctorId = visitDoctorId,
+                            Snomedcode = TruncateString(snomedCode, 50),
+                            VisitDiagCodePoolId = visitDiagCodePoolId,
+                            Icd10code = TruncateString(ICD10Code, 50),
+                            Icd9code = TruncateString(ICD9Code, 50),
+                            NarrativeHeader = TruncateString(narrativeHeader, 255),
+                            NarrativeText = TruncateString(narrativeText, int.MaxValue),
+                            NarrativeType = TruncateString(narrativeType, 50),
+                            DisplayOrder = displayOrder,
+                            InsertGuid = TruncateString(insertGUID, 50)
+                        };
+                        planNarratives.Add(newPlanNarrative);
                     }
                 }
-                string snomedCode = "";
-                if (planNarrative.Snomedcode != null) {
-                    snomedCode = planNarrative.Snomedcode;
-                }
-                int? visitDiagCodePoolId = null;
-                if (planNarrative.VisitDiagCodePoolId != null) {
-                    if (int.TryParse(planNarrative.VisitDiagCodePoolId, out int locum)) {
-                        visitDiagCodePoolId = locum;
-                    }
-                }
-                string ICD10Code = "";
-                if (planNarrative.Icd10code != null) {
-                    ICD10Code = planNarrative.Icd10code;
-                }
-                string ICD9Code = "";
-                if (planNarrative.Icd9code != null) {
-                    ICD9Code = planNarrative.Icd9code;
-                }
-                string narrativeHeader = "";
-                if (planNarrative.NarrativeHeader != null) {
-                    narrativeHeader = planNarrative.NarrativeHeader;
-                }
-                string narrativeText = "";
-                if (planNarrative.NarrativeText != null) {
-                    narrativeText = planNarrative.NarrativeText;
-                }
-                string narrativeType = "";
-                if (planNarrative.NarrativeType != null) {
-                    narrativeType = planNarrative.NarrativeType;
-                }
-                int displayOrder = -1;
-                if (planNarrative.DisplayOrder != null) {
-                    if (int.TryParse(planNarrative.DisplayOrder, out int locum)) {
-                        displayOrder = locum;
-                    }
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID in source table
-
-                var ehrOrig = planNarratives.FirstOrDefault(n => n.PtId == ptId && n.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newPlanNarrative = new Brady_s_Conversion_Program.ModelsB.EmrvisitPlanNarrative {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        VisitDoctorId = visitDoctorId,
-                        Snomedcode = TruncateString(snomedCode, 50),
-                        VisitDiagCodePoolId = visitDiagCodePoolId,
-                        Icd10code = TruncateString(ICD10Code, 50),
-                        Icd9code = TruncateString(ICD9Code, 50),
-                        NarrativeHeader = TruncateString(narrativeHeader, 255),
-                        NarrativeText = TruncateString(narrativeText, int.MaxValue),
-                        NarrativeType = TruncateString(narrativeType, 50),
-                        DisplayOrder = displayOrder,
-                        InsertGuid = TruncateString(insertGUID, 50)
-                    };
-                    planNarratives.Add(newPlanNarrative);
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitPlanNarratives.UpdateRange(planNarratives);
+            eyeMDDbContext.SaveChanges();
+            planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
         }
 
-        public static void ProcDiagPoolsConvert(ModelsC.ProcDiagPool procDiagPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ProcDiagPoolsConvert(List<ModelsC.ProcDiagPool> ehrProcDiagPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePoolDiag> procDiagPools) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (procDiagPool.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(procDiagPool.Dosdate, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var procDiagPool in ehrProcDiagPools) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (procDiagPool.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(procDiagPool.Dosdate, dateFormats,
+                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (procDiagPool.VisitId != null) {
-                    visitId = procDiagPool.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for proc diag code pool with ID: {procDiagPool.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
-                    return;
-                }
-                int? ptId = null;
-                if (procDiagPool.PtId !<= 0) {
-                    ptId = procDiagPool.PtId;
-                }
-                if (ptId == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (procDiagPool.VisitId != null) {
+                        visitId = procDiagPool.VisitId;
                     }
-                    else {
-                        logger.Log($"EHR: EHR PatientID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
-                    }
-                }
-
-                int? controlId = null;
-                // no controlId in source table
-                int? visitProcCodePoolId = null;
-                if (procDiagPool.VisitProcCodePoolId != null) {
-                    if (int.TryParse(procDiagPool.VisitProcCodePoolId, out int locum)) {
-                        visitProcCodePoolId = locum;
-                    }
-                }
-                int? visitDiagCodePoolId = null;
-                if (procDiagPool.VisitDiagCodePoolId != null) {
-                    if (int.TryParse(procDiagPool.VisitDiagCodePoolId, out int locum)) {
-                        visitDiagCodePoolId = locum;
-                    }
-                }
-                int? requestedProcId = null;
-                if (procDiagPool.RequestedProcedureId != null) {
-                    if (int.TryParse(procDiagPool.RequestedProcedureId, out int locum)) {
-                        requestedProcId = locum;
-                    }
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID in source table
-
-                var ehrOrig = procDiagPools.FirstOrDefault(pcp => pcp.PtId == ptId && pcp.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        ControlId = controlId,
-                        VisitProcCodePoolId = visitProcCodePoolId,
-                        VisitDiagCodePoolId = visitDiagCodePoolId,
-                        RequestedProcedureId = requestedProcId,
-                        InsertGuid = TruncateString(insertGUID, 50)
-                    };
-                    procDiagPools.Add(newProcDiagPool);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void ProcPoolsConvert(ModelsC.ProcPool procPool, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePool> procCodePools, List<Emrpatient> eyeMDPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (procPool.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(procPool.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
-                }
-                int? ptId = null;
-                if (procPool.PtId !<= 0) {
-                    ptId = procPool.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                int? visitId = null;
-                if (procPool.VisitId != null) {
-                    visitId = procPool.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for proc pool with ID: {procPool.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Proc Pool with ID: {procPool.Id}");
-                }
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
-                    }
-                    else {
-                        logger.Log($"EHR: EHR PatientID not found for Proc Pool with ID: {procPool.Id}");
-                    }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
-
-                int? controlId = null;
-                // no controlId in source table
-                string procText = "";
-                if (procPool.ProcText != null) {
-                    procText = procPool.ProcText;
-                }
-                string code = "";
-                if (procPool.Code != null) {
-                    code = procPool.Code;
-                }
-                string modifier = "";
-                if (procPool.Modifier != null) {
-                    modifier = procPool.Modifier;
-                }
-                string originalModifier = "";
-                if (procPool.OriginalModifier != null) {
-                    originalModifier = procPool.OriginalModifier;
-                }
-                string location = "";
-                if (procPool.Location != null) {
-                    location = procPool.Location;
-                }
-                string sourceField = "";
-                if (procPool.SourceField != null) {
-                    sourceField = procPool.SourceField;
-                }
-                short isBilled = -1;
-                if (procPool.IsBilled != null) {
-                    if (short.TryParse(procPool.IsBilled, out short locum)) {
-                        isBilled = locum;
-                    }
-                }
-                int? procLocationType = null;
-                if (procPool.ProcLocationType != null) {
-                    if (int.TryParse(procPool.ProcLocationType, out int locum)) {
-                        procLocationType = locum;
-                    }
-                }
-                short procDiagTestComponents = -1;
-                if (procPool.ProcDiagTestComponents != null) {
-                    if (short.TryParse(procPool.ProcDiagTestComponents, out short locum)) {
-                        procDiagTestComponents = locum;
-                    }
-                }
-                short? notPoRelated = null;
-                if (procPool.NotPorelated != null) {
-                    if (short.TryParse(procPool.NotPorelated, out short locum)) {
-                        notPoRelated = locum;
-                    }
-                }
-                int? procType = null;
-                if (procPool.ProcType != null) {
-                    if (int.TryParse(procPool.ProcType, out int locum)) {
-                        procType = locum;
-                    }
-                }
-                int? billMultiProcId = null;
-                if (procPool.BillMultiProcId != null) {
-                    if (int.TryParse(procPool.BillMultiProcId, out int locum)) {
-                        billMultiProcId = locum;
-                    }
-                }
-                int? billMultiProcControlId = null;
-                if (procPool.BillMultiProcControlId != null) {
-                    if (int.TryParse(procPool.BillMultiProcControlId, out int locum)) {
-                        billMultiProcControlId = locum;
-                    }
-                }
-                string additionalModifier = "";
-                if (procPool.AdditionalModifier != null) {
-                    additionalModifier = procPool.AdditionalModifier;
-                }
-                short? isQr = null;
-                if (procPool.IsQr != null) {
-                    if (short.TryParse(procPool.IsQr, out short locum)) {
-                        isQr = locum;
-                    }
-                }
-                string eyeMDQRNum = "";
-                if (procPool.EyeMdqrnum != null) {
-                    eyeMDQRNum = procPool.EyeMdqrnum;
-                }
-                string pqrsNum = "";
-                if (procPool.Pqrsnum != null) {
-                    pqrsNum = procPool.Pqrsnum;
-                }
-                string nqfNum = "";
-                if (procPool.Nqfnum != null) {
-                    nqfNum = procPool.Nqfnum;
-                }
-                int? numerator = null;
-                if (procPool.Numerator != null) {
-                    if (int.TryParse(procPool.Numerator, out int locum)) {
-                        numerator = locum;
-                    }
-                }
-                int? denominator = null;
-                if (procPool.Denominator != null) {
-                    if (int.TryParse(procPool.Denominator, out int locum)) {
-                        denominator = locum;
-                    }
-                }
-                short? isHidden = null;
-                if (procPool.IsHidden != null) {
-                    if (short.TryParse(procPool.IsHidden, out short locum)) {
-                        isHidden = locum;
-                    }
-                }
-                string qrComponent = "";
-                if (procPool.Qrcomponent != null) {
-                    qrComponent = procPool.Qrcomponent;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID in source table
-                int? units = null;
-                if (procPool.Units != null) {
-                    if (int.TryParse(procPool.Units, out int locum)) {
-                        units = locum;
-                    }
-                }
-                int? requestedProcedureId = null;
-                if (procPool.RequestedProcedureId != null) {
-                    if (int.TryParse(procPool.RequestedProcedureId, out int locum)) {
-                        requestedProcedureId = locum;
-                    }
-                }
-                short? sentInVisit = null;
-                if (procPool.SentInVisit != null) {
-                    if (short.TryParse(procPool.SentInVisit, out short locum)) {
-                        sentInVisit = locum;
-                    }
-                }
-                int? sourceRecordId = null;
-                if (procPool.SourceRecordId != null) {
-                    if (int.TryParse(procPool.SourceRecordId, out int locum)) {
-                        sourceRecordId = locum;
-                    }
-                }
-                int? initialPatientPopulation = null;
-                if (procPool.InitialPatientPopulation != null) {
-                    if (int.TryParse(procPool.InitialPatientPopulation, out int locum)) {
-                        initialPatientPopulation = locum;
-                    }
-                }
-                int? denominatorExclusion = null;
-                if (procPool.DenominatorExclusion != null) {
-                    if (int.TryParse(procPool.DenominatorExclusion, out int locum)) {
-                        denominatorExclusion = locum;
-                    }
-                }
-                int? denominatorException = null;
-                if (procPool.DenominatorException != null) {
-                    if (int.TryParse(procPool.DenominatorException, out int locum)) {
-                        denominatorException = locum;
-                    }
-                }
-                int billingOrder = -1;
-                if (procPool.BillingOrder != null) {
-                    if (int.TryParse(procPool.BillingOrder, out int locum)) {
-                        billingOrder = locum;
-                    }
-                }
-
-                var ehrOrig = procCodePools.FirstOrDefault(pc => pc.PtId == ptId && pc.VisitId == visitId);
-
-                if (ehrOrig == null) {
-                    var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
-                        Qrcomponent = TruncateString(qrComponent, 50),
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        ControlId = controlId,
-                        ProcText = TruncateString(procText, 255),
-                        Code = TruncateString(code, 50),
-                        Modifier = TruncateString(modifier, 50),
-                        OriginalModifier = TruncateString(originalModifier, 50),
-                        Location = TruncateString(location, 50),
-                        SourceField = TruncateString(sourceField, 50),
-                        IsBilled = isBilled, // smallint, no truncation needed
-                        ProcLocationType = procLocationType,
-                        ProcDiagTestComponents = procDiagTestComponents, // smallint, no truncation needed
-                        NotPorelated = notPoRelated, // smallint, no truncation needed
-                        ProcType = procType,
-                        BillMultiProcId = billMultiProcId,
-                        BillMultiProcControlId = billMultiProcControlId,
-                        AdditionalModifier = TruncateString(additionalModifier, 50),
-                        IsQr = isQr, // smallint, no truncation needed
-                        EyeMdqrnum = TruncateString(eyeMDQRNum, 50),
-                        Pqrsnum = TruncateString(pqrsNum, 50),
-                        Nqfnum = TruncateString(nqfNum, 50),
-                        Numerator = numerator,
-                        Denominator = denominator,
-                        IsHidden = isHidden, // smallint, no truncation needed
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        Units = units,
-                        RequestedProcedureId = requestedProcedureId,
-                        SentInVisit = sentInVisit, // smallint, no truncation needed
-                        SourceRecordId = sourceRecordId,
-                        InitialPatientPopulation = initialPatientPopulation,
-                        DenominatorExclusion = denominatorExclusion,
-                        DenominatorException = denominatorException,
-                        BillingOrder = billingOrder
-                    };
-                    procCodePools.Add(newProcPool);
-                }
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void RefractionsConvert(ModelsC.Refraction refraction, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
-            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitRefraction> refractions) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime dosDate = minAcceptableDate;
-                if (refraction.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(refraction.Dosdate, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
-                    }
-                }
-                int? visitId = null;
-                if (refraction.VisitId != null) {
-                    visitId = refraction.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for refraction with ID: {refraction.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Refraction with ID: {refraction.Id}");
-                    return;
-                }
-                int ptId = -1;
-                if (refraction.PtId !<= 0) {
-                    ptId = refraction.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
-                    }
-                    else {
-                        logger.Log($"EHR: EHR PatientID not found for Refraction with ID: {refraction.Id}");
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for proc diag code pool with ID: {procDiagPool.Id}");
                         return;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
+                        return;
+                    }
+                    int? ptId = null;
+                    if (procDiagPool.PtId! <= 0) {
+                        ptId = procDiagPool.PtId;
+                    }
+                    if (ptId == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Proc Diag Pool with ID: {procDiagPool.Id}");
+                        }
+                    }
 
-                string refractionClass = "";
-                if (refraction.RefractionClass != null) {
-                    refractionClass = refraction.RefractionClass;
-                }
-                string refractionType = "";
-                if (refraction.RefractionType != null) {
-                    refractionType = refraction.RefractionType;
-                }
-                string sphereOd = "";
-                if (refraction.SphereOd != null) {
-                    sphereOd = refraction.SphereOd;
-                }
-                string sphereOs = "";
-                if (refraction.SphereOs != null) {
-                    sphereOs = refraction.SphereOs;
-                }
-                string cylinderOd = "";
-                if (refraction.CylinderOd != null) {
-                    cylinderOd = refraction.CylinderOd;
-                }
-                string cylinderOs = "";
-                if (refraction.CylinderOs != null) {
-                    cylinderOs = refraction.CylinderOs;
-                }
-                string axisOd = "";
-                if (refraction.AxisOd != null) {
-                    axisOd = refraction.AxisOd;
-                }
-                string axisOs = "";
-                if (refraction.AxisOs != null) {
-                    axisOs = refraction.AxisOs;
-                }
-                string bifocalAddOd = "";
-                if (refraction.BifocalAddOd != null) {
-                    bifocalAddOd = refraction.BifocalAddOd;
-                }
-                string bifocalAddOs = "";
-                if (refraction.BifocalAddOs != null) {
-                    bifocalAddOs = refraction.BifocalAddOs;
-                }
-                string prism360Od = "";
-                if (refraction.Prism360Od != null) {
-                    prism360Od = refraction.Prism360Od;
-                }
-                string prism360Os = "";
-                if (refraction.Prism360Os != null) {
-                    prism360Os = refraction.Prism360Os;
-                }
-                string directionHod = "";
-                if (refraction.DirectionHod != null) {
-                    directionHod = refraction.DirectionHod;
-                }
-                string directionHos = "";
-                if (refraction.DirectionHos != null) {
-                    directionHos = refraction.DirectionHos;
-                }
-                string pdDistOd = "";
-                if (refraction.PddistOd != null) {
-                    pdDistOd = refraction.PddistOd;
-                }
-                string pdDistOs = "";
-                if (refraction.PddistOs != null) {
-                    pdDistOs = refraction.PddistOs;
-                }
-                string pdNearOd = "";
-                if (refraction.PdnearOd != null) {
-                    pdNearOd = refraction.PdnearOd;
-                }
-                string pdNearOs = "";
-                if (refraction.PdnearOs != null) {
-                    pdNearOs = refraction.PdnearOs;
-                }
-                string age = "";
-                if (refraction.Age != null) {
-                    age = refraction.Age;
-                }
-                string? vaDOd = "";
-                if (refraction.VaDos != null) {
-                    vaDOd = refraction.VaDod;
-                }
-                string vaDOs = "";
-                if (refraction.VaDos != null) {
-                    vaDOs = refraction.VaDos;
-                }
-                string vaDOu = "";
-                if (refraction.VaDou != null) {
-                    vaDOu = refraction.VaDou;
-                }
-                string vaNOd = "";
-                if (refraction.VaNod != null) {
-                    vaNOd = refraction.VaNod;
-                }
-                string vaNOs = "";
-                if (refraction.VaNos != null) {
-                    vaNOs = refraction.VaNos;
-                }
-                string vaNOu = "";
-                if (refraction.VaNou != null) {
-                    vaNOu = refraction.VaNou;
-                }
-                string vaIOd = "";
-                if (refraction.VaIod != null) {
-                    vaIOd = refraction.VaIod;
-                }
-                string vaIOs = "";
-                if (refraction.VaIos != null) {
-                    vaIOs = refraction.VaIos;
-                }
-                string vaIOu = "";
-                if (refraction.VaIou != null) {
-                    vaIOu = refraction.VaIou;
-                }
-                string expires = "";
-                if (refraction.Expires != null) {
-                    expires = refraction.Expires;
-                }
-                string remarks = "";
-                if (refraction.Remarks != null) {
-                    remarks = refraction.Remarks;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID in source table
-                bool printed = false;
-                // no printed in source table
-                bool sentToOptical = false;
-                // no sentToOptical in source table
-                string enteredBy = "";
-                // no enteredBy in source table
-                string prismTypeOd = "";
-                // no prismTypeOd in source table
-                string prismTypeOs = "";
-                // no prismTypeOs in source table
+                    int? controlId = null;
+                    // no controlId in source table
+                    int? visitProcCodePoolId = null;
+                    if (procDiagPool.VisitProcCodePoolId != null) {
+                        if (int.TryParse(procDiagPool.VisitProcCodePoolId, out int locum)) {
+                            visitProcCodePoolId = locum;
+                        }
+                    }
+                    int? visitDiagCodePoolId = null;
+                    if (procDiagPool.VisitDiagCodePoolId != null) {
+                        if (int.TryParse(procDiagPool.VisitDiagCodePoolId, out int locum)) {
+                            visitDiagCodePoolId = locum;
+                        }
+                    }
+                    int? requestedProcId = null;
+                    if (procDiagPool.RequestedProcedureId != null) {
+                        if (int.TryParse(procDiagPool.RequestedProcedureId, out int locum)) {
+                            requestedProcId = locum;
+                        }
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID in source table
 
-                var ehrOrig = refractions.FirstOrDefault(r => r.PtId == ptId && r.VisitId == visitId);
+                    var ehrOrig = procDiagPools.FirstOrDefault(pcp => pcp.PtId == ptId && pcp.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        RefractionClass = TruncateString(refractionClass, 5),
-                        RefractionType = TruncateString(refractionType, 50),
-                        SphereOd = TruncateString(sphereOd, 50),
-                        SphereOs = TruncateString(sphereOs, 50),
-                        CylinderOd = TruncateString(cylinderOd, 50),
-                        CylinderOs = TruncateString(cylinderOs, 50),
-                        AxisOd = TruncateString(axisOd, 50),
-                        AxisOs = TruncateString(axisOs, 50),
-                        BifocalAddOd = TruncateString(bifocalAddOd, 50),
-                        BifocalAddOs = TruncateString(bifocalAddOs, 50),
-                        PrismTypeOd = TruncateString(prismTypeOd, 255),
-                        PrismTypeOs = TruncateString(prismTypeOs, 255),
-                        Prism360Od = TruncateString(prism360Od, 50),
-                        Prism360Os = TruncateString(prism360Os, 50),
-                        DirectionOd = TruncateString(directionHod, 50),
-                        DirectionOs = TruncateString(directionHos, 50),
-                        PdDistOd = TruncateString(pdDistOd, 50),
-                        PdDistOs = TruncateString(pdDistOs, 50),
-                        PdNearOd = TruncateString(pdNearOd, 50),
-                        PdNearOs = TruncateString(pdNearOs, 50),
-                        Age = TruncateString(age, 50),
-                        VaDOd = TruncateString(vaDOd, 50),
-                        VaDOs = TruncateString(vaDOs, 50),
-                        VaDOu = TruncateString(vaDOu, 50),
-                        VaNOd = TruncateString(vaNOd, 50),
-                        VaNOs = TruncateString(vaNOs, 50),
-                        VaNOu = TruncateString(vaNOu, 50),
-                        VaIOd = TruncateString(vaIOd, 50),
-                        VaIOs = TruncateString(vaIOs, 50),
-                        VaIOu = TruncateString(vaIOu, 50),
-                        Expires = TruncateString(expires, 50),
-                        Remarks = TruncateString(remarks, int.MaxValue),
-                        InsertGuid = TruncateString(insertGUID, 40),
-                        Printed = printed, // bit, no truncation needed
-                        SentToOptical = sentToOptical, // bit, no truncation needed
-                        EnteredBy = TruncateString(enteredBy, 200)
+                    if (ehrOrig == null) {
+                        var newProcDiagPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePoolDiag {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            ControlId = controlId,
+                            VisitProcCodePoolId = visitProcCodePoolId,
+                            VisitDiagCodePoolId = visitDiagCodePoolId,
+                            RequestedProcedureId = requestedProcId,
+                            InsertGuid = TruncateString(insertGUID, 50)
+                        };
+                        procDiagPools.Add(newProcDiagPool);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.EmrvisitProcCodePoolDiags.UpdateRange(procDiagPools);
+            eyeMDDbContext.SaveChanges();
+            procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
+        }
+
+        public static void ProcPoolsConvert(List<ModelsC.ProcPool> ehrProcPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePool> procCodePools, List<Emrpatient> eyeMDPatients) {
+            foreach (var procPool in ehrProcPools) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (procPool.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(procPool.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    int? ptId = null;
+                    if (procPool.PtId! <= 0) {
+                        ptId = procPool.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    int? visitId = null;
+                    if (procPool.VisitId != null) {
+                        visitId = procPool.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for proc pool with ID: {procPool.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Proc Pool with ID: {procPool.Id}");
+                    }
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Proc Pool with ID: {procPool.Id}");
+                        }
+                    }
+                    else {
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+                    int? controlId = null;
+                    // no controlId in source table
+                    string procText = "";
+                    if (procPool.ProcText != null) {
+                        procText = procPool.ProcText;
+                    }
+                    string code = "";
+                    if (procPool.Code != null) {
+                        code = procPool.Code;
+                    }
+                    string modifier = "";
+                    if (procPool.Modifier != null) {
+                        modifier = procPool.Modifier;
+                    }
+                    string originalModifier = "";
+                    if (procPool.OriginalModifier != null) {
+                        originalModifier = procPool.OriginalModifier;
+                    }
+                    string location = "";
+                    if (procPool.Location != null) {
+                        location = procPool.Location;
+                    }
+                    string sourceField = "";
+                    if (procPool.SourceField != null) {
+                        sourceField = procPool.SourceField;
+                    }
+                    short isBilled = -1;
+                    if (procPool.IsBilled != null) {
+                        if (short.TryParse(procPool.IsBilled, out short locum)) {
+                            isBilled = locum;
+                        }
+                    }
+                    int? procLocationType = null;
+                    if (procPool.ProcLocationType != null) {
+                        if (int.TryParse(procPool.ProcLocationType, out int locum)) {
+                            procLocationType = locum;
+                        }
+                    }
+                    short procDiagTestComponents = -1;
+                    if (procPool.ProcDiagTestComponents != null) {
+                        if (short.TryParse(procPool.ProcDiagTestComponents, out short locum)) {
+                            procDiagTestComponents = locum;
+                        }
+                    }
+                    short? notPoRelated = null;
+                    if (procPool.NotPorelated != null) {
+                        if (short.TryParse(procPool.NotPorelated, out short locum)) {
+                            notPoRelated = locum;
+                        }
+                    }
+                    int? procType = null;
+                    if (procPool.ProcType != null) {
+                        if (int.TryParse(procPool.ProcType, out int locum)) {
+                            procType = locum;
+                        }
+                    }
+                    int? billMultiProcId = null;
+                    if (procPool.BillMultiProcId != null) {
+                        if (int.TryParse(procPool.BillMultiProcId, out int locum)) {
+                            billMultiProcId = locum;
+                        }
+                    }
+                    int? billMultiProcControlId = null;
+                    if (procPool.BillMultiProcControlId != null) {
+                        if (int.TryParse(procPool.BillMultiProcControlId, out int locum)) {
+                            billMultiProcControlId = locum;
+                        }
+                    }
+                    string additionalModifier = "";
+                    if (procPool.AdditionalModifier != null) {
+                        additionalModifier = procPool.AdditionalModifier;
+                    }
+                    short? isQr = null;
+                    if (procPool.IsQr != null) {
+                        if (short.TryParse(procPool.IsQr, out short locum)) {
+                            isQr = locum;
+                        }
+                    }
+                    string eyeMDQRNum = "";
+                    if (procPool.EyeMdqrnum != null) {
+                        eyeMDQRNum = procPool.EyeMdqrnum;
+                    }
+                    string pqrsNum = "";
+                    if (procPool.Pqrsnum != null) {
+                        pqrsNum = procPool.Pqrsnum;
+                    }
+                    string nqfNum = "";
+                    if (procPool.Nqfnum != null) {
+                        nqfNum = procPool.Nqfnum;
+                    }
+                    int? numerator = null;
+                    if (procPool.Numerator != null) {
+                        if (int.TryParse(procPool.Numerator, out int locum)) {
+                            numerator = locum;
+                        }
+                    }
+                    int? denominator = null;
+                    if (procPool.Denominator != null) {
+                        if (int.TryParse(procPool.Denominator, out int locum)) {
+                            denominator = locum;
+                        }
+                    }
+                    short? isHidden = null;
+                    if (procPool.IsHidden != null) {
+                        if (short.TryParse(procPool.IsHidden, out short locum)) {
+                            isHidden = locum;
+                        }
+                    }
+                    string qrComponent = "";
+                    if (procPool.Qrcomponent != null) {
+                        qrComponent = procPool.Qrcomponent;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID in source table
+                    int? units = null;
+                    if (procPool.Units != null) {
+                        if (int.TryParse(procPool.Units, out int locum)) {
+                            units = locum;
+                        }
+                    }
+                    int? requestedProcedureId = null;
+                    if (procPool.RequestedProcedureId != null) {
+                        if (int.TryParse(procPool.RequestedProcedureId, out int locum)) {
+                            requestedProcedureId = locum;
+                        }
+                    }
+                    short? sentInVisit = null;
+                    if (procPool.SentInVisit != null) {
+                        if (short.TryParse(procPool.SentInVisit, out short locum)) {
+                            sentInVisit = locum;
+                        }
+                    }
+                    int? sourceRecordId = null;
+                    if (procPool.SourceRecordId != null) {
+                        if (int.TryParse(procPool.SourceRecordId, out int locum)) {
+                            sourceRecordId = locum;
+                        }
+                    }
+                    int? initialPatientPopulation = null;
+                    if (procPool.InitialPatientPopulation != null) {
+                        if (int.TryParse(procPool.InitialPatientPopulation, out int locum)) {
+                            initialPatientPopulation = locum;
+                        }
+                    }
+                    int? denominatorExclusion = null;
+                    if (procPool.DenominatorExclusion != null) {
+                        if (int.TryParse(procPool.DenominatorExclusion, out int locum)) {
+                            denominatorExclusion = locum;
+                        }
+                    }
+                    int? denominatorException = null;
+                    if (procPool.DenominatorException != null) {
+                        if (int.TryParse(procPool.DenominatorException, out int locum)) {
+                            denominatorException = locum;
+                        }
+                    }
+                    int billingOrder = -1;
+                    if (procPool.BillingOrder != null) {
+                        if (int.TryParse(procPool.BillingOrder, out int locum)) {
+                            billingOrder = locum;
+                        }
+                    }
+
+                    var ehrOrig = procCodePools.FirstOrDefault(pc => pc.PtId == ptId && pc.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newProcPool = new Brady_s_Conversion_Program.ModelsB.EmrvisitProcCodePool {
+                            Qrcomponent = TruncateString(qrComponent, 50),
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            ControlId = controlId,
+                            ProcText = TruncateString(procText, 255),
+                            Code = TruncateString(code, 50),
+                            Modifier = TruncateString(modifier, 50),
+                            OriginalModifier = TruncateString(originalModifier, 50),
+                            Location = TruncateString(location, 50),
+                            SourceField = TruncateString(sourceField, 50),
+                            IsBilled = isBilled, // smallint, no truncation needed
+                            ProcLocationType = procLocationType,
+                            ProcDiagTestComponents = procDiagTestComponents, // smallint, no truncation needed
+                            NotPorelated = notPoRelated, // smallint, no truncation needed
+                            ProcType = procType,
+                            BillMultiProcId = billMultiProcId,
+                            BillMultiProcControlId = billMultiProcControlId,
+                            AdditionalModifier = TruncateString(additionalModifier, 50),
+                            IsQr = isQr, // smallint, no truncation needed
+                            EyeMdqrnum = TruncateString(eyeMDQRNum, 50),
+                            Pqrsnum = TruncateString(pqrsNum, 50),
+                            Nqfnum = TruncateString(nqfNum, 50),
+                            Numerator = numerator,
+                            Denominator = denominator,
+                            IsHidden = isHidden, // smallint, no truncation needed
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            Units = units,
+                            RequestedProcedureId = requestedProcedureId,
+                            SentInVisit = sentInVisit, // smallint, no truncation needed
+                            SourceRecordId = sourceRecordId,
+                            InitialPatientPopulation = initialPatientPopulation,
+                            DenominatorExclusion = denominatorExclusion,
+                            DenominatorException = denominatorException,
+                            BillingOrder = billingOrder
+                        };
+                        procCodePools.Add(newProcPool);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.EmrvisitProcCodePools.UpdateRange(procCodePools);
+            eyeMDDbContext.SaveChanges();
+            procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
+        }
+
+        public static void RefractionsConvert(List<ModelsC.Refraction> ehrRefractions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitRefraction> refractions) {
+            foreach (var refraction in ehrRefractions) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime dosDate = minAcceptableDate;
+                    if (refraction.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(refraction.Dosdate, dateFormats,
+                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
+                    }
+                    int? visitId = null;
+                    if (refraction.VisitId != null) {
+                        visitId = refraction.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for refraction with ID: {refraction.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Refraction with ID: {refraction.Id}");
+                        return;
+                    }
+                    int ptId = -1;
+                    if (refraction.PtId! <= 0) {
+                        ptId = refraction.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Refraction with ID: {refraction.Id}");
+                            return;
+                        }
+                    }
+                    else {
+                        ptId = eyeMDPatient.PtId;
+                    }
+
+                    string refractionClass = "";
+                    if (refraction.RefractionClass != null) {
+                        refractionClass = refraction.RefractionClass;
+                    }
+                    string refractionType = "";
+                    if (refraction.RefractionType != null) {
+                        refractionType = refraction.RefractionType;
+                    }
+                    string sphereOd = "";
+                    if (refraction.SphereOd != null) {
+                        sphereOd = refraction.SphereOd;
+                    }
+                    string sphereOs = "";
+                    if (refraction.SphereOs != null) {
+                        sphereOs = refraction.SphereOs;
+                    }
+                    string cylinderOd = "";
+                    if (refraction.CylinderOd != null) {
+                        cylinderOd = refraction.CylinderOd;
+                    }
+                    string cylinderOs = "";
+                    if (refraction.CylinderOs != null) {
+                        cylinderOs = refraction.CylinderOs;
+                    }
+                    string axisOd = "";
+                    if (refraction.AxisOd != null) {
+                        axisOd = refraction.AxisOd;
+                    }
+                    string axisOs = "";
+                    if (refraction.AxisOs != null) {
+                        axisOs = refraction.AxisOs;
+                    }
+                    string bifocalAddOd = "";
+                    if (refraction.BifocalAddOd != null) {
+                        bifocalAddOd = refraction.BifocalAddOd;
+                    }
+                    string bifocalAddOs = "";
+                    if (refraction.BifocalAddOs != null) {
+                        bifocalAddOs = refraction.BifocalAddOs;
+                    }
+                    string prism360Od = "";
+                    if (refraction.Prism360Od != null) {
+                        prism360Od = refraction.Prism360Od;
+                    }
+                    string prism360Os = "";
+                    if (refraction.Prism360Os != null) {
+                        prism360Os = refraction.Prism360Os;
+                    }
+                    string directionHod = "";
+                    if (refraction.DirectionHod != null) {
+                        directionHod = refraction.DirectionHod;
+                    }
+                    string directionHos = "";
+                    if (refraction.DirectionHos != null) {
+                        directionHos = refraction.DirectionHos;
+                    }
+                    string pdDistOd = "";
+                    if (refraction.PddistOd != null) {
+                        pdDistOd = refraction.PddistOd;
+                    }
+                    string pdDistOs = "";
+                    if (refraction.PddistOs != null) {
+                        pdDistOs = refraction.PddistOs;
+                    }
+                    string pdNearOd = "";
+                    if (refraction.PdnearOd != null) {
+                        pdNearOd = refraction.PdnearOd;
+                    }
+                    string pdNearOs = "";
+                    if (refraction.PdnearOs != null) {
+                        pdNearOs = refraction.PdnearOs;
+                    }
+                    string age = "";
+                    if (refraction.Age != null) {
+                        age = refraction.Age;
+                    }
+                    string? vaDOd = "";
+                    if (refraction.VaDos != null) {
+                        vaDOd = refraction.VaDod;
+                    }
+                    string vaDOs = "";
+                    if (refraction.VaDos != null) {
+                        vaDOs = refraction.VaDos;
+                    }
+                    string vaDOu = "";
+                    if (refraction.VaDou != null) {
+                        vaDOu = refraction.VaDou;
+                    }
+                    string vaNOd = "";
+                    if (refraction.VaNod != null) {
+                        vaNOd = refraction.VaNod;
+                    }
+                    string vaNOs = "";
+                    if (refraction.VaNos != null) {
+                        vaNOs = refraction.VaNos;
+                    }
+                    string vaNOu = "";
+                    if (refraction.VaNou != null) {
+                        vaNOu = refraction.VaNou;
+                    }
+                    string vaIOd = "";
+                    if (refraction.VaIod != null) {
+                        vaIOd = refraction.VaIod;
+                    }
+                    string vaIOs = "";
+                    if (refraction.VaIos != null) {
+                        vaIOs = refraction.VaIos;
+                    }
+                    string vaIOu = "";
+                    if (refraction.VaIou != null) {
+                        vaIOu = refraction.VaIou;
+                    }
+                    string expires = "";
+                    if (refraction.Expires != null) {
+                        expires = refraction.Expires;
+                    }
+                    string remarks = "";
+                    if (refraction.Remarks != null) {
+                        remarks = refraction.Remarks;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID in source table
+                    bool printed = false;
+                    // no printed in source table
+                    bool sentToOptical = false;
+                    // no sentToOptical in source table
+                    string enteredBy = "";
+                    // no enteredBy in source table
+                    string prismTypeOd = "";
+                    // no prismTypeOd in source table
+                    string prismTypeOs = "";
+                    // no prismTypeOs in source table
+
+                    var ehrOrig = refractions.FirstOrDefault(r => r.PtId == ptId && r.VisitId == visitId);
+
+                    if (ehrOrig == null) {
+                        var newRefraction = new Brady_s_Conversion_Program.ModelsB.EmrvisitRefraction {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            RefractionClass = TruncateString(refractionClass, 5),
+                            RefractionType = TruncateString(refractionType, 50),
+                            SphereOd = TruncateString(sphereOd, 50),
+                            SphereOs = TruncateString(sphereOs, 50),
+                            CylinderOd = TruncateString(cylinderOd, 50),
+                            CylinderOs = TruncateString(cylinderOs, 50),
+                            AxisOd = TruncateString(axisOd, 50),
+                            AxisOs = TruncateString(axisOs, 50),
+                            BifocalAddOd = TruncateString(bifocalAddOd, 50),
+                            BifocalAddOs = TruncateString(bifocalAddOs, 50),
+                            PrismTypeOd = TruncateString(prismTypeOd, 255),
+                            PrismTypeOs = TruncateString(prismTypeOs, 255),
+                            Prism360Od = TruncateString(prism360Od, 50),
+                            Prism360Os = TruncateString(prism360Os, 50),
+                            DirectionOd = TruncateString(directionHod, 50),
+                            DirectionOs = TruncateString(directionHos, 50),
+                            PdDistOd = TruncateString(pdDistOd, 50),
+                            PdDistOs = TruncateString(pdDistOs, 50),
+                            PdNearOd = TruncateString(pdNearOd, 50),
+                            PdNearOs = TruncateString(pdNearOs, 50),
+                            Age = TruncateString(age, 50),
+                            VaDOd = TruncateString(vaDOd, 50),
+                            VaDOs = TruncateString(vaDOs, 50),
+                            VaDOu = TruncateString(vaDOu, 50),
+                            VaNOd = TruncateString(vaNOd, 50),
+                            VaNOs = TruncateString(vaNOs, 50),
+                            VaNOu = TruncateString(vaNOu, 50),
+                            VaIOd = TruncateString(vaIOd, 50),
+                            VaIOs = TruncateString(vaIOs, 50),
+                            VaIOu = TruncateString(vaIOu, 50),
+                            Expires = TruncateString(expires, 50),
+                            Remarks = TruncateString(remarks, int.MaxValue),
+                            InsertGuid = TruncateString(insertGUID, 40),
+                            Printed = printed, // bit, no truncation needed
+                            SentToOptical = sentToOptical, // bit, no truncation needed
+                            EnteredBy = TruncateString(enteredBy, 200)
+                        };
+                        refractions.Add(newRefraction);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
+                }
+            }
+            eyeMDDbContext.EmrvisitRefractions.UpdateRange(refractions);
+            eyeMDDbContext.SaveChanges();
+            refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
+        }
+
+        public static void RosConvert(List<ModelsC.Ro> ehrRos, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+            List<Emrrosdefault> ross) {
+            foreach (var ros in ehrRos) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
+                        RosbloodCustomDesc1 = TruncateString(ros.RosbloodCustomDesc1, 50),
+                        RosbloodCustomDesc2 = TruncateString(ros.RosbloodCustomDesc2, 50),
+                        RoscardioCustomDesc1 = TruncateString(ros.RoscardioCustomDesc1, 50),
+                        RoscardioCustomDesc2 = TruncateString(ros.RoscardioCustomDesc2, 50),
+                        RosconsCustomDesc1 = TruncateString(ros.RosconsCustomDesc1, 50),
+                        RosconsCustomDesc2 = TruncateString(ros.RosconsCustomDesc2, 50),
+                        RosendoCustomDesc1 = TruncateString(ros.RosendoCustomDesc1, 50),
+                        RosendoCustomDesc2 = TruncateString(ros.RosendoCustomDesc2, 50),
+                        RosentcustomDesc1 = TruncateString(ros.RosentcustomDesc1, 50),
+                        RosentcustomDesc2 = TruncateString(ros.RosentcustomDesc2, 50),
+                        RoseyeCustomDesc1 = TruncateString(ros.RoseyeCustomDesc1, 50),
+                        RoseyeCustomDesc2 = TruncateString(ros.RoseyeCustomDesc2, 50),
+                        RoseyeCustomDesc3 = TruncateString(ros.RoseyeCustomDesc3, 50),
+                        RoseyeCustomDesc4 = TruncateString(ros.RoseyeCustomDesc4, 50),
+                        RosgasCustomDesc1 = TruncateString(ros.RosgasCustomDesc1, 50),
+                        RosgasCustomDesc2 = TruncateString(ros.RosgasCustomDesc2, 50),
+                        RosimmuCustomDesc1 = TruncateString(ros.RosimmuCustomDesc1, 50),
+                        RosimmuCustomDesc2 = TruncateString(ros.RosimmuCustomDesc2, 50),
+                        RosmusSkeCustomDesc1 = TruncateString(ros.RosmusSkeCustomDesc1, 50),
+                        RosmusSkeCustomDesc2 = TruncateString(ros.RosmusSkeCustomDesc2, 50),
+                        RosneuroCustomDesc1 = TruncateString(ros.RosneuroCustomDesc1, 50),
+                        RosneuroCustomDesc2 = TruncateString(ros.RosneuroCustomDesc2, 50),
+                        RospsycCustomDesc1 = TruncateString(ros.RospsycCustomDesc1, 50),
+                        RospsycCustomDesc2 = TruncateString(ros.RospsycCustomDesc2, 50),
+                        RosrespCustomDesc1 = TruncateString(ros.RosrespCustomDesc1, 50),
+                        RosrespCustomDesc2 = TruncateString(ros.RosrespCustomDesc2, 50),
+                        RosskinCustomDesc1 = TruncateString(ros.RosskinCustomDesc1, 50),
+                        RosskinCustomDesc2 = TruncateString(ros.RosskinCustomDesc2, 50),
+                        RosurinaryCustomDesc1 = TruncateString(ros.RosurinaryCustomDesc1, 50),
+                        RosurinaryCustomDesc2 = TruncateString(ros.RosurinaryCustomDesc2, 50)
                     };
-                    refractions.Add(newRefraction);
+                    ross.Add(newRos);
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.Emrrosdefaults.UpdateRange(ross);
+            eyeMDDbContext.SaveChanges();
+            ross = eyeMDDbContext.Emrrosdefaults.ToList();
         }
 
-        public static void RosConvert(ModelsC.Ro ros, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
-                    RosbloodCustomDesc1 = TruncateString(ros.RosbloodCustomDesc1, 50),
-                    RosbloodCustomDesc2 = TruncateString(ros.RosbloodCustomDesc2, 50),
-                    RoscardioCustomDesc1 = TruncateString(ros.RoscardioCustomDesc1, 50),
-                    RoscardioCustomDesc2 = TruncateString(ros.RoscardioCustomDesc2, 50),
-                    RosconsCustomDesc1 = TruncateString(ros.RosconsCustomDesc1, 50),
-                    RosconsCustomDesc2 = TruncateString(ros.RosconsCustomDesc2, 50),
-                    RosendoCustomDesc1 = TruncateString(ros.RosendoCustomDesc1, 50),
-                    RosendoCustomDesc2 = TruncateString(ros.RosendoCustomDesc2, 50),
-                    RosentcustomDesc1 = TruncateString(ros.RosentcustomDesc1, 50),
-                    RosentcustomDesc2 = TruncateString(ros.RosentcustomDesc2, 50),
-                    RoseyeCustomDesc1 = TruncateString(ros.RoseyeCustomDesc1, 50),
-                    RoseyeCustomDesc2 = TruncateString(ros.RoseyeCustomDesc2, 50),
-                    RoseyeCustomDesc3 = TruncateString(ros.RoseyeCustomDesc3, 50),
-                    RoseyeCustomDesc4 = TruncateString(ros.RoseyeCustomDesc4, 50),
-                    RosgasCustomDesc1 = TruncateString(ros.RosgasCustomDesc1, 50),
-                    RosgasCustomDesc2 = TruncateString(ros.RosgasCustomDesc2, 50),
-                    RosimmuCustomDesc1 = TruncateString(ros.RosimmuCustomDesc1, 50),
-                    RosimmuCustomDesc2 = TruncateString(ros.RosimmuCustomDesc2, 50),
-                    RosmusSkeCustomDesc1 = TruncateString(ros.RosmusSkeCustomDesc1, 50),
-                    RosmusSkeCustomDesc2 = TruncateString(ros.RosmusSkeCustomDesc2, 50),
-                    RosneuroCustomDesc1 = TruncateString(ros.RosneuroCustomDesc1, 50),
-                    RosneuroCustomDesc2 = TruncateString(ros.RosneuroCustomDesc2, 50),
-                    RospsycCustomDesc1 = TruncateString(ros.RospsycCustomDesc1, 50),
-                    RospsycCustomDesc2 = TruncateString(ros.RospsycCustomDesc2, 50),
-                    RosrespCustomDesc1 = TruncateString(ros.RosrespCustomDesc1, 50),
-                    RosrespCustomDesc2 = TruncateString(ros.RosrespCustomDesc2, 50),
-                    RosskinCustomDesc1 = TruncateString(ros.RosskinCustomDesc1, 50),
-                    RosskinCustomDesc2 = TruncateString(ros.RosskinCustomDesc2, 50),
-                    RosurinaryCustomDesc1 = TruncateString(ros.RosurinaryCustomDesc1, 50),
-                    RosurinaryCustomDesc2 = TruncateString(ros.RosurinaryCustomDesc2, 50)
-                };
-                eyeMDDbContext.Emrrosdefaults.Add(newRos);
-
-                eyeMDDbContext.SaveChanges();
-            }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void RxConvert(ModelsC.RxMedication rx, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void RxConvert(List<ModelsC.RxMedication> ehrRxs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitRxMedication> rxMedications, List<Emrpatient> eyeMDPatients) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (rx.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(rx.Dosdate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var rx in ehrRxs) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (rx.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(rx.Dosdate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (rx.VisitId! <= -1) {
-                    visitId = rx.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for Rx with ID: {rx.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Rx with ID: {rx.Id}");
-                }
-                int ptId = -1;
-                if (rx.PtId !<= 0) {
-                    ptId = rx.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (rx.VisitId! <= -1) {
+                        visitId = rx.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for Rx with ID: {rx.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Rx with ID: {rx.Id}");
+                    }
+                    int ptId = -1;
+                    if (rx.PtId! <= 0) {
+                        ptId = rx.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Rx with ID: {rx.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Rx with ID: {rx.Id}");
+                        ptId = eyeMDPatient.PtId;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
 
-                string medName = "";
-                if (rx.MedName != null) {
-                    medName = rx.MedName;
-                }
-                string medSig = "";
-                if (rx.MedSig != null) {
-                    medSig = rx.MedSig;
-                }
-                string medDisp = "";
-                if (rx.MedDisp != null) {
-                    medDisp = rx.MedDisp;
-                }
-                string medRefill = "";
+                    string medName = "";
+                    if (rx.MedName != null) {
+                        medName = rx.MedName;
+                    }
+                    string medSig = "";
+                    if (rx.MedSig != null) {
+                        medSig = rx.MedSig;
+                    }
+                    string medDisp = "";
+                    if (rx.MedDisp != null) {
+                        medDisp = rx.MedDisp;
+                    }
+                    string medRefill = "";
 
-                int? medType = null;
-                if (rx.MedType != null) {
-                    if (int.TryParse(rx.MedType, out int locum)) {
-                        medType = locum;
+                    int? medType = null;
+                    if (rx.MedType != null) {
+                        if (int.TryParse(rx.MedType, out int locum)) {
+                            medType = locum;
+                        }
                     }
-                }
-                short brandMedOnly = -1;
-                if (rx.BrandMedOnly != null) {
-                    if (short.TryParse(rx.BrandMedOnly, out short locum)) {
-                        brandMedOnly = locum;
+                    short brandMedOnly = -1;
+                    if (rx.BrandMedOnly != null) {
+                        if (short.TryParse(rx.BrandMedOnly, out short locum)) {
+                            brandMedOnly = locum;
+                        }
                     }
-                }
-                short doNotPrintRx = -1;
-                if (rx.DoNotPrintRx != null) {
-                    if (short.TryParse(rx.DoNotPrintRx, out short locum)) {
-                        doNotPrintRx = locum;
+                    short doNotPrintRx = -1;
+                    if (rx.DoNotPrintRx != null) {
+                        if (short.TryParse(rx.DoNotPrintRx, out short locum)) {
+                            doNotPrintRx = locum;
+                        }
                     }
-                }
-                short sampleGiven = -1;
-                if (rx.SampleGiven != null) {
-                    if (short.TryParse(rx.SampleGiven, out short locum)) {
-                        sampleGiven = locum;
+                    short sampleGiven = -1;
+                    if (rx.SampleGiven != null) {
+                        if (short.TryParse(rx.SampleGiven, out short locum)) {
+                            sampleGiven = locum;
+                        }
                     }
-                }
-                string notes = "";
-                if (rx.Notes != null) {
-                    notes = rx.Notes;
-                }
-                string description = "";
-                if (rx.Description != null) {
-                    description = rx.Description;
-                }
-                int? medTableId = null;
-                if (rx.MedTableId != null) {
-                    if (int.TryParse(rx.MedTableId, out int locum)) {
-                        medTableId = locum;
+                    string notes = "";
+                    if (rx.Notes != null) {
+                        notes = rx.Notes;
                     }
-                }
-                short? medDispType = null;
-                if (rx.MedDispType != null) {
-                    if (short.TryParse(rx.MedDispType, out short locum)) {
-                        medDispType = locum;
+                    string description = "";
+                    if (rx.Description != null) {
+                        description = rx.Description;
                     }
-                }
-                string drugStrength = "";
-                if (rx.DrugStrength != null) {
-                    drugStrength = rx.DrugStrength;
-                }
-                string drugRoute = "";
-                if (rx.DrugRoute != null) {
-                    drugRoute = rx.DrugRoute;
-                }
-                string drugForm = "";
-                if (rx.DrugForm != null) {
-                    drugForm = rx.DrugForm;
-                }
-                string drugMappingId = "";
-                if (rx.DrugMappingId != null) {
-                    drugMappingId = rx.DrugMappingId;
-                }
-                string drugAltMappingId = "";
-                if (rx.DrugAltMappingId != null) {
-                    drugAltMappingId = rx.DrugAltMappingId;
-                }
-                string drugName = "";
-                if (rx.DrugName != null) {
-                    drugName = rx.DrugName;
-                }
-                string drugNameId = "";
-                if (rx.DrugNameId != null) {
-                    drugNameId = rx.DrugNameId;
-                }
-                string erxGUID = "";
-                if (rx.ErxGuid != null) {
-                    erxGUID = rx.ErxGuid;
-                }
-                short? erxPendingTransmit = null;
-                if (rx.ErxPendingTransmit != null) {
-                    if (short.TryParse(rx.ErxPendingTransmit, out short locum)) {
-                        erxPendingTransmit = locum;
+                    int? medTableId = null;
+                    if (rx.MedTableId != null) {
+                        if (int.TryParse(rx.MedTableId, out int locum)) {
+                            medTableId = locum;
+                        }
                     }
-                }
-                int? calledInLocationId = null;
-                if (rx.CalledInLocationId != null) {
-                    if (int.TryParse(rx.CalledInLocationId, out int locum)) {
-                        calledInLocationId = locum;
+                    short? medDispType = null;
+                    if (rx.MedDispType != null) {
+                        if (short.TryParse(rx.MedDispType, out short locum)) {
+                            medDispType = locum;
+                        }
                     }
-                }
-                int? calledInProviderEmpId = null;
-                if (rx.CalledInProviderEmpId != null) {
-                    if (int.TryParse(rx.CalledInProviderEmpId, out int locum)) {
-                        calledInProviderEmpId = locum;
+                    string drugStrength = "";
+                    if (rx.DrugStrength != null) {
+                        drugStrength = rx.DrugStrength;
                     }
-                }
-                string medDispUnitType = "";
-                if (rx.MedDispUnitType != null) {
-                    medDispUnitType = rx.MedDispUnitType;
-                }
-                string rxcui = "";
-                if (rx.Rxcui != null) {
-                    rxcui = rx.Rxcui;
-                }
-                short? isRefill = null;
-                if (rx.IsRefill != null) {
-                    if (short.TryParse(rx.IsRefill, out short locum)) {
-                        isRefill = locum;
+                    string drugRoute = "";
+                    if (rx.DrugRoute != null) {
+                        drugRoute = rx.DrugRoute;
                     }
-                }
-                string originalMedicationId = "";
-                if (rx.OriginalMedicationId != null) {
-                    originalMedicationId = rx.OriginalMedicationId;
-                }
-                string originalMedicationDate = "";
-                if (rx.OriginalMedicationDate != null) {
-                    originalMedicationDate = rx.OriginalMedicationDate;
-                }
-                short? sentViaErx = null;
-                if (rx.SentViaErx != null) {
-                    if (short.TryParse(rx.SentViaErx, out short locum)) {
-                        sentViaErx = locum;
+                    string drugForm = "";
+                    if (rx.DrugForm != null) {
+                        drugForm = rx.DrugForm;
                     }
-                }
-                string snomed = "";
-                if (rx.Snomed != null) {
-                    snomed = rx.Snomed;
-                }
-                string drugFdaStatus = "";
-                if (rx.DrugFdastatus != null) {
-                    drugFdaStatus = rx.DrugFdastatus;
-                }
-                string drugDeaClass = "";
-                if (rx.DrugDeaclass != null) {
-                    drugDeaClass = rx.DrugDeaclass;
-                }
-                string rxRemarks = "";
-                if (rx.RxRemarks != null) {
-                    rxRemarks = rx.RxRemarks;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
-                // no insertGUID in source table
-                int? recordedEmpRole = null;
-                if (rx.RecordedEmpRole != null) {
-                    if (int.TryParse(rx.RecordedEmpRole, out int locum)) {
-                        recordedEmpRole = locum;
+                    string drugMappingId = "";
+                    if (rx.DrugMappingId != null) {
+                        drugMappingId = rx.DrugMappingId;
                     }
-                }
-                short? administeredMed = null;
-                if (rx.AdministeredMed != null) {
-                    if (short.TryParse(rx.AdministeredMed, out short locum)) {
-                        administeredMed = locum;
+                    string drugAltMappingId = "";
+                    if (rx.DrugAltMappingId != null) {
+                        drugAltMappingId = rx.DrugAltMappingId;
                     }
-                }
-                short? formularyChecked = null;
-                if (rx.FormularyChecked != null) {
-                    if (short.TryParse(rx.FormularyChecked, out short locum)) {
-                        formularyChecked = locum;
+                    string drugName = "";
+                    if (rx.DrugName != null) {
+                        drugName = rx.DrugName;
                     }
-                }
-                short? printedRx = null;
-                if (rx.PrintedRx != null) {
-                    if (short.TryParse(rx.PrintedRx, out short locum)) {
-                        printedRx = locum;
+                    string drugNameId = "";
+                    if (rx.DrugNameId != null) {
+                        drugNameId = rx.DrugNameId;
                     }
-                }
-                bool doNotReconcile = false;
-                if (rx.DoNotReconcile != null && rx.DoNotReconcile.ToLower() == "yes" || rx.DoNotReconcile == "1") {
-                    doNotReconcile = true;
-                }
-                DateTime? rxStartDate = null;
-                if (rx.RxStartDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(rx.RxStartDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        rxStartDate = tempDateTime;
+                    string erxGUID = "";
+                    if (rx.ErxGuid != null) {
+                        erxGUID = rx.ErxGuid;
                     }
-                }
-                DateTime? rxEndDate = null;
-                if (rx.RxEndDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(rx.RxEndDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        rxEndDate = tempDateTime;
+                    short? erxPendingTransmit = null;
+                    if (rx.ErxPendingTransmit != null) {
+                        if (short.TryParse(rx.ErxPendingTransmit, out short locum)) {
+                            erxPendingTransmit = locum;
+                        }
                     }
-                }
-                int? rxDurationDays = null;
-                if (rx.RxDurationDays != null) {
-                    if (int.TryParse(rx.RxDurationDays, out int locum)) {
-                        rxDurationDays = locum;
+                    int? calledInLocationId = null;
+                    if (rx.CalledInLocationId != null) {
+                        if (int.TryParse(rx.CalledInLocationId, out int locum)) {
+                            calledInLocationId = locum;
+                        }
                     }
-                }
-                DateTime? lastModified = null;
-                if (rx.LastModified != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(rx.LastModified, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        lastModified = tempDateTime;
+                    int? calledInProviderEmpId = null;
+                    if (rx.CalledInProviderEmpId != null) {
+                        if (int.TryParse(rx.CalledInProviderEmpId, out int locum)) {
+                            calledInProviderEmpId = locum;
+                        }
                     }
-                }
-                int? visitDiagCodePoolId = null;
-                if (rx.VisitDiagCodePoolId != null) {
-                    if (int.TryParse(rx.VisitDiagCodePoolId, out int locum)) {
-                        visitDiagCodePoolId = locum;
+                    string medDispUnitType = "";
+                    if (rx.MedDispUnitType != null) {
+                        medDispUnitType = rx.MedDispUnitType;
                     }
-                }
-                DateTime? created = null;
-                if (rx.Created != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(rx.Created, dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        created = tempDateTime;
+                    string rxcui = "";
+                    if (rx.Rxcui != null) {
+                        rxcui = rx.Rxcui;
                     }
-                }
-                int? createdEmpId = null;
-                if (rx.CreatedEmpId != null) {
-                    if (int.TryParse(rx.CreatedEmpId, out int locum)) {
-                        createdEmpId = locum;
+                    short? isRefill = null;
+                    if (rx.IsRefill != null) {
+                        if (short.TryParse(rx.IsRefill, out short locum)) {
+                            isRefill = locum;
+                        }
                     }
-                }
-                int? lastModifiedEmpId = null;
-                if (rx.LastModifiedEmpId != null) {
-                    if (int.TryParse(rx.LastModifiedEmpId, out int locum)) {
-                        lastModifiedEmpId = locum;
+                    string originalMedicationId = "";
+                    if (rx.OriginalMedicationId != null) {
+                        originalMedicationId = rx.OriginalMedicationId;
                     }
-                }
-                string erxStatus = "";
-                if (rx.ErxStatus != null) {
-                    erxStatus = rx.ErxStatus;
-                }
+                    string originalMedicationDate = "";
+                    if (rx.OriginalMedicationDate != null) {
+                        originalMedicationDate = rx.OriginalMedicationDate;
+                    }
+                    short? sentViaErx = null;
+                    if (rx.SentViaErx != null) {
+                        if (short.TryParse(rx.SentViaErx, out short locum)) {
+                            sentViaErx = locum;
+                        }
+                    }
+                    string snomed = "";
+                    if (rx.Snomed != null) {
+                        snomed = rx.Snomed;
+                    }
+                    string drugFdaStatus = "";
+                    if (rx.DrugFdastatus != null) {
+                        drugFdaStatus = rx.DrugFdastatus;
+                    }
+                    string drugDeaClass = "";
+                    if (rx.DrugDeaclass != null) {
+                        drugDeaClass = rx.DrugDeaclass;
+                    }
+                    string rxRemarks = "";
+                    if (rx.RxRemarks != null) {
+                        rxRemarks = rx.RxRemarks;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
+                    // no insertGUID in source table
+                    int? recordedEmpRole = null;
+                    if (rx.RecordedEmpRole != null) {
+                        if (int.TryParse(rx.RecordedEmpRole, out int locum)) {
+                            recordedEmpRole = locum;
+                        }
+                    }
+                    short? administeredMed = null;
+                    if (rx.AdministeredMed != null) {
+                        if (short.TryParse(rx.AdministeredMed, out short locum)) {
+                            administeredMed = locum;
+                        }
+                    }
+                    short? formularyChecked = null;
+                    if (rx.FormularyChecked != null) {
+                        if (short.TryParse(rx.FormularyChecked, out short locum)) {
+                            formularyChecked = locum;
+                        }
+                    }
+                    short? printedRx = null;
+                    if (rx.PrintedRx != null) {
+                        if (short.TryParse(rx.PrintedRx, out short locum)) {
+                            printedRx = locum;
+                        }
+                    }
+                    bool doNotReconcile = false;
+                    if (rx.DoNotReconcile != null && rx.DoNotReconcile.ToLower() == "yes" || rx.DoNotReconcile == "1") {
+                        doNotReconcile = true;
+                    }
+                    DateTime? rxStartDate = null;
+                    if (rx.RxStartDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(rx.RxStartDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            rxStartDate = tempDateTime;
+                        }
+                    }
+                    DateTime? rxEndDate = null;
+                    if (rx.RxEndDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(rx.RxEndDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            rxEndDate = tempDateTime;
+                        }
+                    }
+                    int? rxDurationDays = null;
+                    if (rx.RxDurationDays != null) {
+                        if (int.TryParse(rx.RxDurationDays, out int locum)) {
+                            rxDurationDays = locum;
+                        }
+                    }
+                    DateTime? lastModified = null;
+                    if (rx.LastModified != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(rx.LastModified, dateFormats,
+                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            lastModified = tempDateTime;
+                        }
+                    }
+                    int? visitDiagCodePoolId = null;
+                    if (rx.VisitDiagCodePoolId != null) {
+                        if (int.TryParse(rx.VisitDiagCodePoolId, out int locum)) {
+                            visitDiagCodePoolId = locum;
+                        }
+                    }
+                    DateTime? created = null;
+                    if (rx.Created != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(rx.Created, dateFormats,
+                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            created = tempDateTime;
+                        }
+                    }
+                    int? createdEmpId = null;
+                    if (rx.CreatedEmpId != null) {
+                        if (int.TryParse(rx.CreatedEmpId, out int locum)) {
+                            createdEmpId = locum;
+                        }
+                    }
+                    int? lastModifiedEmpId = null;
+                    if (rx.LastModifiedEmpId != null) {
+                        if (int.TryParse(rx.LastModifiedEmpId, out int locum)) {
+                            lastModifiedEmpId = locum;
+                        }
+                    }
+                    string erxStatus = "";
+                    if (rx.ErxStatus != null) {
+                        erxStatus = rx.ErxStatus;
+                    }
 
-                var ehrOrig = rxMedications.FirstOrDefault(rx => rx.PtId == ptId && rx.VisitId == visitId);
+                    var ehrOrig = rxMedications.FirstOrDefault(rx => rx.PtId == ptId && rx.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        MedName = TruncateString(medName, 255),
-                        MedSig = TruncateString(medSig, 255),
-                        MedDisp = TruncateString(medDisp, 255),
-                        MedRefill = TruncateString(medRefill, 255),
-                        MedType = medType,
-                        BrandMedOnly = brandMedOnly, // smallint, no truncation needed
-                        DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
-                        SampleGiven = sampleGiven, // smallint, no truncation needed
-                        Notes = TruncateString(notes, int.MaxValue),
-                        Description = TruncateString(description, int.MaxValue),
-                        MedTableId = medTableId,
-                        MedDispType = medDispType, // smallint, no truncation needed
-                        DrugStrength = TruncateString(drugStrength, 100),
-                        DrugRoute = TruncateString(drugRoute, 100),
-                        DrugForm = TruncateString(drugForm, 100),
-                        DrugMappingId = TruncateString(drugMappingId, 100),
-                        DrugAltMappingId = TruncateString(drugAltMappingId, 100),
-                        DrugName = TruncateString(drugName, 200),
-                        DrugNameId = TruncateString(drugNameId, 100),
-                        ErxGuid = TruncateString(erxGUID, 50),
-                        ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
-                        CalledInLocationId = calledInLocationId,
-                        CalledInProviderEmpId = calledInProviderEmpId,
-                        MedDispUnitType = TruncateString(medDispUnitType, 100),
-                        Rxcui = TruncateString(rxcui, 50),
-                        IsRefill = isRefill, // smallint, no truncation needed
-                        OriginalMedicationId = TruncateString(originalMedicationId, 255),
-                        OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
-                        SentViaErx = sentViaErx, // smallint, no truncation needed
-                        Snomed = TruncateString(snomed, 50),
-                        DrugFdastatus = TruncateString(drugFdaStatus, 50),
-                        DrugDeaclass = TruncateString(drugDeaClass, 25),
-                        RxRemarks = TruncateString(rxRemarks, 255),
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        RecordedEmpRole = recordedEmpRole,
-                        AdministeredMed = administeredMed, // smallint, no truncation needed
-                        FormularyChecked = formularyChecked, // smallint, no truncation needed
-                        PrintedRx = printedRx, // smallint, no truncation needed
-                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                        RxStartDate = rxStartDate,
-                        RxEndDate = rxEndDate,
-                        RxDurationDays = rxDurationDays,
-                        LastModified = lastModified,
-                        VisitDiagCodePoolId = visitDiagCodePoolId,
-                        Created = created,
-                        CreatedEmpId = createdEmpId,
-                        LastModifiedEmpId = lastModifiedEmpId,
-                        ErxStatus = TruncateString(erxStatus, 100)
-                    };
-                    rxMedications.Add(newRx);
+                    if (ehrOrig == null) {
+                        var newRx = new Brady_s_Conversion_Program.ModelsB.EmrvisitRxMedication {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            MedName = TruncateString(medName, 255),
+                            MedSig = TruncateString(medSig, 255),
+                            MedDisp = TruncateString(medDisp, 255),
+                            MedRefill = TruncateString(medRefill, 255),
+                            MedType = medType,
+                            BrandMedOnly = brandMedOnly, // smallint, no truncation needed
+                            DoNotPrintRx = doNotPrintRx, // smallint, no truncation needed
+                            SampleGiven = sampleGiven, // smallint, no truncation needed
+                            Notes = TruncateString(notes, int.MaxValue),
+                            Description = TruncateString(description, int.MaxValue),
+                            MedTableId = medTableId,
+                            MedDispType = medDispType, // smallint, no truncation needed
+                            DrugStrength = TruncateString(drugStrength, 100),
+                            DrugRoute = TruncateString(drugRoute, 100),
+                            DrugForm = TruncateString(drugForm, 100),
+                            DrugMappingId = TruncateString(drugMappingId, 100),
+                            DrugAltMappingId = TruncateString(drugAltMappingId, 100),
+                            DrugName = TruncateString(drugName, 200),
+                            DrugNameId = TruncateString(drugNameId, 100),
+                            ErxGuid = TruncateString(erxGUID, 50),
+                            ErxPendingTransmit = erxPendingTransmit, // smallint, no truncation needed
+                            CalledInLocationId = calledInLocationId,
+                            CalledInProviderEmpId = calledInProviderEmpId,
+                            MedDispUnitType = TruncateString(medDispUnitType, 100),
+                            Rxcui = TruncateString(rxcui, 50),
+                            IsRefill = isRefill, // smallint, no truncation needed
+                            OriginalMedicationId = TruncateString(originalMedicationId, 255),
+                            OriginalMedicationDate = TruncateString(originalMedicationDate, 50),
+                            SentViaErx = sentViaErx, // smallint, no truncation needed
+                            Snomed = TruncateString(snomed, 50),
+                            DrugFdastatus = TruncateString(drugFdaStatus, 50),
+                            DrugDeaclass = TruncateString(drugDeaClass, 25),
+                            RxRemarks = TruncateString(rxRemarks, 255),
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            RecordedEmpRole = recordedEmpRole,
+                            AdministeredMed = administeredMed, // smallint, no truncation needed
+                            FormularyChecked = formularyChecked, // smallint, no truncation needed
+                            PrintedRx = printedRx, // smallint, no truncation needed
+                            DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                            RxStartDate = rxStartDate,
+                            RxEndDate = rxEndDate,
+                            RxDurationDays = rxDurationDays,
+                            LastModified = lastModified,
+                            VisitDiagCodePoolId = visitDiagCodePoolId,
+                            Created = created,
+                            CreatedEmpId = createdEmpId,
+                            LastModifiedEmpId = lastModifiedEmpId,
+                            ErxStatus = TruncateString(erxStatus, 100)
+                        };
+                        rxMedications.Add(newRx);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
+            eyeMDDbContext.SaveChanges();
+            rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
         }
 
-        public static void SurgHistoriesConvert(ModelsC.SurgHistory surgHistory, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void SurgHistoriesConvert(List<ModelsC.SurgHistory> ehrSurgHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Emrvisit> visits, List<EmrvisitSurgicalHistory> surgicalHistories, List<Emrpatient> eyeMDPatients, List<Visit> ehrVisits) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (surgHistory.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(surgHistory.Dosdate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var surgHistory in ehrSurgHistories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (surgHistory.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(surgHistory.Dosdate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (surgHistory.VisitId != null) {
-                    visitId = surgHistory.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for Surg History with ID: {surgHistory.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Surg History with ID: {surgHistory.Id}");
-                }
-                int ptId = -1;
-                if (surgHistory.PtId !<= 0) {
-                    ptId = surgHistory.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (surgHistory.VisitId != null) {
+                        visitId = surgHistory.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for Surg History with ID: {surgHistory.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Surg History with ID: {surgHistory.Id}");
+                    }
+                    int ptId = -1;
+                    if (surgHistory.PtId! <= 0) {
+                        ptId = surgHistory.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Surg History with ID: {surgHistory.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Surg History with ID: {surgHistory.Id}");
+                        ptId = eyeMDPatient.PtId;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
 
-                int? controlId = null;
-                // no controlId in source table
-                int? origVisitSurgicalHistoryId = null;
-                if (surgHistory.OrigVisitSurgicalHistoryId != null) {
-                    if (int.TryParse(surgHistory.OrigVisitSurgicalHistoryId, out int locum)) {
-                        origVisitSurgicalHistoryId = locum;
+                    int? controlId = null;
+                    // no controlId in source table
+                    int? origVisitSurgicalHistoryId = null;
+                    if (surgHistory.OrigVisitSurgicalHistoryId != null) {
+                        if (int.TryParse(surgHistory.OrigVisitSurgicalHistoryId, out int locum)) {
+                            origVisitSurgicalHistoryId = locum;
+                        }
                     }
-                }
-                DateTime? origVisitDate = null;
-                if (surgHistory.OrigVisitDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(surgHistory.OrigVisitDate, dateFormats,
-                                                                                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        origVisitDate = tempDateTime;
+                    DateTime? origVisitDate = null;
+                    if (surgHistory.OrigVisitDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(surgHistory.OrigVisitDate, dateFormats,
+                                                                                                                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            origVisitDate = tempDateTime;
+                        }
                     }
-                }
-                string description = "";
-                if (surgHistory.Description != null) {
-                    description = surgHistory.Description;
-                }
-                int? typeId = null;
-                if (surgHistory.TypeId != null) {
-                    if (int.TryParse(surgHistory.TypeId, out int locum)) {
-                        typeId = locum;
+                    string description = "";
+                    if (surgHistory.Description != null) {
+                        description = surgHistory.Description;
                     }
-                }
-                int? codeId = null;
-                if (surgHistory.CodeId != null) {
-                    if (int.TryParse(surgHistory.CodeId, out int locum)) {
-                        codeId = locum;
+                    int? typeId = null;
+                    if (surgHistory.TypeId != null) {
+                        if (int.TryParse(surgHistory.TypeId, out int locum)) {
+                            typeId = locum;
+                        }
                     }
-                }
-                string code = "";
-                if (surgHistory.Code != null) {
-                    code = surgHistory.Code;
-                }
-                string modifier = "";
-                if (surgHistory.Modifier != null) {
-                    modifier = surgHistory.Modifier;
-                }
-                string codeICD10 = "";
-                if (surgHistory.CodeIcd10 != null) {
-                    codeICD10 = surgHistory.CodeIcd10;
-                }
-                string codeSnomed = "";
-                if (surgHistory.CodeSnomed != null) {
-                    codeSnomed = surgHistory.CodeSnomed;
-                }
-                string location1 = "";
-                if (surgHistory.Location1 != null) {
-                    location1 = surgHistory.Location1;
-                }
-                string procedureMonth1 = "";
-                if (surgHistory.ProcedureMonth1 != null) {
-                    procedureMonth1 = surgHistory.ProcedureMonth1;
-                }
-                string procedureDay1 = "";
-                if (surgHistory.ProcedureDay1 != null) {
-                    procedureDay1 = surgHistory.ProcedureDay1;
-                }
-                string procedureYear1 = "";
-                if (surgHistory.ProcedureYear1 != null) {
-                    procedureYear1 = surgHistory.ProcedureYear1;
-                }
-                int? performedByEmpId1 = null;
-                if (surgHistory.PerformedbyEmpId1 != null) {
-                    if (int.TryParse(surgHistory.PerformedbyEmpId1, out int locum)) {
-                        performedByEmpId1 = locum;
+                    int? codeId = null;
+                    if (surgHistory.CodeId != null) {
+                        if (int.TryParse(surgHistory.CodeId, out int locum)) {
+                            codeId = locum;
+                        }
                     }
-                }
-                int? performedByRefProvider1 = null;
-                if (surgHistory.ComanageRefProviderId1 != null) {
-                    if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
-                        performedByRefProvider1 = locum;
+                    string code = "";
+                    if (surgHistory.Code != null) {
+                        code = surgHistory.Code;
                     }
-                }
-                string comanageFullName1 = "";
-                if (surgHistory.ComanageFullName1 != null) {
-                    comanageFullName1 = surgHistory.ComanageFullName1;
-                }
-                string location2 = "";
-                if (surgHistory.Location2 != null) {
-                    location2 = surgHistory.Location2;
-                }
-                string procedureMonth2 = "";
-                if (surgHistory.ProcedureMonth2 != null) {
-                    procedureMonth2 = surgHistory.ProcedureMonth2;
-                }
-                string procedureDay2 = "";
-                if (surgHistory.ProcedureDay2 != null) {
-                    procedureDay2 = surgHistory.ProcedureDay2;
-                }
-                string procedureYear2 = "";
-                if (surgHistory.ProcedureYear2 != null) {
-                    procedureYear2 = surgHistory.ProcedureYear2;
-                }
-                int? performedByEmpId2 = null;
-                if (surgHistory.PerformedbyEmpId2 != null) {
-                    if (int.TryParse(surgHistory.PerformedbyEmpId2, out int locum)) {
-                        performedByEmpId2 = locum;
+                    string modifier = "";
+                    if (surgHistory.Modifier != null) {
+                        modifier = surgHistory.Modifier;
                     }
-                }
-                int? performedbyRefProviderId2 = null;
-                if (surgHistory.ComanageRefProviderId2 != null) {
-                    if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
-                        performedbyRefProviderId2 = locum;
+                    string codeICD10 = "";
+                    if (surgHistory.CodeIcd10 != null) {
+                        codeICD10 = surgHistory.CodeIcd10;
                     }
-                }
-                string comanageFullName2 = "";
-                if (surgHistory.ComanageFullName2 != null) {
-                    comanageFullName2 = surgHistory.ComanageFullName2;
-                }
-                string notes = "";
-                if (surgHistory.Notes != null) {
-                    notes = surgHistory.Notes;
-                }
-                string insertGUID = Guid.NewGuid().ToString();
+                    string codeSnomed = "";
+                    if (surgHistory.CodeSnomed != null) {
+                        codeSnomed = surgHistory.CodeSnomed;
+                    }
+                    string location1 = "";
+                    if (surgHistory.Location1 != null) {
+                        location1 = surgHistory.Location1;
+                    }
+                    string procedureMonth1 = "";
+                    if (surgHistory.ProcedureMonth1 != null) {
+                        procedureMonth1 = surgHistory.ProcedureMonth1;
+                    }
+                    string procedureDay1 = "";
+                    if (surgHistory.ProcedureDay1 != null) {
+                        procedureDay1 = surgHistory.ProcedureDay1;
+                    }
+                    string procedureYear1 = "";
+                    if (surgHistory.ProcedureYear1 != null) {
+                        procedureYear1 = surgHistory.ProcedureYear1;
+                    }
+                    int? performedByEmpId1 = null;
+                    if (surgHistory.PerformedbyEmpId1 != null) {
+                        if (int.TryParse(surgHistory.PerformedbyEmpId1, out int locum)) {
+                            performedByEmpId1 = locum;
+                        }
+                    }
+                    int? performedByRefProvider1 = null;
+                    if (surgHistory.ComanageRefProviderId1 != null) {
+                        if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
+                            performedByRefProvider1 = locum;
+                        }
+                    }
+                    string comanageFullName1 = "";
+                    if (surgHistory.ComanageFullName1 != null) {
+                        comanageFullName1 = surgHistory.ComanageFullName1;
+                    }
+                    string location2 = "";
+                    if (surgHistory.Location2 != null) {
+                        location2 = surgHistory.Location2;
+                    }
+                    string procedureMonth2 = "";
+                    if (surgHistory.ProcedureMonth2 != null) {
+                        procedureMonth2 = surgHistory.ProcedureMonth2;
+                    }
+                    string procedureDay2 = "";
+                    if (surgHistory.ProcedureDay2 != null) {
+                        procedureDay2 = surgHistory.ProcedureDay2;
+                    }
+                    string procedureYear2 = "";
+                    if (surgHistory.ProcedureYear2 != null) {
+                        procedureYear2 = surgHistory.ProcedureYear2;
+                    }
+                    int? performedByEmpId2 = null;
+                    if (surgHistory.PerformedbyEmpId2 != null) {
+                        if (int.TryParse(surgHistory.PerformedbyEmpId2, out int locum)) {
+                            performedByEmpId2 = locum;
+                        }
+                    }
+                    int? performedbyRefProviderId2 = null;
+                    if (surgHistory.ComanageRefProviderId2 != null) {
+                        if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
+                            performedbyRefProviderId2 = locum;
+                        }
+                    }
+                    string comanageFullName2 = "";
+                    if (surgHistory.ComanageFullName2 != null) {
+                        comanageFullName2 = surgHistory.ComanageFullName2;
+                    }
+                    string notes = "";
+                    if (surgHistory.Notes != null) {
+                        notes = surgHistory.Notes;
+                    }
+                    string insertGUID = Guid.NewGuid().ToString();
 
-                bool doNotReconcile = false;
-                if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes" || surgHistory.DoNotReconcile == "1") {
-                    doNotReconcile = true;
-                }
-                int? ptDeviceId = null;
-                if (surgHistory.PtDeviceId != null) {
-                    if (int.TryParse(surgHistory.PtDeviceId, out int locum)) {
-                        ptDeviceId = locum;
+                    bool doNotReconcile = false;
+                    if (surgHistory.DoNotReconcile != null && surgHistory.DoNotReconcile.ToLower() == "yes" || surgHistory.DoNotReconcile == "1") {
+                        doNotReconcile = true;
                     }
-                }
-                int? comanageRefProviderId1 = null;
-                if (surgHistory.ComanageRefProviderId1 != null) {
-                    if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
-                        comanageRefProviderId1 = locum;
+                    int? ptDeviceId = null;
+                    if (surgHistory.PtDeviceId != null) {
+                        if (int.TryParse(surgHistory.PtDeviceId, out int locum)) {
+                            ptDeviceId = locum;
+                        }
                     }
-                }
-                int? comanageRefProviderId2 = null;
-                if (surgHistory.ComanageRefProviderId2 != null) {
-                    if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
-                        comanageRefProviderId2 = locum;
+                    int? comanageRefProviderId1 = null;
+                    if (surgHistory.ComanageRefProviderId1 != null) {
+                        if (int.TryParse(surgHistory.ComanageRefProviderId1, out int locum)) {
+                            comanageRefProviderId1 = locum;
+                        }
                     }
-                }
-                DateTime? created = null;
-                // no created in source table
-                DateTime? lastModified = null;
-                // no lastModified in source table
-                int? createdEmpId = null;
-                // no createdEmpId in source table
-                int? lastModifiedEmpId = null;
-                // no lastModifiedEmpId in source table
+                    int? comanageRefProviderId2 = null;
+                    if (surgHistory.ComanageRefProviderId2 != null) {
+                        if (int.TryParse(surgHistory.ComanageRefProviderId2, out int locum)) {
+                            comanageRefProviderId2 = locum;
+                        }
+                    }
+                    DateTime? created = null;
+                    // no created in source table
+                    DateTime? lastModified = null;
+                    // no lastModified in source table
+                    int? createdEmpId = null;
+                    // no createdEmpId in source table
+                    int? lastModifiedEmpId = null;
+                    // no lastModifiedEmpId in source table
 
-                var ehrOrig = surgicalHistories.FirstOrDefault(s => s.PtId == ptId && s.VisitId == visitId);
+                    var ehrOrig = surgicalHistories.FirstOrDefault(s => s.PtId == ptId && s.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        VisitDate = dosDate,
-                        ControlId = controlId,
-                        OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
-                        OrigVisitDate = origVisitDate,
-                        Description = TruncateString(description, 255),
-                        TypeId = typeId,
-                        CodeId = codeId,
-                        Code = TruncateString(code, 50),
-                        Modifier = TruncateString(modifier, 50),
-                        CodeIcd10 = TruncateString(codeICD10, 50),
-                        CodeSnomed = TruncateString(codeSnomed, 50),
-                        ComanageEmpId1 = performedByEmpId1,
-                        ComanageRefProviderId1 = comanageRefProviderId1,
-                        ComanageFullName1 = TruncateString(comanageFullName1, 100),
-                        ComanageEmpId2 = performedByEmpId2,
-                        ComanageRefProviderId2 = performedbyRefProviderId2,
-                        ComanageFullName2 = TruncateString(comanageFullName2, 100),
-                        Notes = TruncateString(notes, int.MaxValue),
-                        Created = created,
-                        LastModified = lastModified,
-                        CreatedEmpId = createdEmpId,
-                        LastModifiedEmpId = lastModifiedEmpId,
-                        DoNotReconcile = doNotReconcile, // bit, no truncation needed
-                        PtDeviceId = ptDeviceId,
-                        InsertGuid = TruncateString(insertGUID, 50),
-                        Location1 = TruncateString(location1, 50),
-                        ProcedureMonth1 = TruncateString(procedureMonth1, 10),
-                        ProcedureDay1 = TruncateString(procedureDay1, 10),
-                        ProcedureYear1 = TruncateString(procedureYear1, 10),
-                        PerformedbyEmpId1 = performedByEmpId1,
-                        PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
-                        PerformedbyRefProviderId1 = performedByRefProvider1,
-                        Location2 = TruncateString(location2, 50),
-                        ProcedureMonth2 = TruncateString(procedureMonth2, 10),
-                        ProcedureDay2 = TruncateString(procedureDay2, 10),
-                        ProcedureYear2 = TruncateString(procedureYear2, 10),
-                        PerformedbyEmpId2 = performedByEmpId2,
-                        PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
-                        PerformedbyRefProviderId2 = performedbyRefProviderId2
-                    };
-                    surgicalHistories.Add(newSurgHistory);
+                    if (ehrOrig == null) {
+                        var newSurgHistory = new Brady_s_Conversion_Program.ModelsB.EmrvisitSurgicalHistory {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            VisitDate = dosDate,
+                            ControlId = controlId,
+                            OrigVisitSurgicalHistoryId = origVisitSurgicalHistoryId,
+                            OrigVisitDate = origVisitDate,
+                            Description = TruncateString(description, 255),
+                            TypeId = typeId,
+                            CodeId = codeId,
+                            Code = TruncateString(code, 50),
+                            Modifier = TruncateString(modifier, 50),
+                            CodeIcd10 = TruncateString(codeICD10, 50),
+                            CodeSnomed = TruncateString(codeSnomed, 50),
+                            ComanageEmpId1 = performedByEmpId1,
+                            ComanageRefProviderId1 = comanageRefProviderId1,
+                            ComanageFullName1 = TruncateString(comanageFullName1, 100),
+                            ComanageEmpId2 = performedByEmpId2,
+                            ComanageRefProviderId2 = performedbyRefProviderId2,
+                            ComanageFullName2 = TruncateString(comanageFullName2, 100),
+                            Notes = TruncateString(notes, int.MaxValue),
+                            Created = created,
+                            LastModified = lastModified,
+                            CreatedEmpId = createdEmpId,
+                            LastModifiedEmpId = lastModifiedEmpId,
+                            DoNotReconcile = doNotReconcile, // bit, no truncation needed
+                            PtDeviceId = ptDeviceId,
+                            InsertGuid = TruncateString(insertGUID, 50),
+                            Location1 = TruncateString(location1, 50),
+                            ProcedureMonth1 = TruncateString(procedureMonth1, 10),
+                            ProcedureDay1 = TruncateString(procedureDay1, 10),
+                            ProcedureYear1 = TruncateString(procedureYear1, 10),
+                            PerformedbyEmpId1 = performedByEmpId1,
+                            PerformedbyFullName1 = TruncateString(comanageFullName1, 100),
+                            PerformedbyRefProviderId1 = performedByRefProvider1,
+                            Location2 = TruncateString(location2, 50),
+                            ProcedureMonth2 = TruncateString(procedureMonth2, 10),
+                            ProcedureDay2 = TruncateString(procedureDay2, 10),
+                            ProcedureYear2 = TruncateString(procedureYear2, 10),
+                            PerformedbyEmpId2 = performedByEmpId2,
+                            PerformedbyFullName2 = TruncateString(comanageFullName2, 100),
+                            PerformedbyRefProviderId2 = performedbyRefProviderId2
+                        };
+                        surgicalHistories.Add(newSurgHistory);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
+            eyeMDDbContext.SaveChanges();
+            surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
         }
 
-        public static void TechsConvert(ModelsC.Tech tech, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void TechsConvert(List<ModelsC.Tech> ehrTechs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech> techs) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (tech.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.Dosdate, dateFormats,
-                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var tech in ehrTechs) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (tech.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.Dosdate, dateFormats,
+                                                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (tech.VisitId != null) {
-                    visitId = tech.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for Tech with ID: {tech.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Tech with ID: {tech.Id}");
-                }
-                int ptId = -1;
-                if (tech.PtId !<= 0) {
-                    ptId = tech.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (tech.VisitId != null) {
+                        visitId = tech.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for Tech with ID: {tech.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Tech with ID: {tech.Id}");
+                    }
+                    int ptId = -1;
+                    if (tech.PtId! <= 0) {
+                        ptId = tech.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Tech with ID: {tech.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Tech with ID: {tech.Id}");
+                        ptId = eyeMDPatient.PtId;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
 
 
 
-                int? pmhSmoking = null;
-                if (tech.Pmhsmoking != null) {
-                    if (int.TryParse(tech.Pmhsmoking, out int locum)) {
-                        pmhSmoking = locum;
+                    int? pmhSmoking = null;
+                    if (tech.Pmhsmoking != null) {
+                        if (int.TryParse(tech.Pmhsmoking, out int locum)) {
+                            pmhSmoking = locum;
+                        }
                     }
-                }
-                int? pmhAlcohol = null;
-                if (tech.Pmhalcohol != null) {
-                    if (int.TryParse(tech.Pmhalcohol, out int locum)) {
-                        pmhAlcohol = locum;
+                    int? pmhAlcohol = null;
+                    if (tech.Pmhalcohol != null) {
+                        if (int.TryParse(tech.Pmhalcohol, out int locum)) {
+                            pmhAlcohol = locum;
+                        }
                     }
-                }
-                int? pmhDrugs = null;
-                if (tech.Pmhdrugs != null) {
-                    if (int.TryParse(tech.Pmhdrugs, out int locum)) {
-                        pmhDrugs = locum;
+                    int? pmhDrugs = null;
+                    if (tech.Pmhdrugs != null) {
+                        if (int.TryParse(tech.Pmhdrugs, out int locum)) {
+                            pmhDrugs = locum;
+                        }
                     }
-                }
-                int? wuvaCcType = null;
-                if (tech.Wuvacctype != null) {
-                    if (int.TryParse(tech.Wuvacctype, out int locum)) {
-                        wuvaCcType = locum;
+                    int? wuvaCcType = null;
+                    if (tech.Wuvacctype != null) {
+                        if (int.TryParse(tech.Wuvacctype, out int locum)) {
+                            wuvaCcType = locum;
+                        }
                     }
-                }
-                short? workupMdReviewed = null;
-                if (tech.WorkupMdreviewed != null) {
-                    if (short.TryParse(tech.WorkupMdreviewed, out short locum)) {
-                        workupMdReviewed = locum;
+                    short? workupMdReviewed = null;
+                    if (tech.WorkupMdreviewed != null) {
+                        if (short.TryParse(tech.WorkupMdreviewed, out short locum)) {
+                            workupMdReviewed = locum;
+                        }
                     }
-                }
-                DateTime? workupMdReviewedDate = null;
-                if (tech.WorkupMdreviewedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.WorkupMdreviewedDate, dateFormats,
-                                                                           CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        workupMdReviewedDate = tempDateTime;
+                    DateTime? workupMdReviewedDate = null;
+                    if (tech.WorkupMdreviewedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.WorkupMdreviewedDate, dateFormats,
+                                                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            workupMdReviewedDate = tempDateTime;
+                        }
                     }
-                }
-                int? workupMdReviewedEmpId = null;
-                if (tech.WorkupMdreviewedEmpId != null) {
-                    if (int.TryParse(tech.WorkupMdreviewedEmpId, out int locum)) {
-                        workupMdReviewedEmpId = locum;
+                    int? workupMdReviewedEmpId = null;
+                    if (tech.WorkupMdreviewedEmpId != null) {
+                        if (int.TryParse(tech.WorkupMdreviewedEmpId, out int locum)) {
+                            workupMdReviewedEmpId = locum;
+                        }
                     }
-                }
-                short? wucvfAbute = null;
-                if (tech.Wucvfabute != null) {
-                    if (short.TryParse(tech.Wucvfabute, out short locum)) {
-                        wucvfAbute = locum;
+                    short? wucvfAbute = null;
+                    if (tech.Wucvfabute != null) {
+                        if (short.TryParse(tech.Wucvfabute, out short locum)) {
+                            wucvfAbute = locum;
+                        }
                     }
-                }
-                int? wuDilated = null;
-                if (tech.Wudilated != null) {
-                    if (int.TryParse(tech.Wudilated, out int locum)) {
-                        wuDilated = locum;
+                    int? wuDilated = null;
+                    if (tech.Wudilated != null) {
+                        if (int.TryParse(tech.Wudilated, out int locum)) {
+                            wuDilated = locum;
+                        }
                     }
-                }
-                decimal? vitalsBmiPercentile = null;
-                if (tech.VitalsBmipercentile != null) {
-                    if (decimal.TryParse(tech.VitalsBmipercentile, out decimal locum)) {
-                        vitalsBmiPercentile = locum;
+                    decimal? vitalsBmiPercentile = null;
+                    if (tech.VitalsBmipercentile != null) {
+                        if (decimal.TryParse(tech.VitalsBmipercentile, out decimal locum)) {
+                            vitalsBmiPercentile = locum;
+                        }
                     }
-                }
-                decimal? vitalsHofcPercentile = null;
-                if (tech.VitalsHofcpercentile != null) {
-                    if (decimal.TryParse(tech.VitalsHofcpercentile, out decimal locum)) {
-                        vitalsHofcPercentile = locum;
+                    decimal? vitalsHofcPercentile = null;
+                    if (tech.VitalsHofcpercentile != null) {
+                        if (decimal.TryParse(tech.VitalsHofcpercentile, out decimal locum)) {
+                            vitalsHofcPercentile = locum;
+                        }
                     }
-                }
-                decimal? vitalsInhaled02Concentration = null;
-                if (tech.VitalsInhaled02Concentration != null) {
-                    if (decimal.TryParse(tech.VitalsInhaled02Concentration, out decimal locum)) {
-                        vitalsInhaled02Concentration = locum;
+                    decimal? vitalsInhaled02Concentration = null;
+                    if (tech.VitalsInhaled02Concentration != null) {
+                        if (decimal.TryParse(tech.VitalsInhaled02Concentration, out decimal locum)) {
+                            vitalsInhaled02Concentration = locum;
+                        }
                     }
-                }
-                decimal? vitalsPulseOximetry = null;
-                if (tech.VitalsPulseOximetry != null) {
-                    if (decimal.TryParse(tech.VitalsPulseOximetry, out decimal locum)) {
-                        vitalsPulseOximetry = locum;
+                    decimal? vitalsPulseOximetry = null;
+                    if (tech.VitalsPulseOximetry != null) {
+                        if (decimal.TryParse(tech.VitalsPulseOximetry, out decimal locum)) {
+                            vitalsPulseOximetry = locum;
+                        }
                     }
-                }
-                decimal? vitalsWflPercentile = null;
-                if (tech.VitalsWflpercentile != null) {
-                    if (decimal.TryParse(tech.VitalsWflpercentile, out decimal locum)) {
-                        vitalsWflPercentile = locum;
+                    decimal? vitalsWflPercentile = null;
+                    if (tech.VitalsWflpercentile != null) {
+                        if (decimal.TryParse(tech.VitalsWflpercentile, out decimal locum)) {
+                            vitalsWflPercentile = locum;
+                        }
                     }
-                }
-                short? historyReviewed = null;
-                if (tech.HistoryMdreviewed != null) {
-                    if (short.TryParse(tech.HistoryMdreviewed, out short locum)) {
-                        historyReviewed = locum;
+                    short? historyReviewed = null;
+                    if (tech.HistoryMdreviewed != null) {
+                        if (short.TryParse(tech.HistoryMdreviewed, out short locum)) {
+                            historyReviewed = locum;
+                        }
                     }
-                }
-                DateTime? historyMdReviewedDate = null;
-                if (tech.HistoryMdreviewedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.HistoryMdreviewedDate, dateFormats,
+                    DateTime? historyMdReviewedDate = null;
+                    if (tech.HistoryMdreviewedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.HistoryMdreviewedDate, dateFormats,
+                                                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            historyMdReviewedDate = tempDateTime;
+                        }
+                    }
+                    int? historyMdReviewedEmpId = null;
+                    if (tech.HistoryMdreviewedEmpId != null) {
+                        if (int.TryParse(tech.HistoryMdreviewedEmpId, out int locum)) {
+                            historyMdReviewedEmpId = locum;
+                        }
+                    }
+                    DateTime? created = null;
+                    if (tech.Created != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.Created, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            created = tempDateTime;
+                        }
+                    }
+                    int? createdEmpId = null;
+                    if (tech.CreatedEmpId != null) {
+                        if (int.TryParse(tech.CreatedEmpId, out int locum)) {
+                            createdEmpId = locum;
+                        }
+                    }
+                    DateTime? wuDilatedTime = null;
+                    if (tech.WudilatedTime != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.WudilatedTime, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            wuDilatedTime = tempDateTime;
+                        }
+                    }
+                    short? wuDilatedTimeZone = null;
+                    if (tech.WudilatedTimeZone != null) {
+                        if (short.TryParse(tech.WudilatedTimeZone, out short locum)) {
+                            wuDilatedTimeZone = locum;
+                        }
+                    }
+                    bool intakeReconciled = false;
+                    if (tech.IntakeReconciled != null && tech.IntakeReconciled.ToLower() == "yes" || tech.IntakeReconciled == "1") {
+                        intakeReconciled = true;
+                    }
+                    DateTime? lastModified = null;
+                    if (tech.LasstModified != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech.LasstModified, dateFormats,
                                                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        historyMdReviewedDate = tempDateTime;
+                            lastModified = tempDateTime;
+                        }
                     }
-                }
-                int? historyMdReviewedEmpId = null;
-                if (tech.HistoryMdreviewedEmpId != null) {
-                    if (int.TryParse(tech.HistoryMdreviewedEmpId, out int locum)) {
-                        historyMdReviewedEmpId = locum;
+                    int? lastModifiedEmpId = null;
+                    if (tech.LastModifiedEmpId != null) {
+                        if (int.TryParse(tech.LastModifiedEmpId, out int locum)) {
+                            lastModifiedEmpId = locum;
+                        }
                     }
-                }
-                DateTime? created = null;
-                if (tech.Created != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.Created, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        created = tempDateTime;
+                    short? medRecNotPerformed = null;
+                    if (tech.MedRecNotPerformed != null) {
+                        if (short.TryParse(tech.MedRecNotPerformed, out short locum)) {
+                            medRecNotPerformed = locum;
+                        }
                     }
-                }
-                int? createdEmpId = null;
-                if (tech.CreatedEmpId != null) {
-                    if (int.TryParse(tech.CreatedEmpId, out int locum)) {
-                        createdEmpId = locum;
+                    int? wuMood = null;
+                    if (tech.Wumood != null) {
+                        if (int.TryParse(tech.Wumood, out int locum)) {
+                            wuMood = locum;
+                        }
                     }
-                }
-                DateTime? wuDilatedTime = null;
-                if (tech.WudilatedTime != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.WudilatedTime, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        wuDilatedTime = tempDateTime;
+                    int? wuextPan = null;
+                    if (tech.Wuextpan != null) {
+                        if (int.TryParse(tech.Wuextpan, out int locum)) {
+                            wuextPan = locum;
+                        }
                     }
-                }
-                short? wuDilatedTimeZone = null;
-                if (tech.WudilatedTimeZone != null) {
-                    if (short.TryParse(tech.WudilatedTimeZone, out short locum)) {
-                        wuDilatedTimeZone = locum;
+                    short? wuiopAbute = null;
+                    if (tech.Wuiopabute != null) {
+                        if (short.TryParse(tech.Wuiopabute, out short locum)) {
+                            wuiopAbute = locum;
+                        }
                     }
-                }
-                bool intakeReconciled = false;
-                if (tech.IntakeReconciled != null && tech.IntakeReconciled.ToLower() == "yes" || tech.IntakeReconciled == "1") {
-                    intakeReconciled = true;
-                }
-                DateTime? lastModified = null;
-                if (tech.LasstModified != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech.LasstModified, dateFormats,
-                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        lastModified = tempDateTime;
+                    int? wuOrientPerson = null;
+                    if (tech.WuorientPerson != null) {
+                        if (int.TryParse(tech.WuorientPerson, out int locum)) {
+                            wuOrientPerson = locum;
+                        }
                     }
-                }
-                int? lastModifiedEmpId = null;
-                if (tech.LastModifiedEmpId != null) {
-                    if (int.TryParse(tech.LastModifiedEmpId, out int locum)) {
-                        lastModifiedEmpId = locum;
+                    int? wuOrientPlace = null;
+                    if (tech.WuorientPlace != null) {
+                        if (int.TryParse(tech.WuorientPlace, out int locum)) {
+                            wuOrientPlace = locum;
+                        }
                     }
-                }
-                short? medRecNotPerformed = null;
-                if (tech.MedRecNotPerformed != null) {
-                    if (short.TryParse(tech.MedRecNotPerformed, out short locum)) {
-                        medRecNotPerformed = locum;
+                    int? wuOrientTime = null;
+                    if (tech.WuorientTime != null) {
+                        if (int.TryParse(tech.WuorientTime, out int locum)) {
+                            wuOrientTime = locum;
+                        }
                     }
-                }
-                int? wuMood = null;
-                if (tech.Wumood != null) {
-                    if (int.TryParse(tech.Wumood, out int locum)) {
-                        wuMood = locum;
+                    int? wuOrientSituation = null;
+                    if (tech.WuorientSituation != null) {
+                        if (int.TryParse(tech.WuorientSituation, out int locum)) {
+                            wuOrientSituation = locum;
+                        }
                     }
-                }
-                int? wuextPan = null;
-                if (tech.Wuextpan != null) {
-                    if (int.TryParse(tech.Wuextpan, out int locum)) {
-                        wuextPan = locum;
-                    }
-                }
-                short? wuiopAbute = null;
-                if (tech.Wuiopabute != null) {
-                    if (short.TryParse(tech.Wuiopabute, out short locum)) {
-                        wuiopAbute = locum;
-                    }
-                }
-                int? wuOrientPerson = null;
-                if (tech.WuorientPerson != null) {
-                    if (int.TryParse(tech.WuorientPerson, out int locum)) {
-                        wuOrientPerson = locum;
-                    }
-                }
-                int? wuOrientPlace = null;
-                if (tech.WuorientPlace != null) {
-                    if (int.TryParse(tech.WuorientPlace, out int locum)) {
-                        wuOrientPlace = locum;
-                    }
-                }
-                int? wuOrientTime = null;
-                if (tech.WuorientTime != null) {
-                    if (int.TryParse(tech.WuorientTime, out int locum)) {
-                        wuOrientTime = locum;
-                    }
-                }
-                int? wuOrientSituation = null;
-                if (tech.WuorientSituation != null) {
-                    if (int.TryParse(tech.WuorientSituation, out int locum)) {
-                        wuOrientSituation = locum;
-                    }
-                }
 
-                var ehrOrig = techs.FirstOrDefault(t => t.PtId == ptId && t.VisitId == visitId);
+                    var ehrOrig = techs.FirstOrDefault(t => t.PtId == ptId && t.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        Pmhsmoking = pmhSmoking,
-                        Pmhalcohol = pmhAlcohol,
-                        Pmhdrugs = pmhDrugs,
-                        WuvaCcType = wuvaCcType,
-                        Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
-                        PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
-                        PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
-                        PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
-                        PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
-                        PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
-                        PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
-                        PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
-                        PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
-                        HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
-                        Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
-                        Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
-                        Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
-                        Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
-                        Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
-                        Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
-                        HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
-                        HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
-                        Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
-                        WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
-                        WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
-                        WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
-                        WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
-                        WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
-                        WuvaScOd = TruncateString(tech.Wuvascod, 50),
-                        WuvaScOs = TruncateString(tech.Wuvascos, 50),
-                        WuvaScOu = TruncateString(tech.Wuvascou, 50),
-                        WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
-                        WunCcOd = TruncateString(tech.Wunccod, 50),
-                        WunCcOs = TruncateString(tech.Wunccos, 50),
-                        WunCcOu = TruncateString(tech.Wunccou, 50),
-                        Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
-                        WunScOd = TruncateString(tech.Wunscod, 50),
-                        WunScOs = TruncateString(tech.Wunscos, 50),
-                        WunScOu = TruncateString(tech.Wunscou, 50),
-                        WudomEye = TruncateString(tech.WudomEye, 50),
-                        WutcvfOd = TruncateString(tech.Wutcvfod, 50),
-                        WutcvfOs = TruncateString(tech.Wutcvfos, 50),
-                        WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
-                        WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
-                        WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
-                        WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
-                        WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
-                        WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
-                        WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
-                        WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
-                        WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
-                        WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
-                        WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
-                        WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
-                        WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
-                        WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
-                        WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
-                        WorkupMdreviewedDate = workupMdReviewedDate,
-                        WorkupMdreviewedEmpId = workupMdReviewedEmpId,
-                        WuamslerOd = TruncateString(tech.WuamslerOd, 255),
-                        WuamslerOs = TruncateString(tech.WuamslerOs, 255),
-                        WucvfAbute = wucvfAbute, // smallint, no truncation needed
-                        Wudilated = wuDilated, // smallint, no truncation needed
-                        WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
-                        WudilatedEye = TruncateString(tech.WudilatedEye, 50),
-                        WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
-                        VitalsTemp = TruncateString(tech.VitalsTemp, 50),
-                        VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
-                        VitalsPulse = TruncateString(tech.VitalsPulse, 50),
-                        VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
-                        VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
-                        VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
-                        VitalsWeight = TruncateString(tech.VitalsWeight, 50),
-                        VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
-                        VitalsHeight = TruncateString(tech.VitalsHeight, 50),
-                        VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
-                        VitalsBmi = TruncateString(tech.VitalsBmi, 50),
-                        VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
-                        VitalsBgl = TruncateString(tech.VitalsBgl, 50),
-                        VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
-                        VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
-                        VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
-                        VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
-                        VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
-                        HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
-                        HistoryMdreviewedDate = historyMdReviewedDate,
-                        HistoryMdreviewedEmpId = historyMdReviewedEmpId,
-                        Created = created,
-                        CreatedEmpId = createdEmpId,
-                        WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
-                        WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
-                        WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
-                        WudilatedTime = wuDilatedTime,
-                        WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
-                        WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
-                        WueomType = TruncateString(tech.Wueomtype, 255),
-                        Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
-                        Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
-                        PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
-                        WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
-                        WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
-                        WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
-                        WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
-                        WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
-                        WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
-                        WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
-                        WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
-                        HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
-                        IntakeReconciled = intakeReconciled, // bit, no truncation needed
-                        LastModified = lastModified,
-                        LastModifiedEmpId = lastModifiedEmpId,
-                        MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
-                        UpsizeTs = null,
-                        Wumood = wuMood, // smallint, no truncation needed
-                        Wuextpan = wuextPan, // int, no truncation needed
-                        WuiopAbute = wuiopAbute, // smallint, no truncation needed
-                        WuorientPerson = wuOrientPerson, // int, no truncation needed
-                        WuorientPlace = wuOrientPlace, // int, no truncation needed
-                        WuorientTime = wuOrientTime, // int, no truncation needed
-                        WuorientSituation = wuOrientSituation // int, no truncation needed
-                    };
-                    techs.Add(newTech);
+                    if (ehrOrig == null) {
+                        var newTech = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            Pmhsmoking = pmhSmoking,
+                            Pmhalcohol = pmhAlcohol,
+                            Pmhdrugs = pmhDrugs,
+                            WuvaCcType = wuvaCcType,
+                            Pmhfhother = TruncateString(tech.Pmhfhother, int.MaxValue),
+                            PmhsmokeHowMuch = TruncateString(tech.PmhsmokeHowMuch, 50),
+                            PmhsmokeHowLong = TruncateString(tech.PmhsmokeHowLong, 50),
+                            PmhsmokeWhenQuit = TruncateString(tech.PmhsmokeWhenQuit, 50),
+                            PmhalcoholHowMuch = TruncateString(tech.PmhalcoholHowMuch, 50),
+                            PmhdrugsNames = TruncateString(tech.PmhdrugsNames, int.MaxValue),
+                            PmhdrugsHowMuch = TruncateString(tech.PmhdrugsHowMuch, 50),
+                            PmhdrugsHowLong = TruncateString(tech.PmhdrugsHowLong, 50),
+                            PmhdrugsWhenQuit = TruncateString(tech.PmhdrugsWhenQuit, 50),
+                            HpichiefComplaint = TruncateString(tech.HpichiefComplaint, 255),
+                            Hpilocation1 = TruncateString(tech.Hpilocation1, 255),
+                            Hpiquality1 = TruncateString(tech.Hpiquality1, 255),
+                            Hpiseverity1 = TruncateString(tech.Hpiseverity1, 255),
+                            Hpitiming1 = TruncateString(tech.Hpitiming1, 255),
+                            Hpiduration1 = TruncateString(tech.Hpiduration1, 255),
+                            Hpicontext1 = TruncateString(tech.Hpicontext1, 255),
+                            HpimodFactors1 = TruncateString(tech.HpimodFactors1, 255),
+                            HpiassoSignsSymp1 = TruncateString(tech.HpiassoSignsSymp1, 255),
+                            Hpi1letterText = TruncateString(tech.Hpi1letterText, int.MaxValue),
+                            WuvaCcOd = TruncateString(tech.Wuvaccod, 50),
+                            WuvaCcOs = TruncateString(tech.Wuvaccos, 50),
+                            WuvaCcOu = TruncateString(tech.Wuvaccou, 50),
+                            WuvaPhOd = TruncateString(tech.Wuvaphod, 50),
+                            WuvaPhOs = TruncateString(tech.Wuvaphos, 50),
+                            WuvaScOd = TruncateString(tech.Wuvascod, 50),
+                            WuvaScOs = TruncateString(tech.Wuvascos, 50),
+                            WuvaScOu = TruncateString(tech.Wuvascou, 50),
+                            WuvaTestUsed = TruncateString(tech.WuvatestUsed, 50),
+                            WunCcOd = TruncateString(tech.Wunccod, 50),
+                            WunCcOs = TruncateString(tech.Wunccos, 50),
+                            WunCcOu = TruncateString(tech.Wunccou, 50),
+                            Wunotes = TruncateString(tech.Wunotes, int.MaxValue),
+                            WunScOd = TruncateString(tech.Wunscod, 50),
+                            WunScOs = TruncateString(tech.Wunscos, 50),
+                            WunScOu = TruncateString(tech.Wunscou, 50),
+                            WudomEye = TruncateString(tech.WudomEye, 50),
+                            WutcvfOd = TruncateString(tech.Wutcvfod, 50),
+                            WutcvfOs = TruncateString(tech.Wutcvfos, 50),
+                            WucvfdiagOd = TruncateString(tech.WucvfdiagOd, int.MaxValue),
+                            WucvfdiagOs = TruncateString(tech.WucvfdiagOs, int.MaxValue),
+                            WueomSuTmOd = TruncateString(tech.WueomsuTmOd, 50),
+                            WueomSuTmOs = TruncateString(tech.WueomsuTmOs, 50),
+                            WueomMedialOd = TruncateString(tech.WueommedialOd, 50),
+                            WueomMedialOs = TruncateString(tech.WueommedialOs, 50),
+                            WueomInNaOs = TruncateString(tech.WueominNaOs, 50),
+                            WueomInNaOd = TruncateString(tech.WueominNaOd, 50),
+                            WueomInTmOd = TruncateString(tech.WueominTmOd, 50),
+                            WueomInTmOs = TruncateString(tech.WueominTmOs, 50),
+                            WueomSuNaOd = TruncateString(tech.WueomsuNaOd, 50),
+                            WueomSuNaOs = TruncateString(tech.WueomsuNaOs, 50),
+                            WupupilNearOd = TruncateString(tech.WupupilNearOd, 50),
+                            WupupilNearOs = TruncateString(tech.WupupilNearOs, 50),
+                            WorkupMdreviewed = workupMdReviewed, // smallint, no truncation needed
+                            WorkupMdreviewedDate = workupMdReviewedDate,
+                            WorkupMdreviewedEmpId = workupMdReviewedEmpId,
+                            WuamslerOd = TruncateString(tech.WuamslerOd, 255),
+                            WuamslerOs = TruncateString(tech.WuamslerOs, 255),
+                            WucvfAbute = wucvfAbute, // smallint, no truncation needed
+                            Wudilated = wuDilated, // smallint, no truncation needed
+                            WudilatedAgent = TruncateString(tech.WudilatedAgent, 255),
+                            WudilatedEye = TruncateString(tech.WudilatedEye, 50),
+                            WudilatedFrequency = TruncateString(tech.WudilatedFrequency, 255),
+                            VitalsTemp = TruncateString(tech.VitalsTemp, 50),
+                            VitalsTempUnits = TruncateString(tech.VitalsTempUnits, 50),
+                            VitalsPulse = TruncateString(tech.VitalsPulse, 50),
+                            VitalsBpsys = TruncateString(tech.VitalsBpsys, 50),
+                            VitalsBpdia = TruncateString(tech.VitalsBpdia, 50),
+                            VitalsRespRate = TruncateString(tech.VitalsRespRate, 255),
+                            VitalsWeight = TruncateString(tech.VitalsWeight, 50),
+                            VitalsWeightUnits = TruncateString(tech.VitalsWeightUnits, 50),
+                            VitalsHeight = TruncateString(tech.VitalsHeight, 50),
+                            VitalsHeightUnits = TruncateString(tech.VitalsHeightUnits, 50),
+                            VitalsBmi = TruncateString(tech.VitalsBmi, 50),
+                            VitalsBmipercentile = vitalsBmiPercentile, // decimal(9, 8), no truncation needed
+                            VitalsBgl = TruncateString(tech.VitalsBgl, 50),
+                            VitalsBglunits = TruncateString(tech.VitalsBglunits, 50),
+                            VitalsHofcpercentile = vitalsHofcPercentile, // decimal(9, 8), no truncation needed
+                            VitalsInhaled02Concentration = vitalsInhaled02Concentration, // decimal(9, 8), no truncation needed
+                            VitalsPulseOximetry = vitalsPulseOximetry, // decimal(9, 8), no truncation needed
+                            VitalsWflpercentile = vitalsWflPercentile, // decimal(9, 8), no truncation needed
+                            HistoryMdreviewed = historyReviewed, // smallint, no truncation needed
+                            HistoryMdreviewedDate = historyMdReviewedDate,
+                            HistoryMdreviewedEmpId = historyMdReviewedEmpId,
+                            Created = created,
+                            CreatedEmpId = createdEmpId,
+                            WupupilShapeOs = TruncateString(tech.WupupilShapeOs, 50),
+                            WupupilShapeOd = TruncateString(tech.WupupilShapeOd, 50),
+                            WudilatedTimeZone = wuDilatedTimeZone, // smallint, no truncation needed
+                            WudilatedTime = wuDilatedTime,
+                            WueomTemporalOd = TruncateString(tech.WueomtemporalOd, 50),
+                            WueomTemporalOs = TruncateString(tech.WueomtemporalOs, 50),
+                            WueomType = TruncateString(tech.Wueomtype, 255),
+                            Wuextlids = TruncateString(tech.Wuextlids, int.MaxValue),
+                            Wuextorbits = TruncateString(tech.Wuextorbits, int.MaxValue),
+                            PmhsmokingStatus = TruncateString(tech.PmhsmokingStatus, 100),
+                            WupupilReactionOs = TruncateString(tech.WupupilReactionOs, 50),
+                            WupupilReactionOd = TruncateString(tech.WupupilReactionOd, 50),
+                            WupupilLightSizeOs = TruncateString(tech.WupupilLightSizeOs, 50),
+                            WupupilLightSizeOd = TruncateString(tech.WupupilLightSizeOd, 50),
+                            WupupilApdOd = TruncateString(tech.WupupilApdod, 50),
+                            WupupilApdOs = TruncateString(tech.WupupilApdos, 50),
+                            WupupilDarkSizeOd = TruncateString(tech.WupupilDarkSizeOd, 50),
+                            WupupilDarkSizeOs = TruncateString(tech.WupupilDarkSizeOs, 50),
+                            HpiadditionalComments1 = TruncateString(tech.HpiadditionalComments1, int.MaxValue),
+                            IntakeReconciled = intakeReconciled, // bit, no truncation needed
+                            LastModified = lastModified,
+                            LastModifiedEmpId = lastModifiedEmpId,
+                            MedRecNotPerformed = medRecNotPerformed, // smallint, no truncation needed
+                            UpsizeTs = null,
+                            Wumood = wuMood, // smallint, no truncation needed
+                            Wuextpan = wuextPan, // int, no truncation needed
+                            WuiopAbute = wuiopAbute, // smallint, no truncation needed
+                            WuorientPerson = wuOrientPerson, // int, no truncation needed
+                            WuorientPlace = wuOrientPlace, // int, no truncation needed
+                            WuorientTime = wuOrientTime, // int, no truncation needed
+                            WuorientSituation = wuOrientSituation // int, no truncation needed
+                        };
+                        techs.Add(newTech);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
+            eyeMDDbContext.SaveChanges();
+            techs = eyeMDDbContext.EmrvisitTeches.ToList();
         }
 
-        public static void Tech2sConvert(ModelsC.Tech2 tech2, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void Tech2sConvert(List<ModelsC.Tech2> ehrTech2s, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech2> tech2s) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                DateTime? dosDate = null;
-                if (tech2.Dosdate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(tech2.Dosdate, dateFormats,
-                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        dosDate = tempDateTime;
+            foreach (var tech2 in ehrTech2s) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    DateTime? dosDate = null;
+                    if (tech2.Dosdate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(tech2.Dosdate, dateFormats,
+                                                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            dosDate = tempDateTime;
+                        }
                     }
-                }
-                int? visitId = null;
-                if (tech2.VisitId != null) {
-                    visitId = tech2.VisitId;
-                }
-                var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
-                if (convVisit == null) {
-                    logger.Log($"EHR: EHR Visit not found for Tech2 with ID: {tech2.Id}");
-                    return;
-                }
-                var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
-                if (eyeMDVisit == null) {
-                    logger.Log($"EHR: EHR VisitID not found for Tech2 with ID: {tech2.Id}");
-                }
-                int ptId = -1;
-                if (tech2.PtId !<= 0) {
-                    ptId = tech2.PtId;
-                }
-                var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
-                if (eyeMDPatient == null) {
-                    if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
-                        ptId = (int)eyeMDVisit.PtId;
+                    int? visitId = null;
+                    if (tech2.VisitId != null) {
+                        visitId = tech2.VisitId;
+                    }
+                    var convVisit = ehrVisits.FirstOrDefault(ev => ev.Id == visitId);
+                    if (convVisit == null) {
+                        logger.Log($"EHR: EHR Visit not found for Tech2 with ID: {tech2.Id}");
+                        return;
+                    }
+                    var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == convVisit.Id && v.Dosdate == dosDate);
+                    if (eyeMDVisit == null) {
+                        logger.Log($"EHR: EHR VisitID not found for Tech2 with ID: {tech2.Id}");
+                    }
+                    int ptId = -1;
+                    if (tech2.PtId! <= 0) {
+                        ptId = tech2.PtId;
+                    }
+                    var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
+                    if (eyeMDPatient == null) {
+                        if (eyeMDVisit != null && eyeMDVisit.PtId != null) {
+                            ptId = (int)eyeMDVisit.PtId;
+                        }
+                        else {
+                            logger.Log($"EHR: EHR PatientID not found for Tech2 with ID: {tech2.Id}");
+                        }
                     }
                     else {
-                        logger.Log($"EHR: EHR PatientID not found for Tech2 with ID: {tech2.Id}");
+                        ptId = eyeMDPatient.PtId;
                     }
-                }
-                else {
-                    ptId = eyeMDPatient.PtId;
-                }
 
-                float? wu2kmaxOd = null;
-                if (tech2.Wu2kmaxOd != null) {
-                    if (float.TryParse(tech2.Wu2kmaxOd, out float locum)) {
-                        wu2kmaxOd = locum;
+                    float? wu2kmaxOd = null;
+                    if (tech2.Wu2kmaxOd != null) {
+                        if (float.TryParse(tech2.Wu2kmaxOd, out float locum)) {
+                            wu2kmaxOd = locum;
+                        }
                     }
-                }
-                float? wu2kmaxOs = null;
-                if (tech2.Wu2kmaxOs != null) {
-                    if (float.TryParse(tech2.Wu2kmaxOs, out float locum)) {
-                        wu2kmaxOs = locum;
+                    float? wu2kmaxOs = null;
+                    if (tech2.Wu2kmaxOs != null) {
+                        if (float.TryParse(tech2.Wu2kmaxOs, out float locum)) {
+                            wu2kmaxOs = locum;
+                        }
                     }
-                }
-                float? wu2kminOd = null;
-                if (tech2.Wu2kminOd != null) {
-                    if (float.TryParse(tech2.Wu2kminOd, out float locum)) {
-                        wu2kminOd = locum;
+                    float? wu2kminOd = null;
+                    if (tech2.Wu2kminOd != null) {
+                        if (float.TryParse(tech2.Wu2kminOd, out float locum)) {
+                            wu2kminOd = locum;
+                        }
                     }
-                }
-                float? wu2kminOs = null;
-                if (tech2.Wu2kminOs != null) {
-                    if (float.TryParse(tech2.Wu2kminOs, out float locum)) {
-                        wu2kminOs = locum;
+                    float? wu2kminOs = null;
+                    if (tech2.Wu2kminOs != null) {
+                        if (float.TryParse(tech2.Wu2kminOs, out float locum)) {
+                            wu2kminOs = locum;
+                        }
                     }
-                }
-                float? wu2kminDegOd = null;
-                if (tech2.Wu2kminDegOd != null) {
-                    if (float.TryParse(tech2.Wu2kminDegOd, out float locum)) {
-                        wu2kminDegOd = locum;
+                    float? wu2kminDegOd = null;
+                    if (tech2.Wu2kminDegOd != null) {
+                        if (float.TryParse(tech2.Wu2kminDegOd, out float locum)) {
+                            wu2kminDegOd = locum;
+                        }
                     }
-                }
-                float? wu2kminDegOs = null;
-                if (tech2.Wu2kminDegOs != null) {
-                    if (float.TryParse(tech2.Wu2kminDegOs, out float locum)) {
-                        wu2kminDegOs = locum;
+                    float? wu2kminDegOs = null;
+                    if (tech2.Wu2kminDegOs != null) {
+                        if (float.TryParse(tech2.Wu2kminDegOs, out float locum)) {
+                            wu2kminDegOs = locum;
+                        }
                     }
-                }
-                float? wu2kmaxDegOd = null;
-                if (tech2.Wu2kmaxDegOd != null) {
-                    if (float.TryParse(tech2.Wu2kmaxDegOd, out float locum)) {
-                        wu2kmaxDegOd = locum;
+                    float? wu2kmaxDegOd = null;
+                    if (tech2.Wu2kmaxDegOd != null) {
+                        if (float.TryParse(tech2.Wu2kmaxDegOd, out float locum)) {
+                            wu2kmaxDegOd = locum;
+                        }
                     }
-                }
-                float? wu2kmaxDegOs = null;
-                if (tech2.Wu2kmaxDegOs != null) {
-                    if (float.TryParse(tech2.Wu2kmaxDegOs, out float locum)) {
-                        wu2kmaxDegOs = locum;
+                    float? wu2kmaxDegOs = null;
+                    if (tech2.Wu2kmaxDegOs != null) {
+                        if (float.TryParse(tech2.Wu2kmaxDegOs, out float locum)) {
+                            wu2kmaxDegOs = locum;
+                        }
                     }
-                }
-                short? wu2TearOsmolarityCollectionDifficult = null;
-                if (tech2.Wu2tearOsmolarityCollectionDifficult != null) {
-                    if (short.TryParse(tech2.Wu2tearOsmolarityCollectionDifficult, out short locum)) {
-                        wu2TearOsmolarityCollectionDifficult = locum;
+                    short? wu2TearOsmolarityCollectionDifficult = null;
+                    if (tech2.Wu2tearOsmolarityCollectionDifficult != null) {
+                        if (short.TryParse(tech2.Wu2tearOsmolarityCollectionDifficult, out short locum)) {
+                            wu2TearOsmolarityCollectionDifficult = locum;
+                        }
                     }
-                }
-                byte[]? upsizets = null;
-                // no upsizets in source table
+                    byte[]? upsizets = null;
+                    // no upsizets in source table
 
-                var ehrOrig = tech2s.FirstOrDefault(t2 => t2.PtId == ptId && t2.VisitId == visitId);
+                    var ehrOrig = tech2s.FirstOrDefault(t2 => t2.PtId == ptId && t2.VisitId == visitId);
 
-                if (ehrOrig == null) {
-                    var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
-                        PtId = ptId,
-                        VisitId = visitId,
-                        Dosdate = dosDate,
-                        Wu2vaOrxOd = tech2.Wu2vaorxOd,
-                        Wu2vaOrxOs = tech2.Wu2vaorxOs,
-                        Wu2kmaxOd = wu2kmaxOd,
-                        Wu2kmaxOs = wu2kmaxOs,
-                        Wu2kminOd = wu2kminOd,
-                        Wu2kminOs = wu2kminOs,
-                        Wu2kminDegOd = wu2kminDegOd,
-                        Wu2kminDegOs = wu2kminDegOs,
-                        Wu2kmaxDegOd = wu2kmaxDegOd,
-                        Wu2kmaxDegOs = wu2kmaxDegOs,
-                        UpsizeTs = upsizets,
-                        Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
-                        Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
-                        Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
-                        Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
-                        Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
-                        Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
-                        Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
-                        Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
-                        Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
-                        Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
-                        Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
-                        Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
-                        Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
-                        Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
-                        Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
-                        Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
-                        Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
-                        Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
-                        Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
-                        Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
-                        Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
-                        Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
-                        Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
-                        Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
-                        Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
-                        Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
-                        Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
-                        Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
-                        Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
-                        Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
-                        Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
-                        Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
-                        Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
-                        Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
-                        Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
-                        Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
-                        Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
-                        Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
-                        Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
-                        Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
-                        Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
-                        Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
-                        Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
-                        Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
-                        Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
-                        Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
-                        Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
-                        Wu2GlareHighOd = tech2.Wu2glareHighOd,
-                        Wu2GlareHighOs = tech2.Wu2glareHighOs,
-                        Wu2GlareLowOd = tech2.Wu2glareLowOd,
-                        Wu2GlareLowOs = tech2.Wu2glareLowOs,
-                        Wu2GlareMedOd = tech2.Wu2glareMedOd,
-                        Wu2GlareMedOs = tech2.Wu2glareMedOs,
-                        Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
-                        Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
-                        Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
-                        Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
-                        Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
-                        Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
-                        Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
-                        Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
-                        Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
-                        Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
-                        Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
-                        Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
-                    };
-                    tech2s.Add(newTech2);
+                    if (ehrOrig == null) {
+                        var newTech2 = new Brady_s_Conversion_Program.ModelsB.EmrvisitTech2 {
+                            PtId = ptId,
+                            VisitId = visitId,
+                            Dosdate = dosDate,
+                            Wu2vaOrxOd = tech2.Wu2vaorxOd,
+                            Wu2vaOrxOs = tech2.Wu2vaorxOs,
+                            Wu2kmaxOd = wu2kmaxOd,
+                            Wu2kmaxOs = wu2kmaxOs,
+                            Wu2kminOd = wu2kminOd,
+                            Wu2kminOs = wu2kminOs,
+                            Wu2kminDegOd = wu2kminDegOd,
+                            Wu2kminDegOs = wu2kminDegOs,
+                            Wu2kmaxDegOd = wu2kmaxDegOd,
+                            Wu2kmaxDegOs = wu2kmaxDegOs,
+                            UpsizeTs = upsizets,
+                            Wu2tearOsmolarityOd = tech2.Wu2tearOsmolarityOd,
+                            Wu2tearOsmolarityOs = tech2.Wu2tearOsmolarityOs,
+                            Wu2tearOsmolarityCollectionDifficult = wu2TearOsmolarityCollectionDifficult,
+                            Wu2custom1Data = TruncateString(tech2.Wu2custom1Data, int.MaxValue),
+                            Wu2custom1Desc = TruncateString(tech2.Wu2custom1Desc, 50),
+                            Wu2custom2Data = TruncateString(tech2.Wu2custom2Data, int.MaxValue),
+                            Wu2custom2Desc = TruncateString(tech2.Wu2custom2Desc, 50),
+                            Wu2custom3Data = TruncateString(tech2.Wu2custom3Data, int.MaxValue),
+                            Wu2custom3Desc = TruncateString(tech2.Wu2custom3Desc, 50),
+                            Wu2custom4Data = TruncateString(tech2.Wu2custom4Data, int.MaxValue),
+                            Wu2custom4Desc = TruncateString(tech2.Wu2custom4Desc, 50),
+                            Wu2custom5Data = TruncateString(tech2.Wu2custom5Data, int.MaxValue),
+                            Wu2custom5Desc = TruncateString(tech2.Wu2custom5Desc, 50),
+                            Wu2custom6Data = TruncateString(tech2.Wu2custom6Data, int.MaxValue),
+                            Wu2custom6Desc = TruncateString(tech2.Wu2custom6Desc, 50),
+                            Wu2custom7Data = TruncateString(tech2.Wu2custom7Data, int.MaxValue),
+                            Wu2custom7Desc = TruncateString(tech2.Wu2custom7Desc, 50),
+                            Wu2custom8Data = TruncateString(tech2.Wu2custom8Data, int.MaxValue),
+                            Wu2custom8Desc = TruncateString(tech2.Wu2custom8Desc, 50),
+                            Wu2custom9Data = TruncateString(tech2.Wu2custom9Data, int.MaxValue),
+                            Wu2custom9Desc = TruncateString(tech2.Wu2custom9Desc, 50),
+                            Wu2custom10Data = TruncateString(tech2.Wu2custom10Data, int.MaxValue),
+                            Wu2custom10Desc = TruncateString(tech2.Wu2custom10Desc, 50),
+                            Wu2custom11Data = TruncateString(tech2.Wu2custom11Data, int.MaxValue),
+                            Wu2custom11Desc = TruncateString(tech2.Wu2custom11Desc, 50),
+                            Wu2custom12Data = TruncateString(tech2.Wu2custom12Data, int.MaxValue),
+                            Wu2custom12Desc = TruncateString(tech2.Wu2custom12Desc, 50),
+                            Wu2custom13Data = TruncateString(tech2.Wu2custom13Data, int.MaxValue),
+                            Wu2custom13Desc = TruncateString(tech2.Wu2custom13Desc, 50),
+                            Wu2custom14Data = TruncateString(tech2.Wu2custom14Data, int.MaxValue),
+                            Wu2custom14Desc = TruncateString(tech2.Wu2custom14Desc, 50),
+                            Wu2custom15Data = TruncateString(tech2.Wu2custom15Data, int.MaxValue),
+                            Wu2custom15Desc = TruncateString(tech2.Wu2custom15Desc, 50),
+                            Wu2custom16Data = TruncateString(tech2.Wu2custom16Data, int.MaxValue),
+                            Wu2custom16Desc = TruncateString(tech2.Wu2custom16Desc, 50),
+                            Wu2custom17Data = TruncateString(tech2.Wu2custom17Data, int.MaxValue),
+                            Wu2custom17Desc = TruncateString(tech2.Wu2custom17Desc, 50),
+                            Wu2custom18Data = TruncateString(tech2.Wu2custom18Data, int.MaxValue),
+                            Wu2custom18Desc = TruncateString(tech2.Wu2custom18Desc, 50),
+                            Wu2custom19Data = TruncateString(tech2.Wu2custom19Data, int.MaxValue),
+                            Wu2custom19Desc = TruncateString(tech2.Wu2custom19Desc, 50),
+                            Wu2custom20Data = TruncateString(tech2.Wu2custom20Data, int.MaxValue),
+                            Wu2custom20Desc = TruncateString(tech2.Wu2custom20Desc, 50),
+                            Wu2custom21Data = TruncateString(tech2.Wu2custom21Data, int.MaxValue),
+                            Wu2custom21Desc = TruncateString(tech2.Wu2custom21Desc, 50),
+                            Wu2custom22Data = TruncateString(tech2.Wu2custom22Data, int.MaxValue),
+                            Wu2custom22Desc = TruncateString(tech2.Wu2custom22Desc, 50),
+                            Wu2GlareHighOd = tech2.Wu2glareHighOd,
+                            Wu2GlareHighOs = tech2.Wu2glareHighOs,
+                            Wu2GlareLowOd = tech2.Wu2glareLowOd,
+                            Wu2GlareLowOs = tech2.Wu2glareLowOs,
+                            Wu2GlareMedOd = tech2.Wu2glareMedOd,
+                            Wu2GlareMedOs = tech2.Wu2glareMedOs,
+                            Wu2GlareType = TruncateString(tech2.Wu2glareType, 50),
+                            Wu2hertelBase = TruncateString(tech2.Wu2hertelBase, 100),
+                            Wu2hertelOd = TruncateString(tech2.Wu2hertelOd, 100),
+                            Wu2hertelOs = TruncateString(tech2.Wu2hertelOs, 100),
+                            Wu2ktype = TruncateString(tech2.Wu2ktype, 255),
+                            Wu2pachCctOd = TruncateString(tech2.Wu2pachCctod, 50),
+                            Wu2pachCctOs = TruncateString(tech2.Wu2pachCctos, 50),
+                            Wu2ttvOd = TruncateString(tech2.Wu2ttvod, 50),
+                            Wu2ttvOs = TruncateString(tech2.Wu2ttvos, 50),
+                            Wu2ttvtype = TruncateString(tech2.Wu2ttvtype, int.MaxValue),
+                            Wu2vaPamOd = TruncateString(tech2.Wu2vapamod, 50),
+                            Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
+                        };
+                        tech2s.Add(newTech2);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
                 }
             }
-            catch (Exception e) {
-                logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
-            }
+            eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
+            eyeMDDbContext.SaveChanges();
+            tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
         }
         #endregion EyeMDConversion
 
