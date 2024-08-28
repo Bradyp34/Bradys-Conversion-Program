@@ -16,8 +16,8 @@ public partial class VisitDoctor
     [Column("PtID")]
     public int PtId { get; set; }
 
-    [Column("VisitID")]
-    public int? VisitId { get; set; }
+    [Column("OldVisitID")]
+    public int? OldVisitId { get; set; }
 
     [Column("DOSDate")]
     [StringLength(100)]
