@@ -3222,7 +3222,7 @@ namespace Brady_s_Conversion_Program {
                             if (phone.Type == null) {
                                 ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmProviderAddress.Extension = TruncateString(phone.Extension, 10);
-                                return;
+                                continue;
                             }
                             switch (phone.Type.ToLower()) {
                                 case "home":
@@ -3264,7 +3264,7 @@ namespace Brady_s_Conversion_Program {
                             if (phone.Type == null) {
                                 ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmReferralAddress.Extension = TruncateString(phone.Extension, 10);
-                                return;
+                                continue;
                             }
                             switch (phone.Type.ToLower()) {
                                 case "home":
@@ -3291,7 +3291,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Guarantor not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            convPatient = convPatients.FirstOrDefault(p => p.OldPatientAccountNumber == convGuarantor.PatientId.ToString()); // Trying with different values
+                            convPatient = convPatients.FirstOrDefault(p => p.Id == convGuarantor.PatientId);
                             if (convPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3316,7 +3316,7 @@ namespace Brady_s_Conversion_Program {
                             if (phone.Type == null) {
                                 guarantorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 guarantorAddress.Extension = TruncateString(phone.Extension, 10);
-                                return;
+                                continue;
                             }
                             break;
                         case "LOC":
@@ -3340,7 +3340,7 @@ namespace Brady_s_Conversion_Program {
                             if (phone.Type == null) {
                                 ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
                                 ffpmLocationAddress.Extension = TruncateString(phone.Extension, 10);
-                                return;
+                                continue;
                             }
                             switch (phone.Type.ToLower()) {
                                 case "home":
