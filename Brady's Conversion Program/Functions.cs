@@ -257,7 +257,6 @@ namespace Brady_s_Conversion_Program {
                                                 eHRDbContext.Tech2s.Count() +
                                                 eHRDbContext.PatientDocuments.Count() +
                                                 eHRDbContext.Appointments.Count() +
-                                                eHRDbContext.Patients.Count() +
                                                 eHRDbContext.PatientDocuments.Count() +
                                                 eHRDbContext.PatientNotes.Count();
 
