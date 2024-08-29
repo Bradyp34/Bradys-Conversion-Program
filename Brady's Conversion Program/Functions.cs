@@ -8463,121 +8463,165 @@ namespace Brady_s_Conversion_Program {
 
         #region InvConversion
         public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
+            var clnsBrands = ffpmDbContext.ClnsBrands.ToList();
+            var clLenses = ffpmDbContext.ClnsContactLens.ToList();
+            var clInventories = ffpmDbContext.ClnsInventories.ToList();
+            var cptDepts = ffpmDbContext.CptDepartments.ToList();
+            var cptMappings = ffpmDbContext.CptGroupMappings.ToList();
+            var cpts = ffpmDbContext.Cptids.ToList();
+            var frameCategories = ffpmDbContext.FrameCategories.ToList();
+            var frameCollections = ffpmDbContext.FrameCollections.ToList();
+            var frameColors = ffpmDbContext.FrameColors.ToList();
+            var frameShapes = ffpmDbContext.FrameShapes.ToList();
+            var frameStatuses = ffpmDbContext.FrameStatuses.ToList();
+            var frameTemples = ffpmDbContext.FrameTempleStyles.ToList();
+            var frameEtypes = ffpmDbContext.FrameEtypes.ToList();
+            var frameFtypes = ffpmDbContext.FrameFtypes.ToList();
+            var frameInventories = ffpmDbContext.Inventories.ToList();
+            var frameLensColors = ffpmDbContext.FrameDblensColors.ToList();
+            var frameMaterials = ffpmDbContext.FrameMaterials.ToList();
+            var frameOrders = ffpmDbContext.FrameOrderInfos.ToList();
+            var frames = ffpmDbContext.Frames.ToList();
+            var clnsContactlens = ffpmDbContext.ClnsContactLens.ToList();
+            var cptGroupMappings = ffpmDbContext.CptGroupMappings.ToList();
+
+            var invClBrands = invDbContext.Clbrands.ToList();
+            var invClLenses = invDbContext.Cllenses.ToList();
+            var invClInventories = invDbContext.Clinventories.ToList();
+            var invCptDepts = invDbContext.Cptdepts.ToList();
+            var invCptMappings = invDbContext.Cptmappings.ToList();
+            var invCpts = invDbContext.Cpts.ToList();
+            var invFrameCategories = invDbContext.FrameCategories.ToList();
+            var invFrameCollections = invDbContext.FrameCollections.ToList();
+            var invFrameColors = invDbContext.FrameColors.ToList();
+            var invFrameShapes = invDbContext.FrameShapes.ToList();
+            var invFrameStatuses = invDbContext.FrameStatuses.ToList();
+            var invFrameTemples = invDbContext.FrameTemples.ToList();
+            var invFrameEtypes = invDbContext.FrameEtypes.ToList();
+            var invFrameFtypes = invDbContext.FrameFtypes.ToList();
+            var invFrameInventories = invDbContext.FrameInventories.ToList();
+            var invFrameLensColors = invDbContext.FrameLensColors.ToList();
+            var invFrameMaterials = invDbContext.FrameMaterials.ToList();
+            var invFrameOrders = invDbContext.FrameOrders.ToList();
+            var invFrames = invDbContext.Frames.ToList();
+
+
+
+
+
+            CLBrandsConvert(invClBrands, invDbContext, ffpmDbContext, logger, progress, clnsBrands);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Brands converted\n");
             });
 
-            CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
+            CLLensesConvert(invClLenses, invDbContext, ffpmDbContext, logger, progress, clLenses);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Lenses converted\n");
             });
 
-            clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
+            clInventoryConvert(invClInventories, invDbContext, ffpmDbContext, logger, progress, clInventories);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Inventory converted\n");
             });
 
-            CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
+            CPTDeptConvert(invCptDepts, invDbContext, ffpmDbContext, logger, progress, cptDepts);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Depts converted\n");
             });
 
-            CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
+            CPTMappingConvert(invCptMappings, invDbContext, ffpmDbContext, logger, progress, cptMappings);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Mappings converted\n");
             });
 
-            CPTConvert(cpt, invDbContext, ffpmDbContext, logger, progress);
+            CPTConvert(invCpts, invDbContext, ffpmDbContext, logger, progress, cpts);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPTs converted\n");
             });
 
-            FrameCategoryConvert(frameCategory, invDbContext, ffpmDbContext, logger, progress);
+            FrameCategoryConvert(invFrameCategories, invDbContext, ffpmDbContext, logger, progress, frameCategories);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Categories converted\n");
             });
 
-            FrameCollectionConvert(frameCollection, invDbContext, ffpmDbContext, logger, progress);
+            FrameCollectionConvert(invFrameCollections, invDbContext, ffpmDbContext, logger, progress, frameCollections);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Collections converted\n");
             });
 
-            FrameColorConvert(frameColor, invDbContext, ffpmDbContext, logger, progress);
+            FrameColorConvert(invFrameColors, invDbContext, ffpmDbContext, logger, progress, frameColors);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Colors converted\n");
             });
 
-            FrameShapeConvert(frameShape, invDbContext, ffpmDbContext, logger, progress);
+            FrameShapeConvert(invFrameShapes, invDbContext, ffpmDbContext, logger, progress, frameShapes);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Shapes converted\n");
             });
 
-            FrameStatusConvert(frameStatus, invDbContext, ffpmDbContext, logger, progress);
+            FrameStatusConvert(invFrameStatuses, invDbContext, ffpmDbContext, logger, progress, frameStatuses);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Statuses converted\n");
             });
 
-            FrameTempleConvert(frameTemple, invDbContext, ffpmDbContext, logger, progress);
+            FrameTempleConvert(invFrameTemples, invDbContext, ffpmDbContext, logger, progress, frameTemples);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Temples converted\n");
             });
 
-            FrameETypeConvert(frameEtype, invDbContext, ffpmDbContext, logger, progress);
+            FrameETypeConvert(invFrameEtypes, invDbContext, ffpmDbContext, logger, progress, frameEtypes);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame ETypes converted\n");
             });
 
-            FrameFTypeConvert(frameFtype, invDbContext, ffpmDbContext, logger, progress);
+            FrameFTypeConvert(invFrameFtypes, invDbContext, ffpmDbContext, logger, progress, frameFtypes);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
-            FrameInventoryConvert(frameInventory, invDbContext, ffpmDbContext, logger, progress);
+            FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, progress, frameInventories, invFrames, frames);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Inventories converted\n");
             });
 
-            FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
+            FrameLensColorConvert(invFrameLensColors, invDbContext, ffpmDbContext, logger, progress, frameLensColors);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Lens Colors converted\n");
             });
 
-            FrameMaterialConvert(frameMaterial, invDbContext, ffpmDbContext, logger, progress);
+            FrameMaterialConvert(invFrameMaterials, invDbContext, ffpmDbContext, logger, progress, frameMaterials);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Materials converted\n");
             });
 
-            FrameOrderConvert(frameOrder, invDbContext, ffpmDbContext, logger, progress);
+            FrameOrderConvert(invFrameOrders, invDbContext, ffpmDbContext, logger, progress, frameOrders);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Orders converted\n");
             });
 
-            FrameConvert(frames, invDbContext, ffpmDbContext, logger, progress);
+            FrameConvert(invFrames, invDbContext, ffpmDbContext, logger, progress, frames);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
-
-
         }
 
         public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -8866,7 +8910,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var invList = clnsContactLens.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+                var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
 
                 if (invList != null) {
 					var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
@@ -8894,16 +8938,16 @@ namespace Brady_s_Conversion_Program {
 						LensPerBox = lensPerBox,
 						IsLensFromClxCatalog = isLensFromClxCatalog
 					};
-                    clnsContactLens.Add(newClLens);
+                        clLenses.Add(newClLens);
 				}
             }
             catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
             }
             }
-			ffpmDbContext.ClnsContactLens.UpdateRange(clnsContactLens);
+			ffpmDbContext.ClnsContactLens.UpdateRange(clLenses);
 			ffpmDbContext.SaveChanges();
-			clnsContactLens = ffpmDbContext.ClnsContactLens.ToList();
+            clLenses = ffpmDbContext.ClnsContactLens.ToList();
 		}
 
         public static void CPTDeptConvert(List<Cptdept> invCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -8991,7 +9035,7 @@ namespace Brady_s_Conversion_Program {
                         Active = false;
                     }
 
-                    var invList = cptGroupMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
+                    var invList = cptMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
 
                     if (invList != null) {
 					    var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
@@ -9202,7 +9246,7 @@ namespace Brady_s_Conversion_Program {
 		}
 
         public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<FrameCollection> frameCollections) {
+            List<ModelsA.FrameCollection> frameCollections) {
             foreach (var frameCollection in invFrameCollections) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9244,7 +9288,7 @@ namespace Brady_s_Conversion_Program {
 		}
 
         public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<FrameColor> frameColors) {
+            List<ModelsA.FrameColor> frameColors) {
             foreach (var frameColor in invFrameColors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9279,7 +9323,7 @@ namespace Brady_s_Conversion_Program {
             }
 			ffpmDbContext.FrameColors.UpdateRange(frameColors);
             ffpmDbContext.SaveChanges();
-            frameColors = ffpmDbContext.FrameColors.ToList()
+            frameColors = ffpmDbContext.FrameColors.ToList();
 		}
 
         public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -9421,7 +9465,7 @@ namespace Brady_s_Conversion_Program {
 		}
 
         public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<FrameEtype> frameEtypes) {
+			List<ModelsA.FrameEtype> frameEtypes) {
             foreach (var frameEType in invFrameETypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9492,13 +9536,13 @@ namespace Brady_s_Conversion_Program {
 		}
 
         public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<ModelsA.Inventory> frameInventories) {
+			List<ModelsA.Inventory> frameInventories, List<ModelsD.Frame> invFrames, List<ModelsA.Frame> frames) {
             foreach (var frameInventory in invFrameInventories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-                    var convFrame = invFrames.FirstOrDefault(f => f.Id == frameInventory.OldFrameId);
+                    var convFrame = invFrames.FirstOrDefault(f => f.Id.ToString() == frameInventory.OldFrameId);
                     if (convFrame == null) {
                         logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
                         return;
@@ -9690,7 +9734,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameDblensColors.FirstOrDefault(x => x.ColorCode == colorCode);
+                    var invList = frameLensColors.FirstOrDefault(x => x.ColorCode == colorCode);
 
                     if (invList != null) {
 					    var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
