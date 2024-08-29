@@ -3636,7 +3636,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = allergy.PtId;
                     }
                     if (ptId == null && visitId == null) {
-                        logger.Log($"EHR: EHR Visit ID and Patient ID not found for visit order with ID: {allergy.Id}");
+                        logger.Log($"EHR: EHR Visit ID and Patient ID not found for allergy with ID: {allergy.Id}");
                     }
                     else if (ptId == null) {
                         var eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
@@ -3648,11 +3648,11 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (visitId == null) {
-                        logger.Log($"EHR: EHR VisitID not found for visit order with ID: {allergy.Id}");
+                        logger.Log($"EHR: EHR VisitID not found for allergy with ID: {allergy.Id}");
                     }
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                     if (eyeMDPatient == null) {
-                        logger.Log($"EHR: EHR Patient not found for visit order with ID: {allergy.Id}");
+                        logger.Log($"EHR: EHR Patient not found for allergy with ID: {allergy.Id}");
                         continue;
                     }
                     ptId = eyeMDPatient.PtId;
@@ -4608,14 +4608,14 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (visitId == null) {
-                        logger.Log($"EHR: EHR VisitID not found for visit order with ID: {visitDoctor.Id}");
+                        logger.Log($"EHR: EHR VisitID not found for visit doctor with ID: {visitDoctor.Id}");
                     }
 
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                     if (eyeMDPatient == null) {
                         eyeMDVisit = visits.FirstOrDefault(v => v.VisitId == visitId);
                         if (eyeMDPatient == null) {
-                            logger.Log($"EHR: EHR Patient not found for visit order with ID: {visitDoctor.Id}");
+                            logger.Log($"EHR: EHR Patient not found for visit doctor with ID: {visitDoctor.Id}");
                             continue;
                         }
                         else {
