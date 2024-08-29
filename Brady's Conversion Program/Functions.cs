@@ -8463,135 +8463,116 @@ namespace Brady_s_Conversion_Program {
 
         #region InvConversion
         public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
-            foreach (var clBrand in invDbContext.Clbrands) {
-                CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
-            }
+            CLBrandsConvert(clBrand, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Brands converted\n");
             });
 
-            foreach (var clLense in invDbContext.Cllenses) {
-                CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
-            }
+            CLLensesConvert(clLense, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Lenses converted\n");
             });
 
-            foreach (var clInventory in invDbContext.Clinventories) {
-                clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
-            }
+            clInventoryConvert(clInventory, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Inventory converted\n");
             });
 
-            foreach (var cptDept in invDbContext.Cptdepts) {
-                CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
-            }
+            CPTDeptConvert(cptDept, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Depts converted\n");
             });
 
-            foreach (var cptMapping in invDbContext.Cptmappings) {
-                CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
-            }
+            CPTMappingConvert(cptMapping, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Mappings converted\n");
             });
 
-            foreach (var cpt in invDbContext.Cpts) {
-                CPTConvert(cpt, invDbContext, ffpmDbContext, logger, progress);
-            }
+            CPTConvert(cpt, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPTs converted\n");
             });
 
-            foreach (var frameCategory in invDbContext.FrameCategories) {
-                FrameCategoryConvert(frameCategory, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameCategoryConvert(frameCategory, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Categories converted\n");
             });
 
-            foreach (var frameCollection in invDbContext.FrameCollections) {
-                FrameCollectionConvert(frameCollection, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameCollectionConvert(frameCollection, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Collections converted\n");
             });
 
-            foreach (var frameColor in invDbContext.FrameColors) {
-                FrameColorConvert(frameColor, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameColorConvert(frameColor, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Colors converted\n");
             });
 
-            foreach (var frameShape in invDbContext.FrameShapes) {
-                FrameShapeConvert(frameShape, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameShapeConvert(frameShape, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Shapes converted\n");
             });
 
-            foreach (var frameStatus in invDbContext.FrameStatuses) {
-                FrameStatusConvert(frameStatus, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameStatusConvert(frameStatus, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Statuses converted\n");
             });
 
-            foreach (var frameTemple in invDbContext.FrameTemples) {
-                FrameTempleConvert(frameTemple, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameTempleConvert(frameTemple, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Temples converted\n");
             });
 
-            foreach (var frameEtype in invDbContext.FrameEtypes) {
-                FrameETypeConvert(frameEtype, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameETypeConvert(frameEtype, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame ETypes converted\n");
             });
 
-            foreach (var frameFtype in invDbContext.FrameFtypes) {
-                FrameFTypeConvert(frameFtype, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameFTypeConvert(frameFtype, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
-            foreach (var frameInventory in invDbContext.FrameInventories) {
-                FrameInventoryConvert(frameInventory, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameInventoryConvert(frameInventory, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Inventories converted\n");
             });
 
-            foreach (var frameLensColor in invDbContext.FrameLensColors) {
-                FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameLensColorConvert(frameLensColor, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Lens Colors converted\n");
             });
 
-            foreach (var frameMaterial in invDbContext.FrameMaterials) {
-                FrameMaterialConvert(frameMaterial, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameMaterialConvert(frameMaterial, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Materials converted\n");
             });
 
-            foreach (var frameOrder in invDbContext.FrameOrders) {
-                FrameOrderConvert(frameOrder, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameOrderConvert(frameOrder, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Orders converted\n");
             });
 
-            foreach (var frames in invDbContext.Frames) {
-                FrameConvert(frames, invDbContext, ffpmDbContext, logger, progress);
-            }
+            FrameConvert(frames, invDbContext, ffpmDbContext, logger, progress);
+            
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
@@ -8599,9 +8580,9 @@ namespace Brady_s_Conversion_Program {
 
         }
 
-        public static void CLBrandsConvert(List<Clbrand> ehrClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.ClnsBrand> clnsBrands) {
-            foreach (var clBrand in ehrClBrands) {
+            foreach (var clBrand in invClBrands) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -8656,9 +8637,9 @@ namespace Brady_s_Conversion_Program {
 			clnsBrands = ffpmDbContext.ClnsBrands.ToList();
 		}
 
-        public static void clInventoryConvert(List<Clinventory> ehrClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void clInventoryConvert(List<Clinventory> invClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.ClnsInventory> clnsInventories) {
-            foreach (var clInventory in ehrClInventories) {
+            foreach (var clInventory in invClInventories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -8791,9 +8772,9 @@ namespace Brady_s_Conversion_Program {
 			clnsInventories = ffpmDbContext.ClnsInventories.ToList();
 		}
 
-        public static void CLLensesConvert(List<Cllense> ehrClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CLLensesConvert(List<Cllense> invClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.ClnsContactLen> clLenses) {
-            foreach (var clLense in ehrClLenses) {
+            foreach (var clLense in invClLenses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -8925,9 +8906,9 @@ namespace Brady_s_Conversion_Program {
 			clnsContactLens = ffpmDbContext.ClnsContactLens.ToList();
 		}
 
-        public static void CPTDeptConvert(List<Cptdept> ehrCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTDeptConvert(List<Cptdept> invCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.CptDepartment> cptDepartments) {
-            foreach (var cptDept in ehrCptDepts) {
+            foreach (var cptDept in invCptDepts) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -8977,9 +8958,9 @@ namespace Brady_s_Conversion_Program {
             cptDepartments = ffpmDbContext.CptDepartments.ToList();
         }
 
-        public static void CPTMappingConvert(List<Cptmapping> ehrCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTMappingConvert(List<Cptmapping> invCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.CptGroupMapping> cptMappings) {
-            foreach (var cptMapping in ehrCptMappings) {
+            foreach (var cptMapping in invCptMappings) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -9031,9 +9012,9 @@ namespace Brady_s_Conversion_Program {
 			cptMappings = ffpmDbContext.CptGroupMappings.ToList();
 		}
 
-        public static void CPTConvert(List<Cpt> ehrCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTConvert(List<Cpt> invCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.Cptid> cptIds) {
-            foreach (var cpt in ehrCpts) {
+            foreach (var cpt in invCpts) {
 				progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -9167,9 +9148,9 @@ namespace Brady_s_Conversion_Program {
 			cptIds = ffpmDbContext.Cptids.ToList();
 		}
 
-        public static void FrameCategoryConvert(List<ModelsD.FrameCategory> ehrFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameCategoryConvert(List<ModelsD.FrameCategory> invFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameCategory> frameCategories) {
-            foreach (var frameCategory in ehrFrameCategories) {
+            foreach (var frameCategory in invFrameCategories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -9220,9 +9201,9 @@ namespace Brady_s_Conversion_Program {
 			frameCategories = ffpmDbContext.FrameCategories.ToList();
 		}
 
-        public static void FrameCollectionConvert(List<ModelsD.FrameCollection> ehrFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<FrameCollection> frameCollections) {
-            foreach (var frameCollection in ehrFrameCollections) {
+            foreach (var frameCollection in invFrameCollections) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -9262,9 +9243,9 @@ namespace Brady_s_Conversion_Program {
 			frameCollections = ffpmDbContext.FrameCollections.ToList();
 		}
 
-        public static void FrameColorConvert(List<ModelsD.FrameColor> ehrFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<FrameColor> frameColors) {
-            foreach (var frameColor in ehrFrameColors) {
+            foreach (var frameColor in invFrameColors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
@@ -9301,958 +9282,972 @@ namespace Brady_s_Conversion_Program {
             frameColors = ffpmDbContext.FrameColors.ToList()
 		}
 
-        public static void FrameShapeConvert(List<ModelsD.FrameShape> ehrFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameShape> frameShapes) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string shape = "";
-                if (frameShape.FrameShape1 != null) {
-                    shape = frameShape.FrameShape1;
-                }
-                bool active = false;
-                if (frameShape.Active != null && frameShape.Active.ToLower() == "yes" || frameShape.Active == "1") {
-                    active = true;
-                }
-                long sortOrder = -1;
-                if (frameShape.SortOrder != null) {
-                    if (long.TryParse(frameShape.SortOrder, out long locum)) {
-                        sortOrder = locum;
+            foreach (var frameShape in invFrameShapes) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string shape = "";
+                    if (frameShape.FrameShape1 != null) {
+                        shape = frameShape.FrameShape1;
                     }
-                }
-                long? locationId = null;
-                if (frameShape.LocationId != null) {
-                    if (long.TryParse(frameShape.LocationId, out long locum)) {
-                        locationId = locum;
+                    bool active = false;
+                    if (frameShape.Active != null && frameShape.Active.ToLower() == "yes" || frameShape.Active == "1") {
+                        active = true;
                     }
-                }
+                    long sortOrder = -1;
+                    if (frameShape.SortOrder != null) {
+                        if (long.TryParse(frameShape.SortOrder, out long locum)) {
+                            sortOrder = locum;
+                        }
+                    }
+                    long? locationId = null;
+                    if (frameShape.LocationId != null) {
+                        if (long.TryParse(frameShape.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
 
-                var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
+                    var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
 
-                if (invList != null) {
-                    invList.ShapeDescription = TruncateString(frameShape.ShapeDescription, 250);
-                    invList.Active = active;
-                    invList.SortOrder = sortOrder;
-                    invList.LocationId = locationId;
+                    if (invList != null) {
+                        invList.ShapeDescription = TruncateString(frameShape.ShapeDescription, 250);
+                        invList.Active = active;
+                        invList.SortOrder = sortOrder;
+                        invList.LocationId = locationId;
+                        ffpmDbContext.SaveChanges();
+                        return;
+                    }
+
+
+                    var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
+                        FrameShape1 = TruncateString(shape, 50),
+                        ShapeDescription = TruncateString(frameShape.ShapeDescription, 250),
+                        Active = active,
+                        SortOrder = sortOrder,
+                        LocationId = locationId
+                    };
+                    ffpmDbContext.FrameShapes.Add(newFrameShape);
+
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
-
-
-                var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
-                    FrameShape1 = TruncateString(shape, 50),
-                    ShapeDescription = TruncateString(frameShape.ShapeDescription, 250),
-                    Active = active,
-                    SortOrder = sortOrder,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameShapes.Add(newFrameShape);
-
-                ffpmDbContext.SaveChanges();
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
-            }
-        }
+            ffpmDbContext.FrameShapes.UpdateRange(frameShapes);
+			ffpmDbContext.SaveChanges();
+			frameShapes = ffpmDbContext.FrameShapes.ToList();
+		}
 
-        public static void FrameStatusConvert(List<ModelsD.FrameStatus> ehrFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameStatusConvert(List<ModelsD.FrameStatus> invFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameStatus> frameStatuses) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string status = "";
-                if (frameStatus.OldStatusId != null) {
-                    status = frameStatus.OldStatusId;
-                }
+            foreach (var frameStatus in invFrameStatuses) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string status = "";
+                    if (frameStatus.OldStatusId != null) {
+                        status = frameStatus.OldStatusId;
+                    }
 
-                var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
+                    var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
 
-                if (invList != null) {
-                    invList.Description = TruncateString(frameStatus.Description, 100);
-                    invList.LabCode = TruncateString(frameStatus.LabCode, 25);
+                    if (invList != null) {
+                        invList.Description = TruncateString(frameStatus.Description, 100);
+                        invList.LabCode = TruncateString(frameStatus.LabCode, 25);
+                        ffpmDbContext.SaveChanges();
+                        return;
+                    }
+
+                    var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
+                        Status = TruncateString(status, 100),
+                        Description = TruncateString(frameStatus.Description, 100),
+                        LabCode = TruncateString(frameStatus.LabCode, 25)
+                    };
+                    ffpmDbContext.FrameStatuses.Add(newFrameStatus);
+
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
-
-                var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
-                    Status = TruncateString(status, 100),
-                    Description = TruncateString(frameStatus.Description, 100),
-                    LabCode = TruncateString(frameStatus.LabCode, 25)
-                };
-                ffpmDbContext.FrameStatuses.Add(newFrameStatus);
-
-                ffpmDbContext.SaveChanges();
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameStatuses.UpdateRange(frameStatuses);
+			ffpmDbContext.SaveChanges();
+			frameStatuses = ffpmDbContext.FrameStatuses.ToList();
+		}
 
-        public static void FrameTempleConvert(List<ModelsD.FrameTemple> ehrFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameTempleConvert(List<ModelsD.FrameTemple> invFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameTempleStyle> frameTemples) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string temple = "";
-                if (frameTemple.OldTempleId != null) {
-                    temple = frameTemple.OldTempleId;
-                }
+            foreach (var frameTemple in invFrameTemples) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string temple = "";
+                    if (frameTemple.OldTempleId != null) {
+                        temple = frameTemple.OldTempleId;
+                    }
 
-                var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
+                    var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
 
-                if (invList != null) {
-                    invList.Description = TruncateString(frameTemple.Description, 100);
-                    invList.LabCode = TruncateString(frameTemple.LabCode, 25);
+                    if (invList != null) {
+                        invList.Description = TruncateString(frameTemple.Description, 100);
+                        invList.LabCode = TruncateString(frameTemple.LabCode, 25);
+                        ffpmDbContext.SaveChanges();
+                        return;
+                    }
+
+                    var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
+                        Temple = TruncateString(temple, 100),
+                        Description = TruncateString(frameTemple.Description, 100),
+                        LabCode = TruncateString(frameTemple.LabCode, 25)
+                    };
+                    ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
+
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
-
-                var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
-                    Temple = TruncateString(temple, 100),
-                    Description = TruncateString(frameTemple.Description, 100),
-                    LabCode = TruncateString(frameTemple.LabCode, 25)
-                };
-                ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
-
-                ffpmDbContext.SaveChanges();
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameTempleStyles.UpdateRange(frameTemples);
+			ffpmDbContext.SaveChanges();
+			frameTemples = ffpmDbContext.FrameTempleStyles.ToList();
+		}
 
-        public static void FrameETypeConvert(List<ModelsD.FrameEtype> ehrFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<FrameEtype> frameEtypes) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string eType = "";
-                if (frameEType.OldEtypeId != null) {
-                    eType = frameEType.OldEtypeId;
-                }
+            foreach (var frameEType in invFrameETypes) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string eType = "";
+                    if (frameEType.OldEtypeId != null) {
+                        eType = frameEType.OldEtypeId;
+                    }
 
-                var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
+                    var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
 
-                if (invList != null) {
-                    invList.Description = TruncateString(frameEType.Description, 100);
-                    invList.LabCode = TruncateString(frameEType.LabCode, 25);
+                    if (invList != null) {
+                        invList.Description = TruncateString(frameEType.Description, 100);
+                        invList.LabCode = TruncateString(frameEType.LabCode, 25);
+                        ffpmDbContext.SaveChanges();
+                        return;
+                    }
+
+                    var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
+                        Etype = TruncateString(eType, 100),
+                        Description = TruncateString(frameEType.Description, 100),
+                        LabCode = TruncateString(frameEType.LabCode, 25)
+                    };
+                    ffpmDbContext.FrameEtypes.Add(newFrameEType);
+
                     ffpmDbContext.SaveChanges();
-                    return;
                 }
-
-                var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
-                    Etype = TruncateString(eType, 100),
-                    Description = TruncateString(frameEType.Description, 100),
-                    LabCode = TruncateString(frameEType.LabCode, 25)
-                };
-                ffpmDbContext.FrameEtypes.Add(newFrameEType);
-
-                ffpmDbContext.SaveChanges();
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameEtypes.UpdateRange(frameEtypes);
+			ffpmDbContext.SaveChanges();
+			frameEtypes = ffpmDbContext.FrameEtypes.ToList();
+		}
 
-        public static void FrameFTypeConvert(List<ModelsD.FrameFtype> ehrFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameFTypeConvert(List<ModelsD.FrameFtype> invFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameFtype> frameFtypes) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string fType = "";
-                if (frameFType.OldFtypeId != null) {
-                    fType = frameFType.OldFtypeId;
+            foreach (var frameFType in invFrameFTypes) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string fType = "";
+                    if (frameFType.OldFtypeId != null) {
+                        fType = frameFType.OldFtypeId;
+                    }
+
+                    var invList = frameFtypes.FirstOrDefault(x => x.Ftype == fType);
+
+                    if (invList != null) {
+						var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
+							Ftype = TruncateString(fType, 100),
+							Description = TruncateString(frameFType.Description, 100),
+							LabCode = TruncateString(frameFType.LabCode, 25)
+						};
+                        frameFtypes.Add(newFrameFType);
+					}
                 }
-
-                var invList = ffpmDbContext.FrameFtypes.FirstOrDefault(x => x.Ftype == fType);
-
-                if (invList != null) {
-                    invList.Description = TruncateString(frameFType.Description, 100);
-                    invList.LabCode = TruncateString(frameFType.LabCode, 25);
-                    ffpmDbContext.SaveChanges();
-                    return;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
                 }
-
-                var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
-                    Ftype = TruncateString(fType, 100),
-                    Description = TruncateString(frameFType.Description, 100),
-                    LabCode = TruncateString(frameFType.LabCode, 25)
-                };
-                ffpmDbContext.FrameFtypes.Add(newFrameFType);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameFtypes.UpdateRange(frameFtypes);
+			ffpmDbContext.SaveChanges();
+			frameFtypes = ffpmDbContext.FrameFtypes.ToList();
+		}
 
-        public static void FrameInventoryConvert(List<ModelsD.FrameInventory> ehrFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.Inventory> frameInventories) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                var convFrame = invDbContext.Frames.Find(frameInventory.OldFrameId);
-                if (convFrame == null) {
-                    logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
-                    return;
-                }
-                var ffpmFrame = ffpmDbContext.Frames.FirstOrDefault(x => x.Upc == convFrame.Upc);
-                if (ffpmFrame == null) {
-                    logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
-                    return;
-                }
-                long locationID = -1;
-                if (frameInventory.OldLocationId != null) {
-                    if (long.TryParse(frameInventory.OldLocationId, out long locum)) {
-                        locationID = locum;
+            foreach (var frameInventory in invFrameInventories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    var convFrame = invFrames.FirstOrDefault(f => f.Id == frameInventory.OldFrameId);
+                    if (convFrame == null) {
+                        logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                        return;
                     }
-                }
-                int? quantityOrdered = null;
-                if (frameInventory.QuantityOrdered != null) {
-                    if (int.TryParse(frameInventory.QuantityOrdered, out int locum)) {
-                        quantityOrdered = locum;
+                    var ffpmFrame = frames.FirstOrDefault(x => x.Upc == convFrame.Upc);
+                    if (ffpmFrame == null) {
+                        logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                        return;
                     }
-                }
-                decimal? cost = null;
-                if (frameInventory.Cost != null) {
-                    if (decimal.TryParse(frameInventory.Cost, out decimal locum)) {
-                        cost = locum;
+                    long locationID = -1;
+                    if (frameInventory.OldLocationId != null) {
+                        if (long.TryParse(frameInventory.OldLocationId, out long locum)) {
+                            locationID = locum;
+                        }
                     }
-                }
-                decimal? wholesale = null;
-                if (frameInventory.WholeSale != null) {
-                    if (decimal.TryParse(frameInventory.WholeSale, out decimal locum)) {
-                        wholesale = locum;
+                    int? quantityOrdered = null;
+                    if (frameInventory.QuantityOrdered != null) {
+                        if (int.TryParse(frameInventory.QuantityOrdered, out int locum)) {
+                            quantityOrdered = locum;
+                        }
                     }
-                }
-                decimal? retail = null;
-                if (frameInventory.Retail != null) {
-                    if (decimal.TryParse(frameInventory.Retail, out decimal locum)) {
-                        retail = locum;
+                    decimal? cost = null;
+                    if (frameInventory.Cost != null) {
+                        if (decimal.TryParse(frameInventory.Cost, out decimal locum)) {
+                            cost = locum;
+                        }
                     }
-                }
-                int? received = null;
-                if (frameInventory.Received != null) {
-                    if (int.TryParse(frameInventory.Received, out int locum)) {
-                        received = locum;
+                    decimal? wholesale = null;
+                    if (frameInventory.WholeSale != null) {
+                        if (decimal.TryParse(frameInventory.WholeSale, out decimal locum)) {
+                            wholesale = locum;
+                        }
                     }
-                }
-                int? onHand = null;
-                if (frameInventory.OnHand != null) {
-                    if (int.TryParse(frameInventory.OnHand, out int locum)) {
-                        onHand = locum;
+                    decimal? retail = null;
+                    if (frameInventory.Retail != null) {
+                        if (decimal.TryParse(frameInventory.Retail, out decimal locum)) {
+                            retail = locum;
+                        }
                     }
-                }
-                int? dispensed = null;
-                if (frameInventory.Dispensed != null) {
-                    if (int.TryParse(frameInventory.Dispensed, out int locum)) {
-                        dispensed = locum;
+                    int? received = null;
+                    if (frameInventory.Received != null) {
+                        if (int.TryParse(frameInventory.Received, out int locum)) {
+                            received = locum;
+                        }
                     }
-                }
-                int? returnedToVendor = null;
-                if (frameInventory.ReturnedToVendor != null) {
-                    if (int.TryParse(frameInventory.ReturnedToVendor, out int locum)) {
-                        returnedToVendor = locum;
+                    int? onHand = null;
+                    if (frameInventory.OnHand != null) {
+                        if (int.TryParse(frameInventory.OnHand, out int locum)) {
+                            onHand = locum;
+                        }
                     }
-                }
-                int? scrapped = null;
-                if (frameInventory.Scrapped != null) {
-                    if (int.TryParse(frameInventory.Scrapped, out int locum)) {
-                        scrapped = locum;
+                    int? dispensed = null;
+                    if (frameInventory.Dispensed != null) {
+                        if (int.TryParse(frameInventory.Dispensed, out int locum)) {
+                            dispensed = locum;
+                        }
                     }
-                }
-                int? returnedByCustomer = null;
-                if (frameInventory.ReturnedByCustomer != null) {
-                    if (int.TryParse(frameInventory.ReturnedByCustomer, out int locum)) {
-                        returnedByCustomer = locum;
+                    int? returnedToVendor = null;
+                    if (frameInventory.ReturnedToVendor != null) {
+                        if (int.TryParse(frameInventory.ReturnedToVendor, out int locum)) {
+                            returnedToVendor = locum;
+                        }
                     }
-                }
-                int? lost = null;
-                if (frameInventory.Lost != null) {
-                    if (int.TryParse(frameInventory.Lost, out int locum)) {
-                        lost = locum;
+                    int? scrapped = null;
+                    if (frameInventory.Scrapped != null) {
+                        if (int.TryParse(frameInventory.Scrapped, out int locum)) {
+                            scrapped = locum;
+                        }
                     }
-                }
-                int? donation = null;
-                if (frameInventory.Donation != null) {
-                    if (int.TryParse(frameInventory.Donation, out int locum)) {
-                        donation = locum;
+                    int? returnedByCustomer = null;
+                    if (frameInventory.ReturnedByCustomer != null) {
+                        if (int.TryParse(frameInventory.ReturnedByCustomer, out int locum)) {
+                            returnedByCustomer = locum;
+                        }
                     }
-                }
-                bool? consignment = null;
-                if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "yes" || frameInventory.Consignment == "1") {
-                    consignment = true;
-                }
-                else if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "no" || frameInventory.Consignment == "0") {
-                    consignment = false;
-                }
-                int? transferredIn = null;
-                if (frameInventory.TransferredIn != null) {
-                    if (int.TryParse(frameInventory.TransferredIn, out int locum)) {
-                        transferredIn = locum;
+                    int? lost = null;
+                    if (frameInventory.Lost != null) {
+                        if (int.TryParse(frameInventory.Lost, out int locum)) {
+                            lost = locum;
+                        }
                     }
-                }
-                int? transferredOut = null;
-                if (frameInventory.TransferredOut != null) {
-                    if (int.TryParse(frameInventory.TransferredOut, out int locum)) {
-                        transferredOut = locum;
+                    int? donation = null;
+                    if (frameInventory.Donation != null) {
+                        if (int.TryParse(frameInventory.Donation, out int locum)) {
+                            donation = locum;
+                        }
                     }
-                }
-                DateTime? invoiceDate = null;
-                if (frameInventory.InvoiceDate != null) {
-                    if (DateTime.TryParseExact(frameInventory.InvoiceDate, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
-                        invoiceDate = locum;
+                    bool? consignment = null;
+                    if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "yes" || frameInventory.Consignment == "1") {
+                        consignment = true;
                     }
-                }
-                bool? validInventory = null;
-                if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "yes" || frameInventory.ValidInventory == "1") {
-                    validInventory = true;
-                }
-                else if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "no" || frameInventory.ValidInventory == "0") {
-                    validInventory = false;
-                }
-                DateTime? dateAdded = null;
-                if (frameInventory.DateAdded != null) {
-                    if (DateTime.TryParseExact(frameInventory.DateAdded, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
-                        dateAdded = locum;
+                    else if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "no" || frameInventory.Consignment == "0") {
+                        consignment = false;
                     }
-                }
+                    int? transferredIn = null;
+                    if (frameInventory.TransferredIn != null) {
+                        if (int.TryParse(frameInventory.TransferredIn, out int locum)) {
+                            transferredIn = locum;
+                        }
+                    }
+                    int? transferredOut = null;
+                    if (frameInventory.TransferredOut != null) {
+                        if (int.TryParse(frameInventory.TransferredOut, out int locum)) {
+                            transferredOut = locum;
+                        }
+                    }
+                    DateTime? invoiceDate = null;
+                    if (frameInventory.InvoiceDate != null) {
+                        if (DateTime.TryParseExact(frameInventory.InvoiceDate, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            invoiceDate = locum;
+                        }
+                    }
+                    bool? validInventory = null;
+                    if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "yes" || frameInventory.ValidInventory == "1") {
+                        validInventory = true;
+                    }
+                    else if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "no" || frameInventory.ValidInventory == "0") {
+                        validInventory = false;
+                    }
+                    DateTime? dateAdded = null;
+                    if (frameInventory.DateAdded != null) {
+                        if (DateTime.TryParseExact(frameInventory.DateAdded, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            dateAdded = locum;
+                        }
+                    }
 
-
-
-                var newInventory = new Brady_s_Conversion_Program.ModelsA.Inventory {
-                    FrameId = ffpmFrame.FrameId,
-                    LocationId = locationID,
-                    InvoiceNumber = TruncateString(frameInventory.InvoiceNumber, 20),
-                    QuantityOrdered = quantityOrdered,
-                    Cost = cost,
-                    WholeSale = wholesale,
-                    Retail = retail,
-                    Received = received,
-                    OnHand = onHand,
-                    Dispensed = dispensed,
-                    ReturnedToVendor = returnedToVendor,
-                    Scrapped = scrapped,
-                    ReturnedByCustomer = returnedByCustomer,
-                    Lost = lost,
-                    Donation = donation,
-                    Consignment = consignment,
-                    TransferredIn = transferredIn,
-                    TransferredOut = transferredOut,
-                    Note = frameInventory.Note,
-                    InvoiceDate = invoiceDate,
-                    ValidInventory = validInventory,
-                    DateAdded = dateAdded
-                };
-                ffpmDbContext.Inventories.Add(newInventory);
-
-                ffpmDbContext.SaveChanges();
+                    var newInventory = new Brady_s_Conversion_Program.ModelsA.Inventory {
+                        FrameId = ffpmFrame.FrameId,
+                        LocationId = locationID,
+                        InvoiceNumber = TruncateString(frameInventory.InvoiceNumber, 20),
+                        QuantityOrdered = quantityOrdered,
+                        Cost = cost,
+                        WholeSale = wholesale,
+                        Retail = retail,
+                        Received = received,
+                        OnHand = onHand,
+                        Dispensed = dispensed,
+                        ReturnedToVendor = returnedToVendor,
+                        Scrapped = scrapped,
+                        ReturnedByCustomer = returnedByCustomer,
+                        Lost = lost,
+                        Donation = donation,
+                        Consignment = consignment,
+                        TransferredIn = transferredIn,
+                        TransferredOut = transferredOut,
+                        Note = frameInventory.Note,
+                        InvoiceDate = invoiceDate,
+                        ValidInventory = validInventory,
+                        DateAdded = dateAdded
+                    };
+                    frameInventories.Add(newInventory);
+				}
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID {frameInventory.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID {frameInventory.Id}. Error: {e.Message}");
-            }
-        }
+            ffpmDbContext.Inventories.UpdateRange(frameInventories);
+			ffpmDbContext.SaveChanges();
+			frameInventories = ffpmDbContext.Inventories.ToList();
+		}
 
-        public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> ehrFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> invFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameDblensColor> frameLensColors) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string colorCode = "";
-                if (frameLensColor.ColorCode != null) {
-                    colorCode = frameLensColor.ColorCode;
-                }
-                string colorDescription = "";
-                if (frameLensColor.ColorDescription != null) {
-                    colorDescription = frameLensColor.ColorDescription;
-                }
-                int statusId = -1;
-                if (frameLensColor.StatusId != null) {
-                    if (int.TryParse(frameLensColor.StatusId, out int locum)) {
-                        statusId = locum;
+            foreach (var frameLensColor in invFrameLensColors) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string colorCode = "";
+                    if (frameLensColor.ColorCode != null) {
+                        colorCode = frameLensColor.ColorCode;
                     }
-                }
-                long locationId = -1;
-                if (frameLensColor.LocationId != null) {
-                    if (long.TryParse(frameLensColor.LocationId, out long locum)) {
-                        locationId = locum;
+                    string colorDescription = "";
+                    if (frameLensColor.ColorDescription != null) {
+                        colorDescription = frameLensColor.ColorDescription;
                     }
+                    int statusId = -1;
+                    if (frameLensColor.StatusId != null) {
+                        if (int.TryParse(frameLensColor.StatusId, out int locum)) {
+                            statusId = locum;
+                        }
+                    }
+                    long locationId = -1;
+                    if (frameLensColor.LocationId != null) {
+                        if (long.TryParse(frameLensColor.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = frameDblensColors.FirstOrDefault(x => x.ColorCode == colorCode);
+
+                    if (invList != null) {
+					    var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
+						    ColorCode = TruncateString(colorCode, 50),
+						    ColorDescription = TruncateString(colorDescription, 150),
+						    StatusId = statusId,
+						    LocationId = locationId
+					    };
+					    frameLensColors.Add(newFrameLensColor);
+				    }
                 }
-
-                var invList = ffpmDbContext.FrameDblensColors.FirstOrDefault(x => x.ColorCode == colorCode);
-
-                if (invList != null) {
-                    invList.ColorDescription = TruncateString(colorDescription, 150);
-                    invList.StatusId = statusId;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
                 }
-
-                var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
-                    ColorCode = TruncateString(colorCode, 50),
-                    ColorDescription = TruncateString(colorDescription, 150),
-                    StatusId = statusId,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameDblensColors.Add(newFrameLensColor);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameDblensColors.UpdateRange(frameLensColors);
+			ffpmDbContext.SaveChanges();
+			frameLensColors = ffpmDbContext.FrameDblensColors.ToList();
+		}
 
-        public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> ehrFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> invFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameMaterial> frameMaterials) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string materialName = "";
-                if (frameMaterial.MaterialName != null) {
-                    materialName = frameMaterial.MaterialName;
-                }
-                bool active = false;
-                if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes" || frameMaterial.Active == "1") {
-                    active = true;
-                }
-                long sortOrder = -1;
-                if (frameMaterial.SortOrder != null) {
-                    if (long.TryParse(frameMaterial.SortOrder, out long locum)) {
-                        sortOrder = locum;
+            foreach (var frameMaterial in invFrameMaterials) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string materialName = "";
+                    if (frameMaterial.MaterialName != null) {
+                        materialName = frameMaterial.MaterialName;
                     }
-                }
-                long locationId = -1;
-                if (frameMaterial.LocationId != null) {
-                    if (long.TryParse(frameMaterial.LocationId, out long locum)) {
-                        locationId = locum;
+                    bool active = false;
+                    if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes" || frameMaterial.Active == "1") {
+                        active = true;
                     }
+                    long sortOrder = -1;
+                    if (frameMaterial.SortOrder != null) {
+                        if (long.TryParse(frameMaterial.SortOrder, out long locum)) {
+                            sortOrder = locum;
+                        }
+                    }
+                    long locationId = -1;
+                    if (frameMaterial.LocationId != null) {
+                        if (long.TryParse(frameMaterial.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = frameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
+
+                    if (invList != null) {
+					    var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
+						    MaterialName = TruncateString(materialName, 50),
+						    MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
+						    Active = active,
+						    SortOrder = sortOrder,
+						    LocationId = locationId
+					    };
+					    frameMaterials.Add(newFrameMaterial);
+				    }
                 }
-
-                var invList = ffpmDbContext.FrameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
-
-                if (invList != null) {
-                    invList.MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250);
-                    invList.Active = active;
-                    invList.SortOrder = sortOrder;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
                 }
-
-                var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
-                    MaterialName = TruncateString(materialName, 50),
-                    MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
-                    Active = active,
-                    SortOrder = sortOrder,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameMaterials.Add(newFrameMaterial);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameMaterials.UpdateRange(frameMaterials);
+			ffpmDbContext.SaveChanges();
+			frameMaterials = ffpmDbContext.FrameMaterials.ToList();
+		}
 
-        public static void FrameMountConvert(List<ModelsD.FrameMount> ehrFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameMountConvert(List<ModelsD.FrameMount> invFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameMount> frameMounts) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string frameMount1 = "";
-                if (frameMount.FrameMount1 != null) {
-                    frameMount1 = frameMount.FrameMount1;
-                }
-                bool active = false;
-                if (frameMount.Active != null && frameMount.Active.ToLower() == "yes" || frameMount.Active == "1") {
-                    active = true;
-                }
-                long sortOrder = -1;
-                if (frameMount.SortOrder != null) {
-                    if (long.TryParse(frameMount.SortOrder, out long locum)) {
-                        sortOrder = locum;
+            foreach (var frameMount in invFrameMounts) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string frameMount1 = "";
+                    if (frameMount.FrameMount1 != null) {
+                        frameMount1 = frameMount.FrameMount1;
                     }
-                }
-                long locationId = -1;
-                if (frameMount.LocationId != null) {
-                    if (long.TryParse(frameMount.LocationId, out long locum)) {
-                        locationId = locum;
+                    bool active = false;
+                    if (frameMount.Active != null && frameMount.Active.ToLower() == "yes" || frameMount.Active == "1") {
+                        active = true;
                     }
+                    long sortOrder = -1;
+                    if (frameMount.SortOrder != null) {
+                        if (long.TryParse(frameMount.SortOrder, out long locum)) {
+                            sortOrder = locum;
+                        }
+                    }
+                    long locationId = -1;
+                    if (frameMount.LocationId != null) {
+                        if (long.TryParse(frameMount.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = frameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
+
+                    if (invList != null) {
+					    var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
+						    FrameMount1 = TruncateString(frameMount1, 50),
+						    MountDescription = TruncateString(frameMount.MountDescription, 250),
+						    Active = active,
+						    SortOrder = sortOrder,
+						    LocationId = locationId
+					    };
+					    frameMounts.Add(newFrameMount);
+				    }
                 }
-
-                var invList = ffpmDbContext.FrameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
-
-                if (invList != null) {
-                    invList.MountDescription = TruncateString(frameMount.MountDescription, 250);
-                    invList.Active = active;
-                    invList.SortOrder = sortOrder;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
                 }
-
-                var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
-                    FrameMount1 = TruncateString(frameMount1, 50),
-                    MountDescription = TruncateString(frameMount.MountDescription, 250),
-                    Active = active,
-                    SortOrder = sortOrder,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameMounts.Add(newFrameMount);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameMounts.UpdateRange(frameMounts);
+			ffpmDbContext.SaveChanges();
+            frameMounts = ffpmDbContext.FrameMounts.ToList();
+		}
 
-        public static void FrameOrderConvert(List<ModelsD.FrameOrder> ehrFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameOrderConvert(List<ModelsD.FrameOrder> invFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.FrameOrderInfo> frameOrders) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string name = "";
-                if (frameOrder.Name != null) {
-                    name = frameOrder.Name;
-                }
-                int materialId = -1;
-                if (frameOrder.MaterialId != null) {
-                    if (int.TryParse(frameOrder.MaterialId, out int locum)) {
-                        materialId = locum;
+            foreach (var frameOrder in invFrameOrders) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string name = "";
+                    if (frameOrder.Name != null) {
+                        name = frameOrder.Name;
                     }
-                }
-                int statusId = -1;
-                if (frameOrder.StatusId != null) {
-                    if (int.TryParse(frameOrder.StatusId, out int locum)) {
-                        statusId = locum;
+                    int materialId = -1;
+                    if (frameOrder.MaterialId != null) {
+                        if (int.TryParse(frameOrder.MaterialId, out int locum)) {
+                            materialId = locum;
+                        }
                     }
-                }
-                int cptId = -1;
-                if (frameOrder.CptId != null) {
-                    if (int.TryParse(frameOrder.CptId, out int locum)) {
-                        cptId = locum;
+                    int statusId = -1;
+                    if (frameOrder.StatusId != null) {
+                        if (int.TryParse(frameOrder.StatusId, out int locum)) {
+                            statusId = locum;
+                        }
                     }
-                }
-                int eTypId = -1;
-                if (frameOrder.EtypId != null) {
-                    if (int.TryParse(frameOrder.EtypId, out int locum)) {
-                        eTypId = locum;
+                    int cptId = -1;
+                    if (frameOrder.CptId != null) {
+                        if (int.TryParse(frameOrder.CptId, out int locum)) {
+                            cptId = locum;
+                        }
                     }
-                }
-                int fTypId = -1;
-                if (frameOrder.FtypId != null) {
-                    if (int.TryParse(frameOrder.FtypId, out int locum)) {
-                        fTypId = locum;
+                    int eTypId = -1;
+                    if (frameOrder.EtypId != null) {
+                        if (int.TryParse(frameOrder.EtypId, out int locum)) {
+                            eTypId = locum;
+                        }
                     }
-                }
-                string color = "";
-                if (frameOrder.Color != null) {
-                    color = frameOrder.Color;
-                }
-                long manufacturerId = -1;
-                if (frameOrder.ManufacturerId != null) {
-                    if (long.TryParse(frameOrder.ManufacturerId, out long locum)) {
-                        manufacturerId = locum;
+                    int fTypId = -1;
+                    if (frameOrder.FtypId != null) {
+                        if (int.TryParse(frameOrder.FtypId, out int locum)) {
+                            fTypId = locum;
+                        }
                     }
-                }
-                int eye = -1;
-                if (frameOrder.Eye != null) {
-                    if (int.TryParse(frameOrder.Eye, out int locum)) {
-                        eye = locum;
+                    string color = "";
+                    if (frameOrder.Color != null) {
+                        color = frameOrder.Color;
                     }
-                }
-                int bridge = -1;
-                if (frameOrder.Bridge != null) {
-                    if (int.TryParse(frameOrder.Bridge, out int locum)) {
-                        bridge = locum;
+                    long manufacturerId = -1;
+                    if (frameOrder.ManufacturerId != null) {
+                        if (long.TryParse(frameOrder.ManufacturerId, out long locum)) {
+                            manufacturerId = locum;
+                        }
                     }
-                }
-                decimal a = -1;
-                if (frameOrder.A != null) {
-                    if (decimal.TryParse(frameOrder.A, out decimal locum)) {
-                        a = locum;
+                    int eye = -1;
+                    if (frameOrder.Eye != null) {
+                        if (int.TryParse(frameOrder.Eye, out int locum)) {
+                            eye = locum;
+                        }
                     }
-                }
-                decimal b = -1;
-                if (frameOrder.B != null) {
-                    if (decimal.TryParse(frameOrder.B, out decimal locum)) {
-                        b = locum;
+                    int bridge = -1;
+                    if (frameOrder.Bridge != null) {
+                        if (int.TryParse(frameOrder.Bridge, out int locum)) {
+                            bridge = locum;
+                        }
                     }
-                }
-                decimal ed = -1;
-                if (frameOrder.Ed != null) {
-                    if (decimal.TryParse(frameOrder.Ed, out decimal locum)) {
-                        ed = locum;
+                    decimal a = -1;
+                    if (frameOrder.A != null) {
+                        if (decimal.TryParse(frameOrder.A, out decimal locum)) {
+                            a = locum;
+                        }
                     }
-                }
-                decimal dbl = -1;
-                if (frameOrder.Dbl != null) {
-                    if (decimal.TryParse(frameOrder.Dbl, out decimal locum)) {
-                        dbl = locum;
+                    decimal b = -1;
+                    if (frameOrder.B != null) {
+                        if (decimal.TryParse(frameOrder.B, out decimal locum)) {
+                            b = locum;
+                        }
                     }
-                }
-                decimal cSize = -1;
-                if (frameOrder.Csize != null) {
-                    if (decimal.TryParse(frameOrder.Csize, out decimal locum)) {
-                        cSize = locum;
+                    decimal ed = -1;
+                    if (frameOrder.Ed != null) {
+                        if (decimal.TryParse(frameOrder.Ed, out decimal locum)) {
+                            ed = locum;
+                        }
                     }
-                }
-                int templeSize = -1;
-                if (frameOrder.TempleSize != null) {
-                    if (int.TryParse(frameOrder.TempleSize, out int locum)) {
-                        templeSize = locum;
+                    decimal dbl = -1;
+                    if (frameOrder.Dbl != null) {
+                        if (decimal.TryParse(frameOrder.Dbl, out decimal locum)) {
+                            dbl = locum;
+                        }
                     }
-                }
-                int templeStyleId = -1;
-                if (frameOrder.TempleStyleId != null) {
-                    if (int.TryParse(frameOrder.TempleStyleId, out int locum)) {
-                        templeStyleId = locum;
+                    decimal cSize = -1;
+                    if (frameOrder.Csize != null) {
+                        if (decimal.TryParse(frameOrder.Csize, out decimal locum)) {
+                            cSize = locum;
+                        }
                     }
-                }
-                decimal retail = -1;
-                if (frameOrder.Retail != null) {
-                    if (decimal.TryParse(frameOrder.Retail, out decimal locum)) {
-                        retail = locum;
+                    int templeSize = -1;
+                    if (frameOrder.TempleSize != null) {
+                        if (int.TryParse(frameOrder.TempleSize, out int locum)) {
+                            templeSize = locum;
+                        }
                     }
-                }
-                long inventoryId = -1;
-                if (frameOrder.InventoryId != null) {
-                    if (long.TryParse(frameOrder.InventoryId, out long locum)) {
-                        inventoryId = locum;
+                    int templeStyleId = -1;
+                    if (frameOrder.TempleStyleId != null) {
+                        if (int.TryParse(frameOrder.TempleStyleId, out int locum)) {
+                            templeStyleId = locum;
+                        }
                     }
-                }
-                bool isLmsFrame = false;
-                if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes" || frameOrder.Active == "1") {
-                    isLmsFrame = true;
-                }
+                    decimal retail = -1;
+                    if (frameOrder.Retail != null) {
+                        if (decimal.TryParse(frameOrder.Retail, out decimal locum)) {
+                            retail = locum;
+                        }
+                    }
+                    long inventoryId = -1;
+                    if (frameOrder.InventoryId != null) {
+                        if (long.TryParse(frameOrder.InventoryId, out long locum)) {
+                            inventoryId = locum;
+                        }
+                    }
+                    bool isLmsFrame = false;
+                    if (frameOrder.IsLmsframe != null && frameOrder.IsLmsframe.ToLower() == "yes" || frameOrder.Active == "1") {
+                        isLmsFrame = true;
+                    }
 
-                // since it is orders, there can be multiple that are the exact same
-                // because of this, I wont check for duplicate orders
+                    // since it is orders, there can be multiple that are the exact same
+                    // because of this, I wont check for duplicate orders
 
 
 
-                var newFrameOrder = new Brady_s_Conversion_Program.ModelsA.FrameOrderInfo {
-                    Name = TruncateString(name, 50),
-                    MaterialId = materialId,
-                    StatusId = statusId,
-                    CptId = cptId,
-                    EtypId = eTypId,
-                    FtypId = fTypId,
-                    Color = TruncateString(color, 20),
-                    ManufacturerId = manufacturerId,
-                    Eye = eye,
-                    Bridge = bridge,
-                    A = a,
-                    B = b,
-                    Ed = ed,
-                    Dbl = dbl,
-                    Csize = cSize,
-                    TempleSize = templeSize,
-                    TempleStyleId = templeStyleId,
-                    Retail = retail,
-                    InventoryId = inventoryId,
-                    IsLmsframe = isLmsFrame
-                };
-                ffpmDbContext.FrameOrderInfos.Add(newFrameOrder);
-
-                ffpmDbContext.SaveChanges();
+                    var newFrameOrder = new Brady_s_Conversion_Program.ModelsA.FrameOrderInfo {
+                        Name = TruncateString(name, 50),
+                        MaterialId = materialId,
+                        StatusId = statusId,
+                        CptId = cptId,
+                        EtypId = eTypId,
+                        FtypId = fTypId,
+                        Color = TruncateString(color, 20),
+                        ManufacturerId = manufacturerId,
+                        Eye = eye,
+                        Bridge = bridge,
+                        A = a,
+                        B = b,
+                        Ed = ed,
+                        Dbl = dbl,
+                        Csize = cSize,
+                        TempleSize = templeSize,
+                        TempleStyleId = templeStyleId,
+                        Retail = retail,
+                        InventoryId = inventoryId,
+                        IsLmsframe = isLmsFrame
+                    };
+                    frameOrders.Add(newFrameOrder);
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameOrderInfos.UpdateRange(frameOrders);
+			ffpmDbContext.SaveChanges();
+			frameOrders = ffpmDbContext.FrameOrderInfos.ToList();
+		}
 
-        public static void FrameConvert(List<ModelsD.Frame> ehrFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameConvert(List<ModelsD.Frame> invFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.Frame> frames) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string upc = "";
-                if (frame.Upc != null) {
-                    upc = frame.Upc;
-                }
-                int styleId = -1;
-                if (frame.StyleId != null) {
-                    if (int.TryParse(frame.StyleId, out int locum)) {
-                        styleId = locum;
+            foreach (var frame in invFrames) {
+				progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string upc = "";
+                    if (frame.Upc != null) {
+                        upc = frame.Upc;
                     }
-                }
-                int? eye = null;
-                if (frame.Eye != null) {
-                    if (int.TryParse(frame.Eye, out int locum)) {
-                        eye = locum;
+                    int styleId = -1;
+                    if (frame.StyleId != null) {
+                        if (int.TryParse(frame.StyleId, out int locum)) {
+                            styleId = locum;
+                        }
                     }
-                }
-                int? bridge = null;
-                if (frame.Bridge != null) {
-                    if (int.TryParse(frame.Bridge, out int locum)) {
-                        bridge = locum;
+                    int? eye = null;
+                    if (frame.Eye != null) {
+                        if (int.TryParse(frame.Eye, out int locum)) {
+                            eye = locum;
+                        }
                     }
-                }
-                int? temple = null;
-                if (frame.Temple != null) {
-                    if (int.TryParse(frame.Temple, out int locum)) {
-                        temple = locum;
+                    int? bridge = null;
+                    if (frame.Bridge != null) {
+                        if (int.TryParse(frame.Bridge, out int locum)) {
+                            bridge = locum;
+                        }
                     }
-                }
-                decimal? dbl = null;
-                if (frame.Dbl != null) {
-                    if (decimal.TryParse(frame.Dbl, out decimal locum)) {
-                        dbl = locum;
+                    int? temple = null;
+                    if (frame.Temple != null) {
+                        if (int.TryParse(frame.Temple, out int locum)) {
+                            temple = locum;
+                        }
                     }
-                }
-                decimal? a = null;
-                if (frame.A != null) {
-                    if (decimal.TryParse(frame.A, out decimal locum)) {
-                        a = locum;
+                    decimal? dbl = null;
+                    if (frame.Dbl != null) {
+                        if (decimal.TryParse(frame.Dbl, out decimal locum)) {
+                            dbl = locum;
+                        }
                     }
-                }
-                decimal? b = null;
-                if (frame.B != null) {
-                    if (decimal.TryParse(frame.B, out decimal locum)) {
-                        b = locum;
+                    decimal? a = null;
+                    if (frame.A != null) {
+                        if (decimal.TryParse(frame.A, out decimal locum)) {
+                            a = locum;
+                        }
                     }
-                }
-                decimal? ed = null;
-                if (frame.Ed != null) {
-                    if (decimal.TryParse(frame.Ed, out decimal locum)) {
-                        ed = locum;
+                    decimal? b = null;
+                    if (frame.B != null) {
+                        if (decimal.TryParse(frame.B, out decimal locum)) {
+                            b = locum;
+                        }
                     }
-                }
-                decimal? circumference = null;
-                if (frame.Circumference != null) {
-                    if (decimal.TryParse(frame.Circumference, out decimal locum)) {
-                        circumference = locum;
+                    decimal? ed = null;
+                    if (frame.Ed != null) {
+                        if (decimal.TryParse(frame.Ed, out decimal locum)) {
+                            ed = locum;
+                        }
                     }
-                }
-                decimal? edAngle = null;
-                if (frame.Edangle != null) {
-                    if (decimal.TryParse(frame.Edangle, out decimal locum)) {
-                        edAngle = locum;
+                    decimal? circumference = null;
+                    if (frame.Circumference != null) {
+                        if (decimal.TryParse(frame.Circumference, out decimal locum)) {
+                            circumference = locum;
+                        }
                     }
-                }
-                decimal? frontPrice = null;
-                if (frame.FrontPrice != null) {
-                    if (decimal.TryParse(frame.FrontPrice, out decimal locum)) {
-                        frontPrice = locum;
+                    decimal? edAngle = null;
+                    if (frame.Edangle != null) {
+                        if (decimal.TryParse(frame.Edangle, out decimal locum)) {
+                            edAngle = locum;
+                        }
                     }
-                }
-                decimal? halfTemplesPrice = null;
-                if (frame.HalfTemplesPrice != null) {
-                    if (decimal.TryParse(frame.HalfTemplesPrice, out decimal locum)) {
-                        halfTemplesPrice = locum;
+                    decimal? frontPrice = null;
+                    if (frame.FrontPrice != null) {
+                        if (decimal.TryParse(frame.FrontPrice, out decimal locum)) {
+                            frontPrice = locum;
+                        }
                     }
-                }
-                decimal? templesPrice = null;
-                if (frame.TemplesPrice != null) {
-                    if (decimal.TryParse(frame.TemplesPrice, out decimal locum)) {
-                        templesPrice = locum;
+                    decimal? halfTemplesPrice = null;
+                    if (frame.HalfTemplesPrice != null) {
+                        if (decimal.TryParse(frame.HalfTemplesPrice, out decimal locum)) {
+                            halfTemplesPrice = locum;
+                        }
                     }
-                }
-                decimal? completePrice = null;
-                if (frame.CompletePrice != null) {
-                    if (decimal.TryParse(frame.CompletePrice, out decimal locum)) {
-                        completePrice = locum;
+                    decimal? templesPrice = null;
+                    if (frame.TemplesPrice != null) {
+                        if (decimal.TryParse(frame.TemplesPrice, out decimal locum)) {
+                            templesPrice = locum;
+                        }
                     }
-                }
-                bool? styleNew = null;
-                if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes" || frame.StyleNew == "1") {
-                    styleNew = true;
-                }
-                else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
-                    styleNew = false;
-                }
-                bool? changedPrice = null;
-                if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes" || frame.ChangedPrice == "1") {
-                    changedPrice = true;
-                }
-                else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
-                    changedPrice = false;
-                }
-                long? manufacturerId = null;
-                if (frame.ManufacturerId != null) {
-                    if (long.TryParse(frame.ManufacturerId, out long locum)) {
-                        manufacturerId = locum;
+                    decimal? completePrice = null;
+                    if (frame.CompletePrice != null) {
+                        if (decimal.TryParse(frame.CompletePrice, out decimal locum)) {
+                            completePrice = locum;
+                        }
                     }
-                }
-                long? vendorId = null;
-                if (frame.VendorId != null) {
-                    if (long.TryParse(frame.VendorId, out long locum)) {
-                        vendorId = locum;
+                    bool? styleNew = null;
+                    if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes" || frame.StyleNew == "1") {
+                        styleNew = true;
                     }
-                }
-                long? brandId = null;
-                if (frame.BrandId != null) {
-                    if (long.TryParse(frame.BrandId, out long locum)) {
-                        brandId = locum;
+                    else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
+                        styleNew = false;
                     }
-                }
-                long? collectionId = null;
-                if (frame.CollectionId != null) {
-                    if (long.TryParse(frame.CollectionId, out long locum)) {
-                        collectionId = locum;
+                    bool? changedPrice = null;
+                    if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes" || frame.ChangedPrice == "1") {
+                        changedPrice = true;
                     }
-                }
-                int? frameCategoryId = null;
-                if (frame.FrameCategoryId != null) {
-                    if (int.TryParse(frame.FrameCategoryId, out int locum)) {
-                        frameCategoryId = locum;
+                    else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
+                        changedPrice = false;
                     }
-                }
-                int? frameShapeId = null;
-                if (frame.FrameShapeId != null) {
-                    if (int.TryParse(frame.FrameShapeId, out int locum)) {
-                        frameShapeId = locum;
+                    long? manufacturerId = null;
+                    if (frame.ManufacturerId != null) {
+                        if (long.TryParse(frame.ManufacturerId, out long locum)) {
+                            manufacturerId = locum;
+                        }
                     }
-                }
-                int? materialId = null;
-                if (frame.MaterialId != null) {
-                    if (int.TryParse(frame.MaterialId, out int locum)) {
-                        materialId = locum;
+                    long? vendorId = null;
+                    if (frame.VendorId != null) {
+                        if (long.TryParse(frame.VendorId, out long locum)) {
+                            vendorId = locum;
+                        }
                     }
-                }
-                int? frameMountId = null;
-                if (frame.FrameMountId != null) {
-                    if (int.TryParse(frame.FrameMountId, out int locum)) {
-                        frameMountId = locum;
+                    long? brandId = null;
+                    if (frame.BrandId != null) {
+                        if (long.TryParse(frame.BrandId, out long locum)) {
+                            brandId = locum;
+                        }
                     }
-                }
-                long? frameColorId = null;
-                if (frame.FrameColorId != null) {
-                    if (long.TryParse(frame.FrameColorId, out long locum)) {
-                        frameColorId = locum;
+                    long? collectionId = null;
+                    if (frame.CollectionId != null) {
+                        if (long.TryParse(frame.CollectionId, out long locum)) {
+                            collectionId = locum;
+                        }
                     }
-                }
-                long? lensColorId = null;
-                if (frame.LensColorId != null) {
-                    if (long.TryParse(frame.LensColorId, out long locum)) {
-                        lensColorId = locum;
+                    int? frameCategoryId = null;
+                    if (frame.FrameCategoryId != null) {
+                        if (int.TryParse(frame.FrameCategoryId, out int locum)) {
+                            frameCategoryId = locum;
+                        }
                     }
-                }
-                int? genderId = null;
-                if (frame.GenderId != null) {
-                    if (int.TryParse(frame.GenderId, out int locum)) {
-                        genderId = locum;
+                    int? frameShapeId = null;
+                    if (frame.FrameShapeId != null) {
+                        if (int.TryParse(frame.FrameShapeId, out int locum)) {
+                            frameShapeId = locum;
+                        }
                     }
-                }
-                long? countryId = null;
-                if (frame.CountryId != null) {
-                    if (long.TryParse(frame.CountryId, out long locum)) {
-                        countryId = locum;
+                    int? materialId = null;
+                    if (frame.MaterialId != null) {
+                        if (int.TryParse(frame.MaterialId, out int locum)) {
+                            materialId = locum;
+                        }
                     }
-                }
-                int? ageGroupId = null;
-                if (frame.AgeGroupId != null) {
-                    if (int.TryParse(frame.AgeGroupId, out int locum)) {
-                        ageGroupId = locum;
+                    int? frameMountId = null;
+                    if (frame.FrameMountId != null) {
+                        if (int.TryParse(frame.FrameMountId, out int locum)) {
+                            frameMountId = locum;
+                        }
                     }
-                }
-                long? locationId = null;
-                if (frame.LocationId != null) {
-                    if (long.TryParse(frame.LocationId, out long locum)) {
-                        locationId = locum;
+                    long? frameColorId = null;
+                    if (frame.FrameColorId != null) {
+                        if (long.TryParse(frame.FrameColorId, out long locum)) {
+                            frameColorId = locum;
+                        }
                     }
-                }
-                int? cptid = null;
-                if (frame.Cptid != null) {
-                    if (int.TryParse(frame.Cptid, out int locum)) {
-                        cptid = locum;
+                    long? lensColorId = null;
+                    if (frame.LensColorId != null) {
+                        if (long.TryParse(frame.LensColorId, out long locum)) {
+                            lensColorId = locum;
+                        }
                     }
-                }
-                bool? active = null;
-                if (frame.Active != null && frame.Active.ToLower() == "yes" || frame.Active == "1") {
-                    active = true;
-                }
-                else if (frame.Active != null && frame.Active.ToLower() == "no") {
-                    active = false;
-                }
-                DateTime? dateAdded = null;
-                if (frame.DateAdded != null) {
-                    if (DateTime.TryParseExact(frame.DateAdded, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
-                        dateAdded = locum;
+                    int? genderId = null;
+                    if (frame.GenderId != null) {
+                        if (int.TryParse(frame.GenderId, out int locum)) {
+                            genderId = locum;
+                        }
                     }
-                }
-                DateTime? lastUpdated = null;
-                if (frame.LastUpdated != null) {
-                    if (DateTime.TryParseExact(frame.LastUpdated, dateFormats,
-                        CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
-                        lastUpdated = locum;
+                    long? countryId = null;
+                    if (frame.CountryId != null) {
+                        if (long.TryParse(frame.CountryId, out long locum)) {
+                            countryId = locum;
+                        }
                     }
-                }
+                    int? ageGroupId = null;
+                    if (frame.AgeGroupId != null) {
+                        if (int.TryParse(frame.AgeGroupId, out int locum)) {
+                            ageGroupId = locum;
+                        }
+                    }
+                    long? locationId = null;
+                    if (frame.LocationId != null) {
+                        if (long.TryParse(frame.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+                    int? cptid = null;
+                    if (frame.Cptid != null) {
+                        if (int.TryParse(frame.Cptid, out int locum)) {
+                            cptid = locum;
+                        }
+                    }
+                    bool? active = null;
+                    if (frame.Active != null && frame.Active.ToLower() == "yes" || frame.Active == "1") {
+                        active = true;
+                    }
+                    else if (frame.Active != null && frame.Active.ToLower() == "no") {
+                        active = false;
+                    }
+                    DateTime? dateAdded = null;
+                    if (frame.DateAdded != null) {
+                        if (DateTime.TryParseExact(frame.DateAdded, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            dateAdded = locum;
+                        }
+                    }
+                    DateTime? lastUpdated = null;
+                    if (frame.LastUpdated != null) {
+                        if (DateTime.TryParseExact(frame.LastUpdated, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            lastUpdated = locum;
+                        }
+                    }
 
-                // how do we know if a frame is a duplicate?
+                    // how do we know if a frame is a duplicate?
 
 
 
 
-                var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
-                    Fpc = TruncateString(frame.Fpc, 14),
-                    Upc = TruncateString(upc, 14),
-                    StyleId = styleId,
-                    StyleName = TruncateString(frame.StyleName, 37),
-                    Eye = eye,
-                    Bridge = bridge,
-                    Temple = temple,
-                    Dbl = dbl,
-                    A = a,
-                    B = b,
-                    Ed = ed,
-                    Circumference = circumference,
-                    Edangle = edAngle,
-                    FrontPrice = frontPrice,
-                    HalfTemplesPrice = halfTemplesPrice,
-                    TemplesPrice = templesPrice,
-                    CompletePrice = completePrice,
-                    StyleNew = styleNew,
-                    ChangedPrice = changedPrice,
-                    Sku = TruncateString(frame.Sku, 30),
-                    YearIntroduced = TruncateString(frame.YearIntroduced, 4),
-                    ManufacturerId = manufacturerId,
-                    VendorId = vendorId,
-                    BrandId = brandId,
-                    CollectionId = collectionId,
-                    FrameCategoryId = frameCategoryId,
-                    FrameShapeId = frameShapeId,
-                    MaterialId = materialId,
-                    FrameMountId = frameMountId,
-                    FrameColorId = frameColorId,
-                    LensColorId = lensColorId,
-                    GenderId = genderId,
-                    CountryId = countryId,
-                    AgeGroupId = ageGroupId,
-                    LocationId = locationId,
-                    Cptid = cptid,
-                    Active = active,
-                    DateAdded = dateAdded,
-                    LastUpdated = lastUpdated
-                };
-                ffpmDbContext.Frames.Add(newFrame);
-
-                ffpmDbContext.SaveChanges();
+                    var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
+                        Fpc = TruncateString(frame.Fpc, 14),
+                        Upc = TruncateString(upc, 14),
+                        StyleId = styleId,
+                        StyleName = TruncateString(frame.StyleName, 37),
+                        Eye = eye,
+                        Bridge = bridge,
+                        Temple = temple,
+                        Dbl = dbl,
+                        A = a,
+                        B = b,
+                        Ed = ed,
+                        Circumference = circumference,
+                        Edangle = edAngle,
+                        FrontPrice = frontPrice,
+                        HalfTemplesPrice = halfTemplesPrice,
+                        TemplesPrice = templesPrice,
+                        CompletePrice = completePrice,
+                        StyleNew = styleNew,
+                        ChangedPrice = changedPrice,
+                        Sku = TruncateString(frame.Sku, 30),
+                        YearIntroduced = TruncateString(frame.YearIntroduced, 4),
+                        ManufacturerId = manufacturerId,
+                        VendorId = vendorId,
+                        BrandId = brandId,
+                        CollectionId = collectionId,
+                        FrameCategoryId = frameCategoryId,
+                        FrameShapeId = frameShapeId,
+                        MaterialId = materialId,
+                        FrameMountId = frameMountId,
+                        FrameColorId = frameColorId,
+                        LensColorId = lensColorId,
+                        GenderId = genderId,
+                        CountryId = countryId,
+                        AgeGroupId = ageGroupId,
+                        LocationId = locationId,
+                        Cptid = cptid,
+                        Active = active,
+                        DateAdded = dateAdded,
+                        LastUpdated = lastUpdated
+                    };
+                    frames.Add(newFrame);
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.Frames.UpdateRange(frames);
+			ffpmDbContext.SaveChanges();
+			frames = ffpmDbContext.Frames.ToList();
+		}
 
         #endregion InvConversion
     }
