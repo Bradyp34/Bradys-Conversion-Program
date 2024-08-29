@@ -8599,225 +8599,205 @@ namespace Brady_s_Conversion_Program {
 
         }
 
-        public static void CLBrandsConvert(Clbrand clBrand, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                long? addedBy = null;
-                if (clBrand.AddedBy != null) {
-                    if (long.TryParse(clBrand.AddedBy, out long locum)) {
-                        addedBy = locum;
+        public static void CLBrandsConvert(List<Clbrand> ehrClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.ClnsBrand> clnsBrands) {
+            foreach (var clBrand in ehrClBrands) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    long? addedBy = null;
+                    if (clBrand.AddedBy != null) {
+                        if (long.TryParse(clBrand.AddedBy, out long locum)) {
+                            addedBy = locum;
+                        }
                     }
-                }
-                DateTime? addedDate = null;
-                if (clBrand.AddedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clBrand.AddedDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        addedDate = tempDateTime;
+                    DateTime? addedDate = null;
+                    if (clBrand.AddedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clBrand.AddedDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            addedDate = tempDateTime;
+                        }
                     }
-                }
-                long? locationId = null;
-                if (clBrand.LocationId != null) {
-                    if (long.TryParse(clBrand.LocationId, out long locum)) {
-                        locationId = locum;
+                    long? locationId = null;
+                    if (clBrand.LocationId != null) {
+                        if (long.TryParse(clBrand.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
                     }
-                }
-                bool? isActive = null;
-                if (clBrand.Active != null) {
-                    if (bool.TryParse(clBrand.Active, out bool locum)) {
-                        isActive = locum;
+                    bool? isActive = null;
+                    if (clBrand.Active != null) {
+                        if (bool.TryParse(clBrand.Active, out bool locum)) {
+                            isActive = locum;
+                        }
                     }
+
+                    var invList = clnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
+
+                    if (invList != null) {
+					    var newClbrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
+						    BrandName = TruncateString(clBrand.BrandName, 50),
+						    BrandCode = TruncateString(clBrand.BrandCode, 10),
+						    AddedBy = addedBy,
+						    AddedDate = addedDate,
+						    LocationId = locationId,
+						    IsActive = isActive
+					    };
+                        clnsBrands.Add(newClbrand);
+				    }
                 }
-
-                var invList = ffpmDbContext.ClnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
-
-                if (invList != null) {
-                    invList.BrandCode = clBrand.BrandCode;
-                    invList.AddedBy = addedBy;
-                    invList.AddedDate = addedDate;
-                    invList.LocationId = locationId;
-                    invList.IsActive = isActive;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
                 }
-
-                var newClbrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
-                    BrandName = TruncateString(clBrand.BrandName, 50),
-                    BrandCode = TruncateString(clBrand.BrandCode, 10),
-                    AddedBy = addedBy,
-                    AddedDate = addedDate,
-                    LocationId = locationId,
-                    IsActive = isActive
-                };
-                ffpmDbContext.ClnsBrands.Add(newClbrand);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
+            ffpmDbContext.ClnsBrands.UpdateRange(clnsBrands);
+			ffpmDbContext.SaveChanges();
+			clnsBrands = ffpmDbContext.ClnsBrands.ToList();
+		}
+
+        public static void clInventoryConvert(List<Clinventory> ehrClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.ClnsInventory> clnsInventories) {
+            foreach (var clInventory in ehrClInventories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    if (clInventory.ContactLensId <= -1) {
+                        logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID {clInventory.Id}");
+                        return;
+                    }
+                    int? quantityOrdered = null;
+                    if (clInventory.QuantityOrdered != null) {
+                        if (int.TryParse(clInventory.QuantityOrdered, out int locum)) {
+                            quantityOrdered = locum;
+                        }
+                    }
+                    int? received = null;
+                    if (clInventory.Received != null) {
+                        if (int.TryParse(clInventory.Received, out int locum)) {
+                            received = locum;
+                        }
+                    }
+                    int? onHand = null;
+                    if (clInventory.OnHand != null) {
+                        if (int.TryParse(clInventory.OnHand, out int locum)) {
+                            onHand = locum;
+                        }
+                    }
+                    int? dispensed = null;
+                    if (clInventory.Dispensed != null) {
+                        if (int.TryParse(clInventory.Dispensed, out int locum)) {
+                            dispensed = locum;
+                        }
+                    }
+                    long? addedBy = null;
+                    if (clInventory.AddedBy != null) {
+                        if (long.TryParse(clInventory.AddedBy, out long locum)) {
+                            addedBy = locum;
+                        }
+                    }
+                    DateTime? addedDate = null;
+                    if (clInventory.AddedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clInventory.AddedDate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            addedDate = tempDateTime;
+                        }
+                    }
+                    DateTime? invoiceDate = null;
+                    if (clInventory.InvoiceDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clInventory.InvoiceDate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            invoiceDate = tempDateTime;
+                        }
+                    }
+                    DateTime? expiryDate = null;
+                    if (clInventory.ExpiryDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clInventory.ExpiryDate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            expiryDate = tempDateTime;
+                        }
+                    }
+                    long? updatedBy = null;
+                    if (clInventory.UpdatedBy != null) {
+                        if (long.TryParse(clInventory.UpdatedBy, out long locum)) {
+                            updatedBy = locum;
+                        }
+                    }
+                    DateTime? updatedDate = null;
+                    if (clInventory.UpdatedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clInventory.UpdatedDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            updatedDate = tempDateTime;
+                        }
+                    }
+                    bool? isTrials = null;
+                    if (clInventory.IsTrials != null) {
+                        if (bool.TryParse(clInventory.IsTrials, out bool locum)) {
+                            isTrials = locum;
+                        }
+                    }
+                    bool? isActive = null;
+                    if (clInventory.IsActive != null) {
+                        if (bool.TryParse(clInventory.IsActive, out bool locum)) {
+                            isActive = locum;
+                        }
+                    }
+                    long? locationId = null;
+                    if (clInventory.LocationId != null) {
+                        if (long.TryParse(clInventory.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = clnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
+
+                    if (invList != null) {
+						var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
+							ContactLensId = clInventory.ContactLensId,
+							Barcode = TruncateString(clInventory.Barcode, 8),
+							InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20),
+							ItemCost = TruncateString(clInventory.ItemCost, 20),
+							WholesalePrice = TruncateString(clInventory.WholesalePrice, 20),
+							RetailPrice = TruncateString(clInventory.RetailPrice, 20),
+							Notes = clInventory.Notes,  // Notes is varchar(MAX), no truncation needed
+							QuantityOrdered = quantityOrdered,
+							Received = received,
+							OnHand = onHand,
+							Dispensed = dispensed,
+							AddedBy = addedBy,
+							AddedDate = addedDate,
+							InvoiceDate = invoiceDate,
+							ExpiryDate = expiryDate,
+							UpdatedBy = updatedBy,
+							UpdatedDate = updatedDate,
+							IsTrials = isTrials,
+							IsActive = isActive,
+							LocationId = locationId
+						};
+                        clnsInventories.Add(newClInventory);
+					}
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
+                }
             }
-        }
+			ffpmDbContext.ClnsInventories.UpdateRange(clnsInventories);
+			ffpmDbContext.SaveChanges();
+			clnsInventories = ffpmDbContext.ClnsInventories.ToList();
+		}
 
-        public static void clInventoryConvert(Clinventory clInventory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                if (clInventory.ContactLensId <= -1) {
-                    logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID {clInventory.Id}");
-                    return;
-                }
-                int? quantityOrdered = null;
-                if (clInventory.QuantityOrdered != null) {
-                    if (int.TryParse(clInventory.QuantityOrdered, out int locum)) {
-                        quantityOrdered = locum;
-                    }
-                }
-                int? received = null;
-                if (clInventory.Received != null) {
-                    if (int.TryParse(clInventory.Received, out int locum)) {
-                        received = locum;
-                    }
-                }
-                int? onHand = null;
-                if (clInventory.OnHand != null) {
-                    if (int.TryParse(clInventory.OnHand, out int locum)) {
-                        onHand = locum;
-                    }
-                }
-                int? dispensed = null;
-                if (clInventory.Dispensed != null) {
-                    if (int.TryParse(clInventory.Dispensed, out int locum)) {
-                        dispensed = locum;
-                    }
-                }
-                long? addedBy = null;
-                if (clInventory.AddedBy != null) {
-                    if (long.TryParse(clInventory.AddedBy, out long locum)) {
-                        addedBy = locum;
-                    }
-                }
-                DateTime? addedDate = null;
-                if (clInventory.AddedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clInventory.AddedDate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        addedDate = tempDateTime;
-                    }
-                }
-                DateTime? invoiceDate = null;
-                if (clInventory.InvoiceDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clInventory.InvoiceDate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        invoiceDate = tempDateTime;
-                    }
-                }
-                DateTime? expiryDate = null;
-                if (clInventory.ExpiryDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clInventory.ExpiryDate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        expiryDate = tempDateTime;
-                    }
-                }
-                long? updatedBy = null;
-                if (clInventory.UpdatedBy != null) {
-                    if (long.TryParse(clInventory.UpdatedBy, out long locum)) {
-                        updatedBy = locum;
-                    }
-                }
-                DateTime? updatedDate = null;
-                if (clInventory.UpdatedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clInventory.UpdatedDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        updatedDate = tempDateTime;
-                    }
-                }
-                bool? isTrials = null;
-                if (clInventory.IsTrials != null) {
-                    if (bool.TryParse(clInventory.IsTrials, out bool locum)) {
-                        isTrials = locum;
-                    }
-                }
-                bool? isActive = null;
-                if (clInventory.IsActive != null) {
-                    if (bool.TryParse(clInventory.IsActive, out bool locum)) {
-                        isActive = locum;
-                    }
-                }
-                long? locationId = null;
-                if (clInventory.LocationId != null) {
-                    if (long.TryParse(clInventory.LocationId, out long locum)) {
-                        locationId = locum;
-                    }
-                }
-
-                var invList = ffpmDbContext.ClnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
-
-                if (invList != null) {
-                    invList.Barcode = TruncateString(clInventory.Barcode, 8);
-                    invList.InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20);
-                    invList.ItemCost = TruncateString(clInventory.ItemCost, 20);
-                    invList.WholesalePrice = TruncateString(clInventory.WholesalePrice, 20);
-                    invList.RetailPrice = TruncateString(clInventory.RetailPrice, 20);
-                    invList.Notes = clInventory.Notes;  // Notes is varchar(MAX), no truncation needed
-                    invList.QuantityOrdered = quantityOrdered;
-                    invList.Received = received;
-                    invList.OnHand = onHand;
-                    invList.Dispensed = dispensed;
-                    invList.AddedBy = addedBy;
-                    invList.AddedDate = addedDate;
-                    invList.InvoiceDate = invoiceDate;
-                    invList.ExpiryDate = expiryDate;
-                    invList.UpdatedBy = updatedBy;
-                    invList.UpdatedDate = updatedDate;
-                    invList.IsTrials = isTrials;
-                    invList.IsActive = isActive;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-                var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
-                    ContactLensId = clInventory.ContactLensId,
-                    Barcode = TruncateString(clInventory.Barcode, 8),
-                    InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20),
-                    ItemCost = TruncateString(clInventory.ItemCost, 20),
-                    WholesalePrice = TruncateString(clInventory.WholesalePrice, 20),
-                    RetailPrice = TruncateString(clInventory.RetailPrice, 20),
-                    Notes = clInventory.Notes,  // Notes is varchar(MAX), no truncation needed
-                    QuantityOrdered = quantityOrdered,
-                    Received = received,
-                    OnHand = onHand,
-                    Dispensed = dispensed,
-                    AddedBy = addedBy,
-                    AddedDate = addedDate,
-                    InvoiceDate = invoiceDate,
-                    ExpiryDate = expiryDate,
-                    UpdatedBy = updatedBy,
-                    UpdatedDate = updatedDate,
-                    IsTrials = isTrials,
-                    IsActive = isActive,
-                    LocationId = locationId
-                };
-                ffpmDbContext.ClnsInventories.Add(newClInventory);
-
-                ffpmDbContext.SaveChanges();
-            }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void CLLensesConvert(Cllense clLense, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
+        public static void CLLensesConvert(List<Cllense> ehrClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.ClnsContactLen> clLenses) {
+            foreach (var clLense in ehrClLenses) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
                 int clnsBrandId = -1;
                 if (clLense.ClndbrandId != null) {
                     if (int.TryParse(clLense.ClndbrandId, out int locum)) {
@@ -8905,476 +8885,421 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
 
-                var invList = ffpmDbContext.ClnsContactLens.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+                var invList = clnsContactLens.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
 
                 if (invList != null) {
-                    invList.ClnsManufacturerId = clnsManufacturerId;
-                    invList.Sphere = TruncateString(clLense.Sphere, 10);
-                    invList.Cylinder = TruncateString(clLense.Cylinder, 10);
-                    invList.Axis = TruncateString(clLense.Axis, 10);
-                    invList.BaseCurve = TruncateString(clLense.BaseCurve, 10);
-                    invList.Diameter = TruncateString(clLense.Diameter, 10);
-                    invList.AddPower = TruncateString(clLense.AddPower, 10);
-                    invList.AddPowerName = TruncateString(clLense.AddPowerName, 20);
-                    invList.Multifocal = TruncateString(clLense.Multifocal, 50);
-                    invList.Color = TruncateString(clLense.Color, 50);
-                    invList.Upc = TruncateString(clLense.Upc, 15);
-                    invList.ClnsLensTypeId = clnsLensTypeId;
-                    invList.CptId = cptId;
-                    invList.AddedDate = addedDate;
-                    invList.AddedBy = addedBy;
-                    invList.UpdatedDate = updatedDate;
-                    invList.UpdatedBy = updatedBy;
-                    invList.IsSoftContact = isSoftContact;
-                    invList.IsActive = isActive;
-                    invList.LocationId = locationId;
-                    invList.LensPerBox = lensPerBox;
-                    invList.IsLensFromClxCatalog = isLensFromClxCatalog;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-                var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
-                    ClnsBrandId = clnsBrandId,
-                    ClnsManufacturerId = clnsManufacturerId,
-                    Sphere = TruncateString(clLense.Sphere, 10),
-                    Cylinder = TruncateString(clLense.Cylinder, 10),
-                    Axis = TruncateString(clLense.Axis, 10),
-                    BaseCurve = TruncateString(clLense.BaseCurve, 10),
-                    Diameter = TruncateString(clLense.Diameter, 10),
-                    AddPower = TruncateString(clLense.AddPower, 10),
-                    AddPowerName = TruncateString(clLense.AddPowerName, 20),
-                    Multifocal = TruncateString(clLense.Multifocal, 50),
-                    Color = TruncateString(clLense.Color, 50),
-                    Upc = TruncateString(clLense.Upc, 15),
-                    ClnsLensTypeId = clnsLensTypeId,
-                    CptId = cptId,
-                    AddedDate = addedDate,
-                    AddedBy = addedBy,
-                    UpdatedDate = updatedDate,
-                    UpdatedBy = updatedBy,
-                    IsSoftContact = isSoftContact,
-                    IsActive = isActive,
-                    LocationId = locationId,
-                    LensPerBox = lensPerBox,
-                    IsLensFromClxCatalog = isLensFromClxCatalog
-                };
-
-                ffpmDbContext.ClnsContactLens.Add(newClLens);
-
-                ffpmDbContext.SaveChanges();
+					var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
+						ClnsBrandId = clnsBrandId,
+						ClnsManufacturerId = clnsManufacturerId,
+						Sphere = TruncateString(clLense.Sphere, 10),
+						Cylinder = TruncateString(clLense.Cylinder, 10),
+						Axis = TruncateString(clLense.Axis, 10),
+						BaseCurve = TruncateString(clLense.BaseCurve, 10),
+						Diameter = TruncateString(clLense.Diameter, 10),
+						AddPower = TruncateString(clLense.AddPower, 10),
+						AddPowerName = TruncateString(clLense.AddPowerName, 20),
+						Multifocal = TruncateString(clLense.Multifocal, 50),
+						Color = TruncateString(clLense.Color, 50),
+						Upc = TruncateString(clLense.Upc, 15),
+						ClnsLensTypeId = clnsLensTypeId,
+						CptId = cptId,
+						AddedDate = addedDate,
+						AddedBy = addedBy,
+						UpdatedDate = updatedDate,
+						UpdatedBy = updatedBy,
+						IsSoftContact = isSoftContact,
+						IsActive = isActive,
+						LocationId = locationId,
+						LensPerBox = lensPerBox,
+						IsLensFromClxCatalog = isLensFromClxCatalog
+					};
+                    clnsContactLens.Add(newClLens);
+				}
             }
             catch (Exception e) {
                 logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
             }
+            }
+			ffpmDbContext.ClnsContactLens.UpdateRange(clnsContactLens);
+			ffpmDbContext.SaveChanges();
+			clnsContactLens = ffpmDbContext.ClnsContactLens.ToList();
+		}
+
+        public static void CPTDeptConvert(List<Cptdept> ehrCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.CptDepartment> cptDepartments) {
+            foreach (var cptDept in ehrCptDepts) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string code = "";
+                    if (cptDept.Code != null) {
+                        code = cptDept.Code;
+                    }
+                    string description = "";
+                    if (cptDept.Description != null) {
+                        description = cptDept.Description;
+                    }
+                    int locationId = -1;
+                    if (cptDept.LocationId != null) {
+                        if (int.TryParse(cptDept.LocationId, out int locum)) {
+                            locationId = locum;
+                        }
+                    }
+                    bool active = false;
+                    if (cptDept.Active != null && cptDept.Active.ToLower() == "yes" || cptDept.Active == "1") {
+                        active = true;
+                    }
+                    string sortNumber = "";
+                    if (cptDept.SortNumber != null) {
+                        sortNumber = cptDept.SortNumber;
+                    } // max size here is 3. it is a number in string form.
+
+                    var invList = cptDepartments.FirstOrDefault(x => x.Code == code);
+
+                    if (invList != null) {
+						var newCptdept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
+							Code = TruncateString(code, 10),
+							Description = TruncateString(description, 500),
+							LocationId = locationId,
+							Active = active,
+							SortNumber = TruncateString(sortNumber, 3)
+						};
+                        cptDepartments.Add(newCptdept);
+					}
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID {cptDept.Id}. Error: {e.Message}");
+                }
+            }
+		    ffpmDbContext.CptDepartments.UpdateRange(cptDepartments);
+            ffpmDbContext.SaveChanges();
+            cptDepartments = ffpmDbContext.CptDepartments.ToList();
         }
 
-        public static void CPTDeptConvert(Cptdept cptDept, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string code = "";
-                if (cptDept.Code != null) {
-                    code = cptDept.Code;
-                }
-                string description = "";
-                if (cptDept.Description != null) {
-                    description = cptDept.Description;
-                }
-                int locationId = -1;
-                if (cptDept.LocationId != null) {
-                    if (int.TryParse(cptDept.LocationId, out int locum)) {
-                        locationId = locum;
+        public static void CPTMappingConvert(List<Cptmapping> ehrCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.CptGroupMapping> cptMappings) {
+            foreach (var cptMapping in ehrCptMappings) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int? cptId = null;
+                    if (cptMapping.CptId != null) {
+                        if (int.TryParse(cptMapping.CptId, out int locum)) {
+                            cptId = locum;
+                        }
                     }
+                    int? groupId = null;
+                    if (cptMapping.GroupId != null) {
+                        if (int.TryParse(cptMapping.GroupId, out int locum)) {
+                            groupId = locum;
+                        }
+                    }
+                    int? locationId = null;
+                    if (cptMapping.LocationId != null) {
+                        if (int.TryParse(cptMapping.LocationId, out int locum)) {
+                            locationId = locum;
+                        }
+                    }
+                    bool? Active = null;
+                    if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes" || cptMapping.Active == "1") {
+                        Active = true;
+                    }
+                    else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
+                        Active = false;
+                    }
+
+                    var invList = cptGroupMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
+
+                    if (invList != null) {
+					    var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
+						    CptId = cptId,
+						    GroupId = groupId,
+						    LocationId = locationId,
+						    Active = Active
+					    };
+                        cptMappings.Add(newCptmapping);
+			        }
                 }
-                bool active = false;
-                if (cptDept.Active != null && cptDept.Active.ToLower() == "yes" || cptDept.Active == "1") {
-                    active = true;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
                 }
-                string sortNumber = "";
-                if (cptDept.SortNumber != null) {
-                    sortNumber = cptDept.SortNumber;
-                } // max size here is 3. it is a number in string form.
-
-                var invList = ffpmDbContext.CptDepartments.FirstOrDefault(x => x.Code == code);
-
-                if (invList != null) {
-                    invList.Description = TruncateString(description, 500);
-                    invList.LocationId = locationId;
-                    invList.Active = active;
-                    invList.SortNumber = TruncateString(sortNumber, 3);
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-                var newCptdept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
-                    Code = TruncateString(code, 10),
-                    Description = TruncateString(description, 500),
-                    LocationId = locationId,
-                    Active = active,
-                    SortNumber = TruncateString(sortNumber, 3)
-                };
-                ffpmDbContext.CptDepartments.Add(newCptdept);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID {cptDept.Id}. Error: {e.Message}");
+			ffpmDbContext.CptGroupMappings.UpdateRange(cptMappings);
+			ffpmDbContext.SaveChanges();
+			cptMappings = ffpmDbContext.CptGroupMappings.ToList();
+		}
+
+        public static void CPTConvert(List<Cpt> ehrCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.Cptid> cptIds) {
+            foreach (var cpt in ehrCpts) {
+				progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int? sortOrder = null;
+                    if (cpt.SortOrder != null) {
+                        if (int.TryParse(cpt.SortOrder, out int locum)) {
+                            sortOrder = locum;
+                        }
+                    }
+                    bool? active = null;
+                    if (cpt.Active != null && cpt.Active.ToLower() == "yes" || cpt.Active == "1") {
+                        active = true;
+                    }
+                    else if (cpt.Active != null && cpt.Active.ToLower() == "no") {
+                        active = false;
+                    }
+                    long? locationId = null;
+                    if (cpt.LocationId != null) {
+                        if (long.TryParse(cpt.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+                    decimal? fee = null;
+                    if (cpt.Fee != null) {
+                        if (decimal.TryParse(cpt.Fee, out decimal locum)) {
+                            fee = locum;
+                        }
+                    }
+                    bool taxable = false;
+                    if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes" || cpt.Taxable == "1") {
+                        taxable = true;
+                    }
+                    int departmentId = -1;
+                    if (cpt.DepartmentId != null) {
+                        if (int.TryParse(cpt.DepartmentId, out int locum)) {
+                            departmentId = locum;
+                        }
+                    }
+                    int typeOfServiceId = -1;
+                    if (cpt.TypeOfServiceId != null) {
+                        if (int.TryParse(cpt.TypeOfServiceId, out int locum)) {
+                            typeOfServiceId = locum;
+                        }
+                    }
+                    int taxTypeId = -1;
+                    if (cpt.TaxTypeId != null) {
+                        if (int.TryParse(cpt.TaxTypeId, out int locum)) {
+                            taxTypeId = locum;
+                        }
+                    }
+                    bool useCliaNumber = false;
+                    if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes" || cpt.UseClianumber == "1") {
+                        useCliaNumber = true;
+                    }
+                    int units = -1;
+                    if (cpt.Units != null) {
+                        if (int.TryParse(cpt.Units, out int locum)) {
+                            units = locum;
+                        }
+                    }
+                    bool ndcActive = false;
+                    if (cpt.Ndcactive != null && cpt.Ndcactive.ToLower() == "yes" || cpt.Ndcactive == "1") {
+                        ndcActive = true;
+                    }
+                    decimal? ndcCost = null;
+                    if (cpt.Ndccost != null) {
+                        if (decimal.TryParse(cpt.Ndccost, out decimal locum)) {
+                            ndcCost = locum;
+                        }
+                    }
+                    int? ndcUnitsMeasurementId = null;
+                    if (cpt.NdcunitsMeasurementId != null) {
+                        if (int.TryParse(cpt.NdcunitsMeasurementId, out int locum)) {
+                            ndcUnitsMeasurementId = locum;
+                        }
+                    }
+                    decimal? ndcQuantity = null;
+                    if (cpt.Ndcquantity != null) {
+                        if (decimal.TryParse(cpt.Ndcquantity, out decimal locum)) {
+                            ndcQuantity = locum;
+                        }
+                    }
+                    bool autoUpdateReferringProvider = false;
+                    if (cpt.AutoUpdateReferringProvider != null && cpt.AutoUpdateReferringProvider.ToLower() == "yes" || cpt.AutoUpdateReferringProvider == "1") {
+                        autoUpdateReferringProvider = true;
+                    }
+                    string privateStatementDescription = "";
+                    if (cpt.PrivateStatementDescription != null) {
+                        privateStatementDescription = cpt.PrivateStatementDescription;
+                    }
+                    string alternateCode = "";
+                    if (cpt.AlternateCode != null) {
+                        alternateCode = cpt.AlternateCode;
+                    }
+
+                    var invList = cptIds.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
+
+                    if (invList != null) {
+					    var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
+						    Cpt = cpt.Cpt1,
+						    Description = TruncateString(cpt.Description, 250),
+						    SortOrder = sortOrder,
+						    Active = active,
+						    LocationId = locationId,
+						    Fee = fee,
+						    Taxable = taxable,
+						    DepartmentId = departmentId,
+						    TypeOfServiceId = typeOfServiceId,
+						    TaxTypeId = taxTypeId,
+						    PrivateStatementDescription = TruncateString(privateStatementDescription, 250),
+						    AlternateCode = TruncateString(alternateCode, 20),
+						    UseClianumber = useCliaNumber,
+						    Units = units,
+						    NdcActive = ndcActive,
+						    NdcCost = ndcCost,
+						    NdcCode = TruncateString(cpt.Ndccode, 11),
+						    NdcUnitsMeasurementId = ndcUnitsMeasurementId,
+						    NdcQuantity = ndcQuantity,
+						    AutoUpdateReferringProvider = autoUpdateReferringProvider
+					    };
+                        cptIds.Add(newCpt);
+				    }
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CPT with ID {cpt.Id}. Error: {e.Message}");
+                }
             }
-        }
+			ffpmDbContext.Cptids.UpdateRange(cptIds);
+			ffpmDbContext.SaveChanges();
+			cptIds = ffpmDbContext.Cptids.ToList();
+		}
 
-        public static void CPTMappingConvert(Cptmapping cptMapping, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int? cptId = null;
-                if (cptMapping.CptId != null) {
-                    if (int.TryParse(cptMapping.CptId, out int locum)) {
-                        cptId = locum;
+        public static void FrameCategoryConvert(List<ModelsD.FrameCategory> ehrFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.FrameCategory> frameCategories) {
+            foreach (var frameCategory in ehrFrameCategories) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string categoryName = "";
+                    if (frameCategory.CategoryName != null) {
+                        categoryName = frameCategory.CategoryName;
                     }
-                }
-                int? groupId = null;
-                if (cptMapping.GroupId != null) {
-                    if (int.TryParse(cptMapping.GroupId, out int locum)) {
-                        groupId = locum;
+                    bool? active = null;
+                    if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes" || frameCategory.Active == "1") {
+                        active = true;
                     }
-                }
-                int? locationId = null;
-                if (cptMapping.LocationId != null) {
-                    if (int.TryParse(cptMapping.LocationId, out int locum)) {
-                        locationId = locum;
+                    else if (frameCategory.Active != null && frameCategory.Active.ToLower() == "no") {
+                        active = false;
                     }
+                    long sortOrder = -1;
+                    if (frameCategory.SortOrder != null) {
+                        if (long.TryParse(frameCategory.SortOrder, out long locum)) {
+                            sortOrder = locum;
+                        }
+                    }
+                    long? locationId = null;
+                    if (frameCategory.LocationId != null) {
+                        if (long.TryParse(frameCategory.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = frameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
+
+                    if (invList != null) {
+						var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
+							CategoryName = TruncateString(categoryName, 150),
+							CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
+							Active = active,
+							SortOrder = sortOrder,
+							LocationId = locationId
+						};
+                        frameCategories.Add(newFrameCategory);
+					}
                 }
-                bool? Active = null;
-                if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes" || cptMapping.Active == "1") {
-                    Active = true;
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
                 }
-                else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
-                    Active = false;
-                }
-
-                var invList = ffpmDbContext.CptGroupMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
-
-                if (invList != null) {
-                    invList.LocationId = locationId;
-                    invList.Active = Active;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-                var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
-                    CptId = cptId,
-                    GroupId = groupId,
-                    LocationId = locationId,
-                    Active = Active
-                };
-
-                ffpmDbContext.CptGroupMappings.Add(newCptmapping);
-
-                ffpmDbContext.SaveChanges();
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
+            ffpmDbContext.FrameCategories.UpdateRange(frameCategories);
+			ffpmDbContext.SaveChanges();
+			frameCategories = ffpmDbContext.FrameCategories.ToList();
+		}
+
+        public static void FrameCollectionConvert(List<ModelsD.FrameCollection> ehrFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<FrameCollection> frameCollections) {
+            foreach (var frameCollection in ehrFrameCollections) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    string collectionName = "";
+                    if (frameCollection.CollectionName != null) {
+                        collectionName = frameCollection.CollectionName;
+                    }
+                    bool active = false;
+                    if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes" || frameCollection.Active == "1") {
+                        active = true;
+                    }
+                    long locationId = -1;
+                    if (frameCollection.LocationId != null) {
+                        if (long.TryParse(frameCollection.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+
+                    var invList = frameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
+
+                    if (invList != null) {
+						var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
+							CollectionName = TruncateString(collectionName, 250),
+							Active = active,
+							LocationId = locationId
+						};
+						frameCollections.Add(newFrameCollection);
+					}
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
+                }
             }
-        }
+			ffpmDbContext.FrameCollections.UpdateRange(frameCollections);
+			ffpmDbContext.SaveChanges();
+			frameCollections = ffpmDbContext.FrameCollections.ToList();
+		}
 
-        public static void CPTConvert(Cpt cpt, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                int? sortOrder = null;
-                if (cpt.SortOrder != null) {
-                    if (int.TryParse(cpt.SortOrder, out int locum)) {
-                        sortOrder = locum;
+        public static void FrameColorConvert(List<ModelsD.FrameColor> ehrFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<FrameColor> frameColors) {
+            foreach (var frameColor in ehrFrameColors) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    bool active = false;
+                    if (frameColor.Active != null && frameColor.Active.ToLower() == "yes" || frameColor.Active == "1") {
+                        active = true;
                     }
-                }
-                bool? active = null;
-                if (cpt.Active != null && cpt.Active.ToLower() == "yes" || cpt.Active == "1") {
-                    active = true;
-                }
-                else if (cpt.Active != null && cpt.Active.ToLower() == "no") {
-                    active = false;
-                }
-                long? locationId = null;
-                if (cpt.LocationId != null) {
-                    if (long.TryParse(cpt.LocationId, out long locum)) {
-                        locationId = locum;
+                    long locationId = -1;
+                    if (frameColor.LocationId != null) {
+                        if (long.TryParse(frameColor.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
                     }
-                }
-                decimal? fee = null;
-                if (cpt.Fee != null) {
-                    if (decimal.TryParse(cpt.Fee, out decimal locum)) {
-                        fee = locum;
-                    }
-                }
-                bool taxable = false;
-                if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes" || cpt.Taxable == "1") {
-                    taxable = true;
-                }
-                int departmentId = -1;
-                if (cpt.DepartmentId != null) {
-                    if (int.TryParse(cpt.DepartmentId, out int locum)) {
-                        departmentId = locum;
-                    }
-                }
-                int typeOfServiceId = -1;
-                if (cpt.TypeOfServiceId != null) {
-                    if (int.TryParse(cpt.TypeOfServiceId, out int locum)) {
-                        typeOfServiceId = locum;
-                    }
-                }
-                int taxTypeId = -1;
-                if (cpt.TaxTypeId != null) {
-                    if (int.TryParse(cpt.TaxTypeId, out int locum)) {
-                        taxTypeId = locum;
-                    }
-                }
-                bool useCliaNumber = false;
-                if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes" || cpt.UseClianumber == "1") {
-                    useCliaNumber = true;
-                }
-                int units = -1;
-                if (cpt.Units != null) {
-                    if (int.TryParse(cpt.Units, out int locum)) {
-                        units = locum;
-                    }
-                }
-                bool ndcActive = false;
-                if (cpt.Ndcactive != null && cpt.Ndcactive.ToLower() == "yes" || cpt.Ndcactive == "1") {
-                    ndcActive = true;
-                }
-                decimal? ndcCost = null;
-                if (cpt.Ndccost != null) {
-                    if (decimal.TryParse(cpt.Ndccost, out decimal locum)) {
-                        ndcCost = locum;
-                    }
-                }
-                int? ndcUnitsMeasurementId = null;
-                if (cpt.NdcunitsMeasurementId != null) {
-                    if (int.TryParse(cpt.NdcunitsMeasurementId, out int locum)) {
-                        ndcUnitsMeasurementId = locum;
-                    }
-                }
-                decimal? ndcQuantity = null;
-                if (cpt.Ndcquantity != null) {
-                    if (decimal.TryParse(cpt.Ndcquantity, out decimal locum)) {
-                        ndcQuantity = locum;
-                    }
-                }
-                bool autoUpdateReferringProvider = false;
-                if (cpt.AutoUpdateReferringProvider != null && cpt.AutoUpdateReferringProvider.ToLower() == "yes" || cpt.AutoUpdateReferringProvider == "1") {
-                    autoUpdateReferringProvider = true;
-                }
-                string privateStatementDescription = "";
-                if (cpt.PrivateStatementDescription != null) {
-                    privateStatementDescription = cpt.PrivateStatementDescription;
-                }
-                string alternateCode = "";
-                if (cpt.AlternateCode != null) {
-                    alternateCode = cpt.AlternateCode;
-                }
 
-                var invList = ffpmDbContext.Cptids.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
+                    var invList = frameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
 
-                if (invList != null) {
-                    invList.Description = TruncateString(cpt.Description, 250);
-                    invList.SortOrder = sortOrder;
-                    invList.Active = active;
-                    invList.LocationId = locationId;
-                    invList.Fee = fee;
-                    invList.Taxable = taxable;
-                    invList.DepartmentId = departmentId;
-                    invList.TypeOfServiceId = typeOfServiceId;
-                    invList.TaxTypeId = taxTypeId;
-                    invList.PrivateStatementDescription = TruncateString(privateStatementDescription, 250);
-                    invList.AlternateCode = TruncateString(alternateCode, 20);
-                    invList.UseClianumber = useCliaNumber;
-                    invList.Units = units;
-                    invList.NdcActive = ndcActive;
-                    invList.NdcCost = ndcCost;
-                    invList.NdcCode = TruncateString(cpt.Ndccode, 11);
-                    invList.NdcUnitsMeasurementId = ndcUnitsMeasurementId;
-                    invList.NdcQuantity = ndcQuantity;
-                    invList.AutoUpdateReferringProvider = autoUpdateReferringProvider;
-                    ffpmDbContext.SaveChanges();
-                    return;
+                    if (invList != null) {
+					    var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
+						    ColorCode = TruncateString(frameColor.ColorCode, 50),
+						    ColorDescription = TruncateString(frameColor.ColorDescription, 150),
+						    Active = active,
+						    LocationId = locationId
+					    };
+                        frameColors.Add(newFrameColor);
+			        }
                 }
-
-                var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
-                    Cpt = cpt.Cpt1,
-                    Description = TruncateString(cpt.Description, 250),
-                    SortOrder = sortOrder,
-                    Active = active,
-                    LocationId = locationId,
-                    Fee = fee,
-                    Taxable = taxable,
-                    DepartmentId = departmentId,
-                    TypeOfServiceId = typeOfServiceId,
-                    TaxTypeId = taxTypeId,
-                    PrivateStatementDescription = TruncateString(privateStatementDescription, 250),
-                    AlternateCode = TruncateString(alternateCode, 20),
-                    UseClianumber = useCliaNumber,
-                    Units = units,
-                    NdcActive = ndcActive,
-                    NdcCost = ndcCost,
-                    NdcCode = TruncateString(cpt.Ndccode, 11),
-                    NdcUnitsMeasurementId = ndcUnitsMeasurementId,
-                    NdcQuantity = ndcQuantity,
-                    AutoUpdateReferringProvider = autoUpdateReferringProvider
-                };
-                ffpmDbContext.Cptids.Add(newCpt);
-
-                ffpmDbContext.SaveChanges();
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CPT with ID {cpt.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void FrameCategoryConvert(ModelsD.FrameCategory frameCategory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string categoryName = "";
-                if (frameCategory.CategoryName != null) {
-                    categoryName = frameCategory.CategoryName;
-                }
-                bool? active = null;
-                if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes" || frameCategory.Active == "1") {
-                    active = true;
-                }
-                else if (frameCategory.Active != null && frameCategory.Active.ToLower() == "no") {
-                    active = false;
-                }
-                long sortOrder = -1;
-                if (frameCategory.SortOrder != null) {
-                    if (long.TryParse(frameCategory.SortOrder, out long locum)) {
-                        sortOrder = locum;
-                    }
-                }
-                long? locationId = null;
-                if (frameCategory.LocationId != null) {
-                    if (long.TryParse(frameCategory.LocationId, out long locum)) {
-                        locationId = locum;
-                    }
-                }
-
-                var invList = ffpmDbContext.FrameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
-
-                if (invList != null) {
-                    invList.CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250);
-                    invList.Active = active;
-                    invList.SortOrder = sortOrder;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-
-                var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
-                    CategoryName = TruncateString(categoryName, 150),
-                    CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
-                    Active = active,
-                    SortOrder = sortOrder,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameCategories.Add(newFrameCategory);
-
-                ffpmDbContext.SaveChanges();
-            }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void FrameCollectionConvert(ModelsD.FrameCollection frameCollection, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                string collectionName = "";
-                if (frameCollection.CollectionName != null) {
-                    collectionName = frameCollection.CollectionName;
-                }
-                bool active = false;
-                if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes" || frameCollection.Active == "1") {
-                    active = true;
-                }
-                long locationId = -1;
-                if (frameCollection.LocationId != null) {
-                    if (long.TryParse(frameCollection.LocationId, out long locum)) {
-                        locationId = locum;
-                    }
-                }
-
-                var invList = ffpmDbContext.FrameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
-
-                if (invList != null) {
-                    invList.Active = active;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-
-                var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
-                    CollectionName = TruncateString(collectionName, 250),
-                    Active = active,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameCollections.Add(newFrameCollection);
-
-                ffpmDbContext.SaveChanges();
-            }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
-            }
-        }
-
-        public static void FrameColorConvert(ModelsD.FrameColor frameColor, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
-            progress.Invoke((MethodInvoker)delegate {
-                progress.PerformStep();
-            });
-            try {
-                bool active = false;
-                if (frameColor.Active != null && frameColor.Active.ToLower() == "yes" || frameColor.Active == "1") {
-                    active = true;
-                }
-                long locationId = -1;
-                if (frameColor.LocationId != null) {
-                    if (long.TryParse(frameColor.LocationId, out long locum)) {
-                        locationId = locum;
-                    }
-                }
-
-                var invList = ffpmDbContext.FrameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
-
-                if (invList != null) {
-                    invList.ColorDescription = TruncateString(frameColor.ColorDescription, 150);
-                    invList.Active = active;
-                    invList.LocationId = locationId;
-                    ffpmDbContext.SaveChanges();
-                    return;
-                }
-
-                var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
-                    ColorCode = TruncateString(frameColor.ColorCode, 50),
-                    ColorDescription = TruncateString(frameColor.ColorDescription, 150),
-                    Active = active,
-                    LocationId = locationId
-                };
-                ffpmDbContext.FrameColors.Add(newFrameColor);
-
-                ffpmDbContext.SaveChanges();
-            }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
-            }
-        }
+			ffpmDbContext.FrameColors.UpdateRange(frameColors);
+            ffpmDbContext.SaveChanges();
+            frameColors = ffpmDbContext.FrameColors.ToList()
+		}
 
         public static void FrameShapeConvert(ModelsD.FrameShape frameShape, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
