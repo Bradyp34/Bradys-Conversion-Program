@@ -9301,7 +9301,8 @@ namespace Brady_s_Conversion_Program {
             frameColors = ffpmDbContext.FrameColors.ToList()
 		}
 
-        public static void FrameShapeConvert(ModelsD.FrameShape frameShape, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameShapeConvert(List<ModelsD.FrameShape> ehrFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<ModelsA.FrameShape> frameShapes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9355,7 +9356,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameStatusConvert(ModelsD.FrameStatus frameStatus, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameStatusConvert(List<ModelsD.FrameStatus> ehrFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameStatus> frameStatuses) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9388,7 +9390,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameTempleConvert(ModelsD.FrameTemple frameTemple, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameTempleConvert(List<ModelsD.FrameTemple> ehrFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameTempleStyle> frameTemples) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9421,7 +9424,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameETypeConvert(ModelsD.FrameEtype frameEType, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameETypeConvert(List<ModelsD.FrameEtype> ehrFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<FrameEtype> frameEtypes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9454,7 +9458,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameFTypeConvert(ModelsD.FrameFtype frameFType, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameFTypeConvert(List<ModelsD.FrameFtype> ehrFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameFtype> frameFtypes) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9487,7 +9492,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameInventoryConvert(ModelsD.FrameInventory frameInventory, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameInventoryConvert(List<ModelsD.FrameInventory> ehrFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.Inventory> frameInventories) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9656,7 +9662,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameLensColorConvert(ModelsD.FrameLensColor frameLensColor, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> ehrFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameDblensColor> frameLensColors) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9707,7 +9714,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameMaterialConvert(ModelsD.FrameMaterial frameMaterial, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> ehrFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameMaterial> frameMaterials) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9760,7 +9768,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameMountConvert(ModelsD.FrameMount frameMount, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameMountConvert(List<ModelsD.FrameMount> ehrFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameMount> frameMounts) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9813,7 +9822,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameOrderConvert(ModelsD.FrameOrder frameOrder, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameOrderConvert(List<ModelsD.FrameOrder> ehrFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.FrameOrderInfo> frameOrders) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -9969,7 +9979,8 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void FrameConvert(ModelsD.Frame frame, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void FrameConvert(List<ModelsD.Frame> ehrFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+			List<ModelsA.Frame> frames) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
