@@ -7,6 +7,8 @@ public partial class FrameInventory
 {
     public long Id { get; set; }
 
+    public string? FrameId { get; set; }
+
     public string? OldInventoryId { get; set; }
 
     public string? OldFrameId { get; set; }

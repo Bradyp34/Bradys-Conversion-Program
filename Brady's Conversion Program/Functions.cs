@@ -9,6 +9,8 @@ using System.Data.SqlClient;
 using Brady_s_Conversion_Program.Models;
 using Brady_s_Conversion_Program.ModelsA;
 using Brady_s_Conversion_Program.ModelsB;
+using Brady_s_Conversion_Program.ModelsC;
+using Brady_s_Conversion_Program.ModelsD;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.Text.RegularExpressions;
@@ -20,8 +22,6 @@ using System.Reflection.Emit;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System.Data.SqlTypes;
-using Brady_s_Conversion_Program.ModelsC;
-using Brady_s_Conversion_Program.ModelsD;
 using System.Web;
 using System.CodeDom;
 using Microsoft.Identity.Client.NativeInterop;
@@ -9213,6 +9213,16 @@ namespace Brady_s_Conversion_Program {
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
+
+            // phone
+
+            // frame vendor
+
+            // frame manufacturers
+
+            // address
+
+            // frame brand
         }
 
         public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,

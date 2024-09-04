@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace Brady_s_Conversion_Program.ModelsD;
 
-public partial class Cptmapping
+public partial class FrameBrand
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
-    public string? MappingId { get; set; }
+    public string? OldBrandId { get; set; }
 
-    public string? CptId { get; set; }
-
-    public string? GroupId { get; set; }
+    public string? BrandName { get; set; }
 
     public string? LocationId { get; set; }
 
