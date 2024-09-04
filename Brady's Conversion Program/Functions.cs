@@ -10977,12 +10977,41 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-
+                    long locationId = -1;
+                    if (frameManufacturer.LocationId > 0) {
+                        var location = frameManufacturers.FirstOrDefault(l => l.LocationId == frameManufacturer.LocationId);
+                        if (location != null) {
+                            locationId = location.LocationId;
+                        }
+                    }
+                    long? contactId = frameManufacturer.ContactId;
+                    long? addressId = null;
+                    int? statusId = null;
+                    // no statusId
+                    bool? contacts = frameManufacturer.Contacts;
+                    bool? frames = frameManufacturer.Frames;
+                    bool? lenses = frameManufacturer.Lenses;
+                    bool? misc = frameManufacturer.Misc;
+                    bool? active = frameManufacturer.Active;
 
 
                     var newFrameManufacturer = new Brady_s_Conversion_Program.ModelsA.Manufacturer {
                         ManufacturerName = TruncateString(frameManufacturer.ManufacturerName, 100),
-
+                        AccountNumber = TruncateString(frameManufacturer.AccountNumber, 50),
+                        AccountRep1 = TruncateString(frameManufacturer.AccountRep1, 255),
+                        AccountRep2 = TruncateString(frameManufacturer.AccountRep2, 255),
+                        AccountRep3 = TruncateString(frameManufacturer.AccountRep3, 255),
+                        AccountRep4 = TruncateString(frameManufacturer.AccountRep4, 255),
+                        Website = TruncateString(frameManufacturer.Website, 255),
+                        ContactId = contactId,
+                        AddressId = addressId,
+                        LocationId = locationId,
+                        StatusId = statusId,
+                        Contacts = contacts,
+                        Frames = frames,
+                        Lenses = lenses,
+                        Misc = misc,
+                        Active = active
                     };
                     frameManufacturers.Add(newFrameManufacturer);
                 }
@@ -10996,28 +11025,52 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void FrameBrandConvert(List<ModelsD.FrameBrand> invFrameBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, 
-            ProgressBar progress, List<FrameBrand> frameBrands) {
+            ProgressBar progress, List<Brand> frameBrands, List<BillingLocation> locations) {
             foreach (var frameBrand in invFrameBrands) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
+                    if (frameBrand.Active != null && frameBrand.Active.ToLower() == "no" || frameBrand.Active == "0")
+                        continue;
+                    int statusId = -1;
+                    // statusId doesnt seem connected to anything
+                    long locationId = -1;
+                    if (frameBrand.LocationId != null) {
+                        var location = locations.FirstOrDefault(l => l.LocationId.ToString() == frameBrand.LocationId);
+                        if (location != null) {
+                            locationId = location.LocationId;
+                        }
+                    }
 
+                    var origBrand = frameBrands.FirstOrDefault(fb => fb.BrandName == frameBrand.BrandName);
+
+                    if (origBrand == null) {
+                        var newFrameBrand = new Brady_s_Conversion_Program.ModelsA.Brand {
+                            BrandName = TruncateString(frameBrand.BrandName, 150),
+                            StatusId = statusId,
+                            LocationId = locationId
+                        };
+                        frameBrands.Add(newFrameBrand);
+                    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID {frameBrand.Id}. Error: {e.Message}");
                 }
             }
+            ffpmDbContext.Brands.UpdateRange(frameBrands);
+            ffpmDbContext.SaveChanges();
+            frameBrands = ffpmDbContext.Brands.ToList();
         }
 
         public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<DmgOtherAddress> otherAddresses) {
+            List<DmgOtherAddress> otherAddresses, List<Vendor> vendors) {
             foreach (var address in invAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-
+                    // looks like the only incoming primary file is "VEND" for vendor
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Address with ID {address.Id}. Error: {e.Message}");
