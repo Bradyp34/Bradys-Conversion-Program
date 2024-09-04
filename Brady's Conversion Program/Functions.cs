@@ -67,7 +67,6 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static string CleanUpDateString(string input) {
-            // Trim leading and trailing spaces
             input = input.Trim();
 
             // Replace multiple spaces with a single space
@@ -149,9 +148,9 @@ namespace Brady_s_Conversion_Program {
         };
 
 
-        private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$"); // Regex for US SSN
-        private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b"); // Regex for US ZIP codes
-        private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$"); // Regex for phone numbers
+        private static Regex ssnRegex = new Regex(@"^(?:\d{3}[-/]\d{2}[-/]\d{4}|\d{9})$");
+        private static Regex zipRegex = new Regex(@"\b(\d{5})(?:[-\s]?(\d{4}))?\b");
+        private static Regex phoneRegex = new Regex(@"^(\+\d{1,3}\s)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$"); 
 
         public static string FFPMString = "";
         public static string EyeMDString = "";
@@ -163,7 +162,7 @@ namespace Brady_s_Conversion_Program {
             try {
                 ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
 
-                // Using block for convDbContext conversion
+
                 int totalEntries = 0;
 
                 if (conv == true) { // if it is an ffpm conversion
@@ -209,7 +208,7 @@ namespace Brady_s_Conversion_Program {
                                     progress.Value = 0;
                                 });
 
-                                // Perform conversion for each table
+
                                 ConvertFFPM(convDbContext, ffpmDbContext, eyeMDDbContext, logger, progress, resultsBox);
 
                                 // Save changes to databases
@@ -222,7 +221,7 @@ namespace Brady_s_Conversion_Program {
                         resultsBox.Text += "Foxfire Conversion Successful\n";
                     });
                 }
-                if (ehr == true) { // if it is also eyemd/ehr conversion
+                if (ehr == true) { // if it is (also) eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                             if (newEyemd) { // if it is a new eyemd database
@@ -262,7 +261,6 @@ namespace Brady_s_Conversion_Program {
 
 
 
-                                // Set progress bar properties on UI thread
                                 progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
                                     progress.Maximum = totalEntries;
                                     progress.Step = 1;
@@ -584,7 +582,7 @@ namespace Brady_s_Conversion_Program {
                     else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
                         continue; ;
                     }
-                    string? ssn = patient.Ssn; // set ssn to the patient ssn using the regex
+                    string? ssn = patient.Ssn;
                     if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
                         ssn = "";
                     }
@@ -597,10 +595,10 @@ namespace Brady_s_Conversion_Program {
 
                     DateTime dob = minAcceptableDate;
                     if (patient.Dob != null && (patient.Dob != "")) {
-                        string dobString = CleanUpDateString(patient.Dob.Trim()); // Remove any extra whitespaces
+                        string dobString = CleanUpDateString(patient.Dob.Trim());
                         if (DateTime.TryParseExact(dobString, dateFormats,
                         CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out dob)) {
-                            dob = isValidDate(dob); // make sure the date is valid
+                            dob = isValidDate(dob);
                         }
                     }
                     short? maritalStatusInt = null;
@@ -763,7 +761,6 @@ namespace Brady_s_Conversion_Program {
 
                         var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
                         if (patientAdditionalDetail == null) {
-                            // If no existing patient is found, create a new one
                             var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
                                 PatientId = patientId,
                                 DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
@@ -780,12 +777,12 @@ namespace Brady_s_Conversion_Program {
                                 PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
                                 DefaultLocationId = newPatient.LocationId
                             };
-                            patientAdditionals.Add(newAdditionDetails); // Id like to move this up so I can add all new at once, but that
-                                                                        // will not allow to check for duplicates if theyre both new
-                            newAdditionalDetails.Add(newAdditionDetails);
+                            patientAdditionals.Add(newAdditionDetails); // could change this to be UpdateRange, but seems to be an
+																		// unnecessary change. Will do later if asked or given time
+							newAdditionalDetails.Add(newAdditionDetails);
                         }
 
-                        // Update or create EMRPatient
+
                         var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
                         if (existingEmrPatient == null) {
                             var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
@@ -861,11 +858,11 @@ namespace Brady_s_Conversion_Program {
 
                     if (ffpmOrig == null) {
                         var newAppointmentType = new SchedulingAppointmentType {
-                            Code = TruncateString(code, 200),  // Truncating to the specified max length of 200
-                            Description = TruncateString(description, 1000),  // Truncating to the specified max length of 1000
+                            Code = TruncateString(code, 200), 
+                            Description = TruncateString(description, 1000),
                             LocationId = 0,
                             PatientRequired = required,
-                            Notes = TruncateString(notes, 5000),  // Truncating to the specified max length of 5000
+                            Notes = TruncateString(notes, 5000),
                             IsExamType = examType,
                             IsAppointmentType = true,
                             IsRecallType = false, // Will set this to true for recall types
@@ -1200,7 +1197,7 @@ namespace Brady_s_Conversion_Program {
 
                     if (ffpmOrig == null) {
                         var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
-                            InsCompanyName = TruncateString(companyName, 150),  // Assuming there's a similar constraint as the others
+                            InsCompanyName = TruncateString(companyName, 150),
                             InsCompanyAddress1 = TruncateString(insurance.InsCompanyAddress1, 100),
                             InsCompanyAddress2 = TruncateString(insurance.InsCompanyAddress2, 100),
                             InsCompanyCity = TruncateString(insurance.InsCompanyCity, 50),
@@ -1630,7 +1627,7 @@ namespace Brady_s_Conversion_Program {
 
                             string zipExt = "";
                             if (zipCode != null && zipCode.Length > 5) {
-                                zipExt = zipCode.Substring(5); // Extracts the substring starting at index 5 to the end of the string
+                                zipExt = zipCode.Substring(5);
                             }
 
                             if (address.TypeOfAddress != null) {
@@ -1651,7 +1648,7 @@ namespace Brady_s_Conversion_Program {
                             }
 
                             var ffpmOrig = ffpmPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId &&
-                                    p.IsPrimary == true)); // new address will be alternate if found
+                                    p.IsPrimary == true));
 
                             if (ffpmOrig == null) {
                                 var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgPatientAddress {
