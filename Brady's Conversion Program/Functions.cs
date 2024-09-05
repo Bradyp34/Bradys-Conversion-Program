@@ -756,8 +756,8 @@ namespace Brady_s_Conversion_Program {
                             LastModifiedDate = DateTime.Now,
                             LastModifiedBy = -1
                         };
+						tempPatientId = patientId;
 						patientId++;
-                        tempPatientId = patientId - 1;
 					} else {
                         tempPatientId = ffpmOrig.PatientId;
 					}
