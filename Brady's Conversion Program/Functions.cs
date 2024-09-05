@@ -563,6 +563,7 @@ namespace Brady_s_Conversion_Program {
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, List<DmgPatientAdditionalDetail> newAdditionalDetails,
                         List<Emrpatient> newEmrPatients) {
             long patientId = 1;
+            int tempPatientId = patientId;
             if (ffpmDbContext.DmgPatients.Any()) {
                 patientId = ffpmDbContext.DmgPatients.Max(p => p.PatientId) + 1;
             }
@@ -755,46 +756,48 @@ namespace Brady_s_Conversion_Program {
                             LastModifiedDate = DateTime.Now,
                             LastModifiedBy = -1
                         };
+						patientId++;
+                        tempPatientId = patientId - 1;
+					} else {
+                        tempPatientId = ffpmOrig.PatientId;
+					}
 
-                        ffpmDbContext.DmgPatients.Add(newPatient);
+                    ffpmDbContext.DmgPatients.Add(newPatient);
+
+                    var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == tempPatientId);
+                    if (patientAdditionalDetail == null) {
+                        var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                            PatientId = tempPatientId,
+                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
+                            DriversLicenseStateId = licenseShort,
+                            RaceId = race,
+                            EthnicityId = ethnicity,
+                            MedicareSecondaryId = medicareSecondaryId,
+                            MedicareSecondaryNotes = medicareSecondaryNotes,
+                            HippaConsent = consent,
+                            HippaConsentDate = consentDate,
+                            PreferredContactFirstId = prefContact1,
+                            PreferredContactSecondId = prefContact2,
+                            PreferredContactThirdId = prefContact3,
+                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
+                            DefaultLocationId = newPatient.LocationId
+                        };
+                        patientAdditionals.Add(newAdditionDetails); // could change this to be UpdateRange, but seems to be an
+																	// unnecessary change. Will do later if asked or given time
+						newAdditionalDetails.Add(newAdditionDetails);
+                    }
 
 
-                        var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == newPatient.PatientId);
-                        if (patientAdditionalDetail == null) {
-                            var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                                PatientId = patientId,
-                                DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                                DriversLicenseStateId = licenseShort,
-                                RaceId = race,
-                                EthnicityId = ethnicity,
-                                MedicareSecondaryId = medicareSecondaryId,
-                                MedicareSecondaryNotes = medicareSecondaryNotes,
-                                HippaConsent = consent,
-                                HippaConsentDate = consentDate,
-                                PreferredContactFirstId = prefContact1,
-                                PreferredContactSecondId = prefContact2,
-                                PreferredContactThirdId = prefContact3,
-                                PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                                DefaultLocationId = newPatient.LocationId
-                            };
-                            patientAdditionals.Add(newAdditionDetails); // could change this to be UpdateRange, but seems to be an
-																		// unnecessary change. Will do later if asked or given time
-							newAdditionalDetails.Add(newAdditionDetails);
-                        }
-
-
-                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
-                        if (existingEmrPatient == null) {
-                            var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                                ClientSoftwarePtId = TruncateString(patientId.ToString(), 50),
-                                PatientNameFirst = TruncateString(newPatient.FirstName, 50),
-                                PatientNameLast = TruncateString(newPatient.LastName, 50),
-                                PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
-                            };
-                            emrPatients.Add(newEMRPatient);
-                            newEmrPatients.Add(newEMRPatient);
-                        }
-                        patientId++;
+                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
+                    if (existingEmrPatient == null) {
+                        var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                            ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
+                            PatientNameFirst = TruncateString(newPatient.FirstName, 50),
+                            PatientNameLast = TruncateString(newPatient.LastName, 50),
+                            PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
+                        };
+                        emrPatients.Add(newEMRPatient);
+                        newEmrPatients.Add(newEMRPatient);
                     }
                 }
                 catch (Exception ex) {
