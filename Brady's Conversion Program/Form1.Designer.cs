@@ -71,7 +71,7 @@
             DBBeginButton.Location = new Point(288, 70);
             DBBeginButton.Name = "DBBeginButton";
             DBBeginButton.Size = new Size(132, 23);
-            DBBeginButton.TabIndex = 2;
+            DBBeginButton.TabIndex = 16;
             DBBeginButton.Text = "Begin";
             DBBeginButton.UseVisualStyleBackColor = true;
             DBBeginButton.Click += DBBeginButton_Click;
@@ -82,7 +82,7 @@
             FFPMServerTextBox.Name = "FFPMServerTextBox";
             FFPMServerTextBox.PlaceholderText = "FFPM Server Name";
             FFPMServerTextBox.Size = new Size(132, 23);
-            FFPMServerTextBox.TabIndex = 3;
+            FFPMServerTextBox.TabIndex = 7;
             // 
             // FFPMDataBaseTextBox
             // 
@@ -90,7 +90,7 @@
             FFPMDataBaseTextBox.Name = "FFPMDataBaseTextBox";
             FFPMDataBaseTextBox.PlaceholderText = "FFPM Database";
             FFPMDataBaseTextBox.Size = new Size(132, 23);
-            FFPMDataBaseTextBox.TabIndex = 4;
+            FFPMDataBaseTextBox.TabIndex = 8;
             // 
             // EyeMDDBTextBox
             // 
@@ -98,7 +98,7 @@
             EyeMDDBTextBox.Name = "EyeMDDBTextBox";
             EyeMDDBTextBox.PlaceholderText = "EyeMD Database";
             EyeMDDBTextBox.Size = new Size(132, 23);
-            EyeMDDBTextBox.TabIndex = 6;
+            EyeMDDBTextBox.TabIndex = 10;
             // 
             // EyeMDServerNameTextBox
             // 
@@ -106,14 +106,14 @@
             EyeMDServerNameTextBox.Name = "EyeMDServerNameTextBox";
             EyeMDServerNameTextBox.PlaceholderText = "EyeMD Server Name";
             EyeMDServerNameTextBox.Size = new Size(132, 23);
-            EyeMDServerNameTextBox.TabIndex = 5;
+            EyeMDServerNameTextBox.TabIndex = 9;
             // 
             // ResultsBox
             // 
             ResultsBox.Location = new Point(12, 163);
             ResultsBox.Name = "ResultsBox";
             ResultsBox.Size = new Size(408, 114);
-            ResultsBox.TabIndex = 7;
+            ResultsBox.TabIndex = 19;
             ResultsBox.Text = "";
             // 
             // progressBar1
@@ -121,7 +121,8 @@
             progressBar1.Location = new Point(12, 134);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(408, 23);
-            progressBar1.TabIndex = 8;
+            progressBar1.Style = ProgressBarStyle.Marquee;
+            progressBar1.TabIndex = 20;
             // 
             // backgroundWorker1
             // 
@@ -133,7 +134,7 @@
             FFPMNewDBCheckBox.Location = new Point(190, 134);
             FFPMNewDBCheckBox.Name = "FFPMNewDBCheckBox";
             FFPMNewDBCheckBox.Size = new Size(101, 19);
-            FFPMNewDBCheckBox.TabIndex = 11;
+            FFPMNewDBCheckBox.TabIndex = 14;
             FFPMNewDBCheckBox.Text = "New FFPM DB";
             FFPMNewDBCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -143,7 +144,7 @@
             EyeMDNewDBCheckBox.Location = new Point(312, 134);
             EyeMDNewDBCheckBox.Name = "EyeMDNewDBCheckBox";
             EyeMDNewDBCheckBox.Size = new Size(108, 19);
-            EyeMDNewDBCheckBox.TabIndex = 12;
+            EyeMDNewDBCheckBox.TabIndex = 15;
             EyeMDNewDBCheckBox.Text = "New EyeMD DB";
             EyeMDNewDBCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -153,7 +154,7 @@
             EHRTextBox.Name = "EHRTextBox";
             EHRTextBox.PlaceholderText = "EHR Database";
             EHRTextBox.Size = new Size(132, 23);
-            EHRTextBox.TabIndex = 13;
+            EHRTextBox.TabIndex = 4;
             // 
             // InvTextBox
             // 
@@ -161,7 +162,7 @@
             InvTextBox.Name = "InvTextBox";
             InvTextBox.PlaceholderText = "Inv Database";
             InvTextBox.Size = new Size(132, 23);
-            InvTextBox.TabIndex = 14;
+            InvTextBox.TabIndex = 6;
             // 
             // ConvCheckBox
             // 
@@ -169,7 +170,7 @@
             ConvCheckBox.Location = new Point(12, 134);
             ConvCheckBox.Name = "ConvCheckBox";
             ConvCheckBox.Size = new Size(54, 19);
-            ConvCheckBox.TabIndex = 15;
+            ConvCheckBox.TabIndex = 11;
             ConvCheckBox.Text = "Conv";
             ConvCheckBox.UseVisualStyleBackColor = true;
             ConvCheckBox.CheckedChanged += ConvCheckBox_CheckedChanged;
@@ -180,7 +181,7 @@
             EHRCheckBox.Location = new Point(72, 134);
             EHRCheckBox.Name = "EHRCheckBox";
             EHRCheckBox.Size = new Size(48, 19);
-            EHRCheckBox.TabIndex = 16;
+            EHRCheckBox.TabIndex = 12;
             EHRCheckBox.Text = "EHR";
             EHRCheckBox.UseVisualStyleBackColor = true;
             EHRCheckBox.CheckedChanged += EhrCheckBox_CheckedChanged;
@@ -211,7 +212,7 @@
             InvCheckBox.Location = new Point(126, 134);
             InvCheckBox.Name = "InvCheckBox";
             InvCheckBox.Size = new Size(42, 19);
-            InvCheckBox.TabIndex = 19;
+            InvCheckBox.TabIndex = 13;
             InvCheckBox.Text = "Inv";
             InvCheckBox.UseVisualStyleBackColor = true;
             InvCheckBox.CheckedChanged += InvCheckBox_CheckedChanged;
@@ -222,7 +223,7 @@
             EHRServerTextBox.Name = "EHRServerTextBox";
             EHRServerTextBox.PlaceholderText = "EHR Server";
             EHRServerTextBox.Size = new Size(132, 23);
-            EHRServerTextBox.TabIndex = 20;
+            EHRServerTextBox.TabIndex = 3;
             // 
             // InvServerTextBox
             // 
@@ -230,7 +231,7 @@
             InvServerTextBox.Name = "InvServerTextBox";
             InvServerTextBox.PlaceholderText = "Inv Server";
             InvServerTextBox.Size = new Size(132, 23);
-            InvServerTextBox.TabIndex = 21;
+            InvServerTextBox.TabIndex = 5;
             // 
             // Form1
             // 

@@ -9075,7 +9075,6 @@ namespace Brady_s_Conversion_Program {
             var frames = ffpmDbContext.Frames.ToList();
             var clnsContactlens = ffpmDbContext.ClnsContactLens.ToList();
             var cptGroupMappings = ffpmDbContext.CptGroupMappings.ToList();
-
             var invClBrands = invDbContext.Clbrands.ToList();
             var invClLenses = invDbContext.Cllenses.ToList();
             var invClInventories = invDbContext.Clinventories.ToList();
@@ -9095,134 +9094,160 @@ namespace Brady_s_Conversion_Program {
             var invFrameMaterials = invDbContext.FrameMaterials.ToList();
             var invFrameOrders = invDbContext.FrameOrders.ToList();
             var invFrames = invDbContext.Frames.ToList();
-
-
+            var invFrameManufacturers = invDbContext.FrameManufacturers.ToList();
+            var locations = ffpmDbContext.BillingLocations.ToList();
+            var otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
+            var vendors = ffpmDbContext.Vendors.ToList();
+            var invFrameVendors = invDbContext.FrameVendors.ToList();
+            var invPhones = invDbContext.Phones.ToList();
+            var invFrameBrands = invDbContext.FrameBrands.ToList();
+            var invAddresses = invDbContext.Addresses.ToList();
 
 
 
             CLBrandsConvert(invClBrands, invDbContext, ffpmDbContext, logger, progress, clnsBrands);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Brands converted\n");
             });
 
             CLLensesConvert(invClLenses, invDbContext, ffpmDbContext, logger, progress, clLenses);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Lenses converted\n");
             });
 
             clInventoryConvert(invClInventories, invDbContext, ffpmDbContext, logger, progress, clInventories);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Inventory converted\n");
             });
 
             CPTDeptConvert(invCptDepts, invDbContext, ffpmDbContext, logger, progress, cptDepts);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Depts converted\n");
             });
 
             CPTMappingConvert(invCptMappings, invDbContext, ffpmDbContext, logger, progress, cptMappings);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Mappings converted\n");
             });
 
             CPTConvert(invCpts, invDbContext, ffpmDbContext, logger, progress, cpts);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPTs converted\n");
             });
 
             FrameCategoryConvert(invFrameCategories, invDbContext, ffpmDbContext, logger, progress, frameCategories);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Categories converted\n");
             });
 
             FrameCollectionConvert(invFrameCollections, invDbContext, ffpmDbContext, logger, progress, frameCollections);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Collections converted\n");
             });
 
             FrameColorConvert(invFrameColors, invDbContext, ffpmDbContext, logger, progress, frameColors);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Colors converted\n");
             });
 
             FrameShapeConvert(invFrameShapes, invDbContext, ffpmDbContext, logger, progress, frameShapes);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Shapes converted\n");
             });
 
             FrameStatusConvert(invFrameStatuses, invDbContext, ffpmDbContext, logger, progress, frameStatuses);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Statuses converted\n");
             });
 
             FrameTempleConvert(invFrameTemples, invDbContext, ffpmDbContext, logger, progress, frameTemples);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Temples converted\n");
             });
 
             FrameETypeConvert(invFrameEtypes, invDbContext, ffpmDbContext, logger, progress, frameEtypes);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame ETypes converted\n");
             });
 
             FrameFTypeConvert(invFrameFtypes, invDbContext, ffpmDbContext, logger, progress, frameFtypes);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
             FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, progress, frameInventories, invFrames, frames);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Inventories converted\n");
             });
 
             FrameLensColorConvert(invFrameLensColors, invDbContext, ffpmDbContext, logger, progress, frameLensColors);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Lens Colors converted\n");
             });
 
             FrameMaterialConvert(invFrameMaterials, invDbContext, ffpmDbContext, logger, progress, frameMaterials);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Materials converted\n");
             });
 
             FrameOrderConvert(invFrameOrders, invDbContext, ffpmDbContext, logger, progress, frameOrders);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Orders converted\n");
             });
 
             FrameConvert(invFrames, invDbContext, ffpmDbContext, logger, progress, frames);
-            
+
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
 
-            // phone
+            FrameVendorConvert(invFrameVendors, invDbContext, ffpmDbContext, logger, progress, vendors, otherAddresses, locations);
 
-            // frame vendor
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Vendors converted\n");
+            });
 
-            // frame manufacturers
+            FrameManufacturerConvert(invFrameManufacturers, invDbContext, ffpmDbContext, logger, progress);
 
-            // address
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Manufacturers converted\n");
+            });
 
-            // frame brand
+            FrameBrandConvert(invFrameBrands, invDbContext, ffpmDbContext, logger, progress);
+
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Brands converted\n");
+            });
+
+            AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, progress, otherAddresses);
+
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Addresses converted\n");
+            });
+
+            PhoneConvert(invPhones, invDbContext, ffpmDbContext, logger, progress, otherAddresses);
+            
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Phones converted\n");
+            });
         }
 
         public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -10893,6 +10918,130 @@ namespace Brady_s_Conversion_Program {
 			ffpmDbContext.SaveChanges();
 			frames = ffpmDbContext.Frames.ToList();
 		}
+
+        public static void FrameVendorConvert(List<ModelsD.FrameVendor> invFrameVendors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List <ModelsA.Vendor> vendors, List<DmgOtherAddress> otherAddresses, List<BillingLocation> locations) {
+            foreach (var vendor in invFrameVendors) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+                    int? discount = null;
+                    // no discount
+                    int? terms = null;
+                    // no terms
+                    long locationId = -1;
+                    var location = locations.FirstOrDefault(l => l.LocationId.ToString() == vendor.LocationId);
+                    if (location != null) {
+                        locationId = location.LocationId;
+                    }
+                    long? contactId = null;
+                    // no contact
+                    long? addressId = null;
+                    // will assign later
+                    long? manufacturerId = null;
+                    // no manufacturer
+                    int? statusId = null;
+                    // no status
+
+                    var origVendor = vendors.FirstOrDefault(ov => ov.VendorName == vendor.VendorName);
+
+                    if (origVendor == null) {
+                        var newVendor = new Brady_s_Conversion_Program.ModelsA.Vendor {
+                            AccountNumber = TruncateString(vendor.Id.ToString(), 50),
+                            VendorName = TruncateString(vendor.VendorName, 100),
+                            AccountRep1 = TruncateString(vendor.VendorAccount, 255),
+                            AccountRep2 = null,
+                            Discount = discount,
+                            Terms = terms,
+                            Website = TruncateString(vendor.VendorWebSite, 250),
+                            LocationId = locationId,
+                            ContactId = contactId,
+                            AddressId = addressId,
+                            ManufacturerId = manufacturerId,
+                            StatusId = statusId
+                        };
+                        vendors.Add(newVendor);
+                    }
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Vendor with ID {vendor.Id}. Error: {e.Message}");
+                }
+            }
+            ffpmDbContext.Vendors.UpdateRange(vendors);
+            ffpmDbContext.SaveChanges();
+            vendors = ffpmDbContext.Vendors.ToList();
+        }
+
+        public static void FrameManufacturerConvert(List<ModelsD.FrameManufacturer> invFrameManufacturers, InvDbContext invDbContext, FfpmContext ffpmDbContext, 
+            ILogger logger, ProgressBar progress, List<Manufacturer> frameManufacturers) {
+            foreach (var frameManufacturer in invFrameManufacturers) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+
+
+
+                    var newFrameManufacturer = new Brady_s_Conversion_Program.ModelsA.Manufacturer {
+                        ManufacturerName = TruncateString(frameManufacturer.ManufacturerName, 100),
+
+                    };
+                    frameManufacturers.Add(newFrameManufacturer);
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Manufacturer with ID {frameManufacturer.Id}. Error: {e.Message}");
+                }
+            }
+            ffpmDbContext.Manufacturers.UpdateRange(frameManufacturers);
+            ffpmDbContext.SaveChanges();
+            frameManufacturers = ffpmDbContext.Manufacturers.ToList();
+        }
+
+        public static void FrameBrandConvert(List<ModelsD.FrameBrand> invFrameBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, 
+            ProgressBar progress, List<FrameBrand> frameBrands) {
+            foreach (var frameBrand in invFrameBrands) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID {frameBrand.Id}. Error: {e.Message}");
+                }
+            }
+        }
+
+        public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<DmgOtherAddress> otherAddresses) {
+            foreach (var address in invAddresses) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Address with ID {address.Id}. Error: {e.Message}");
+                }
+            }
+        }
+
+        public static void PhoneConvert(List<ModelsD.Phone> invPhones, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+            List<DmgOtherAddress> otherAddresses) {
+            foreach (var phone in invPhones) {
+                progress.Invoke((MethodInvoker)delegate {
+                    progress.PerformStep();
+                });
+                try {
+
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the Phone with ID {phone.Id}. Error: {e.Message}");
+                }
+            }
+        }
 
         #endregion InvConversion
     }
