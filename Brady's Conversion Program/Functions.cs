@@ -387,9 +387,8 @@ namespace Brady_s_Conversion_Program {
 
 
 
+
             var newLocations = new List<BillingLocation>();
-            var newAdditionalDetails = new List<DmgPatientAdditionalDetail>();
-            var newEmrPatients = new List<Emrpatient>();
             var newAppointmentTypes = new List<SchedulingAppointmentType>();
             var newGuarantors = new List<DmgGuarantor>();
             var newProviders = new List<DmgProvider>();
@@ -416,7 +415,7 @@ namespace Brady_s_Conversion_Program {
 
 
             PatientConvert(convPatients, convDbContext, ffpmDbContext, eyemdDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys,
-                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, newAdditionalDetails, newEmrPatients);
+                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
 
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
@@ -560,8 +559,7 @@ namespace Brady_s_Conversion_Program {
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, EyeMdContext eyeMdDbContext,
             ILogger logger, ProgressBar progress, List<DmgPatient> ffpmPatients, List<Emrpatient> emrPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
-                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, List<DmgPatientAdditionalDetail> newAdditionalDetails,
-                        List<Emrpatient> newEmrPatients) {
+                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
             long patientId = 1;
             if (ffpmDbContext.DmgPatients.Any()) {
                 patientId = ffpmDbContext.DmgPatients.Max(p => p.PatientId) + 1;
@@ -777,9 +775,7 @@ namespace Brady_s_Conversion_Program {
                                 PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
                                 DefaultLocationId = newPatient.LocationId
                             };
-                            patientAdditionals.Add(newAdditionDetails); // could change this to be UpdateRange, but seems to be an
-																		// unnecessary change. Will do later if asked or given time
-							newAdditionalDetails.Add(newAdditionDetails);
+                            patientAdditionals.Add(newAdditionDetails);
                         }
 
 
@@ -792,7 +788,6 @@ namespace Brady_s_Conversion_Program {
                                 PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
                             };
                             emrPatients.Add(newEMRPatient);
-                            newEmrPatients.Add(newEMRPatient);
                         }
                         patientId++;
                     }
@@ -802,14 +797,12 @@ namespace Brady_s_Conversion_Program {
                 }
             }
             ffpmDbContext.DmgPatients.UpdateRange(ffpmPatients);
-            ffpmDbContext.DmgPatientAdditionalDetails.AddRange(newAdditionalDetails);
-            eyeMdDbContext.Emrpatients.AddRange(newEmrPatients);
+            ffpmDbContext.DmgPatientAdditionalDetails.UpdateRange(patientAdditionals);
+            eyeMdDbContext.Emrpatients.UpdateRange(emrPatients);
             ffpmDbContext.SaveChanges();
             eyeMdDbContext.SaveChanges();
             patientAdditionals = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             emrPatients = eyeMdDbContext.Emrpatients.ToList();
-            newAdditionalDetails.Clear();
-            newEmrPatients.Clear();
         }
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
@@ -9099,6 +9092,9 @@ namespace Brady_s_Conversion_Program {
             var invPhones = invDbContext.Phones.ToList();
             var invFrameBrands = invDbContext.FrameBrands.ToList();
             var invAddresses = invDbContext.Addresses.ToList();
+            var frameManufacturers = ffpmDbContext.Manufacturers.ToList();
+            var frameBrands = ffpmDbContext.Brands.ToList();
+            var stateXrefs = ffpmDbContext.MntStates.ToList();
 
 
 
@@ -9222,19 +9218,19 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("Frame Vendors converted\n");
             });
 
-            FrameManufacturerConvert(invFrameManufacturers, invDbContext, ffpmDbContext, logger, progress);
+            FrameManufacturerConvert(invFrameManufacturers, invDbContext, ffpmDbContext, logger, progress, frameManufacturers);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Manufacturers converted\n");
             });
 
-            FrameBrandConvert(invFrameBrands, invDbContext, ffpmDbContext, logger, progress);
+            FrameBrandConvert(invFrameBrands, invDbContext, ffpmDbContext, logger, progress, frameBrands, locations);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Brands converted\n");
             });
 
-            AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, progress, otherAddresses);
+            AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, progress, otherAddresses, vendors, stateXrefs);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Addresses converted\n");
@@ -11064,18 +11060,65 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-            List<DmgOtherAddress> otherAddresses, List<Vendor> vendors) {
+            List<DmgOtherAddress> otherAddresses, List<Vendor> vendors, List<MntState> stateXrefs) {
             foreach (var address in invAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
+                    if (address.PrimaryFile == null || address.PrimaryFileId == null) {
+                        continue;
+                    }
+
+                    string? zip = null;
+                    if (address.Zip == null || !zipRegex.IsMatch(address.Zip)) {
+                        zip = "";
+                    }
+                    short? stateId = null;
+                    short? countryId = null;
+                    if (address.State != null) {
+                        var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == address.State);
+                        if (stateXref != null) {
+                            stateId = stateXref.StateId;
+                            countryId = (short?)stateXref.CountryId;
+                        }
+                    }
+
+
                     // looks like the only incoming primary file is "VEND" for vendor
+                    switch (address.PrimaryFile.ToLower()) {
+                        default:
+                        case "vend":
+                            string? email = null;
+
+                            var vendor = vendors.FirstOrDefault(v => v.AccountNumber == address.PrimaryFileId.ToString());
+                            if (vendor != null) {
+                                var invVendor = otherAddresses.FirstOrDefault(v => v.OwnerId == vendor.VendorId && v.OwnerType == 5);
+                                if (invVendor != null)
+                                    email = invVendor.Email;
+                                var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                    Address1 = TruncateString(address.Address1, 100),
+                                    Address2 = TruncateString(address.Address2, 100),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = stateId,
+                                    Zip = TruncateString(zip, 10),
+                                    CountryId = countryId,
+                                    Email = TruncateString(email, 100),
+                                    OwnerId = vendor.VendorId,
+                                    OwnerType = 5
+                                };
+                                otherAddresses.Add(newAddress);
+                            }
+                            break;
+                    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Address with ID {address.Id}. Error: {e.Message}");
                 }
             }
+            ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
+            ffpmDbContext.SaveChanges();
+            otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
         }
 
         public static void PhoneConvert(List<ModelsD.Phone> invPhones, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
@@ -11085,12 +11128,48 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-
+                    if (phone.PrimaryFile == null || phone.PrimaryFileId !> 0) {
+                        continue;
+                    }
+                    switch (phone.PrimaryFile.ToLower()) {
+                        case "vend":
+                        default:
+                            var vendorAddress = otherAddresses.FirstOrDefault(v => v.AddressId == phone.PrimaryFileId);
+                            if (vendorAddress != null) {
+                                if (phone.Type == null) {
+                                    vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                    continue;
+                                }
+                                switch (phone.Type.ToLower()) {
+                                    case "cell":
+                                        vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                        break;
+                                    case "home":
+                                        vendorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                        break;
+                                    case "work":
+                                        vendorAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                        break;
+                                    default:
+                                        vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                        break;
+                                }
+                            }
+                            break;
+                    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Phone with ID {phone.Id}. Error: {e.Message}");
                 }
             }
+            ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
+            ffpmDbContext.SaveChanges();
+            otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
         }
 
         #endregion InvConversion

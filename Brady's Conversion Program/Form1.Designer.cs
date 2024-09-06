@@ -121,7 +121,7 @@
             progressBar1.Location = new Point(12, 134);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(408, 23);
-            progressBar1.Style = ProgressBarStyle.Marquee;
+            progressBar1.Style = ProgressBarStyle.Continuous;
             progressBar1.TabIndex = 20;
             // 
             // backgroundWorker1
