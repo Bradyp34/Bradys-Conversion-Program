@@ -561,7 +561,7 @@ namespace Brady_s_Conversion_Program {
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
             long patientId = 1;
-            int tempPatientId = patientId;
+            long tempPatientId = patientId;
             if (ffpmDbContext.DmgPatients.Any()) {
                 patientId = ffpmDbContext.DmgPatients.Max(p => p.PatientId) + 1;
             }
@@ -756,16 +756,16 @@ namespace Brady_s_Conversion_Program {
                         };
 						tempPatientId = patientId;
 						patientId++;
+                        ffpmPatients.Add(newPatient);
 					} else {
                         tempPatientId = ffpmOrig.PatientId;
 					}
 
-                    ffpmDbContext.DmgPatients.Add(newPatient);
 
                     var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == tempPatientId);
                     if (patientAdditionalDetail == null) {
                         var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                            PatientId = tempPatientId,
+                            PatientId = patientId,
                             DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
                             DriversLicenseStateId = licenseShort,
                             RaceId = race,
@@ -778,25 +778,21 @@ namespace Brady_s_Conversion_Program {
                             PreferredContactSecondId = prefContact2,
                             PreferredContactThirdId = prefContact3,
                             PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                            DefaultLocationId = newPatient.LocationId
+                            DefaultLocationId = 0
                         };
-                        patientAdditionals.Add(newAdditionDetails); // could change this to be UpdateRange, but seems to be an
-																	// unnecessary change. Will do later if asked or given time
-						newAdditionalDetails.Add(newAdditionDetails);
+                        patientAdditionals.Add(newAdditionDetails);
                     }
-                        }
 
-                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == newPatient.PatientId.ToString());
+
+                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == tempPatientId.ToString());
                     if (existingEmrPatient == null) {
                         var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                            ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
-                            PatientNameFirst = TruncateString(newPatient.FirstName, 50),
-                            PatientNameLast = TruncateString(newPatient.LastName, 50),
-                            PatientNameMiddle = TruncateString(newPatient.MiddleName, 50)
+                            ClientSoftwarePtId = TruncateString(patientId.ToString(), 50),
+                            PatientNameFirst = TruncateString(patient.FirstName, 50),
+                            PatientNameLast = TruncateString(patient.LastName, 50),
+                            PatientNameMiddle = TruncateString(patient.MiddleName, 50)
                         };
                         emrPatients.Add(newEMRPatient);
-                        newEmrPatients.Add(newEMRPatient);
-                    }
                     }
                 }
                 catch (Exception ex) {
