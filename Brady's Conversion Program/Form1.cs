@@ -18,7 +18,7 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please select at least one database to convert.");
                 return;
             }
-            else if (ConvCheckBox.Checked == true && ConvServerTextBox.Text == "") {
+            else if (ConvCheckBox.Checked && ConvServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name.");
                 return;
             }
@@ -32,6 +32,14 @@ namespace Brady_s_Conversion_Program
             }
             else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && CustomerInfoServerTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for Customer Info database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && CustomerInfoDatabaseTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for Customer Info database on FFPM Conversion.");
                 return;
             }
             else if (EHRCheckBox.Checked && EHRServerTextBox.Text == "") {
@@ -48,6 +56,14 @@ namespace Brady_s_Conversion_Program
             }
             else if (EHRCheckBox.Checked && FFPMDataBaseTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for FFPM Database on EyeMD Conversion.");
+                return;
+            }
+            else if (EHRCheckBox.Checked && ConvServerTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for Conv database on EyeMD Conversion.");
+                return;
+            }
+            else if (EHRCheckBox.Checked && ConvTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for Conv Database on EyeMD Conversion.");
                 return;
             }
             else if (InvCheckBox.Checked && InvServerTextBox.Text == "") {

@@ -50,10 +50,6 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static Dictionary<int, string> insuranceCodes = new Dictionary<int, string> {
-
-        };
-
         public static string TruncateString(string? input, int maxLength) { // make sure strings are of proper length, this did happen in my tests
             if (string.IsNullOrEmpty(input))
                 return "";
@@ -160,6 +156,8 @@ namespace Brady_s_Conversion_Program {
         public static string FFPMString = "";
         public static string EyeMDString = "";
 
+        public static Dictionary<int, string> insuranceCodes = new Dictionary<int, string> {};
+
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
             FFPMString = FFPMConnection;
@@ -168,6 +166,33 @@ namespace Brady_s_Conversion_Program {
 				ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
 
                 // do customer info stuff here
+                using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
+                    conn.Open();
+
+                    // SQL query to fetch OldInsCompanyId and InsCode
+                    string query = @"
+                        SELECT  
+                            i.OldInsCompanyId, 
+                            i.InsCode
+                        FROM [ET10_Foxfire_Conv].[dbo].[Insurance] i
+                            ORDER BY i.ID;";
+
+                    // Execute the query and read the results
+                    using (SqlCommand cmd = new SqlCommand(query, conn)) {
+                        using (SqlDataReader reader = cmd.ExecuteReader()) {
+                            while (reader.Read()) {
+                                // Get the OldInsCompanyId (int) and InsCode (string)
+                                int oldInsCompanyId = reader.GetInt32(0);
+                                string insCode = reader.GetString(1);
+
+                                // Add them as key-value pairs into the dictionary
+                                if (!insuranceCodes.ContainsKey(oldInsCompanyId)) {
+                                    insuranceCodes.Add(oldInsCompanyId, insCode);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 int totalEntries = 0;
 
@@ -1139,9 +1164,7 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     string payerId = "";
-                    if (insurance.InsuranceCompanyCode != null) {
-                        payerId = insurance.InsuranceCompanyCode;
-                    }
+                    
 
                     bool active = false;
                     if (insurance.Active != null && (insurance.Active.ToLower() == "yes" || insurance.Active == "1")) {
@@ -1161,9 +1184,18 @@ namespace Brady_s_Conversion_Program {
                     if (insurance.InsCompanyName != null) {
                         companyName = insurance.InsCompanyName;
                     }
-                    string code = "";
+                    string? code = "";
                     if (insurance.InsuranceCompanyCode != null) {
-                        code = insurance.InsuranceCompanyCode;
+                        int temp = -1;
+                        if (int.TryParse(insurance.InsuranceCompanyCode, out int dontCare))
+                            temp = dontCare;
+                        if (temp <= -1) {
+                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
+                        }
+                        code = insuranceCodes.TryGetValue(temp, out string? value) ? value : insurance.InsuranceCompanyCode;
+                        if (code == null) {
+                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
+                        }
                     }
                     int companyId = 0;
                     if (insurance.OldInsCompanyId != null) {
