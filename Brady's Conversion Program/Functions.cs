@@ -28,6 +28,7 @@ using Microsoft.Identity.Client.NativeInterop;
 using static Azure.Core.HttpHeader;
 using System.Windows.Forms;
 using System.Configuration;
+using System.ComponentModel;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -48,6 +49,8 @@ namespace Brady_s_Conversion_Program {
                 }
             }
         }
+
+        public static Dictionary<int, string> insuranceCodes;
 
         public static string TruncateString(string? input, int maxLength) { // make sure strings are of proper length, this did happen in my tests
             if (string.IsNullOrEmpty(input))
@@ -156,12 +159,13 @@ namespace Brady_s_Conversion_Program {
         public static string EyeMDString = "";
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
-            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox) {
+            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
             FFPMString = FFPMConnection;
             EyeMDString = EyeMDConnection;
             try {
                 ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
 
+                // do customer info stuff here
 
                 int totalEntries = 0;
 
@@ -224,54 +228,56 @@ namespace Brady_s_Conversion_Program {
                 if (ehr == true) { // if it is (also) eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            if (newEyemd) { // if it is a new eyemd database
-                                new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
-                            }
-                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                                resultsBox.Invoke((MethodInvoker)delegate { // change results box text
-                                    resultsBox.Text += "EHR Conversion Started\n";
-                                });
-                                ffpmDbContext.Database.OpenConnection();
-                                eyeMDDbContext.Database.OpenConnection();
+                            using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                                if (newEyemd) { // if it is a new eyemd database
+                                    new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                                }
+                                using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                                    resultsBox.Invoke((MethodInvoker)delegate { // change results box text
+                                        resultsBox.Text += "EHR Conversion Started\n";
+                                    });
+                                    ffpmDbContext.Database.OpenConnection();
+                                    eyeMDDbContext.Database.OpenConnection();
 
-                                totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
-                                                eHRDbContext.Visits.Count() +
-                                                eHRDbContext.VisitOrders.Count() +
-                                                eHRDbContext.VisitDoctors.Count() +
-                                                eHRDbContext.Allergies.Count() +
-                                                eHRDbContext.ContactLens.Count() +
-                                                eHRDbContext.DiagCodePools.Count() +
-                                                eHRDbContext.DiagTests.Count() +
-                                                eHRDbContext.ExamConditions.Count() +
-                                                eHRDbContext.FamilyHistories.Count() +
-                                                eHRDbContext.Iops.Count() +
-                                                eHRDbContext.PlanNarratives.Count() +
-                                                eHRDbContext.ProcDiagPools.Count() +
-                                                eHRDbContext.ProcPools.Count() +
-                                                eHRDbContext.Refractions.Count() +
-                                                eHRDbContext.Ros.Count() +
-                                                eHRDbContext.RxMedications.Count() +
-                                                eHRDbContext.SurgHistories.Count() +
-                                                eHRDbContext.Teches.Count() +
-                                                eHRDbContext.Tech2s.Count() +
-                                                eHRDbContext.PatientDocuments.Count() +
-                                                eHRDbContext.Appointments.Count() +
-                                                eHRDbContext.PatientNotes.Count();
-
-
-
-
-                                progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
-                                    progress.Maximum = totalEntries;
-                                    progress.Step = 1;
-                                    progress.Value = 0;
-                                });
+                                    totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
+                                                    eHRDbContext.Visits.Count() +
+                                                    eHRDbContext.VisitOrders.Count() +
+                                                    eHRDbContext.VisitDoctors.Count() +
+                                                    eHRDbContext.Allergies.Count() +
+                                                    eHRDbContext.ContactLens.Count() +
+                                                    eHRDbContext.DiagCodePools.Count() +
+                                                    eHRDbContext.DiagTests.Count() +
+                                                    eHRDbContext.ExamConditions.Count() +
+                                                    eHRDbContext.FamilyHistories.Count() +
+                                                    eHRDbContext.Iops.Count() +
+                                                    eHRDbContext.PlanNarratives.Count() +
+                                                    eHRDbContext.ProcDiagPools.Count() +
+                                                    eHRDbContext.ProcPools.Count() +
+                                                    eHRDbContext.Refractions.Count() +
+                                                    eHRDbContext.Ros.Count() +
+                                                    eHRDbContext.RxMedications.Count() +
+                                                    eHRDbContext.SurgHistories.Count() +
+                                                    eHRDbContext.Teches.Count() +
+                                                    eHRDbContext.Tech2s.Count() +
+                                                    eHRDbContext.PatientDocuments.Count() +
+                                                    eHRDbContext.Appointments.Count() +
+                                                    eHRDbContext.PatientNotes.Count();
 
 
 
-                                eyeMDDbContext.Database.OpenConnection();
-                                ConvertEyeMD(eHRDbContext, eyeMDDbContext, ffpmDbContext, logger, progress, resultsBox); // convert eyemd data
-                                eyeMDDbContext.SaveChanges();
+
+                                    progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
+                                        progress.Maximum = totalEntries;
+                                        progress.Step = 1;
+                                        progress.Value = 0;
+                                    });
+
+
+
+                                    eyeMDDbContext.Database.OpenConnection();
+                                    ConvertEyeMD(eHRDbContext, eyeMDDbContext, ffpmDbContext, convDbContext, logger, progress, resultsBox); // convert eyemd data
+                                    eyeMDDbContext.SaveChanges();
+                                }
                             }
                         }
                     }
@@ -725,8 +731,8 @@ namespace Brady_s_Conversion_Program {
                     if (ffpmOrig == null) {
                         var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
                             DateCreated = minAcceptableDate,
-                            AccountNumber = patient.Id.ToString(),
-                            AltAccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                            AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                            AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10),
                             LastName = TruncateString(patient.LastName, 50),
                             MiddleName = TruncateString(patient.MiddleName, 50),
                             FirstName = TruncateString(patient.FirstName, 50),
@@ -893,7 +899,7 @@ namespace Brady_s_Conversion_Program {
                     if (appointment.PatientId > 0) {
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
                         if (convPatient != null) {
-                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()));
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber));
                             if (ffpmPatient != null) {
                                 patientId = (int)ffpmPatient.PatientId;
                                 locationId = ffpmPatient.LocationId;
@@ -1442,7 +1448,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for guarantor with ID: {guarantor.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) ||
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for guarantor with ID: {guarantor.Id}");
@@ -1603,7 +1609,7 @@ namespace Brady_s_Conversion_Program {
                                 tempSuffixID = suffixXref.SuffixId;
                             }
 
-                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                                 (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.SuffixId == tempSuffixID));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
@@ -1689,7 +1695,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: FFPM Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
@@ -1883,7 +1889,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
@@ -1970,7 +1976,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
@@ -2043,7 +2049,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
@@ -2187,7 +2193,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                         continue;
                     }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString() ||
+                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
                     (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
@@ -2650,7 +2656,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.Id.ToString()) ||
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber) ||
                         (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for recall with ID: {recall.Id}");
@@ -3156,7 +3162,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3288,7 +3294,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.Id.ToString());
+                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: FFPM Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3376,8 +3382,8 @@ namespace Brady_s_Conversion_Program {
         #endregion FFPMConversion
 
         #region EyeMDConversion
-        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
-            RichTextBox resultsBox) {
+        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, FfpmContext ffpmDbContext, FoxfireConvContext convDbContext, 
+            ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             if (eyeMDDbContext.Emrpatients.Count() == 0) {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
                 return;
@@ -3428,6 +3434,7 @@ namespace Brady_s_Conversion_Program {
             var ehrTechs = eHRDbContext.Teches.ToList();
             var ehrTech2s = eHRDbContext.Tech2s.ToList();
             var ross = eyeMDDbContext.Emrrosdefaults.ToList();
+            var convPatients = convDbContext.Patients.ToList();
 
 
 
@@ -3439,7 +3446,7 @@ namespace Brady_s_Conversion_Program {
             //});
 
             
-            VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders, ffpmPatients, eyeMDPatients);
+            VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDVisitOrders, ffpmPatients, eyeMDPatients, convPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
@@ -3461,7 +3468,8 @@ namespace Brady_s_Conversion_Program {
             });
 
             
-            MedicalHistoriesConvert(ehrMedicalHistories, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories, ffpmPatients);
+            MedicalHistoriesConvert(ehrMedicalHistories, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, medicalHistories, 
+                ffpmPatients, convPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
@@ -3742,7 +3750,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void MedicalHistoriesConvert(List<ModelsC.MedicalHistory> ehrMedicalHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
             ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, 
-                List<DmgPatient> ffpmPatients) {
+                List<DmgPatient> ffpmPatients, List<Models.Patient> convPatients) {
             foreach (var medicalHistory in ehrMedicalHistories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3763,7 +3771,12 @@ namespace Brady_s_Conversion_Program {
                     Emrpatient? eyeMDPatient = null;
                     if (medicalHistory.PtId > 0) {
                         ptId = medicalHistory.PtId;
-                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ptId.ToString());
+                        var convPatient = convPatients.FirstOrDefault(cp => cp.Id == ptId);
+                        if (convPatient == null) {
+                            logger.Log($"EHR: FFPM Patient not found for medical history with ID: {medicalHistory.Id}");
+                            continue;
+                        }
+                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                         if (ffpmPatient == null) {
                             if (medicalHistory.VisitId > 0) {
                                 EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == medicalHistory.VisitId);
@@ -4053,7 +4066,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void VisitsConvert(List<Visit> ehrVisits, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
-            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders, List<DmgPatient> ffpmPatients, List<Emrpatient> eyeMDPatients) {
+            ProgressBar progress, List<Emrvisit> visits, List<EmrvisitOrder> newVisitOrders, List<DmgPatient> ffpmPatients, List<Emrpatient> eyeMDPatients,
+                List<Models.Patient> convPatients) {
             foreach (var visit in ehrVisits) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -4067,12 +4081,16 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"EHR: EHR Patient ID not found for visit with ID: {visit.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == ptId.ToString());
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == ptId);
+                    if (convPatient == null) {
+                        logger.Log($"EHR: FFPM Patient not found for visit with ID: {visit.Id}");
+                        continue;
+                    }
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                     if (ffpmPatient == null) {
                         logger.Log($"EHR: FFPM Patient not found for visit with ID: {visit.Id}");
                         continue;
                     }
-
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ffpmPatient.PatientId.ToString());
                     if (eyeMDPatient == null) {
                         logger.Log($"EHR: EHR Patient not found for visit with ID: {visit.Id}");

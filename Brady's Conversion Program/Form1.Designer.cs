@@ -48,6 +48,8 @@
             InvCheckBox = new CheckBox();
             EHRServerTextBox = new TextBox();
             InvServerTextBox = new TextBox();
+            CustomerInfoServerTextBox = new TextBox();
+            CustomerInfoDatabaseTextBox = new TextBox();
             SuspendLayout();
             // 
             // ConvServerTextBox
@@ -68,7 +70,7 @@
             // 
             // DBBeginButton
             // 
-            DBBeginButton.Location = new Point(288, 70);
+            DBBeginButton.Location = new Point(150, 283);
             DBBeginButton.Name = "DBBeginButton";
             DBBeginButton.Size = new Size(132, 23);
             DBBeginButton.TabIndex = 16;
@@ -233,12 +235,30 @@
             InvServerTextBox.Size = new Size(132, 23);
             InvServerTextBox.TabIndex = 5;
             // 
+            // CustomerInfoServerTextBox
+            // 
+            CustomerInfoServerTextBox.Location = new Point(288, 70);
+            CustomerInfoServerTextBox.Name = "CustomerInfoServerTextBox";
+            CustomerInfoServerTextBox.PlaceholderText = "CustomerInfo Server";
+            CustomerInfoServerTextBox.Size = new Size(132, 23);
+            CustomerInfoServerTextBox.TabIndex = 21;
+            // 
+            // CustomerInfoDatabaseTextBox
+            // 
+            CustomerInfoDatabaseTextBox.Location = new Point(288, 99);
+            CustomerInfoDatabaseTextBox.Name = "CustomerInfoDatabaseTextBox";
+            CustomerInfoDatabaseTextBox.PlaceholderText = "CustomerInfo Database";
+            CustomerInfoDatabaseTextBox.Size = new Size(132, 23);
+            CustomerInfoDatabaseTextBox.TabIndex = 22;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 312);
+            Controls.Add(CustomerInfoDatabaseTextBox);
+            Controls.Add(CustomerInfoServerTextBox);
             Controls.Add(InvServerTextBox);
             Controls.Add(EHRServerTextBox);
             Controls.Add(InvCheckBox);
@@ -289,5 +309,7 @@
         private CheckBox InvCheckBox;
         public TextBox EHRServerTextBox;
         public TextBox InvServerTextBox;
+        private TextBox CustomerInfoServerTextBox;
+        private TextBox CustomerInfoDatabaseTextBox;
     }
 }

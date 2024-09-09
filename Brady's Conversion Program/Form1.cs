@@ -83,9 +83,11 @@ namespace Brady_s_Conversion_Program
             string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
-                ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox); // this is the actual work
+                ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
+                    customerInfoConnectionString); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
