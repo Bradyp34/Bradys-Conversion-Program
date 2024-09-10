@@ -439,7 +439,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -569,7 +569,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
 
-*/
+
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
                 otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations,
                 locations, convReferrals);
