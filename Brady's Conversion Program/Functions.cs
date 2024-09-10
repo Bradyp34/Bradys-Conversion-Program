@@ -605,14 +605,15 @@ namespace Brady_s_Conversion_Program {
                 try { // all patients need first and last name and for active to be yes or null (not no)
                     if (patient.LastName == null) {
                         logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
-                        continue; ;
+                        continue;
                     }
                     else if (patient.FirstName == null) {
                         logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
-                        continue; ;
+                        continue;
                     }
-                    else if (patient.Active != null && patient.Active.ToUpper() == "NO") {
-                        continue; ;
+                    else if (patient.Active != null && patient.Active.ToUpper() == "NO" || patient.Active == "0") {
+                        logger.Log($"Conv: Conv Patient is not active for patient with ID: {patient.Id}");
+                        continue;
                     }
                     string? ssn = patient.Ssn;
                     if (patient.Ssn == null || !ssnRegex.IsMatch(patient.Ssn)) {
@@ -678,15 +679,15 @@ namespace Brady_s_Conversion_Program {
 
                     bool? deceased = null;
                     if (patient.Deceased != null) {
-                        deceased = patient.Deceased.ToUpper() == "NO" ? false : true;
+                        deceased = (patient.Deceased.ToUpper() == "NO" || patient.Deceased.ToUpper() == "FALSE") ? false : true;
                     }
 
                     bool? consent = null;
                     if (patient.Consent != null) {
-                        if (patient.Consent.ToUpper() == "YES" || patient.Consent == "1") {
+                        if (patient.Consent.ToUpper() == "YES" || patient.Consent == "1" || patient.Consent.ToUpper() == "TRUE") {
                             consent = true;
                         }
-                        else if (patient.Consent.ToUpper() == "NO" || patient.Consent == "0") {
+                        else if (patient.Consent.ToUpper() == "NO" || patient.Consent == "0" || patient.Consent.ToUpper() == "FALSE") {
                             consent = false;
                         }
                     }
@@ -751,8 +752,8 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-
-                    var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber || (p.FirstName == patient.FirstName
+                    DmgPatient? ffpmOrig = null;
+                    ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber || (p.FirstName == patient.FirstName
                         && p.LastName == patient.LastName && p.MiddleName == patient.MiddleName && p.Ssn == ssn));
 
                     if (ffpmOrig == null) {
@@ -772,9 +773,9 @@ namespace Brady_s_Conversion_Program {
                             IsDeceased = deceased,
                             DeceasedDate = deceasedDate,
                             LastExamDate = lastExamDate,
-                            PatientBalance = 0,
-                            InsuranceBalance = 0,
-                            OtherBalance = 0,
+                            PatientBalance = -1,
+                            InsuranceBalance = -1,
+                            OtherBalance = -1,
                             GenderId = genderInt,
                             SuffixId = suffixInt,
                             BalanceLastUpdatedDateTime = minAcceptableDate,
@@ -790,43 +791,41 @@ namespace Brady_s_Conversion_Program {
 						tempPatientId = patientId;
 						patientId++;
                         ffpmPatients.Add(newPatient);
-					} else {
+
+                        var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == tempPatientId);
+                        if (patientAdditionalDetail == null) {
+                            var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
+                                PatientId = tempPatientId,
+                                DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
+                                DriversLicenseStateId = licenseShort,
+                                RaceId = race,
+                                EthnicityId = ethnicity,
+                                MedicareSecondaryId = medicareSecondaryId,
+                                MedicareSecondaryNotes = medicareSecondaryNotes,
+                                HippaConsent = consent,
+                                HippaConsentDate = consentDate,
+                                PreferredContactFirstId = prefContact1,
+                                PreferredContactSecondId = prefContact2,
+                                PreferredContactThirdId = prefContact3,
+                                PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
+                                DefaultLocationId = 0
+                            };
+                            patientAdditionals.Add(newAdditionDetails);
+                        }
+
+                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == tempPatientId.ToString());
+                        if (existingEmrPatient == null) {
+                            var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
+                                ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
+                                PatientNameFirst = TruncateString(patient.FirstName, 50),
+                                PatientNameLast = TruncateString(patient.LastName, 50),
+                                PatientNameMiddle = TruncateString(patient.MiddleName, 50)
+                            };
+                            emrPatients.Add(newEMRPatient);
+                        }
+                    } else {
                         tempPatientId = ffpmOrig.PatientId;
 					}
-
-
-                    var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == tempPatientId);
-                    if (patientAdditionalDetail == null) {
-                        var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                            PatientId = tempPatientId,
-                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                            DriversLicenseStateId = licenseShort,
-                            RaceId = race,
-                            EthnicityId = ethnicity,
-                            MedicareSecondaryId = medicareSecondaryId,
-                            MedicareSecondaryNotes = medicareSecondaryNotes,
-                            HippaConsent = consent,
-                            HippaConsentDate = consentDate,
-                            PreferredContactFirstId = prefContact1,
-                            PreferredContactSecondId = prefContact2,
-                            PreferredContactThirdId = prefContact3,
-                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                            DefaultLocationId = 0
-                        };
-                        patientAdditionals.Add(newAdditionDetails);
-                    }
-
-
-                    var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == tempPatientId.ToString());
-                    if (existingEmrPatient == null) {
-                        var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                            ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
-                            PatientNameFirst = TruncateString(patient.FirstName, 50),
-                            PatientNameLast = TruncateString(patient.LastName, 50),
-                            PatientNameMiddle = TruncateString(patient.MiddleName, 50)
-                        };
-                        emrPatients.Add(newEMRPatient);
-                    }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
