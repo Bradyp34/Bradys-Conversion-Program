@@ -439,7 +439,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
+            /*ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations, newLocations);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -569,7 +569,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "SchedCodes Converted\n";
             });
 
-
+*/
             ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients, ffpmPatientAddresses,
                 otherAddresses, referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations,
                 locations, convReferrals);
@@ -752,7 +752,8 @@ namespace Brady_s_Conversion_Program {
                     }
 
 
-                    var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber);
+                    var ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber || (p.FirstName == patient.FirstName
+                        && p.LastName == patient.LastName && p.MiddleName == patient.MiddleName && p.Ssn == ssn));
 
                     if (ffpmOrig == null) {
                         var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
@@ -797,7 +798,7 @@ namespace Brady_s_Conversion_Program {
                     var patientAdditionalDetail = patientAdditionals.FirstOrDefault(ad => ad.PatientId == tempPatientId);
                     if (patientAdditionalDetail == null) {
                         var newAdditionDetails = new Brady_s_Conversion_Program.ModelsA.DmgPatientAdditionalDetail {
-                            PatientId = patientId,
+                            PatientId = tempPatientId,
                             DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
                             DriversLicenseStateId = licenseShort,
                             RaceId = race,
@@ -925,7 +926,7 @@ namespace Brady_s_Conversion_Program {
                     if (appointment.PatientId > 0) {
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
                         if (convPatient != null) {
-                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => (p.AccountNumber == convPatient.OldPatientAccountNumber));
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                             if (ffpmPatient != null) {
                                 patientId = (int)ffpmPatient.PatientId;
                                 locationId = ffpmPatient.LocationId;
@@ -1592,6 +1593,7 @@ namespace Brady_s_Conversion_Program {
             if (ffpmDbContext.DmgOtherAddresses.Any())
                 otherAddressId = ffpmDbContext.DmgOtherAddresses.Max(p => p.AddressId) + 1;
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1637,14 +1639,8 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            short? tempSuffixID = null;
-                            var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == convPatient.Suffix);
-                            if (suffixXref != null) {
-                                tempSuffixID = suffixXref.SuffixId;
-                            }
-
                             var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber ||
-                                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.SuffixId == tempSuffixID));
+                                (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                                 continue;
@@ -1652,7 +1648,8 @@ namespace Brady_s_Conversion_Program {
 
                             var ffpmPatientAdditional = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                             if (ffpmPatientAdditional == null) {
-                                logger.Log($"Conv: FFPM Patient additional not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: FFPM Patient additional not found for address with ID: {address.Id}\nFFPM Patient ID:" +
+                                    $"{ffpmPatient.PatientId}; conv Patient ID: {convPatient.Id}");
                                 continue;
                             }
 
@@ -1664,6 +1661,12 @@ namespace Brady_s_Conversion_Program {
                             string zipExt = "";
                             if (zipCode != null && zipCode.Length > 5) {
                                 zipExt = zipCode.Substring(5);
+                            }
+
+                            short? tempSuffixID = null;
+                            var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == convPatient.Suffix);
+                            if (suffixXref != null) {
+                                tempSuffixID = suffixXref.SuffixId;
                             }
 
                             if (address.TypeOfAddress != null) {
@@ -1729,7 +1732,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: FFPM Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
@@ -1926,7 +1929,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
@@ -3210,7 +3213,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                            DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3342,7 +3345,7 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for phone with ID: {phone.Id}");
                                 continue;
                             }
-                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                            ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                             if (ffpmPatient == null) {
                                 logger.Log($"Conv: FFPM Patient not found for phone with ID: {phone.Id}");
                                 continue;
@@ -3696,7 +3699,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = allergy.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for allergy with ID: {allergy.Id}");
                                 continue;
@@ -3721,7 +3724,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                         if (ffpmPatient == null) {
                             if (allergy.VisitId > 0) {
                                 EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == allergy.VisitId);
@@ -3858,7 +3861,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = medicalHistory.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory with ID: {medicalHistory.Id}");
                                 continue;
@@ -3883,7 +3886,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (medicalHistory.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == medicalHistory.VisitId);
@@ -4207,7 +4210,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"EHR: conv Patient not found for visit with ID: {visit.Id}");
                         continue;
                     }
-                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                    var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                     if (ffpmPatient == null) {
                         logger.Log($"EHR: FFPM Patient not found for visit with ID: {visit.Id}");
                         continue;
@@ -4538,7 +4541,7 @@ namespace Brady_s_Conversion_Program {
 							logger.Log($"EHR: Conv Patient not found for visitOrder with ID: {visitOrder.Id}");
 							continue;
 						}
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (visitOrder.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitOrder.VisitId);
@@ -4809,7 +4812,7 @@ namespace Brady_s_Conversion_Program {
 							logger.Log($"EHR: Conv Patient not found for visitDoctor with ID: {visitDoctor.Id}");
 							continue;
 						}
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (visitDoctor.OldVisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitDoctor.OldVisitId);
@@ -5868,7 +5871,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = diagCodePool.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for diagCodePool with ID: {diagCodePool.Id}");
                                 continue;
@@ -5893,7 +5896,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                         if (ffpmPatient == null) {
                             if (diagCodePool.VisitId > 0) {
                                 EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == diagCodePool.VisitId);
@@ -6173,7 +6176,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = diagTest.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for diagTest with ID: {diagTest.Id}");
                                 continue;
@@ -6198,7 +6201,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                         if (ffpmPatient == null) {
                             if (diagTest.VisitId > 0) {
                                 EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == diagTest.VisitId);
@@ -6634,7 +6637,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = familyHistory.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for familyHistory with ID: {familyHistory.Id}");
                                 continue;
@@ -6659,7 +6662,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (familyHistory.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == familyHistory.VisitId);
@@ -6801,7 +6804,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = iop.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for iop with ID: {iop.Id}");
                                 continue;
@@ -6826,7 +6829,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (iop.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == iop.VisitId);
@@ -7000,7 +7003,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = patientNote.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for patientNote with ID: {patientNote.Id}");
                                 continue;
@@ -7025,7 +7028,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+                        ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
                         if (ffpmPatient == null) {
                             if (patientNote.VisitId > 0) {
                                 EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == patientNote.VisitId);
@@ -7306,7 +7309,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = procDiagPool.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for procDiagPool with ID: {procDiagPool.Id}");
                                 continue;
@@ -7331,7 +7334,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (procDiagPool.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == procDiagPool.VisitId);
@@ -7460,7 +7463,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = procPool.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.PtId == ptId);
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for procPool with ID: {procPool.Id}");
                                 continue;
@@ -7485,7 +7488,7 @@ namespace Brady_s_Conversion_Program {
                                 }
                             }
                         }
-						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
+						ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber && (p.FirstName == convPatient.FirstName && p.LastName == convPatient.LastName && p.MiddleName == convPatient.MiddleName));
 						if (ffpmPatient == null) {
 							if (procPool.VisitId > 0) {
 								EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == procPool.VisitId);
