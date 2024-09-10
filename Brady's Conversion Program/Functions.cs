@@ -1648,8 +1648,7 @@ namespace Brady_s_Conversion_Program {
 
                             var ffpmPatientAdditional = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
                             if (ffpmPatientAdditional == null) {
-                                logger.Log($"Conv: FFPM Patient additional not found for address with ID: {address.Id}\nFFPM Patient ID:" +
-                                    $"{ffpmPatient.PatientId}; conv Patient ID: {convPatient.Id}");
+                                logger.Log($"Conv: FFPM Patient additional not found for address with ID: {address.Id});
                                 continue;
                             }
 
