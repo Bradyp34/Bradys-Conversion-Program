@@ -3444,7 +3444,7 @@ namespace Brady_s_Conversion_Program {
                 // update all patients that have an address that points to them
                 var ffpmpatient = ffpmPatients.FirstOrDefault(p => p.PatientId == patientAddress.PatientId);
                 if (ffpmpatient != null) {
-                    ffpmpatient.AddressId = patientAddress.AddressId;
+                    ffpmpatient.AddressId = patientAddress.PatientAddressId;
                 }
             }
             foreach (var otherAddress in otherAddresses) {
@@ -3465,13 +3465,13 @@ namespace Brady_s_Conversion_Program {
                     case 3:
                         var provider = providers.FirstOrDefault(p => p.ProviderId == otherAddress.OwnerId);
                         if (provider != null) {
-                            provider.AddressId = otherAddress.AddressId;
+                            provider.ProviderAddressId = otherAddress.AddressId;
                         }
                         break;
                     case 4:
                         var referral = providers.FirstOrDefault(p => p.ProviderId == otherAddress.OwnerId);
                         if (referral != null) {
-                            referral.AddressId = otherAddress.AddressId;
+                            referral.ProviderAddressId = otherAddress.AddressId;
                         }
                         break;
                     default:
