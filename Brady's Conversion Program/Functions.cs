@@ -733,8 +733,7 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     DmgPatient? ffpmOrig = null;
-                    ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber || (p.FirstName == patient.FirstName
-                        && p.LastName == patient.LastName && p.MiddleName == patient.MiddleName && p.Ssn == ssn));
+                    ffpmOrig = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumby );
 
                     if (ffpmOrig == null) {
                         var newPatient = new Brady_s_Conversion_Program.ModelsA.DmgPatient {
