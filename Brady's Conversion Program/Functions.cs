@@ -3635,7 +3635,8 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("Family histories converted.\n");
             });
 
-
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            convPatients = convDbContext.Patients.ToList();
             IopsConvert(ehrIops, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, iops, ffpmPatients, convPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -6844,6 +6845,8 @@ namespace Brady_s_Conversion_Program {
 
         public static void IopsConvert(List<ModelsC.Iop> ehrIops, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitIop> iops, List<DmgPatient> ffpmPatients, List<Models.Patient> convPatients) {
+            eyeMDPatients = eyeMDDbContext.Emrpatients.ToList();
+            visits = eyeMDDbContext.Emrvisits.ToList();
             foreach (var iop in ehrIops) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
