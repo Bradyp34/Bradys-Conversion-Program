@@ -443,7 +443,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, progress, ffpmPatients, emrPatients, patientAdditionalDetails, medicareSecondarys,
+            PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
                 raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
 
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
