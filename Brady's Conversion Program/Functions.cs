@@ -1558,12 +1558,14 @@ namespace Brady_s_Conversion_Program {
             long patientAddressId = 1;
             long otherAddressId = 1;
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
+            
             if (ffpmDbContext.DmgPatientAddresses.Any())
                 patientAddressId = ffpmDbContext.DmgPatientAddresses.Max(p => p.PatientAddressId) + 1;
             if (ffpmDbContext.DmgOtherAddresses.Any())
                 otherAddressId = ffpmDbContext.DmgOtherAddresses.Max(p => p.AddressId) + 1;
-            guarantors = ffpmDbContext.DmgGuarantors.ToList();
-            patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
+
             foreach (var address in convAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
