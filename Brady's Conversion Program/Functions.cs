@@ -1099,11 +1099,10 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
-                        if (company.InsCompanyName == insurance.InsCompanyName) {
-                            logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
-                            continue;
-                        }
+                    var insCompanyExisting = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == insurance.InsCompanyName);
+                    if (insCompanyExisting != null) {
+                        logger.Log($"FFPM: FFPM Insurance company already exists for insurance with ID: {insurance.Id}; Name: {insurance.InsCompanyName}");
+                        continue;
                     }
 
                     int stateId = -1;
