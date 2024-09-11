@@ -586,7 +586,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, 
-            List<DmgPatient> ffpmPatients, List<Emrpatient> emrPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
+            List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
             long patientId = 1;
