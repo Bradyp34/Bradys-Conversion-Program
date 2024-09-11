@@ -4316,7 +4316,12 @@ namespace Brady_s_Conversion_Program {
                         MDSignedOff = temp;
                     }
 
-                    int clientSoftwareApptId = visit.Id;
+                    int clientSoftwareApptId = -1;
+                    if (visit.OldVisitId != null) {
+                        if (int.TryParse(visit.OldVisitId, out int locum)) {
+                            clientSoftwareApptId = locum;
+                        }
+                    }
 
                     int? clientSoftwarePtId = null;
                     if (visit.PtId > 0) {
