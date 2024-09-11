@@ -3834,7 +3834,11 @@ namespace Brady_s_Conversion_Program {
                             eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
                         }
                     }
-                    
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        continue;
+                    }
+
                     DateTime? dosDate = null;
                     if (allergy.Dosdate != null && allergy.Dosdate != "" && !int.TryParse(allergy.Dosdate, out int dontCare)) {
                         DateTime tempDateTime;
@@ -3985,19 +3989,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (medicalHistory.VisitId > 0) {
-							visitId = medicalHistory.VisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for medicalHistory with ID: {medicalHistory.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = medicalHistory.VisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for medicalHistory with ID: {medicalHistory.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (medicalHistory.Dosdate != null && medicalHistory.Dosdate != "" && !int.TryParse(medicalHistory.Dosdate, out int dontCare)) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(medicalHistory.Dosdate, dateFormats,
@@ -4640,19 +4648,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (visitOrder.VisitId > 0) {
-							visitId = visitOrder.VisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for visitOrder with ID: {visitOrder.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = visitOrder.VisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for visitOrder with ID: {visitOrder.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosdate = null;
+                    DateTime? dosdate = null;
                     if (visitOrder.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(visitOrder.Dosdate, dateFormats,
@@ -4911,19 +4923,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (visitDoctor.OldVisitId > 0) {
-							visitId = visitDoctor.OldVisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for visitDoctor with ID: {visitDoctor.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = visitDoctor.OldVisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for visitDoctor with ID: {visitDoctor.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosdate = null;
+                    DateTime? dosdate = null;
                     if (visitDoctor.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(visitDoctor.Dosdate, dateFormats,
@@ -5241,6 +5257,10 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
                         }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for contactLens with ID: {iop.Id}");
+                        continue;
                     }
 
                     DateTime dosdate = minAcceptableDate;
@@ -6006,8 +6026,12 @@ namespace Brady_s_Conversion_Program {
                             eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagCodePool with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (diagCodePool.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(diagCodePool.Dosdate, dateFormats,
@@ -6311,8 +6335,12 @@ namespace Brady_s_Conversion_Program {
                             eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagTest with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (diagTest.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(diagTest.Dosdate, dateFormats,
@@ -6618,6 +6646,10 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for examCondition with ID: {iop.Id}");
+                        continue;
+                    }
 
                     DateTime dosDate = minAcceptableDate;
                     if (examCondition.Dosdate != null) {
@@ -6761,19 +6793,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (familyHistory.VisitId > 0) {
-							visitId = familyHistory.VisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for familyHistory with ID: {familyHistory.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = familyHistory.VisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for familyHistory with ID: {familyHistory.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for familyHistory with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (familyHistory.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(familyHistory.Dosdate, dateFormats,
@@ -6941,6 +6977,10 @@ namespace Brady_s_Conversion_Program {
 							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
 						}
 					}
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        continue;
+                    }
 
 						DateTime? dosDate = null;
                     if (iop.Dosdate != null) {
@@ -7140,8 +7180,12 @@ namespace Brady_s_Conversion_Program {
                             eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for patientNote with ID: {iop.Id}");
+                        continue;
+                    }
 
-						string notes = "";
+                    string notes = "";
                     if (patientNote.Notes != null) {
                         notes = patientNote.Notes;
                     }
@@ -7264,6 +7308,10 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
                         }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for planNarrative with ID: {iop.Id}");
+                        continue;
                     }
 
                     DateTime? dosDate = null;
@@ -7435,19 +7483,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (procDiagPool.VisitId > 0) {
-							visitId = procDiagPool.VisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for procDiagPool with ID: {procDiagPool.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = procDiagPool.VisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for procDiagPool with ID: {procDiagPool.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for procDiagPool with ID: {iop.Id}");
+                        continue;
+                    }
 
-						DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (procDiagPool.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(procDiagPool.Dosdate, dateFormats,
@@ -7599,9 +7651,13 @@ namespace Brady_s_Conversion_Program {
 							ptId = EyeMDVisit.PtId;
 							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
 						}
-					}
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for procPool with ID: {iop.Id}");
+                        continue;
+                    }
 
-					DateTime? dosDate = null;
+                    DateTime? dosDate = null;
                     if (procPool.Dosdate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(procPool.Dosdate, dateFormats,
@@ -7900,6 +7956,10 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for refraction with ID: {iop.Id}");
+                        continue;
+                    }
 
                     DateTime dosDate = minAcceptableDate;
                     if (refraction.Dosdate != null) {
@@ -8106,6 +8166,8 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
+                    // No identifiers, only way to check duplicate is exact match
+
                     var newRos = new Brady_s_Conversion_Program.ModelsB.Emrrosdefault {
                         RosbloodCustomDesc1 = TruncateString(ros.RosbloodCustomDesc1, 50),
                         RosbloodCustomDesc2 = TruncateString(ros.RosbloodCustomDesc2, 50),
@@ -8138,7 +8200,45 @@ namespace Brady_s_Conversion_Program {
                         RosurinaryCustomDesc1 = TruncateString(ros.RosurinaryCustomDesc1, 50),
                         RosurinaryCustomDesc2 = TruncateString(ros.RosurinaryCustomDesc2, 50)
                     };
-                    ross.Add(newRos);
+
+                    // Check if an identical object already exists in ross
+                    bool exists = ross.Any(r =>
+                        r.RosbloodCustomDesc1 == newRos.RosbloodCustomDesc1 &&
+                        r.RosbloodCustomDesc2 == newRos.RosbloodCustomDesc2 &&
+                        r.RoscardioCustomDesc1 == newRos.RoscardioCustomDesc1 &&
+                        r.RoscardioCustomDesc2 == newRos.RoscardioCustomDesc2 &&
+                        r.RosconsCustomDesc1 == newRos.RosconsCustomDesc1 &&
+                        r.RosconsCustomDesc2 == newRos.RosconsCustomDesc2 &&
+                        r.RosendoCustomDesc1 == newRos.RosendoCustomDesc1 &&
+                        r.RosendoCustomDesc2 == newRos.RosendoCustomDesc2 &&
+                        r.RosentcustomDesc1 == newRos.RosentcustomDesc1 &&
+                        r.RosentcustomDesc2 == newRos.RosentcustomDesc2 &&
+                        r.RoseyeCustomDesc1 == newRos.RoseyeCustomDesc1 &&
+                        r.RoseyeCustomDesc2 == newRos.RoseyeCustomDesc2 &&
+                        r.RoseyeCustomDesc3 == newRos.RoseyeCustomDesc3 &&
+                        r.RoseyeCustomDesc4 == newRos.RoseyeCustomDesc4 &&
+                        r.RosgasCustomDesc1 == newRos.RosgasCustomDesc1 &&
+                        r.RosgasCustomDesc2 == newRos.RosgasCustomDesc2 &&
+                        r.RosimmuCustomDesc1 == newRos.RosimmuCustomDesc1 &&
+                        r.RosimmuCustomDesc2 == newRos.RosimmuCustomDesc2 &&
+                        r.RosmusSkeCustomDesc1 == newRos.RosmusSkeCustomDesc1 &&
+                        r.RosmusSkeCustomDesc2 == newRos.RosmusSkeCustomDesc2 &&
+                        r.RosneuroCustomDesc1 == newRos.RosneuroCustomDesc1 &&
+                        r.RosneuroCustomDesc2 == newRos.RosneuroCustomDesc2 &&
+                        r.RospsycCustomDesc1 == newRos.RospsycCustomDesc1 &&
+                        r.RospsycCustomDesc2 == newRos.RospsycCustomDesc2 &&
+                        r.RosrespCustomDesc1 == newRos.RosrespCustomDesc1 &&
+                        r.RosrespCustomDesc2 == newRos.RosrespCustomDesc2 &&
+                        r.RosskinCustomDesc1 == newRos.RosskinCustomDesc1 &&
+                        r.RosskinCustomDesc2 == newRos.RosskinCustomDesc2 &&
+                        r.RosurinaryCustomDesc1 == newRos.RosurinaryCustomDesc1 &&
+                        r.RosurinaryCustomDesc2 == newRos.RosurinaryCustomDesc2
+                    );
+
+                    // If it doesn't exist, add it to the list
+                    if (!exists) {
+                        ross.Add(newRos);
+                    }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
@@ -8223,6 +8323,10 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
                         }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for rx with ID: {iop.Id}");
+                        continue;
                     }
 
                     DateTime? dosDate = null;
@@ -8620,6 +8724,10 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for sugHistory with ID: {iop.Id}");
+                        continue;
+                    }
 
                     DateTime? dosDate = null;
                     if (surgHistory.Dosdate != null) {
@@ -8911,6 +9019,10 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
                         }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech with ID: {iop.Id}");
+                        continue;
                     }
 
                     DateTime? dosDate = null;
@@ -9337,6 +9449,10 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
                         }
+                    }
+                    else {
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech2 with ID: {iop.Id}");
+                        continue;
                     }
 
                     DateTime? dosDate = null;
