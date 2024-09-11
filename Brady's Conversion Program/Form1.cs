@@ -86,12 +86,12 @@ namespace Brady_s_Conversion_Program
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
-            string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-            string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-            string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
-            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+            string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+            string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+            string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,

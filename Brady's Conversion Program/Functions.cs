@@ -3434,6 +3434,12 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
             ffpmDbContext.DmgPatientAddresses.UpdateRange(patientAddresses);
             ffpmDbContext.SaveChanges();
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+            guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            providers = ffpmDbContext.DmgProviders.ToList();
+            otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
+            patientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
+            // should go back and be sure to update any new address ids to their owners here. plan to implement later.
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
@@ -6882,17 +6888,17 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else if (iop.VisitId > 0) {
-							visitId = iop.VisitId;
-							EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
-							if (EyeMDVisit == null) {
-								logger.Log($"EHR: EyeMD visit and patient not found for iop with ID: {iop.Id}");
-								continue;
-							}
-							else {
-								ptId = EyeMDVisit.PtId;
-								eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
-							}
+						visitId = iop.VisitId;
+						EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == visitId);
+						if (EyeMDVisit == null) {
+							logger.Log($"EHR: EyeMD visit and patient not found for iop with ID: {iop.Id}");
+							continue;
 						}
+						else {
+							ptId = EyeMDVisit.PtId;
+							eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.PtId == ptId);
+						}
+					}
 
 						DateTime? dosDate = null;
                     if (iop.Dosdate != null) {
