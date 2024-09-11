@@ -363,7 +363,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         #region FFPMConversion
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpm ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -373,7 +373,6 @@ namespace Brady_s_Conversion_Program {
             var stateXrefs = ffpmDbContext.MntStates.ToList();
             var patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
             var medicareSecondarys = ffpmDbContext.MntMedicareSecondaries.ToList();
-            var emrPatients = eyemdDbContext.Emrpatients.ToList();
             var convPatients = convDbContext.Patients.ToList();
             var appointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
             var appointments = ffpmDbContext.SchedulingAppointments.ToList();
@@ -809,17 +808,6 @@ namespace Brady_s_Conversion_Program {
                             };
                             patientAdditionals.Add(newAdditionDetails);
                         }
-
-                        var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == tempPatientId.ToString());
-                        if (existingEmrPatient == null) {
-                            var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                                ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
-                                PatientNameFirst = TruncateString(patient.FirstName, 50),
-                                PatientNameLast = TruncateString(patient.LastName, 50),
-                                PatientNameMiddle = TruncateString(patient.MiddleName, 50)
-                            };
-                            emrPatients.Add(newEMRPatient);
-                        }
                     } else {
                         tempPatientId = ffpmOrig.PatientId;
 					}
@@ -830,11 +818,8 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatients.UpdateRange(ffpmPatients);
             ffpmDbContext.DmgPatientAdditionalDetails.UpdateRange(patientAdditionals);
-            eyeMdDbContext.Emrpatients.UpdateRange(emrPatients);
             ffpmDbContext.SaveChanges();
-            eyeMdDbContext.SaveChanges();
             patientAdditionals = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
-            emrPatients = eyeMdDbContext.Emrpatients.ToList();
         }
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
