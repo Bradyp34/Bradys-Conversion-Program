@@ -1099,7 +1099,25 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    var insCompanyExisting = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == insurance.InsCompanyName);
+                    string? code = "";
+                    if (insurance.InsuranceCompanyCode != null) {
+                        int temp = -1;
+                        if (int.TryParse(insurance.InsuranceCompanyCode, out int dontCare))
+                            temp = dontCare;
+                        if (temp <= -1) {
+                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
+                        }
+                        code = insuranceCodes.GetValueOrDefault(temp);
+
+                        if (code == null) {
+                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
+                        }
+                    }
+                    else {
+                        logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
+                        continue;
+                    }
+                    var insCompanyExisting = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == code);
                     if (insCompanyExisting != null) {
                         logger.Log($"FFPM: FFPM Insurance company already exists for insurance with ID: {insurance.Id}; Name: {insurance.InsCompanyName}");
                         continue;
@@ -1158,20 +1176,7 @@ namespace Brady_s_Conversion_Program {
                     if (insurance.InsCompanyName != null) {
                         companyName = insurance.InsCompanyName;
                     }
-                    string? code = "";
-                    if (insurance.InsuranceCompanyCode != null) {
-                        int temp = -1;
-                        if (int.TryParse(insurance.InsuranceCompanyCode, out int dontCare))
-                            temp = dontCare;
-                        if (temp <= -1) {
-                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
-                        }
-                        code = insuranceCodes.GetValueOrDefault(temp);
-
-                        if (code == null) {
-                            logger.Log($"FFPM: FFPM Insurance company code not found for insurance with ID: {insurance.Id}");
-                        }
-                    }
+                    
                     int companyId = 0;
                     if (insurance.OldInsCompanyId != null) {
                         if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
