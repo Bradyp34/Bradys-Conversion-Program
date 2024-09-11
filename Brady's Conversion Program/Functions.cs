@@ -165,38 +165,37 @@ namespace Brady_s_Conversion_Program {
             try {
 				ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
 
-                // do customer info stuff here
-                using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
-                    conn.Open();
 
-                    // SQL query to fetch OldInsCompanyId and InsCode, without hardcoding the database name
-                    string query = @"
+                int totalEntries = 0;
+
+                if (conv == true) { // if it is an ffpm conversion
+                    // do customer info stuff here
+                    using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
+                        conn.Open();
+
+                        // SQL query to fetch OldInsCompanyId and InsCode, without hardcoding the database name
+                        string query = @"
                         SELECT  
                             i.InsId,
                             i.InsCode
                         FROM [dbo].[Insurance_Xref] i  -- Use just the schema and table name";
 
-                    // Execute the query and read the results
-                    using (SqlCommand cmd = new SqlCommand(query, conn)) {
-                        using (SqlDataReader reader = cmd.ExecuteReader()) {
-                            while (reader.Read()) {
-                                // Get the OldInsCompanyId (int) and InsCode (string)
-                                int oldInsCompanyId = reader.GetInt32(0);  // InsId is at index 0
-                                string insCode = reader.GetString(1);  // InsCode is at index 1
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(query, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    // Get the OldInsCompanyId (int) and InsCode (string)
+                                    int oldInsCompanyId = reader.GetInt32(0);  // InsId is at index 0
+                                    string insCode = reader.GetString(1);  // InsCode is at index 1
 
-                                // Add them as key-value pairs into the dictionary
-                                if (!insuranceCodes.ContainsKey(oldInsCompanyId)) {
-                                    insuranceCodes.Add(oldInsCompanyId, insCode);
+                                    // Add them as key-value pairs into the dictionary
+                                    if (!insuranceCodes.ContainsKey(oldInsCompanyId)) {
+                                        insuranceCodes.Add(oldInsCompanyId, insCode);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-
-                int totalEntries = 0;
-
-                if (conv == true) { // if it is an ffpm conversion
                     using (var convDbContext = new FoxfireConvContext(convConnection)) {
                         convDbContext.Database.OpenConnection();
                         if (newFfpm) { // if it is a new ffpm database
