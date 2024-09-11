@@ -3200,6 +3200,11 @@ namespace Brady_s_Conversion_Program {
                     List<BillingLocation> locations) {
             phones = convDbContext.Phones.ToList();
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
+            providers = ffpmDbContext.DmgProviders.ToList();
+            otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
+            locations = ffpmDbContext.BillingLocations.ToList();
+            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+
             foreach (var phone in phones) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3866,7 +3871,7 @@ namespace Brady_s_Conversion_Program {
 						if (convPatient == null) {
                             var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
-                                logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory with ID: {medicalHistory.Id}");
+                                logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory (1) with ID: {medicalHistory.Id}");
                                 continue;
                             }
                             else {
@@ -3922,7 +3927,7 @@ namespace Brady_s_Conversion_Program {
 							if (medicalHistory.VisitId > 0) {
 								var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == medicalHistory.VisitId);
 								if (ehrVisit == null) {
-									logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory with ID: {medicalHistory.Id}");
+									logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory (2) with ID: {medicalHistory.Id}");
 									continue;
 								}
 								else {
