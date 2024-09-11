@@ -3199,6 +3199,7 @@ namespace Brady_s_Conversion_Program {
                 List<Provider> convProviders, List<DmgProvider> providers, List<DmgOtherAddress> otherAddresses, List<Referral> convReferrals, List<Models.Location> convLocations,
                     List<BillingLocation> locations) {
             phones = convDbContext.Phones.ToList();
+            guarantors = ffpmDbContext.DmgGuarantors.ToList();
             foreach (var phone in phones) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6808,7 +6809,7 @@ namespace Brady_s_Conversion_Program {
 						if (convPatient == null) {
                             var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
                             if (ehrVisit == null) {
-                                logger.Log($"EHR: EHR Visit and Patient not found for iop with ID: {iop.Id}");
+                                logger.Log($"EHR: EHR Visit and Patient not found for iop (1) with ID: {iop.Id}");
                                 continue;
                             }
                             else {
@@ -6864,7 +6865,7 @@ namespace Brady_s_Conversion_Program {
 							if (iop.VisitId > 0) {
 								var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == iop.VisitId);
 								if (ehrVisit == null) {
-									logger.Log($"EHR: EHR Visit and Patient not found for iop with ID: {iop.Id}");
+									logger.Log($"EHR: EHR Visit and Patient not found for iop (2) with ID: {iop.Id}");
 									continue;
 								}
 								else {
