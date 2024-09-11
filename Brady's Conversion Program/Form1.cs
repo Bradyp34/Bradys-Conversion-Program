@@ -22,14 +22,6 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please enter a server name.");
                 return;
             }
-            else if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
-                MessageBox.Show("Please enter the server name for EyeMD database on FFPM Conversion.");
-                return;
-            }
-            else if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
-                MessageBox.Show("Please enter the database name for EyeMD database on FFPM Conversion.");
-                return;
-            }
             else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
                 return;
