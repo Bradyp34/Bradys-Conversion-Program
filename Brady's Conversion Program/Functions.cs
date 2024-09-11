@@ -3439,7 +3439,46 @@ namespace Brady_s_Conversion_Program {
             providers = ffpmDbContext.DmgProviders.ToList();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
             patientAddresses = ffpmDbContext.DmgPatientAddresses.ToList();
-            // should go back and be sure to update any new address ids to their owners here. plan to implement later.
+            // should go back and be sure to update any new address ids to their owners here
+            foreach (var patientAddress in patientAddresses) {
+                // update all patients that have an address that points to them
+                var ffpmpatient = ffpmPatients.FirstOrDefault(p => p.PatientId == patientAddress.PatientId);
+                if (ffpmpatient != null) {
+                    ffpmpatient.AddressId = patientAddress.AddressId;
+                }
+            }
+            foreach (var otherAddress in otherAddresses) {
+                // update others
+                switch (otherAddress.OwnerType) {
+                    case 1:
+                        var guarantor = guarantors.FirstOrDefault(g => g.GuarantorId == otherAddress.OwnerId);
+                        if (guarantor != null) {
+                            guarantor.AddressId = otherAddress.AddressId;
+                        }
+                        break;
+                    case 2:
+                        var location = locations.FirstOrDefault(l => l.LocationId == otherAddress.OwnerId);
+                        if (location != null) {
+                            location.AddressId = otherAddress.AddressId;
+                        }
+                        break;
+                    case 3:
+                        var provider = providers.FirstOrDefault(p => p.ProviderId == otherAddress.OwnerId);
+                        if (provider != null) {
+                            provider.AddressId = otherAddress.AddressId;
+                        }
+                        break;
+                    case 4:
+                        var referral = providers.FirstOrDefault(p => p.ProviderId == otherAddress.OwnerId);
+                        if (referral != null) {
+                            referral.AddressId = otherAddress.AddressId;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
