@@ -3835,7 +3835,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for allergy with ID: {allergy.Id}");
                         continue;
                     }
 
@@ -4001,7 +4001,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for medicalHistory with ID: {medicalHistory.Id}");
                         continue;
                     }
 
@@ -4665,7 +4665,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for visitOrder with ID: {visitOrder.Id}");
                         continue;
                     }
 
@@ -4940,7 +4940,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for iop with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for visitDoctor with ID: {visitDoctor.Id}");
                         continue;
                     }
 
@@ -5052,14 +5052,6 @@ namespace Brady_s_Conversion_Program {
                     if (visitDoctor.DfelensUsed != null) {
                         dfeLensUsed = visitDoctor.DfelensUsed;
                     }
-                    string planTargetIOPOd = "";
-                    if (visitDoctor.PlanTargetIopod != null) {
-                        planTargetIOPOd = visitDoctor.PlanTargetIopod;
-                    }
-                    string planTargetIOPOs = "";
-                    if (visitDoctor.PlanTargetIopos != null) {
-                        planTargetIOPOs = visitDoctor.PlanTargetIopos;
-                    }
                     string dfeDilatedPupilSizeOd = "";
                     if (visitDoctor.DfedilatedPupilSizeOd != null) {
                         dfeDilatedPupilSizeOd = visitDoctor.DfedilatedPupilSizeOd;
@@ -5151,8 +5143,6 @@ namespace Brady_s_Conversion_Program {
                             PlanRxOrdersRemarks = TruncateString(planRxOrdersRemarks, int.MaxValue),
                             DfeextOpth = dfeExtOpth,
                             DfelensUsed = TruncateString(dfeLensUsed, 255),
-                            PlanTargetIopOd = TruncateString(planTargetIOPOd, 50),
-                            PlanTargetIopOs = TruncateString(planTargetIOPOs, 50),
                             DfedilatedPupilSizeOd = TruncateString(dfeDilatedPupilSizeOd, 50),
                             DfedilatedPupilSizeOs = TruncateString(dfeDilatedPupilSizeOs, 50),
                             PlanDictateEyeCareDoc = planDictateEyeCareDoc,
@@ -5264,7 +5254,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for contactLens with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for contactLens with ID: {contactLens.Id}");
                         continue;
                     }
 
@@ -6032,7 +6022,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagCodePool with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagCodePool with ID: {diagCodePool.Id}");
                         continue;
                     }
 
@@ -6341,7 +6331,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagTest with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for diagTest with ID: {diagTest.Id}");
                         continue;
                     }
 
@@ -6418,8 +6408,6 @@ namespace Brady_s_Conversion_Program {
                     string mBalanceVertTypeCcLtGaze = diagTest.MbalanceVertTypeCcltGaze ?? "";
 
                     string mBalanceMethod = diagTest.MbalanceMethod ?? "";
-                    string gonioPigmentOd = diagTest.GonioPigmentOd ?? "";
-                    string gonioPigmentOs = diagTest.GonioPigmentOs ?? "";
                     string mBalanceScType = diagTest.MbalanceSctype ?? "";
                     string mBalanceCcType = diagTest.MbalanceCctype ?? "";
                     string mbalanceHorizScupRtGaze = diagTest.MbalanceHorizScupRtGaze ?? "";
@@ -6560,8 +6548,6 @@ namespace Brady_s_Conversion_Program {
                             GonioAngleStructureTemporalOd = TruncateString(gonioAngleStructureTemporalOd, 50),
                             GonioAngleStructureTemporalOs = TruncateString(gonioAngleStructureTemporalOs, 50),
                             GonioComments = TruncateString(gonioComments, int.MaxValue),
-                            GonioPigmentOd = TruncateString(gonioPigmentOd, 255),
-                            GonioPigmentOs = TruncateString(gonioPigmentOs, 255),
                             // Continue mapping all other properties as needed
                         };
                         diagTests.Add(newDiagTest);
@@ -6652,7 +6638,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for examCondition with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for examCondition with ID: {examCondition.Id}");
                         continue;
                     }
 
@@ -6810,7 +6796,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for familyHistory with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for familyHistory with ID: {familyHistory.Id}");
                         continue;
                     }
 
@@ -7186,7 +7172,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for patientNote with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for patientNote with ID: {patientNote.Id}");
                         continue;
                     }
 
@@ -7315,7 +7301,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for planNarrative with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for planNarrative with ID: {planNarrative.Id}");
                         continue;
                     }
 
@@ -7500,7 +7486,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for procDiagPool with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for procDiagPool with ID: {procDiagPool.Id}");
                         continue;
                     }
 
@@ -7658,7 +7644,7 @@ namespace Brady_s_Conversion_Program {
 						}
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for procPool with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for procPool with ID: {procPool.Id}");
                         continue;
                     }
 
@@ -7962,7 +7948,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for refraction with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for refraction with ID: {refraction.Id}");
                         continue;
                     }
 
@@ -8330,7 +8316,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for rx with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for rx with ID: {rx.Id}");
                         continue;
                     }
 
@@ -8730,7 +8716,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for sugHistory with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for sugHistory with ID: {surgHistory.Id}");
                         continue;
                     }
 
@@ -9026,7 +9012,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech with ID: {tech.Id}");
                         continue;
                     }
 
@@ -9209,12 +9195,6 @@ namespace Brady_s_Conversion_Program {
                             wuextPan = locum;
                         }
                     }
-                    short? wuiopAbute = null;
-                    if (tech.Wuiopabute != null) {
-                        if (short.TryParse(tech.Wuiopabute, out short locum)) {
-                            wuiopAbute = locum;
-                        }
-                    }
                     int? wuOrientPerson = null;
                     if (tech.WuorientPerson != null) {
                         if (int.TryParse(tech.WuorientPerson, out int locum)) {
@@ -9362,7 +9342,6 @@ namespace Brady_s_Conversion_Program {
                             UpsizeTs = null,
                             Wumood = wuMood, // smallint, no truncation needed
                             Wuextpan = wuextPan, // int, no truncation needed
-                            WuiopAbute = wuiopAbute, // smallint, no truncation needed
                             WuorientPerson = wuOrientPerson, // int, no truncation needed
                             WuorientPlace = wuOrientPlace, // int, no truncation needed
                             WuorientTime = wuOrientTime, // int, no truncation needed
@@ -9456,7 +9435,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     else {
-                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech2 with ID: {iop.Id}");
+                        logger.Log($"EHR: EHR VisitId and PatientId not found for tech2 with ID: {tech2.Id}");
                         continue;
                     }
 
