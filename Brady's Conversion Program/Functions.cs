@@ -3747,7 +3747,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = allergy.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == allergy.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for allergy (1) with ID: {allergy.Id}");
                                 continue;
@@ -3922,7 +3922,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = medicalHistory.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == medicalHistory.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for medicalHistory (1) with ID: {medicalHistory.Id}");
                                 continue;
@@ -5971,7 +5971,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = diagCodePool.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == diagCodePool.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for diagCodePool (1) with ID: {diagCodePool.Id}");
                                 continue;
@@ -6773,7 +6773,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = familyHistory.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == familyHistory.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for familyHistory (1) with ID: {familyHistory.Id}");
                                 continue;
@@ -6956,7 +6956,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = iop.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == iop.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for iop (1) with ID: {iop.Id}");
                                 continue;
@@ -7169,7 +7169,7 @@ namespace Brady_s_Conversion_Program {
                         ptId = patientNote.PtId;
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
                         if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == patientNote.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for patientNote (1) with ID: {patientNote.Id}");
                                 continue;
@@ -7501,7 +7501,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = procDiagPool.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == procDiagPool.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for procDiagPool (1) with ID: {procDiagPool.Id}");
                                 continue;
@@ -7668,7 +7668,7 @@ namespace Brady_s_Conversion_Program {
 						ptId = procPool.PtId;
 						var convPatient = convPatients.FirstOrDefault(p => p.Id == ptId);
 						if (convPatient == null) {
-                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.OldVisitId == visitId.ToString());
+                            var ehrVisit = ehrVisits.FirstOrDefault(v => v.Id == procPool.VisitId);
                             if (ehrVisit == null) {
                                 logger.Log($"EHR: EHR Visit and Patient not found for procPool (1) with ID: {procPool.Id}");
                                 continue;
