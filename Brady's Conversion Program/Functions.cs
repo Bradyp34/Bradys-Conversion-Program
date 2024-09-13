@@ -9883,127 +9883,154 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                int clnsBrandId = -1;
-                if (clLense.ClndbrandId != null) {
-                    if (int.TryParse(clLense.ClndbrandId, out int locum)) {
-                        clnsBrandId = locum;
+                    int clnsBrandId = -1;
+                    if (clLense.ClndbrandId != null) {
+                        if (int.TryParse(clLense.ClndbrandId, out int locum)) {
+                            clnsBrandId = locum;
+                        }
                     }
-                }
-                if (clnsBrandId == -1) {
-                    logger.Log($"INV: INV Brand ID not found for CL Lense with ID {clLense.Id}");
-                    return;
-                }
-                int? clnsManufacturerId = null;
-                if (clLense.ClnsmanufacturerId != null) {
-                    if (int.TryParse(clLense.ClnsmanufacturerId, out int locum)) {
-                        clnsManufacturerId = locum;
+                    if (clnsBrandId == -1) {
+                        logger.Log($"INV: INV Brand ID not found for CL Lense with ID {clLense.Id}");
+                        return;
                     }
-                }
-                int? clnsLensTypeId = null;
-                if (clLense.ClnslensTypeId != null) {
-                    if (int.TryParse(clLense.ClnslensTypeId, out int locum)) {
-                        clnsLensTypeId = locum;
+                    int? clnsManufacturerId = null;
+                    if (clLense.ClnsmanufacturerId != null) {
+                        if (int.TryParse(clLense.ClnsmanufacturerId, out int locum)) {
+                            clnsManufacturerId = locum;
+                        }
                     }
-                }
-                int? cptId = null;
-                if (clLense.CptId != null) {
-                    if (int.TryParse(clLense.CptId, out int locum)) {
-                        cptId = locum;
+                    int? clnsLensTypeId = null;
+                    if (clLense.ClnslensTypeId != null) {
+                        if (int.TryParse(clLense.ClnslensTypeId, out int locum)) {
+                            clnsLensTypeId = locum;
+                        }
                     }
-                }
-                DateTime? addedDate = null;
-                if (clLense.AddedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clLense.AddedDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        addedDate = tempDateTime;
+                    int? cptId = null;
+                    if (clLense.CptId != null) {
+                        if (int.TryParse(clLense.CptId, out int locum)) {
+                            cptId = locum;
+                        }
                     }
-                }
-                long? addedBy = null;
-                if (clLense.AddedBy != null) {
-                    if (long.TryParse(clLense.AddedBy, out long locum)) {
-                        addedBy = locum;
+                    DateTime? addedDate = null;
+                    if (clLense.AddedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clLense.AddedDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            addedDate = tempDateTime;
+                        }
                     }
-                }
-                DateTime? updatedDate = null;
-                if (clLense.UpdatedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clLense.UpdatedDate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        updatedDate = tempDateTime;
+                    long? addedBy = null;
+                    if (clLense.AddedBy != null) {
+                        if (long.TryParse(clLense.AddedBy, out long locum)) {
+                            addedBy = locum;
+                        }
                     }
-                }
-                long? updatedBy = null;
-                if (clLense.UpdatedBy != null) {
-                    if (long.TryParse(clLense.UpdatedBy, out long locum)) {
-                        updatedBy = locum;
+                    DateTime? updatedDate = null;
+                    if (clLense.UpdatedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clLense.UpdatedDate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            updatedDate = tempDateTime;
+                        }
                     }
-                }
-                bool? isSoftContact = null;
-                if (clLense.IsSoftContact != null) {
-                    if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
-                        isSoftContact = locum;
+                    long? updatedBy = null;
+                    if (clLense.UpdatedBy != null) {
+                        if (long.TryParse(clLense.UpdatedBy, out long locum)) {
+                            updatedBy = locum;
+                        }
                     }
-                }
-                bool? isActive = null;
-                if (clLense.Active != null) {
-                    if (bool.TryParse(clLense.Active, out bool locum)) {
-                        isActive = locum;
+                    bool? isSoftContact = null;
+                    if (clLense.IsSoftContact != null) {
+                        if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
+                            isSoftContact = locum;
+                        }
                     }
-                }
-                long? locationId = null;
-                if (clLense.LocationId != null) {
-                    if (long.TryParse(clLense.LocationId, out long locum)) {
-                        locationId = locum;
+                    bool? isActive = null;
+                    if (clLense.Active != null) {
+                        if (bool.TryParse(clLense.Active, out bool locum)) {
+                            isActive = locum;
+                        }
                     }
-                }
-                int? lensPerBox = null;
-                if (clLense.LensPerBox != null) {
-                    if (int.TryParse(clLense.LensPerBox, out int locum)) {
-                        lensPerBox = locum;
+                    long? locationId = null;
+                    if (clLense.LocationId != null) {
+                        if (long.TryParse(clLense.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
                     }
-                }
-                bool? isLensFromClxCatalog = null;
-                if (clLense.IsLensFromClxcatalog != null) {
-                    if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
-                        isLensFromClxCatalog = locum;
+                    int? lensPerBox = null;
+                    if (clLense.LensPerBox != null) {
+                        if (int.TryParse(clLense.LensPerBox, out int locum)) {
+                            lensPerBox = locum;
+                        }
                     }
-                }
+                    bool? isLensFromClxCatalog = null;
+                    if (clLense.IsLensFromClxcatalog != null) {
+                        if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
+                            isLensFromClxCatalog = locum;
+                        }
+                    }
 
-                var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+				    var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
+					    ClnsBrandId = clnsBrandId,
+					    ClnsManufacturerId = clnsManufacturerId,
+					    Sphere = TruncateString(clLense.Sphere, 10),
+					    Cylinder = TruncateString(clLense.Cylinder, 10),
+					    Axis = TruncateString(clLense.Axis, 10),
+					    BaseCurve = TruncateString(clLense.BaseCurve, 10),
+					    Diameter = TruncateString(clLense.Diameter, 10),
+					    AddPower = TruncateString(clLense.AddPower, 10),
+					    AddPowerName = TruncateString(clLense.AddPowerName, 20),
+					    Multifocal = TruncateString(clLense.Multifocal, 50),
+					    Color = TruncateString(clLense.Color, 50),
+					    Upc = TruncateString(clLense.Upc, 15),
+					    ClnsLensTypeId = clnsLensTypeId,
+					    CptId = cptId,
+					    AddedDate = addedDate,
+					    AddedBy = addedBy,
+					    UpdatedDate = updatedDate,
+					    UpdatedBy = updatedBy,
+					    IsSoftContact = isSoftContact,
+					    IsActive = isActive,
+					    LocationId = locationId,
+					    LensPerBox = lensPerBox,
+					    IsLensFromClxCatalog = isLensFromClxCatalog
+				    };
 
-                if (invList != null) {
-					var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
-						ClnsBrandId = clnsBrandId,
-						ClnsManufacturerId = clnsManufacturerId,
-						Sphere = TruncateString(clLense.Sphere, 10),
-						Cylinder = TruncateString(clLense.Cylinder, 10),
-						Axis = TruncateString(clLense.Axis, 10),
-						BaseCurve = TruncateString(clLense.BaseCurve, 10),
-						Diameter = TruncateString(clLense.Diameter, 10),
-						AddPower = TruncateString(clLense.AddPower, 10),
-						AddPowerName = TruncateString(clLense.AddPowerName, 20),
-						Multifocal = TruncateString(clLense.Multifocal, 50),
-						Color = TruncateString(clLense.Color, 50),
-						Upc = TruncateString(clLense.Upc, 15),
-						ClnsLensTypeId = clnsLensTypeId,
-						CptId = cptId,
-						AddedDate = addedDate,
-						AddedBy = addedBy,
-						UpdatedDate = updatedDate,
-						UpdatedBy = updatedBy,
-						IsSoftContact = isSoftContact,
-						IsActive = isActive,
-						LocationId = locationId,
-						LensPerBox = lensPerBox,
-						IsLensFromClxCatalog = isLensFromClxCatalog
-					};
-                        clLenses.Add(newClLens);
+					// Check if there is an exact duplicate already in the list "clnsContactLens"
+					bool duplicateExists = clLenses.Any(lens =>
+						lens.ClnsBrandId == newClLens.ClnsBrandId &&
+						lens.ClnsManufacturerId == newClLens.ClnsManufacturerId &&
+						lens.Sphere == newClLens.Sphere &&
+						lens.Cylinder == newClLens.Cylinder &&
+						lens.Axis == newClLens.Axis &&
+						lens.BaseCurve == newClLens.BaseCurve &&
+						lens.Diameter == newClLens.Diameter &&
+						lens.AddPower == newClLens.AddPower &&
+						lens.AddPowerName == newClLens.AddPowerName &&
+						lens.Multifocal == newClLens.Multifocal &&
+						lens.Color == newClLens.Color &&
+						lens.Upc == newClLens.Upc &&
+						lens.ClnsLensTypeId == newClLens.ClnsLensTypeId &&
+						lens.CptId == newClLens.CptId &&
+						lens.AddedDate == newClLens.AddedDate &&
+						lens.AddedBy == newClLens.AddedBy &&
+						lens.UpdatedDate == newClLens.UpdatedDate &&
+						lens.UpdatedBy == newClLens.UpdatedBy &&
+						lens.IsSoftContact == newClLens.IsSoftContact &&
+						lens.IsActive == newClLens.IsActive &&
+						lens.LocationId == newClLens.LocationId &&
+						lens.LensPerBox == newClLens.LensPerBox &&
+						lens.IsLensFromClxCatalog == newClLens.IsLensFromClxCatalog
+					);
+
+					// If no duplicate exists, add the newClLens to the list
+					if (!duplicateExists) {
+						clLenses.Add(newClLens);
+					}
 				}
-            }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
-            }
+				catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
+                }
             }
 			ffpmDbContext.ClnsContactLens.UpdateRange(clLenses);
 			ffpmDbContext.SaveChanges();
@@ -10040,20 +10067,27 @@ namespace Brady_s_Conversion_Program {
                         sortNumber = cptDept.SortNumber;
                     } // max size here is 3. it is a number in string form.
 
-                    var invList = cptDepartments.FirstOrDefault(x => x.Code == code);
 
-                    if (invList != null) {
-						var newCptdept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
-							Code = TruncateString(code, 10),
-							Description = TruncateString(description, 500),
-							LocationId = locationId,
-							Active = active,
-							SortNumber = TruncateString(sortNumber, 3)
-						};
-                        cptDepartments.Add(newCptdept);
+					var newCptdept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
+						Code = TruncateString(code, 10),
+						Description = TruncateString(description, 500),
+						LocationId = locationId,
+						Active = active,
+						SortNumber = TruncateString(sortNumber, 3)
+					};
+
+                    bool duplicateExists = cptDepartments.Any(d =>
+						d.Code == newCptdept.Code &&
+						d.Description == newCptdept.Description &&
+						d.LocationId == newCptdept.LocationId &&
+						d.Active == newCptdept.Active &&
+						d.SortNumber == newCptdept.SortNumber);
+
+					if (!duplicateExists) {
+						cptDepartments.Add(newCptdept);
 					}
-                }
-                catch (Exception e) {
+				}
+				catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID {cptDept.Id}. Error: {e.Message}");
                 }
             }
@@ -10095,18 +10129,23 @@ namespace Brady_s_Conversion_Program {
                         Active = false;
                     }
 
-                    var invList = cptMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
+                    var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
+						CptId = cptId,
+						GroupId = groupId,
+						LocationId = locationId,
+						Active = Active
+					};
 
-                    if (invList != null) {
-					    var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
-						    CptId = cptId,
-						    GroupId = groupId,
-						    LocationId = locationId,
-						    Active = Active
-					    };
-                        cptMappings.Add(newCptmapping);
-			        }
-                }
+                    bool duplicateExists = cptMappings.Any(m =>
+					m.CptId == newCptmapping.CptId &&
+					m.GroupId == newCptmapping.GroupId &&
+					m.LocationId == newCptmapping.LocationId &&
+					m.Active == newCptmapping.Active);
+
+					if (!duplicateExists) {
+						cptMappings.Add(newCptmapping);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
                 }
@@ -10215,34 +10254,56 @@ namespace Brady_s_Conversion_Program {
                         alternateCode = cpt.AlternateCode;
                     }
 
-                    var invList = cptIds.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
+					var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
+						Cpt = cpt.Cpt1,
+						Description = TruncateString(cpt.Description, 250),
+						SortOrder = sortOrder,
+						Active = active,
+						LocationId = locationId,
+						Fee = fee,
+						Taxable = taxable,
+						DepartmentId = departmentId,
+						TypeOfServiceId = typeOfServiceId,
+						TaxTypeId = taxTypeId,
+						PrivateStatementDescription = TruncateString(privateStatementDescription, 250),
+						AlternateCode = TruncateString(alternateCode, 20),
+						UseClianumber = useCliaNumber,
+						Units = units,
+						NdcActive = ndcActive,
+						NdcCost = ndcCost,
+						NdcCode = TruncateString(cpt.Ndccode, 11),
+						NdcUnitsMeasurementId = ndcUnitsMeasurementId,
+						NdcQuantity = ndcQuantity,
+						AutoUpdateReferringProvider = autoUpdateReferringProvider
+					};
 
-                    if (invList != null) {
-					    var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
-						    Cpt = cpt.Cpt1,
-						    Description = TruncateString(cpt.Description, 250),
-						    SortOrder = sortOrder,
-						    Active = active,
-						    LocationId = locationId,
-						    Fee = fee,
-						    Taxable = taxable,
-						    DepartmentId = departmentId,
-						    TypeOfServiceId = typeOfServiceId,
-						    TaxTypeId = taxTypeId,
-						    PrivateStatementDescription = TruncateString(privateStatementDescription, 250),
-						    AlternateCode = TruncateString(alternateCode, 20),
-						    UseClianumber = useCliaNumber,
-						    Units = units,
-						    NdcActive = ndcActive,
-						    NdcCost = ndcCost,
-						    NdcCode = TruncateString(cpt.Ndccode, 11),
-						    NdcUnitsMeasurementId = ndcUnitsMeasurementId,
-						    NdcQuantity = ndcQuantity,
-						    AutoUpdateReferringProvider = autoUpdateReferringProvider
-					    };
-                        cptIds.Add(newCpt);
-				    }
-                }
+					bool duplicateExists = cptIds.Any(c =>
+					    c.Cpt == newCpt.Cpt &&
+						c.Description == newCpt.Description &&
+						c.SortOrder == newCpt.SortOrder &&
+						c.Active == newCpt.Active &&
+						c.LocationId == newCpt.LocationId &&
+						c.Fee == newCpt.Fee &&
+						c.Taxable == newCpt.Taxable &&
+						c.DepartmentId == newCpt.DepartmentId &&
+						c.TypeOfServiceId == newCpt.TypeOfServiceId &&
+						c.TaxTypeId == newCpt.TaxTypeId &&
+						c.PrivateStatementDescription == newCpt.PrivateStatementDescription &&
+						c.AlternateCode == newCpt.AlternateCode &&
+						c.UseClianumber == newCpt.UseClianumber &&
+						c.Units == newCpt.Units &&
+						c.NdcActive == newCpt.NdcActive &&
+						c.NdcCost == newCpt.NdcCost &&
+						c.NdcCode == newCpt.NdcCode &&
+						c.NdcUnitsMeasurementId == newCpt.NdcUnitsMeasurementId &&
+						c.NdcQuantity == newCpt.NdcQuantity &&
+						c.AutoUpdateReferringProvider == newCpt.AutoUpdateReferringProvider
+					);
+
+					if (!duplicateExists) {
+						cptIds.Add(newCpt);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT with ID {cpt.Id}. Error: {e.Message}");
                 }
@@ -10283,19 +10344,25 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
+					var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
+						CategoryName = TruncateString(categoryName, 150),
+						CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
+						Active = active,
+						SortOrder = sortOrder,
+						LocationId = locationId
+					};
 
-                    if (invList != null) {
-						var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
-							CategoryName = TruncateString(categoryName, 150),
-							CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
-							Active = active,
-							SortOrder = sortOrder,
-							LocationId = locationId
-						};
-                        frameCategories.Add(newFrameCategory);
+					bool duplicateExists = frameCategories.Any(c =>
+					c.CategoryName == newFrameCategory.CategoryName &&
+						c.CategoryDescription == newFrameCategory.CategoryDescription &&
+						c.Active == newFrameCategory.Active &&
+						c.SortOrder == newFrameCategory.SortOrder &&
+						c.LocationId == newFrameCategory.LocationId);
+
+					if (!duplicateExists) {
+						frameCategories.Add(newFrameCategory);
 					}
-                }
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
                 }
@@ -10327,18 +10394,26 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
 
-                    if (invList != null) {
-						var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
-							CollectionName = TruncateString(collectionName, 250),
-							Active = active,
-							LocationId = locationId
-						};
+					var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
+						CollectionName = TruncateString(collectionName, 250),
+						Active = active,
+						LocationId = locationId
+					};
+
+					// Check if there is an exact duplicate already in the list "frameCollections"
+					bool duplicateExists = frameCollections.Any(fc =>
+						fc.CollectionName == newFrameCollection.CollectionName &&
+						fc.Active == newFrameCollection.Active &&
+						fc.LocationId == newFrameCollection.LocationId
+					);
+
+					// If no duplicate exists, add the newFrameCollection to the list
+					if (!duplicateExists) {
 						frameCollections.Add(newFrameCollection);
 					}
-                }
-                catch (Exception e) {
+				}
+				catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
                 }
             }
@@ -10365,19 +10440,27 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
+					var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
+						ColorCode = TruncateString(frameColor.ColorCode, 50),
+						ColorDescription = TruncateString(frameColor.ColorDescription, 150),
+						Active = active,
+						LocationId = locationId
+					};
 
-                    if (invList != null) {
-					    var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
-						    ColorCode = TruncateString(frameColor.ColorCode, 50),
-						    ColorDescription = TruncateString(frameColor.ColorDescription, 150),
-						    Active = active,
-						    LocationId = locationId
-					    };
-                        frameColors.Add(newFrameColor);
-			        }
-                }
-                catch (Exception e) {
+					// Check if there is an exact duplicate already in the list "frameColors"
+					bool duplicateExists = frameColors.Any(fc =>
+						fc.ColorCode == newFrameColor.ColorCode &&
+						fc.ColorDescription == newFrameColor.ColorDescription &&
+						fc.Active == newFrameColor.Active &&
+						fc.LocationId == newFrameColor.LocationId
+					);
+
+					// If no duplicate exists, add the newFrameColor to the list
+					if (!duplicateExists) {
+						frameColors.Add(newFrameColor);
+					}
+				}
+				catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
                 }
             }
@@ -10397,9 +10480,9 @@ namespace Brady_s_Conversion_Program {
                     if (frameShape.FrameShape1 != null) {
                         shape = frameShape.FrameShape1;
                     }
-                    bool active = false;
-                    if (frameShape.Active != null && frameShape.Active.ToLower() == "yes" || frameShape.Active == "1") {
-                        active = true;
+                    bool active = true;
+                    if (frameShape.Active != null && frameShape.Active.ToLower() == "no" || frameShape.Active == "false" || frameShape.Active == "0") {
+                        active = false;
                     }
                     long sortOrder = -1;
                     if (frameShape.SortOrder != null) {
@@ -10414,17 +10497,6 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
-
-                    if (invList != null) {
-                        invList.ShapeDescription = TruncateString(frameShape.ShapeDescription, 250);
-                        invList.Active = active;
-                        invList.SortOrder = sortOrder;
-                        invList.LocationId = locationId;
-                        ffpmDbContext.SaveChanges();
-                        return;
-                    }
-
 
                     var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
                         FrameShape1 = TruncateString(shape, 50),
@@ -10433,10 +10505,19 @@ namespace Brady_s_Conversion_Program {
                         SortOrder = sortOrder,
                         LocationId = locationId
                     };
-                    ffpmDbContext.FrameShapes.Add(newFrameShape);
 
-                    ffpmDbContext.SaveChanges();
-                }
+					bool duplicateExists = frameShapes.Any(fs =>
+						fs.FrameShape1 == newFrameShape.FrameShape1 &&
+						fs.ShapeDescription == newFrameShape.ShapeDescription &&
+						fs.Active == newFrameShape.Active &&
+						fs.SortOrder == newFrameShape.SortOrder &&
+						fs.LocationId == newFrameShape.LocationId
+					);
+
+					if (!duplicateExists) {
+						frameShapes.Add(newFrameShape);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
                 }
@@ -10458,24 +10539,22 @@ namespace Brady_s_Conversion_Program {
                         status = frameStatus.OldStatusId;
                     }
 
-                    var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameStatus.Description, 100);
-                        invList.LabCode = TruncateString(frameStatus.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        return;
-                    }
-
                     var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
                         Status = TruncateString(status, 100),
                         Description = TruncateString(frameStatus.Description, 100),
                         LabCode = TruncateString(frameStatus.LabCode, 25)
                     };
-                    ffpmDbContext.FrameStatuses.Add(newFrameStatus);
 
-                    ffpmDbContext.SaveChanges();
-                }
+					bool duplicateExists = frameStatuses.Any(fs =>
+					    fs.Status == newFrameStatus.Status &&
+						fs.Description == newFrameStatus.Description &&
+						fs.LabCode == newFrameStatus.LabCode
+					);
+
+					if (!duplicateExists) {
+						frameStatuses.Add(newFrameStatus);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
                 }
@@ -10497,24 +10576,22 @@ namespace Brady_s_Conversion_Program {
                         temple = frameTemple.OldTempleId;
                     }
 
-                    var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameTemple.Description, 100);
-                        invList.LabCode = TruncateString(frameTemple.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        return;
-                    }
-
                     var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
                         Temple = TruncateString(temple, 100),
                         Description = TruncateString(frameTemple.Description, 100),
                         LabCode = TruncateString(frameTemple.LabCode, 25)
                     };
-                    ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
 
-                    ffpmDbContext.SaveChanges();
-                }
+					bool duplicateExists = frameTemples.Any(ft =>
+					    ft.Temple == newFrameTemple.Temple &&
+						ft.Description == newFrameTemple.Description &&
+						ft.LabCode == newFrameTemple.LabCode
+					);
+
+					if (!duplicateExists) {
+						frameTemples.Add(newFrameTemple);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
                 }
@@ -10536,24 +10613,22 @@ namespace Brady_s_Conversion_Program {
                         eType = frameEType.OldEtypeId;
                     }
 
-                    var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameEType.Description, 100);
-                        invList.LabCode = TruncateString(frameEType.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        return;
-                    }
-
                     var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
                         Etype = TruncateString(eType, 100),
                         Description = TruncateString(frameEType.Description, 100),
                         LabCode = TruncateString(frameEType.LabCode, 25)
                     };
-                    ffpmDbContext.FrameEtypes.Add(newFrameEType);
 
-                    ffpmDbContext.SaveChanges();
-                }
+					bool duplicateExists = frameEtypes.Any(et =>
+					    et.Etype == newFrameEType.Etype &&
+						et.Description == newFrameEType.Description &&
+						et.LabCode == newFrameEType.LabCode
+					);
+
+					if (!duplicateExists) {
+						frameEtypes.Add(newFrameEType);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
                 }
@@ -10575,17 +10650,23 @@ namespace Brady_s_Conversion_Program {
                         fType = frameFType.OldFtypeId;
                     }
 
-                    var invList = frameFtypes.FirstOrDefault(x => x.Ftype == fType);
 
-                    if (invList != null) {
-						var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
-							Ftype = TruncateString(fType, 100),
-							Description = TruncateString(frameFType.Description, 100),
-							LabCode = TruncateString(frameFType.LabCode, 25)
-						};
-                        frameFtypes.Add(newFrameFType);
+					var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
+						Ftype = TruncateString(fType, 100),
+						Description = TruncateString(frameFType.Description, 100),
+						LabCode = TruncateString(frameFType.LabCode, 25)
+					};
+
+					bool duplicateExists = frameFtypes.Any(ft =>
+						ft.Ftype == newFrameFType.Ftype &&
+						ft.Description == newFrameFType.Description &&
+						ft.LabCode == newFrameFType.LabCode
+					);
+
+					if (!duplicateExists) {
+						frameFtypes.Add(newFrameFType);
 					}
-                }
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
                 }
@@ -10755,7 +10836,35 @@ namespace Brady_s_Conversion_Program {
                         ValidInventory = validInventory,
                         DateAdded = dateAdded
                     };
-                    frameInventories.Add(newInventory);
+
+					bool duplicateExists = frameInventories.Any(i =>
+						i.FrameId == newInventory.FrameId &&
+						i.LocationId == newInventory.LocationId &&
+						i.InvoiceNumber == newInventory.InvoiceNumber &&
+						i.QuantityOrdered == newInventory.QuantityOrdered &&
+						i.Cost == newInventory.Cost &&
+						i.WholeSale == newInventory.WholeSale &&
+						i.Retail == newInventory.Retail &&
+						i.Received == newInventory.Received &&
+						i.OnHand == newInventory.OnHand &&
+						i.Dispensed == newInventory.Dispensed &&
+						i.ReturnedToVendor == newInventory.ReturnedToVendor &&
+						i.Scrapped == newInventory.Scrapped &&
+						i.ReturnedByCustomer == newInventory.ReturnedByCustomer &&
+						i.Lost == newInventory.Lost &&
+						i.Donation == newInventory.Donation &&
+						i.Consignment == newInventory.Consignment &&
+						i.TransferredIn == newInventory.TransferredIn &&
+						i.TransferredOut == newInventory.TransferredOut &&
+						i.Note == newInventory.Note &&
+						i.InvoiceDate == newInventory.InvoiceDate &&
+						i.ValidInventory == newInventory.ValidInventory &&
+						i.DateAdded == newInventory.DateAdded
+					);
+
+					if (!duplicateExists) {
+						frameInventories.Add(newInventory);
+					}
 				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID {frameInventory.Id}. Error: {e.Message}");
@@ -10794,18 +10903,25 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameLensColors.FirstOrDefault(x => x.ColorCode == colorCode);
 
-                    if (invList != null) {
-					    var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
-						    ColorCode = TruncateString(colorCode, 50),
-						    ColorDescription = TruncateString(colorDescription, 150),
-						    StatusId = statusId,
-						    LocationId = locationId
-					    };
-					    frameLensColors.Add(newFrameLensColor);
-				    }
-                }
+					var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
+						ColorCode = TruncateString(colorCode, 50),
+						ColorDescription = TruncateString(colorDescription, 150),
+						StatusId = statusId,
+						LocationId = locationId
+					};
+
+					bool duplicateExists = frameLensColors.Any(fl =>
+					    fl.ColorCode == newFrameLensColor.ColorCode &&
+						fl.ColorDescription == newFrameLensColor.ColorDescription &&
+						fl.StatusId == newFrameLensColor.StatusId &&
+						fl.LocationId == newFrameLensColor.LocationId
+					);
+
+					if (!duplicateExists) {
+						frameLensColors.Add(newFrameLensColor);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
                 }
@@ -10843,19 +10959,27 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
 
-                    if (invList != null) {
-					    var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
-						    MaterialName = TruncateString(materialName, 50),
-						    MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
-						    Active = active,
-						    SortOrder = sortOrder,
-						    LocationId = locationId
-					    };
-					    frameMaterials.Add(newFrameMaterial);
-				    }
-                }
+					var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
+						MaterialName = TruncateString(materialName, 50),
+						MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
+						Active = active,
+						SortOrder = sortOrder,
+						LocationId = locationId
+					};
+
+					bool duplicateExists = frameMaterials.Any(fm =>
+					    fm.MaterialName == newFrameMaterial.MaterialName &&
+						fm.MaterialDescription == newFrameMaterial.MaterialDescription &&
+						fm.Active == newFrameMaterial.Active &&
+						fm.SortOrder == newFrameMaterial.SortOrder &&
+						fm.LocationId == newFrameMaterial.LocationId
+					);
+
+					if (!duplicateExists) {
+						frameMaterials.Add(newFrameMaterial);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
                 }
@@ -10893,19 +11017,27 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
 
-                    if (invList != null) {
-					    var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
-						    FrameMount1 = TruncateString(frameMount1, 50),
-						    MountDescription = TruncateString(frameMount.MountDescription, 250),
-						    Active = active,
-						    SortOrder = sortOrder,
-						    LocationId = locationId
-					    };
-					    frameMounts.Add(newFrameMount);
-				    }
-                }
+					var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
+						FrameMount1 = TruncateString(frameMount1, 50),
+						MountDescription = TruncateString(frameMount.MountDescription, 250),
+						Active = active,
+						SortOrder = sortOrder,
+						LocationId = locationId
+					};
+
+					bool duplicateExists = frameMounts.Any(fm =>
+    					fm.FrameMount1 == newFrameMount.FrameMount1 &&
+						fm.MountDescription == newFrameMount.MountDescription &&
+						fm.Active == newFrameMount.Active &&
+						fm.SortOrder == newFrameMount.SortOrder &&
+						fm.LocationId == newFrameMount.LocationId
+					);
+
+					if (!duplicateExists) {
+						frameMounts.Add(newFrameMount);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
                 }
@@ -11064,8 +11196,34 @@ namespace Brady_s_Conversion_Program {
                         InventoryId = inventoryId,
                         IsLmsframe = isLmsFrame
                     };
-                    frameOrders.Add(newFrameOrder);
-                }
+
+                    bool duplicateExists = frameOrders.Any(fo =>
+						fo.Name == newFrameOrder.Name &&
+						fo.MaterialId == newFrameOrder.MaterialId &&
+						fo.StatusId == newFrameOrder.StatusId &&
+						fo.CptId == newFrameOrder.CptId &&
+						fo.EtypId == newFrameOrder.EtypId &&
+						fo.FtypId == newFrameOrder.FtypId &&
+						fo.Color == newFrameOrder.Color &&
+						fo.ManufacturerId == newFrameOrder.ManufacturerId &&
+						fo.Eye == newFrameOrder.Eye &&
+						fo.Bridge == newFrameOrder.Bridge &&
+						fo.A == newFrameOrder.A &&
+						fo.B == newFrameOrder.B &&
+						fo.Ed == newFrameOrder.Ed &&
+						fo.Dbl == newFrameOrder.Dbl &&
+						fo.Csize == newFrameOrder.Csize &&
+						fo.TempleSize == newFrameOrder.TempleSize &&
+						fo.TempleStyleId == newFrameOrder.TempleStyleId &&
+						fo.Retail == newFrameOrder.Retail &&
+						fo.InventoryId == newFrameOrder.InventoryId &&
+						fo.IsLmsframe == newFrameOrder.IsLmsframe
+					);
+
+					if (!duplicateExists) {
+						frameOrders.Add(newFrameOrder);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
                 }
@@ -11295,11 +11453,7 @@ namespace Brady_s_Conversion_Program {
                             lastUpdated = locum;
                         }
                     }
-
-                    // how do we know if a frame is a duplicate?
-
-
-
+                    
 
                     var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
                         Fpc = TruncateString(frame.Fpc, 14),
@@ -11342,8 +11496,52 @@ namespace Brady_s_Conversion_Program {
                         DateAdded = dateAdded,
                         LastUpdated = lastUpdated
                     };
-                    frames.Add(newFrame);
-                }
+
+                    bool duplicateExists = frames.Any(f =>
+                        f.Fpc == newFrame.Fpc &&
+                        f.Upc == newFrame.Upc &&
+                        f.StyleId == newFrame.StyleId &&
+                        f.StyleName == newFrame.StyleName &&
+                        f.Eye == newFrame.Eye &&
+                        f.Bridge == newFrame.Bridge &&
+                        f.Temple == newFrame.Temple &&
+                        f.Dbl == newFrame.Dbl &&
+                        f.A == newFrame.A &&
+                        f.B == newFrame.B &&
+                        f.Ed == newFrame.Ed &&
+                        f.Circumference == newFrame.Circumference &&
+                        f.Edangle == newFrame.Edangle &&
+                        f.FrontPrice == newFrame.FrontPrice &&
+                        f.HalfTemplesPrice == newFrame.HalfTemplesPrice &&
+                        f.TemplesPrice == newFrame.TemplesPrice &&
+                        f.CompletePrice == newFrame.CompletePrice &&
+                        f.StyleNew == newFrame.StyleNew &&
+                        f.ChangedPrice == newFrame.ChangedPrice &&
+                        f.Sku == newFrame.Sku &&
+                        f.YearIntroduced == newFrame.YearIntroduced &&
+                        f.ManufacturerId == newFrame.ManufacturerId &&
+                        f.VendorId == newFrame.VendorId &&
+                        f.BrandId == newFrame.BrandId &&
+                        f.CollectionId == newFrame.CollectionId &&
+                        f.FrameCategoryId == newFrame.FrameCategoryId &&
+                        f.FrameShapeId == newFrame.FrameShapeId &&
+                        f.MaterialId == newFrame.MaterialId &&
+                        f.FrameMountId == newFrame.FrameMountId &&
+                        f.FrameColorId == newFrame.FrameColorId &&
+                        f.LensColorId == newFrame.LensColorId &&
+                        f.GenderId == newFrame.GenderId &&
+                        f.CountryId == newFrame.CountryId &&
+                        f.AgeGroupId == newFrame.AgeGroupId &&
+                        f.LocationId == newFrame.LocationId &&
+                        f.Cptid == newFrame.Cptid &&
+                        f.Active == newFrame.Active &&
+                        f.DateAdded == newFrame.DateAdded &&
+                        f.LastUpdated == newFrame.LastUpdated);
+
+					if (!duplicateExists) {
+						frames.Add(newFrame);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
                 }
@@ -11378,26 +11576,41 @@ namespace Brady_s_Conversion_Program {
                     int? statusId = null;
                     // no status
 
-                    var origVendor = vendors.FirstOrDefault(ov => ov.VendorName == vendor.VendorName);
 
-                    if (origVendor == null) {
-                        var newVendor = new Brady_s_Conversion_Program.ModelsA.Vendor {
-                            AccountNumber = TruncateString(vendor.Id.ToString(), 50),
-                            VendorName = TruncateString(vendor.VendorName, 100),
-                            AccountRep1 = TruncateString(vendor.VendorAccount, 255),
-                            AccountRep2 = null,
-                            Discount = discount,
-                            Terms = terms,
-                            Website = TruncateString(vendor.VendorWebSite, 250),
-                            LocationId = locationId,
-                            ContactId = contactId,
-                            AddressId = addressId,
-                            ManufacturerId = manufacturerId,
-                            StatusId = statusId
-                        };
-                        vendors.Add(newVendor);
-                    }
-                }
+                    var newVendor = new Brady_s_Conversion_Program.ModelsA.Vendor {
+                        AccountNumber = TruncateString(vendor.Id.ToString(), 50),
+                        VendorName = TruncateString(vendor.VendorName, 100),
+                        AccountRep1 = TruncateString(vendor.VendorAccount, 255),
+                        AccountRep2 = null,
+                        Discount = discount,
+                        Terms = terms,
+                        Website = TruncateString(vendor.VendorWebSite, 250),
+                        LocationId = locationId,
+                        ContactId = contactId,
+                        AddressId = addressId,
+                        ManufacturerId = manufacturerId,
+                        StatusId = statusId
+                    };
+                    
+                    bool duplicateExists = vendors.Any(v =>
+						v.AccountNumber == newVendor.AccountNumber &&
+						v.VendorName == newVendor.VendorName &&
+						v.AccountRep1 == newVendor.AccountRep1 &&
+						v.AccountRep2 == newVendor.AccountRep2 &&
+						v.Discount == newVendor.Discount &&
+						v.Terms == newVendor.Terms &&
+						v.Website == newVendor.Website &&
+						v.LocationId == newVendor.LocationId &&
+						v.ContactId == newVendor.ContactId &&
+						v.AddressId == newVendor.AddressId &&
+						v.ManufacturerId == newVendor.ManufacturerId &&
+						v.StatusId == newVendor.StatusId
+					);
+
+					if (!duplicateExists) {
+						vendors.Add(newVendor);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Vendor with ID {vendor.Id}. Error: {e.Message}");
                 }
@@ -11450,8 +11663,30 @@ namespace Brady_s_Conversion_Program {
                         Misc = misc,
                         Active = active
                     };
-                    frameManufacturers.Add(newFrameManufacturer);
-                }
+
+                    bool duplicateExists = frameManufacturers.Any(fm =>
+                    fm.ManufacturerName == newFrameManufacturer.ManufacturerName &&
+					fm.AccountNumber == newFrameManufacturer.AccountNumber &&
+					fm.AccountRep1 == newFrameManufacturer.AccountRep1 &&
+					fm.AccountRep2 == newFrameManufacturer.AccountRep2 &&
+					fm.AccountRep3 == newFrameManufacturer.AccountRep3 &&
+					fm.AccountRep4 == newFrameManufacturer.AccountRep4 &&
+					fm.Website == newFrameManufacturer.Website &&
+					fm.ContactId == newFrameManufacturer.ContactId &&
+					fm.AddressId == newFrameManufacturer.AddressId &&
+					fm.LocationId == newFrameManufacturer.LocationId &&
+					fm.StatusId == newFrameManufacturer.StatusId &&
+					fm.Contacts == newFrameManufacturer.Contacts &&
+					fm.Frames == newFrameManufacturer.Frames &&
+					fm.Lenses == newFrameManufacturer.Lenses &&
+					fm.Misc == newFrameManufacturer.Misc &&
+					fm.Active == newFrameManufacturer.Active
+					);
+
+					if (!duplicateExists) {
+						frameManufacturers.Add(newFrameManufacturer);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Manufacturer with ID {frameManufacturer.Id}. Error: {e.Message}");
                 }
@@ -11480,17 +11715,23 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var origBrand = frameBrands.FirstOrDefault(fb => fb.BrandName == frameBrand.BrandName);
 
-                    if (origBrand == null) {
-                        var newFrameBrand = new Brady_s_Conversion_Program.ModelsA.Brand {
-                            BrandName = TruncateString(frameBrand.BrandName, 150),
-                            StatusId = statusId,
-                            LocationId = locationId
-                        };
-                        frameBrands.Add(newFrameBrand);
-                    }
-                }
+                    var newFrameBrand = new Brady_s_Conversion_Program.ModelsA.Brand {
+                        BrandName = TruncateString(frameBrand.BrandName, 150),
+                        StatusId = statusId,
+                        LocationId = locationId
+                    };
+
+					bool duplicateExists = frameBrands.Any(fb =>
+					    fb.BrandName == newFrameBrand.BrandName &&
+						fb.StatusId == newFrameBrand.StatusId &&
+						fb.LocationId == newFrameBrand.LocationId
+					);
+
+					if (!duplicateExists) {
+						frameBrands.Add(newFrameBrand);
+					}
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID {frameBrand.Id}. Error: {e.Message}");
                 }
@@ -11548,8 +11789,23 @@ namespace Brady_s_Conversion_Program {
                                     OwnerId = vendor.VendorId,
                                     OwnerType = 5
                                 };
-                                otherAddresses.Add(newAddress);
-                            }
+
+								bool duplicateExists = otherAddresses.Any(a =>
+									a.Address1 == newAddress.Address1 &&
+									a.Address2 == newAddress.Address2 &&
+									a.City == newAddress.City &&
+									a.StateId == newAddress.StateId &&
+									a.Zip == newAddress.Zip &&
+									a.CountryId == newAddress.CountryId &&
+									a.Email == newAddress.Email &&
+									a.OwnerId == newAddress.OwnerId &&
+									a.OwnerType == newAddress.OwnerType
+								);
+
+								if (!duplicateExists) {
+									otherAddresses.Add(newAddress);
+								}
+							}
                             break;
                     }
                 }
