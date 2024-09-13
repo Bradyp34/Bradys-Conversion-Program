@@ -9687,21 +9687,30 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = clnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
+					var newClbrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
+						BrandName = TruncateString(clBrand.BrandName, 50),
+						BrandCode = TruncateString(clBrand.BrandCode, 10),
+						AddedBy = addedBy,
+						AddedDate = addedDate,
+						LocationId = locationId,
+						IsActive = isActive
+					};
 
-                    if (invList != null) {
-					    var newClbrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
-						    BrandName = TruncateString(clBrand.BrandName, 50),
-						    BrandCode = TruncateString(clBrand.BrandCode, 10),
-						    AddedBy = addedBy,
-						    AddedDate = addedDate,
-						    LocationId = locationId,
-						    IsActive = isActive
-					    };
-                        clnsBrands.Add(newClbrand);
-				    }
-                }
-                catch (Exception e) {
+					// Check if there is an exact duplicate already in the list "clnsBrands"
+					bool duplicateExists = clnsBrands.Any(b =>
+						b.BrandName == newClbrand.BrandName &&
+						b.BrandCode == newClbrand.BrandCode &&
+						b.AddedBy == newClbrand.AddedBy &&
+						b.AddedDate == newClbrand.AddedDate &&
+						b.LocationId == newClbrand.LocationId &&
+						b.IsActive == newClbrand.IsActive);
+
+					// If no duplicate exists, add the newClbrand to the list
+					if (!duplicateExists) {
+						clnsBrands.Add(newClbrand);
+					}
+				}
+				catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
                 }
             }
@@ -9808,34 +9817,56 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = clnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
+					var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
+						ContactLensId = clInventory.ContactLensId,
+						Barcode = TruncateString(clInventory.Barcode, 8),
+						InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20),
+						ItemCost = TruncateString(clInventory.ItemCost, 20),
+						WholesalePrice = TruncateString(clInventory.WholesalePrice, 20),
+						RetailPrice = TruncateString(clInventory.RetailPrice, 20),
+						Notes = clInventory.Notes,  // Notes is varchar(MAX), no truncation needed
+						QuantityOrdered = quantityOrdered,
+						Received = received,
+						OnHand = onHand,
+						Dispensed = dispensed,
+						AddedBy = addedBy,
+						AddedDate = addedDate,
+						InvoiceDate = invoiceDate,
+						ExpiryDate = expiryDate,
+						UpdatedBy = updatedBy,
+						UpdatedDate = updatedDate,
+						IsTrials = isTrials,
+						IsActive = isActive,
+						LocationId = locationId
+					};
 
-                    if (invList != null) {
-						var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
-							ContactLensId = clInventory.ContactLensId,
-							Barcode = TruncateString(clInventory.Barcode, 8),
-							InvoiceNumber = TruncateString(clInventory.InvoiceNumber, 20),
-							ItemCost = TruncateString(clInventory.ItemCost, 20),
-							WholesalePrice = TruncateString(clInventory.WholesalePrice, 20),
-							RetailPrice = TruncateString(clInventory.RetailPrice, 20),
-							Notes = clInventory.Notes,  // Notes is varchar(MAX), no truncation needed
-							QuantityOrdered = quantityOrdered,
-							Received = received,
-							OnHand = onHand,
-							Dispensed = dispensed,
-							AddedBy = addedBy,
-							AddedDate = addedDate,
-							InvoiceDate = invoiceDate,
-							ExpiryDate = expiryDate,
-							UpdatedBy = updatedBy,
-							UpdatedDate = updatedDate,
-							IsTrials = isTrials,
-							IsActive = isActive,
-							LocationId = locationId
-						};
-                        clnsInventories.Add(newClInventory);
+					bool duplicateExists = clnsInventories.Any(i =>
+						i.ContactLensId == newClInventory.ContactLensId &&
+						i.Barcode == newClInventory.Barcode &&
+						i.InvoiceNumber == newClInventory.InvoiceNumber &&
+						i.ItemCost == newClInventory.ItemCost &&
+						i.WholesalePrice == newClInventory.WholesalePrice &&
+						i.RetailPrice == newClInventory.RetailPrice &&
+						i.Notes == newClInventory.Notes &&
+						i.QuantityOrdered == newClInventory.QuantityOrdered &&
+						i.Received == newClInventory.Received &&
+						i.OnHand == newClInventory.OnHand &&
+						i.Dispensed == newClInventory.Dispensed &&
+						i.AddedBy == newClInventory.AddedBy &&
+						i.AddedDate == newClInventory.AddedDate &&
+						i.InvoiceDate == newClInventory.InvoiceDate &&
+						i.ExpiryDate == newClInventory.ExpiryDate &&
+						i.UpdatedBy == newClInventory.UpdatedBy &&
+						i.UpdatedDate == newClInventory.UpdatedDate &&
+						i.IsTrials == newClInventory.IsTrials &&
+						i.IsActive == newClInventory.IsActive &&
+						i.LocationId == newClInventory.LocationId);
+
+					// If no duplicate exists, add the newClbrand to the list
+					if (!duplicateExists) {
+						clnsInventories.Add(newClInventory);
 					}
-                }
+				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
                 }
