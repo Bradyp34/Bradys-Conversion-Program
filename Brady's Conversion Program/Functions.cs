@@ -200,7 +200,6 @@ namespace Brady_s_Conversion_Program {
                         convDbContext.Database.OpenConnection();
                         if (newFfpm) { // if it is a new ffpm database
                             new FfpmContext(FFPMConnection).Database.EnsureCreated();
-                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
                         }
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                             
@@ -251,58 +250,53 @@ namespace Brady_s_Conversion_Program {
                 }
                 if (ehr == true) { // if it is (also) eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
-                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            using (var convDbContext = new FoxfireConvContext(convConnection)) {
-                                if (newEyemd) { // if it is a new eyemd database
-                                    new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
-                                }
-                                using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                                    resultsBox.Invoke((MethodInvoker)delegate { // change results box text
-                                        resultsBox.Text += "EHR Conversion Started\n";
-                                    });
-                                    ffpmDbContext.Database.OpenConnection();
-                                    eyeMDDbContext.Database.OpenConnection();
+                        if (newEyemd) { // if it is a new eyemd database
+                            new EyeMdContext(EyeMDConnection).Database.EnsureCreated();
+                        }
+                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            resultsBox.Invoke((MethodInvoker)delegate { // change results box text
+                                resultsBox.Text += "EHR Conversion Started\n";
+                            });
+                            eyeMDDbContext.Database.OpenConnection();
 
-                                    totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
-                                                    eHRDbContext.Visits.Count() +
-                                                    eHRDbContext.VisitOrders.Count() +
-                                                    eHRDbContext.VisitDoctors.Count() +
-                                                    eHRDbContext.Allergies.Count() +
-                                                    eHRDbContext.ContactLens.Count() +
-                                                    eHRDbContext.DiagCodePools.Count() +
-                                                    eHRDbContext.DiagTests.Count() +
-                                                    eHRDbContext.ExamConditions.Count() +
-                                                    eHRDbContext.FamilyHistories.Count() +
-                                                    eHRDbContext.Iops.Count() +
-                                                    eHRDbContext.PlanNarratives.Count() +
-                                                    eHRDbContext.ProcDiagPools.Count() +
-                                                    eHRDbContext.ProcPools.Count() +
-                                                    eHRDbContext.Refractions.Count() +
-                                                    eHRDbContext.Ros.Count() +
-                                                    eHRDbContext.RxMedications.Count() +
-                                                    eHRDbContext.SurgHistories.Count() +
-                                                    eHRDbContext.Teches.Count() +
-                                                    eHRDbContext.Tech2s.Count() +
-                                                    eHRDbContext.PatientDocuments.Count() +
-                                                    eHRDbContext.Appointments.Count() +
-                                                    eHRDbContext.PatientNotes.Count();
+                            totalEntries = eHRDbContext.MedicalHistories.Count() + // count total entries for progress bar
+                                            eHRDbContext.Visits.Count() +
+                                            eHRDbContext.VisitOrders.Count() +
+                                            eHRDbContext.VisitDoctors.Count() +
+                                            eHRDbContext.Allergies.Count() +
+                                            eHRDbContext.ContactLens.Count() +
+                                            eHRDbContext.DiagCodePools.Count() +
+                                            eHRDbContext.DiagTests.Count() +
+                                            eHRDbContext.ExamConditions.Count() +
+                                            eHRDbContext.FamilyHistories.Count() +
+                                            eHRDbContext.Iops.Count() +
+                                            eHRDbContext.PlanNarratives.Count() +
+                                            eHRDbContext.ProcDiagPools.Count() +
+                                            eHRDbContext.ProcPools.Count() +
+                                            eHRDbContext.Refractions.Count() +
+                                            eHRDbContext.Ros.Count() +
+                                            eHRDbContext.RxMedications.Count() +
+                                            eHRDbContext.SurgHistories.Count() +
+                                            eHRDbContext.Teches.Count() +
+                                            eHRDbContext.Tech2s.Count() +
+                                            eHRDbContext.PatientDocuments.Count() +
+                                            eHRDbContext.Appointments.Count() +
+                                            eHRDbContext.PatientNotes.Count();
 
 
 
 
-                                    progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
-                                        progress.Maximum = totalEntries;
-                                        progress.Step = 1;
-                                        progress.Value = 0;
-                                    });
+                            progress.Invoke((MethodInvoker)delegate { // set progress bar to 0 again
+                                progress.Maximum = totalEntries;
+                                progress.Step = 1;
+                                progress.Value = 0;
+                            });
 
 
 
-                                    eyeMDDbContext.Database.OpenConnection();
-                                    ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox); // convert eyemd data
-                                    eyeMDDbContext.SaveChanges();
-                                }
-                            }
+                            eyeMDDbContext.Database.OpenConnection();
+                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox); // convert eyemd data
+                            eyeMDDbContext.SaveChanges();
                         }
                     }
                     resultsBox.Invoke((MethodInvoker)delegate { // change results box text
@@ -311,6 +305,9 @@ namespace Brady_s_Conversion_Program {
                 }
                 if (inv == true) { // if it is an inv conversion
                     using (var invDbContext = new InvDbContext(invConnection)) {
+                        if (newFfpm) { // if it is a new ffpm database
+                            new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                        }
                         using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                             resultsBox.Invoke((MethodInvoker)delegate { // change results box text
                                 resultsBox.Text += "Inv Conversion Started\n";
