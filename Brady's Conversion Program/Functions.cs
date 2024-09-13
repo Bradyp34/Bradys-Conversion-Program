@@ -794,7 +794,7 @@ namespace Brady_s_Conversion_Program {
                         var existingEmrPatient = emrPatients.FirstOrDefault(emr => emr.ClientSoftwarePtId == tempPatientId.ToString());
                         if (existingEmrPatient == null) {
                             var newEMRPatient = new Brady_s_Conversion_Program.ModelsB.Emrpatient {
-                                ClientSoftwarePtId = TruncateString(tempPatientId.ToString(), 50),
+                                ClientSoftwarePtId = TruncateString(patient.OldPatientAccountNumber, 50),
                                 PatientNameFirst = TruncateString(patient.FirstName, 50),
                                 PatientNameLast = TruncateString(patient.LastName, 50),
                                 PatientNameMiddle = TruncateString(patient.MiddleName, 50)
