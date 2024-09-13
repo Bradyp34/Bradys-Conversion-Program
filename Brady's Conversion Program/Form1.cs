@@ -42,22 +42,6 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please enter the database name for EHR Database on EyeMD Conversion.");
                 return;
             }
-            else if (EHRCheckBox.Checked && FFPMServerTextBox.Text == "") {
-                MessageBox.Show("Please enter the server name for FFPM database on EyeMD Conversion.");
-                return;
-            }
-            else if (EHRCheckBox.Checked && FFPMDataBaseTextBox.Text == "") {
-                MessageBox.Show("Please enter the database name for FFPM Database on EyeMD Conversion.");
-                return;
-            }
-            else if (EHRCheckBox.Checked && ConvServerTextBox.Text == "") {
-                MessageBox.Show("Please enter the server name for Conv database on EyeMD Conversion.");
-                return;
-            }
-            else if (EHRCheckBox.Checked && ConvTextBox.Text == "") {
-                MessageBox.Show("Please enter the database name for Conv Database on EyeMD Conversion.");
-                return;
-            }
             else if (InvCheckBox.Checked && InvServerTextBox.Text == "") {
                 MessageBox.Show("Please enter the server name for Inv database on Conversion.");
                 return;
