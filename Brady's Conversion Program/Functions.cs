@@ -9016,10 +9016,6 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    if (frameColor.ColorCode == null || frameColor.ColorCode == "") {
-                        logger.Log($"INV: INV Color Code not found for Frame Color with ID {frameColor.Id}");
-                        continue;
-                    } 
                     bool active = true;
                     if (frameColor.Active != null && (frameColor.Active.ToLower() == "no" || frameColor.Active.ToLower() == "false" || frameColor.Active == "0")) {
                         active = true;
