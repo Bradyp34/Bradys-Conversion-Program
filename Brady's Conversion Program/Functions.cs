@@ -1126,7 +1126,7 @@ namespace Brady_s_Conversion_Program {
 
                     bool active = true;
                     if (insurance.Active != null && (insurance.Active.ToLower() == "no" || insurance.Active.ToLower() == "false" || insurance.Active == "0")) {
-                        active = true;
+                        active = false;
                     }
 
                     bool collections = false;
@@ -9018,7 +9018,7 @@ namespace Brady_s_Conversion_Program {
                 try {
                     bool active = true;
                     if (frameColor.Active != null && (frameColor.Active.ToLower() == "no" || frameColor.Active.ToLower() == "false" || frameColor.Active == "0")) {
-                        active = true;
+                        active = false;
                     }
                     long locationId = -1;
                     if (frameColor.LocationId != null) {
