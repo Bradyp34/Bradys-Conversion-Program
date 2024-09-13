@@ -811,7 +811,7 @@ namespace Brady_s_Conversion_Program {
             }
             ffpmDbContext.DmgPatients.UpdateRange(ffpmPatients);
             ffpmDbContext.DmgPatientAdditionalDetails.UpdateRange(patientAdditionals);
-            eyeMdDbContext.Emrpatients.UpdateRange(emrPatients);
+            eyeMdDbContext.Emrpatients.AddRange(emrPatients);
             ffpmDbContext.SaveChanges();
             eyeMdDbContext.SaveChanges();
             patientAdditionals = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
