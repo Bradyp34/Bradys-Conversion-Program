@@ -156,7 +156,7 @@ namespace Brady_s_Conversion_Program {
         public static string FFPMString = "";
         public static string EyeMDString = "";
 
-        public static Dictionary<int, string> insuranceCodes = new Dictionary<int, string> {};
+        public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string> {};
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
@@ -176,8 +176,8 @@ namespace Brady_s_Conversion_Program {
                         // SQL query to fetch OldInsCompanyId and InsCode, without hardcoding the database name
                         string query = @"
                         SELECT  
-                            i.InsId,
-                            i.InsCode
+                            i.InsCode,
+                            i.NavCode
                         FROM [dbo].[Insurance_Xref] i  -- Use just the schema and table name";
 
                         // Execute the query and read the results
@@ -185,12 +185,12 @@ namespace Brady_s_Conversion_Program {
                             using (SqlDataReader reader = cmd.ExecuteReader()) {
                                 while (reader.Read()) {
                                     // Get the OldInsCompanyId (int) and InsCode (string)
-                                    int oldInsCompanyId = reader.GetInt32(0);  // InsId is at index 0
-                                    string insCode = reader.GetString(1);  // InsCode is at index 1
+                                    string oldInsCode = reader.GetString(1);
+                                    string insCode = reader.GetString(1);
 
                                     // Add them as key-value pairs into the dictionary
-                                    if (!insuranceCodes.ContainsKey(oldInsCompanyId)) {
-                                        insuranceCodes.Add(oldInsCompanyId, insCode);
+                                    if (!insuranceCodes.ContainsKey(oldInsCode)) {
+                                        insuranceCodes.Add(oldInsCode, insCode);
                                     }
                                 }
                             }
@@ -1139,15 +1139,11 @@ namespace Brady_s_Conversion_Program {
                     if (insurance.InsCompanyName != null) {
                         companyName = insurance.InsCompanyName;
                     }
+                    string? code = insurance.InsuranceCompanyCode;
+/*                  re- instate before implementing, this is the code for the insurance company code
                     string? code = "";
                     if (insurance.InsuranceCompanyCode != null && insurance.InsuranceCompanyCode != "") {
-                        int temp = -1;
-                        if (int.TryParse(insurance.InsuranceCompanyCode, out int dontCare))
-                            temp = dontCare;
-                        if (temp <= -1) {
-                            logger.Log($"FFPM: FFPM Insurance company code not found (<0) for insurance with ID: {insurance.Id}");
-                        }
-                        code = insuranceCodes.GetValueOrDefault(temp);
+                        code = insuranceCodes.GetValueOrDefault(insurance.InsuranceCompanyCode);
 
                         if (code == null) {
                             logger.Log($"FFPM: FFPM Insurance company code not found (null) for insurance with ID: {insurance.Id}");
@@ -1157,6 +1153,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"FFPM: FFPM Insurance company code not found (null or empty) for insurance with ID: {insurance.Id}");
                         continue;
                     }
+*/
                     int companyId = -1;
                     if (insurance.OldInsCompanyId != null) {
                         if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
@@ -2036,19 +2033,20 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    int insCompanyCode = -1;
-                    if (int.TryParse(patientInsurance.InsuranceCompanyCode, out int temp)) {
-                        insCompanyCode = temp;
-                    }
-                    if (insCompanyCode == -1) {
+                    string? insCompanyCode = patientInsurance.InsuranceCompanyCode;
+                    if (insCompanyCode == null) {
                         logger.Log($"Conv: Conv Insurance company code not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
+                    var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insCompanyCode);
+/*                  Re-enable this before implementation
                     var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insuranceCodes.GetValueOrDefault(insCompanyCode));
+*/
                     if (patientInsuranceCompany == null) {
                         logger.Log($"Conv: FFPM Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
+                    insCompanyCode = patientInsuranceCompany.InsCompanyCode;
 
                     DateTime? startDate = null;
                     if (patientInsurance.StartDate != null && patientInsurance.StartDate != "" && !int.TryParse(patientInsurance.StartDate, out int dontCare)) {
@@ -8392,7 +8390,7 @@ namespace Brady_s_Conversion_Program {
 				    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the CL Brand with ID {clBrand.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the CL Brand with ID: {clBrand.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.ClnsBrands.UpdateRange(clnsBrands);
@@ -8408,7 +8406,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     if (clInventory.ContactLensId <= -1) {
-                        logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID {clInventory.Id}");
+                        logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID: {clInventory.Id}");
                         continue;
                     }
                     int? quantityOrdered = null;
@@ -8527,7 +8525,7 @@ namespace Brady_s_Conversion_Program {
 					}
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID {clInventory.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID: {clInventory.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.ClnsInventories.UpdateRange(clnsInventories);
@@ -8549,7 +8547,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 if (clnsBrandId == -1) {
-                    logger.Log($"INV: INV Brand ID not found for CL Lense with ID {clLense.Id}");
+                    logger.Log($"INV: INV Brand ID not found for CL Lense with ID: {clLense.Id}");
                     continue;
                 }
                 int? clnsManufacturerId = null;
@@ -8661,7 +8659,7 @@ namespace Brady_s_Conversion_Program {
 				}
             }
             catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CL Lens with ID {clLense.Id}. Error: {e.Message}");
+                logger.Log($"INV: INV An error occurred while converting the CL Lens with ID: {clLense.Id}. Error: {e.Message}");
             }
             }
 			ffpmDbContext.ClnsContactLens.UpdateRange(clLenses);
@@ -8713,7 +8711,7 @@ namespace Brady_s_Conversion_Program {
 					}
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID {cptDept.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID: {cptDept.Id}. Error: {e.Message}");
                 }
             }
 		    ffpmDbContext.CptDepartments.UpdateRange(cptDepartments);
@@ -8767,7 +8765,7 @@ namespace Brady_s_Conversion_Program {
 			        }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID {cptMapping.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID: {cptMapping.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.CptGroupMappings.UpdateRange(cptMappings);
@@ -8903,7 +8901,7 @@ namespace Brady_s_Conversion_Program {
 				    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the CPT with ID {cpt.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the CPT with ID: {cpt.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.Cptids.UpdateRange(cptIds);
@@ -8956,7 +8954,7 @@ namespace Brady_s_Conversion_Program {
 					}
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Category with ID {frameCategory.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Category with ID: {frameCategory.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.FrameCategories.UpdateRange(frameCategories);
@@ -8998,7 +8996,7 @@ namespace Brady_s_Conversion_Program {
 					}
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID {frameCollection.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID: {frameCollection.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameCollections.UpdateRange(frameCollections);
@@ -9037,7 +9035,7 @@ namespace Brady_s_Conversion_Program {
 			        }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Color with ID {frameColor.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Color with ID: {frameColor.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameColors.UpdateRange(frameColors);
@@ -9097,7 +9095,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID {frameShape.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID: {frameShape.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.FrameShapes.UpdateRange(frameShapes);
@@ -9136,7 +9134,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Status with ID {frameStatus.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Status with ID: {frameStatus.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameStatuses.UpdateRange(frameStatuses);
@@ -9175,7 +9173,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID {frameTemple.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID: {frameTemple.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameTempleStyles.UpdateRange(frameTemples);
@@ -9214,7 +9212,7 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame EType with ID {frameEType.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame EType with ID: {frameEType.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameEtypes.UpdateRange(frameEtypes);
@@ -9246,7 +9244,7 @@ namespace Brady_s_Conversion_Program {
 					}
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame FType with ID {frameFType.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame FType with ID: {frameFType.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameFtypes.UpdateRange(frameFtypes);
@@ -9261,14 +9259,15 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    var convFrame = invFrames.FirstOrDefault(f => f.Id.ToString() == frameInventory.OldFrameId);
+                    var convFrame = invFrames.FirstOrDefault(f => f.OldFrameId == frameInventory.OldFrameId);
                     if (convFrame == null) {
-                        logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                        logger.Log($"INV: INV Frame not found for Frame Inventory (1) with ID: {frameInventory.Id}");
                         continue;
                     }
-                    var ffpmFrame = frames.FirstOrDefault(x => x.Upc == convFrame.Upc);
+                    // connected since there is no duplicate checking in the frame conversion
+                    var ffpmFrame = frames.FirstOrDefault(x => x.FrameId == convFrame.Id);
                     if (ffpmFrame == null) {
-                        logger.Log($"INV: INV Frame not found for Frame Inventory with ID {frameInventory.Id}");
+                        logger.Log($"INV: INV Frame not found for Frame Inventory (2) with ID: {frameInventory.Id}");
                         continue;
                     }
                     long locationID = -1;
@@ -9418,7 +9417,7 @@ namespace Brady_s_Conversion_Program {
                     frameInventories.Add(newInventory);
 				}
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID {frameInventory.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID: {frameInventory.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.Inventories.UpdateRange(frameInventories);
@@ -9467,7 +9466,7 @@ namespace Brady_s_Conversion_Program {
 				    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID {frameLensColor.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID: {frameLensColor.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameDblensColors.UpdateRange(frameLensColors);
@@ -9517,7 +9516,7 @@ namespace Brady_s_Conversion_Program {
 				    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Material with ID {frameMaterial.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Material with ID: {frameMaterial.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameMaterials.UpdateRange(frameMaterials);
@@ -9567,7 +9566,7 @@ namespace Brady_s_Conversion_Program {
 				    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID {frameMount.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID: {frameMount.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameMounts.UpdateRange(frameMounts);
@@ -9727,7 +9726,7 @@ namespace Brady_s_Conversion_Program {
                     frameOrders.Add(newFrameOrder);
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Order with ID {frameOrder.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Order with ID: {frameOrder.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.FrameOrderInfos.UpdateRange(frameOrders);
@@ -9956,9 +9955,6 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    // how do we know if a frame is a duplicate?
-
-
 
 
                     var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
@@ -10005,7 +10001,7 @@ namespace Brady_s_Conversion_Program {
                     frames.Add(newFrame);
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame with ID {frame.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame with ID: {frame.Id}. Error: {e.Message}");
                 }
             }
 			ffpmDbContext.Frames.UpdateRange(frames);
@@ -10059,7 +10055,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Vendor with ID {vendor.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Vendor with ID: {vendor.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.Vendors.UpdateRange(vendors);
@@ -10113,7 +10109,7 @@ namespace Brady_s_Conversion_Program {
                     frameManufacturers.Add(newFrameManufacturer);
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Manufacturer with ID {frameManufacturer.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Manufacturer with ID: {frameManufacturer.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.Manufacturers.UpdateRange(frameManufacturers);
@@ -10152,7 +10148,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID {frameBrand.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID: {frameBrand.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.Brands.UpdateRange(frameBrands);
@@ -10214,7 +10210,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Address with ID {address.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Address with ID: {address.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
@@ -10265,7 +10261,7 @@ namespace Brady_s_Conversion_Program {
                     }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Phone with ID {phone.Id}. Error: {e.Message}");
+                    logger.Log($"INV: INV An error occurred while converting the Phone with ID: {phone.Id}. Error: {e.Message}");
                 }
             }
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
