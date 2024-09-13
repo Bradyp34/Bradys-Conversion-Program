@@ -1444,10 +1444,10 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAddress(List<Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-    List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
-    List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
-    List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
-    List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
+            List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
+                List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
+                    List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
+                        List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
             long patientAddressId = 1;
             long otherAddressId = 1;
 
@@ -1489,9 +1489,36 @@ namespace Brady_s_Conversion_Program {
 
                             var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
                             if (ffpmPatient == null) {
-                                logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
+                                logger.Log($"Conv: FFPM Patient not found for address with ID: {address.Id}");
                                 continue;
                             }
+                            if (address.TypeOfAddress?.ToLower() == "emp") {
+                                var ffpmPatientAdditional = patientAdditionalDetails.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
+                                if (ffpmPatientAdditional == null) {
+                                    ffpmPatientAdditional = new DmgPatientAdditionalDetail {
+                                        PatientId = ffpmPatient.PatientId,
+                                        EmployerAddressId = -1
+                                    };
+                                }
+                                var newOtherAddress = new DmgOtherAddress {
+                                    AddressId = otherAddressId,
+                                    OwnerId = ffpmPatient.PatientId,
+                                    Address1 = TruncateString(address.Address1, 50),
+                                    Address2 = TruncateString(address.Address2, 50),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = state,
+                                    CountryId = country,
+                                    Zip = TruncateString(zipCode, 10),
+                                    IsActive = isActive,
+                                    AddressType = addressType,
+                                    OwnerType = 0
+                                };
+                                ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress);
+                                ffpmPatientAdditional.EmployerAddressId = otherAddressId;
+                                otherAddressId++;
+                                continue;
+                            }
+
 
                             var isPrimary = address.TypeOfAddress?.ToLower() == "primary";
                             var isAlternate = address.TypeOfAddress?.ToLower() == "alternate";
