@@ -509,7 +509,7 @@ namespace Brady_s_Conversion_Program {
 
 
             ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances,
-                newPatientInsurances);
+                convInsurances);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -1893,19 +1893,12 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int patientId = -1;
-                    if (int.TryParse(patientAlert.PatientId, out int temp)) {
-                        patientId = temp;
-                    }
-                    else {
-                        logger.Log($"Conv: Conv Patient ID not found for patient alert with ID: {patientAlert.Id}");
+                    if (patientAlert.PatientId == null) {
+                        logger.Log($"Conv: Conv Patient ID not found (-1) or null for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    if (patientId <= -1) {
-                        logger.Log($"Conv: Conv Patient ID not found (-1) for patient alert with ID: {patientAlert.Id}");
-                        continue;
-                    }
-                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId);
+                    // this will need to be changed if it is changed from account number to sql id
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == patientAlert.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
@@ -2049,21 +2042,17 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
-                List<DmgPatientInsurance> patientInsurances, List<DmgPatientInsurance> newPatientInsurances) {
+                List<DmgPatientInsurance> patientInsurances, List<Models.Insurance> convInsuranceCompanies) {
             foreach (var patientInsurance in convPatientInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-                    int oldpatientId = 0;
-                    if (int.TryParse(patientInsurance.PrimaryId, out int temp)) {
-                        oldpatientId = temp;
-                    }
-                    else {
-                        logger.Log($"Conv: Conv Patient ID not found for patient insurance with ID: {patientInsurance.Id}");
+                    if (patientInsurance.PrimaryId == null) {
+                        logger.Log($"Conv: Conv Patient ID not found (-1) or null for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == oldpatientId);
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == patientInsurance.PrimaryId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
@@ -2073,22 +2062,22 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: FFPM Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    var convInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == patientInsurance.InsuranceCompanyCode);
+                    var convInsuranceCompany = convInsuranceCompanies.FirstOrDefault(p => p.InsuranceCompanyCode == patientInsurance.InsuranceCompanyCode);
                     if (convInsuranceCompany == null) {
                         logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
                     int insCompanyCode = -1;
-                    if (int.TryParse(patientInsurance.InsuranceCompanyCode, out temp)) {
+                    if (int.TryParse(patientInsurance.InsuranceCompanyCode, out int temp)) {
                         insCompanyCode = temp;
                     }
-                    else {
+                    if (insCompanyCode == -1) {
                         logger.Log($"Conv: Conv Insurance company code not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
                     var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insuranceCodes.GetValueOrDefault(insCompanyCode));
                     if (patientInsuranceCompany == null) {
-                        logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
+                        logger.Log($"Conv: FFPM Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
 
@@ -2185,16 +2174,15 @@ namespace Brady_s_Conversion_Program {
                             IsSubscriberExistingPatient = isSubscriberExistingPatient
                         };
                         patientInsurances.Add(newPatientInsurance);
-                        newPatientInsurances.Add(newPatientInsurance);
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient insurance with ID: {patientInsurance.Id}. Error: {ex.Message}");
                 }
             }
-            ffpmDbContext.DmgPatientInsurances.AddRange(newPatientInsurances);
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(patientInsurances);
             ffpmDbContext.SaveChanges();
-            newPatientInsurances.Clear();
+            patientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
         }
 
         public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
@@ -2205,21 +2193,12 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int patientId = -1;
                     if (patientNote.PatientId == null) {
-                        logger.Log($"Conv: Conv Patient ID is null for patient note with ID: {patientNote.Id}");
+                        logger.Log($"Conv: Conv Patient ID not found (-1) or null for patient note with ID: {patientNote.Id}");
                         continue;
                     }
-                    else {
-                        if (int.TryParse(patientNote.PatientId, out int temp)) {
-                            patientId = temp;
-                        }
-                        else {
-                            logger.Log($"Conv: Conv Patient ID not found for patient note with ID: {patientNote.Id}");
-                            continue;
-                        }
-                    }
-                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientId); // Spoke to dave, this will be changed to use sql id
+                    // this will need to be changed if it is changed off account number
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == patientNote.PatientId); // Spoke to dave, this will be changed to use sql id
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                         continue;
@@ -2299,7 +2278,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient insurance not found for policy holder with ID: {policyHolder.Id}");
                         continue;
                     }
-                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.Id.ToString() == convPatientInsurance.OldPatientId);
+                    var convPolicyPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == convPatientInsurance.OldPatientId);
                     if (convPolicyPatient == null) {
                         logger.Log($"Conv: Conv Patient (subject) not found for policy holder with ID: {policyHolder.Id}");
                         continue;
