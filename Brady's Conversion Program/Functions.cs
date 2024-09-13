@@ -9031,7 +9031,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    var invList = frameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode);
+                    var invList = frameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode && x.ColorCode != null && x.ColorCode != "");
 
                     if (invList != null) {
 					    var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
