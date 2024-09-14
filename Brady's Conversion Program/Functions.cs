@@ -3889,7 +3889,7 @@ namespace Brady_s_Conversion_Program {
                     }
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                     if (eyeMDPatient == null) {
-                        logger.Log($"EHR: EHR Patient not found for visit with ID: {visit.Id}");
+                        logger.Log($"EHR: EyeMD Patient not found for visit with ID: {visit.Id}");
                         continue;
                     }
                     ptId = eyeMDPatient.PtId;
@@ -5830,7 +5830,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == examCondition.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for examCondition with ID: {examCondition.Id}");
                         continue;
                     }
@@ -6182,7 +6182,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == planNarrative.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for planNarrative with ID: {planNarrative.Id}");
                         continue;
                     }
@@ -6602,7 +6602,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == refraction.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for refraction with ID: {refraction.Id}");
                         continue;
                     }
@@ -6909,7 +6909,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == rx.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for rx with ID: {rx.Id}");
                         continue;
                     }
@@ -7248,7 +7248,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == surgHistory.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for surgHistory with ID: {surgHistory.Id}");
                         continue;
                     }
@@ -7483,7 +7483,7 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == tech.PtId.ToString());
-                    if (eyeMDPatient != null) {
+                    if (eyeMDPatient == null) {
                         logger.Log($"EHR: EyeMD Patient not found for tech with ID: {tech.Id}");
                         continue;
                     }
@@ -7491,6 +7491,7 @@ namespace Brady_s_Conversion_Program {
                     if (EyeMDVisit != null) {
                         visitId = EyeMDVisit.VisitId;
                     }
+                    ptId = eyeMDPatient.PtId;
 
                     DateTime? dosDate = null;
                     if (tech.Dosdate != null) {
@@ -7845,13 +7846,15 @@ namespace Brady_s_Conversion_Program {
                     int? visitId = null;
                     int ptId = -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == tech2.PtId.ToString());
-                    if (eyeMDPatient != null) {
-                        ptId = eyeMDPatient.PtId;
+                    if (eyeMDPatient == null) {
+                        logger.Log($"EHR: EyeMD Patient not found for tech2 with ID: {tech2.Id}");
+                        continue;
                     }
                     var EyeMDVisit = visits.FirstOrDefault(v => v.ClientSoftwareApptId == tech2.OldVisitId);
                     if (EyeMDVisit != null) {
                         visitId = EyeMDVisit.VisitId;
                     }
+                    ptId = eyeMDPatient.PtId;
 
                     DateTime? dosDate = null;
                     if (tech2.Dosdate != null) {
