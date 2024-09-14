@@ -9143,10 +9143,275 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"INV: INV Frame not found for Frame Inventory (1) with ID: {frameInventory.Id}");
                         continue;
                     }
-                    // connected since there is no duplicate checking in the frame conversion
-                    var ffpmFrame = frames.FirstOrDefault(x => x.FrameId == convFrame.Id);
+                    #region frameChecking
+                    string upc = "";
+                    if (convFrame.Upc != null) {
+                        upc = convFrame.Upc;
+                    }
+                    int styleId = -1;
+                    if (convFrame.StyleId != null) {
+                        if (int.TryParse(convFrame.StyleId, out int locum)) {
+                            styleId = locum;
+                        }
+                    }
+                    int? eye = null;
+                    if (convFrame.Eye != null) {
+                        if (int.TryParse(convFrame.Eye, out int locum)) {
+                            eye = locum;
+                        }
+                    }
+                    int? bridge = null;
+                    if (convFrame.Bridge != null) {
+                        if (int.TryParse(convFrame.Bridge, out int locum)) {
+                            bridge = locum;
+                        }
+                    }
+                    int? temple = null;
+                    if (convFrame.Temple != null) {
+                        if (int.TryParse(convFrame.Temple, out int locum)) {
+                            temple = locum;
+                        }
+                    }
+                    decimal? dbl = null;
+                    if (convFrame.Dbl != null) {
+                        if (decimal.TryParse(convFrame.Dbl, out decimal locum)) {
+                            dbl = locum;
+                        }
+                    }
+                    decimal? a = null;
+                    if (convFrame.A != null) {
+                        if (decimal.TryParse(convFrame.A, out decimal locum)) {
+                            a = locum;
+                        }
+                    }
+                    decimal? b = null;
+                    if (convFrame.B != null) {
+                        if (decimal.TryParse(convFrame.B, out decimal locum)) {
+                            b = locum;
+                        }
+                    }
+                    decimal? ed = null;
+                    if (convFrame.Ed != null) {
+                        if (decimal.TryParse(convFrame.Ed, out decimal locum)) {
+                            ed = locum;
+                        }
+                    }
+                    decimal? circumference = null;
+                    if (convFrame.Circumference != null) {
+                        if (decimal.TryParse(convFrame.Circumference, out decimal locum)) {
+                            circumference = locum;
+                        }
+                    }
+                    decimal? edAngle = null;
+                    if (convFrame.Edangle != null) {
+                        if (decimal.TryParse(convFrame.Edangle, out decimal locum)) {
+                            edAngle = locum;
+                        }
+                    }
+                    decimal? frontPrice = null;
+                    if (convFrame.FrontPrice != null) {
+                        if (decimal.TryParse(convFrame.FrontPrice, out decimal locum)) {
+                            frontPrice = locum;
+                        }
+                    }
+                    decimal? halfTemplesPrice = null;
+                    if (convFrame.HalfTemplesPrice != null) {
+                        if (decimal.TryParse(convFrame.HalfTemplesPrice, out decimal locum)) {
+                            halfTemplesPrice = locum;
+                        }
+                    }
+                    decimal? templesPrice = null;
+                    if (convFrame.TemplesPrice != null) {
+                        if (decimal.TryParse(convFrame.TemplesPrice, out decimal locum)) {
+                            templesPrice = locum;
+                        }
+                    }
+                    decimal? completePrice = null;
+                    if (convFrame.CompletePrice != null) {
+                        if (decimal.TryParse(convFrame.CompletePrice, out decimal locum)) {
+                            completePrice = locum;
+                        }
+                    }
+                    bool? styleNew = null;
+                    if (convFrame.StyleNew != null && convFrame.StyleNew.ToLower() == "yes" || convFrame.StyleNew == "1") {
+                        styleNew = true;
+                    }
+                    else if (convFrame.StyleNew != null && convFrame.StyleNew.ToLower() == "no") {
+                        styleNew = false;
+                    }
+                    bool? changedPrice = null;
+                    if (convFrame.ChangedPrice != null && convFrame.ChangedPrice.ToLower() == "yes" || convFrame.ChangedPrice == "1") {
+                        changedPrice = true;
+                    }
+                    else if (convFrame.ChangedPrice != null && convFrame.ChangedPrice.ToLower() == "no") {
+                        changedPrice = false;
+                    }
+                    long? manufacturerId = null;
+                    if (convFrame.ManufacturerId != null) {
+                        if (long.TryParse(convFrame.ManufacturerId, out long locum)) {
+                            manufacturerId = locum;
+                        }
+                    }
+                    long? vendorId = null;
+                    if (convFrame.VendorId != null) {
+                        if (long.TryParse(convFrame.VendorId, out long locum)) {
+                            vendorId = locum;
+                        }
+                    }
+                    long? brandId = null;
+                    if (convFrame.BrandId != null) {
+                        if (long.TryParse(convFrame.BrandId, out long locum)) {
+                            brandId = locum;
+                        }
+                    }
+                    long? collectionId = null;
+                    if (convFrame.CollectionId != null) {
+                        if (long.TryParse(convFrame.CollectionId, out long locum)) {
+                            collectionId = locum;
+                        }
+                    }
+                    int? frameCategoryId = null;
+                    if (convFrame.FrameCategoryId != null) {
+                        if (int.TryParse(convFrame.FrameCategoryId, out int locum)) {
+                            frameCategoryId = locum;
+                        }
+                    }
+                    int? frameShapeId = null;
+                    if (convFrame.FrameShapeId != null) {
+                        if (int.TryParse(convFrame.FrameShapeId, out int locum)) {
+                            frameShapeId = locum;
+                        }
+                    }
+                    int? materialId = null;
+                    if (convFrame.MaterialId != null) {
+                        if (int.TryParse(convFrame.MaterialId, out int locum)) {
+                            materialId = locum;
+                        }
+                    }
+                    int? frameMountId = null;
+                    if (convFrame.FrameMountId != null) {
+                        if (int.TryParse(convFrame.FrameMountId, out int locum)) {
+                            frameMountId = locum;
+                        }
+                    }
+                    long? frameColorId = null;
+                    if (convFrame.FrameColorId != null) {
+                        if (long.TryParse(convFrame.FrameColorId, out long locum)) {
+                            frameColorId = locum;
+                        }
+                    }
+                    long? lensColorId = null;
+                    if (convFrame.LensColorId != null) {
+                        if (long.TryParse(convFrame.LensColorId, out long locum)) {
+                            lensColorId = locum;
+                        }
+                    }
+                    int? genderId = null;
+                    if (convFrame.GenderId != null) {
+                        if (int.TryParse(convFrame.GenderId, out int locum)) {
+                            genderId = locum;
+                        }
+                    }
+                    long? countryId = null;
+                    if (convFrame.CountryId != null) {
+                        if (long.TryParse(convFrame.CountryId, out long locum)) {
+                            countryId = locum;
+                        }
+                    }
+                    int? ageGroupId = null;
+                    if (convFrame.AgeGroupId != null) {
+                        if (int.TryParse(convFrame.AgeGroupId, out int locum)) {
+                            ageGroupId = locum;
+                        }
+                    }
+                    long? locationId = null;
+                    if (convFrame.LocationId != null) {
+                        if (long.TryParse(convFrame.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
+                    }
+                    int? cptid = null;
+                    if (convFrame.Cptid != null) {
+                        if (int.TryParse(convFrame.Cptid, out int locum)) {
+                            cptid = locum;
+                        }
+                    }
+                    bool? active = null;
+                    if (convFrame.Active != null && convFrame.Active.ToLower() == "yes" || convFrame.Active == "1") {
+                        active = true;
+                    }
+                    else if (convFrame.Active != null && convFrame.Active.ToLower() == "no") {
+                        active = false;
+                    }
+                    DateTime? dateAdded = null;
+                    if (convFrame.DateAdded != null) {
+                        if (DateTime.TryParseExact(convFrame.DateAdded, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            dateAdded = locum;
+                        }
+                    }
+                    DateTime? lastUpdated = null;
+                    if (convFrame.LastUpdated != null) {
+                        if (DateTime.TryParseExact(convFrame.LastUpdated, dateFormats,
+                            CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
+                            lastUpdated = locum;
+                        }
+                    }
+
+                    var newFrame = new Brady_s_Conversion_Program.ModelsA.Frame {
+                        Fpc = TruncateString(convFrame.Fpc, 14),
+                        Upc = TruncateString(convFrame.Upc, 14),
+                        StyleId = styleId,
+                        StyleName = TruncateString(convFrame.StyleName, 37),
+                        Eye = eye,
+                        Bridge = bridge,
+                        Temple = temple,
+                        Dbl = dbl,
+                        A = a,
+                        B = b,
+                        Ed = ed,
+                        Circumference = circumference,
+                        Edangle = edAngle,
+                        FrontPrice = frontPrice,
+                        HalfTemplesPrice = halfTemplesPrice,
+                        TemplesPrice = templesPrice,
+                        CompletePrice = completePrice,
+                        StyleNew = styleNew,
+                        ChangedPrice = changedPrice,
+                        Sku = TruncateString(convFrame.Sku, 30),
+                        YearIntroduced = TruncateString(convFrame.YearIntroduced, 4),
+                        ManufacturerId = manufacturerId,
+                        VendorId = vendorId,
+                        BrandId = brandId,
+                        CollectionId = collectionId,
+                        FrameCategoryId = frameCategoryId,
+                        FrameShapeId = frameShapeId,
+                        MaterialId = materialId,
+                        FrameMountId = frameMountId,
+                        FrameColorId = frameColorId,
+                        LensColorId = lensColorId,
+                        GenderId = genderId,
+                        CountryId = countryId,
+                        AgeGroupId = ageGroupId,
+                        LocationId = locationId,
+                        Cptid = cptid,
+                        Active = active,
+                        DateAdded = dateAdded,
+                        LastUpdated = lastUpdated
+                    };
+                    #endregion frameChecking
+
+                    // now search for the frame that matches exactly in ffpm
+                    var ffpmFrame = frames.FirstOrDefault(f => f.Fpc == newFrame.Fpc && f.Upc == newFrame.Upc && f.StyleId == newFrame.StyleId && f.StyleName == newFrame.StyleName &&
+                        f.Eye == newFrame.Eye && f.Bridge == newFrame.Bridge && f.Temple == newFrame.Temple && f.Dbl == newFrame.Dbl && f.A == newFrame.A && f.B == newFrame.B &&
+                            f.Ed == newFrame.Ed && f.Circumference == newFrame.Circumference && f.Edangle == newFrame.Edangle && f.FrontPrice == newFrame.FrontPrice && f.HalfTemplesPrice == newFrame.HalfTemplesPrice &&
+                                f.TemplesPrice == newFrame.TemplesPrice && f.CompletePrice == newFrame.CompletePrice && f.StyleNew == newFrame.StyleNew && f.ChangedPrice == newFrame.ChangedPrice &&
+                                    f.Sku == newFrame.Sku && f.YearIntroduced == newFrame.YearIntroduced && f.ManufacturerId == newFrame.ManufacturerId && f.VendorId == newFrame.VendorId && f.BrandId == newFrame.BrandId &&
+                                                                                                                                       f.CollectionId == newFrame.CollectionId && f.FrameCategoryId == newFrame.FrameCategoryId && f.FrameShapeId == newFrame.FrameShapeId && f.MaterialId == newFrame.MaterialId &&
+                                                                                                                                                              f.FrameMountId == newFrame.FrameMountId && f.FrameColorId == newFrame.FrameColorId && f.LensColorId == newFrame.LensColorId && f.GenderId == newFrame.GenderId &&
+                                                                                                                                                                                     f.CountryId == newFrame.CountryId);
                     if (ffpmFrame == null) {
-                        logger.Log($"INV: INV Frame not found for Frame Inventory (2) with ID: {frameInventory.Id}");
+                        logger.Log($"INV: FFPM Frame not found for Frame Inventory (2) with ID: {frameInventory.Id}");
                         continue;
                     }
                     long locationID = -1;
@@ -9260,7 +9525,7 @@ namespace Brady_s_Conversion_Program {
                     else if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "no" || frameInventory.ValidInventory == "0") {
                         validInventory = false;
                     }
-                    DateTime? dateAdded = null;
+                    dateAdded = null;
                     if (frameInventory.DateAdded != null) {
                         if (DateTime.TryParseExact(frameInventory.DateAdded, dateFormats,
                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime locum)) {
@@ -9284,7 +9549,6 @@ namespace Brady_s_Conversion_Program {
                         ReturnedByCustomer = returnedByCustomer,
                         Lost = lost,
                         Donation = donation,
-
                         Consignment = consignment,
                         TransferredIn = transferredIn,
                         TransferredOut = transferredOut,
@@ -9877,7 +10141,18 @@ namespace Brady_s_Conversion_Program {
                         DateAdded = dateAdded,
                         LastUpdated = lastUpdated
                     };
-                    frames.Add(newFrame);
+
+                    bool duplicate = false;
+                    foreach (var f in frames) {
+                        if (f.Fpc == newFrame.Fpc) {
+                            duplicate = true;
+                            break;
+                        }
+                    }
+
+                    if (!duplicate) {
+                        frames.Add(newFrame);
+                    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame with ID: {frame.Id}. Error: {e.Message}");
