@@ -586,10 +586,6 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                         continue;
                     }
-                    else if (patient.Active != null && (patient.Active.ToUpper() == "NO" || patient.Active == "0")) {
-                        logger.Log($"Conv: Conv Patient is not active for patient with ID: {patient.Id}");
-                        continue;
-                    }
 
                     string? ssn = patient.Ssn;
                     if (ssn == null || !ssnRegex.IsMatch(ssn)) {
@@ -2841,7 +2837,7 @@ namespace Brady_s_Conversion_Program {
                     #endregion taxonomys
 
                     var ffpmOrig = referringProviders.FirstOrDefault(p => p.RefProviderCode == referral.OldReferralCode);
-                    var ffpmOrigProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == referral.OldReferralCode);
+                    var ffpmOrigProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == referral.OldReferralCode && p.IsReferringProvider == true);
 
 
                     if (ffpmOrigProvider == null) {
@@ -8159,12 +8155,6 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
-            FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, progress, frameInventories, invFrames, frames);
-
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.AppendText("Frame Inventories converted\n");
-            });
-
             FrameLensColorConvert(invFrameLensColors, invDbContext, ffpmDbContext, logger, progress, frameLensColors);
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -8205,6 +8195,12 @@ namespace Brady_s_Conversion_Program {
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Brands converted\n");
+            });
+
+            FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, progress, frameInventories, invFrames, frames);
+
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.AppendText("Frame Inventories converted\n");
             });
 
             AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, progress, otherAddresses, vendors, stateXrefs);
@@ -8256,7 +8252,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = clnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newClbrand = new Brady_s_Conversion_Program.ModelsA.ClnsBrand {
 						    BrandName = TruncateString(clBrand.BrandName, 50),
 						    BrandCode = TruncateString(clBrand.BrandCode, 10),
@@ -8377,7 +8373,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = clnsInventories.FirstOrDefault(x => x.ContactLensId == clInventory.ContactLensId);
 
-                    if (invList != null) {
+                    if (invList == null) {
 						var newClInventory = new Brady_s_Conversion_Program.ModelsA.ClnsInventory {
 							ContactLensId = clInventory.ContactLensId,
 							Barcode = TruncateString(clInventory.Barcode, 8),
@@ -8508,7 +8504,7 @@ namespace Brady_s_Conversion_Program {
 
                 var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
 
-                if (invList != null) {
+                if (invList == null) {
 					var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
 						ClnsBrandId = clnsBrandId,
 						ClnsManufacturerId = clnsManufacturerId,
@@ -8578,7 +8574,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = cptDepartments.FirstOrDefault(x => x.Code == code);
 
-                    if (invList != null) {
+                    if (invList == null) {
 						var newCptdept = new Brady_s_Conversion_Program.ModelsA.CptDepartment {
 							Code = TruncateString(code, 10),
 							Description = TruncateString(description, 500),
@@ -8633,7 +8629,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = cptMappings.FirstOrDefault(x => x.CptId == cptId && x.GroupId == groupId);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newCptmapping = new Brady_s_Conversion_Program.ModelsA.CptGroupMapping {
 						    CptId = cptId,
 						    GroupId = groupId,
@@ -8753,7 +8749,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = cptIds.FirstOrDefault(x => x.Cpt == cpt.Cpt1);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newCpt = new Brady_s_Conversion_Program.ModelsA.Cptid {
 						    Cpt = cpt.Cpt1,
 						    Description = TruncateString(cpt.Description, 250),
@@ -8790,346 +8786,281 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameCategoryConvert(List<ModelsD.FrameCategory> invFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameCategory> frameCategories) {
+
             foreach (var frameCategory in invFrameCategories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string categoryName = "";
-                    if (frameCategory.CategoryName != null) {
-                        categoryName = frameCategory.CategoryName;
-                    }
-                    bool? active = null;
-                    if (frameCategory.Active != null && frameCategory.Active.ToLower() == "yes" || frameCategory.Active == "1") {
-                        active = true;
-                    }
-                    else if (frameCategory.Active != null && frameCategory.Active.ToLower() == "no") {
-                        active = false;
-                    }
-                    long sortOrder = -1;
-                    if (frameCategory.SortOrder != null) {
-                        if (long.TryParse(frameCategory.SortOrder, out long locum)) {
-                            sortOrder = locum;
-                        }
-                    }
-                    long? locationId = null;
-                    if (frameCategory.LocationId != null) {
-                        if (long.TryParse(frameCategory.LocationId, out long locum)) {
-                            locationId = locum;
-                        }
-                    }
+                    string categoryName = frameCategory.CategoryName ?? string.Empty;
+                    bool? active = frameCategory.Active?.ToLower() switch {
+                        "yes" or "1" => true,
+                        "no" => false,
+                        _ => null
+                    };
+                    long sortOrder = long.TryParse(frameCategory.SortOrder, out var parsedSortOrder) ? parsedSortOrder : -1;
+                    long? locationId = long.TryParse(frameCategory.LocationId, out var parsedLocationId) ? parsedLocationId : (long?)null;
 
-                    var invList = frameCategories.FirstOrDefault(x => x.CategoryName == categoryName);
-
-                    if (invList != null) {
-						var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
-							CategoryName = TruncateString(categoryName, 150),
-							CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
-							Active = active,
-							SortOrder = sortOrder,
-							LocationId = locationId
-						};
+                    if (!frameCategories.Any(x => x.CategoryName == categoryName)) {
+                        var newFrameCategory = new Brady_s_Conversion_Program.ModelsA.FrameCategory {
+                            CategoryName = TruncateString(categoryName, 150),
+                            CategoryDescription = TruncateString(frameCategory.CategoryDescription, 250),
+                            Active = active,
+                            SortOrder = sortOrder,
+                            LocationId = locationId
+                        };
                         frameCategories.Add(newFrameCategory);
-					}
+                    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Category with ID: {frameCategory.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Category with ID: {frameCategory.Id}. Error: {e.Message}");
                 }
             }
+
+            // Update and save changes
             ffpmDbContext.FrameCategories.UpdateRange(frameCategories);
-			ffpmDbContext.SaveChanges();
-			frameCategories = ffpmDbContext.FrameCategories.ToList();
-		}
+            ffpmDbContext.SaveChanges();
+            frameCategories = ffpmDbContext.FrameCategories.ToList();
+        }
 
         public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameCollection> frameCollections) {
+
             foreach (var frameCollection in invFrameCollections) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string collectionName = "";
-                    if (frameCollection.CollectionName != null) {
-                        collectionName = frameCollection.CollectionName;
-                    }
-                    bool active = false;
-                    if (frameCollection.Active != null && frameCollection.Active.ToLower() == "yes" || frameCollection.Active == "1") {
-                        active = true;
-                    }
-                    long locationId = -1;
-                    if (frameCollection.LocationId != null) {
-                        if (long.TryParse(frameCollection.LocationId, out long locum)) {
-                            locationId = locum;
-                        }
-                    }
+                    string collectionName = frameCollection.CollectionName ?? string.Empty;
+                    bool active = frameCollection.Active?.ToLower() switch {
+                        "yes" or "1" => true,
+                        _ => false
+                    };
+                    long locationId = long.TryParse(frameCollection.LocationId, out var parsedLocationId) ? parsedLocationId : -1;
 
-                    var invList = frameCollections.FirstOrDefault(x => x.CollectionName == collectionName);
-
-                    if (invList != null) {
-						var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
-							CollectionName = TruncateString(collectionName, 250),
-							Active = active,
-							LocationId = locationId
-						};
-						frameCollections.Add(newFrameCollection);
-					}
+                    if (!frameCollections.Any(x => x.CollectionName == collectionName)) {
+                        var newFrameCollection = new Brady_s_Conversion_Program.ModelsA.FrameCollection {
+                            CollectionName = TruncateString(collectionName, 250),
+                            Active = active,
+                            LocationId = locationId
+                        };
+                        frameCollections.Add(newFrameCollection);
+                    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Collection with ID: {frameCollection.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Collection with ID: {frameCollection.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameCollections.UpdateRange(frameCollections);
-			ffpmDbContext.SaveChanges();
-			frameCollections = ffpmDbContext.FrameCollections.ToList();
-		}
+
+            // Update and save changes
+            ffpmDbContext.FrameCollections.UpdateRange(frameCollections);
+            ffpmDbContext.SaveChanges();
+            frameCollections = ffpmDbContext.FrameCollections.ToList();
+        }
 
         public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameColor> frameColors) {
+
             foreach (var frameColor in invFrameColors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    bool active = true;
-                    if (frameColor.Active != null && (frameColor.Active.ToLower() == "no" || frameColor.Active.ToLower() == "false" || frameColor.Active == "0")) {
-                        active = false;
-                    }
-                    long locationId = -1;
-                    if (frameColor.LocationId != null) {
-                        if (long.TryParse(frameColor.LocationId, out long locum)) {
-                            locationId = locum;
-                        }
-                    }
+                    bool active = frameColor.Active?.ToLower() switch {
+                        "no" or "false" or "0" => false,
+                        _ => true
+                    };
+                    long locationId = long.TryParse(frameColor.LocationId, out var parsedLocationId) ? parsedLocationId : -1;
 
-                    var invList = frameColors.FirstOrDefault(x => x.ColorCode == frameColor.ColorCode && x.ColorCode != null && x.ColorCode != "");
-
-                    if (invList != null) {
-					    var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
-						    ColorCode = TruncateString(frameColor.ColorCode, 50),
-						    ColorDescription = TruncateString(frameColor.ColorDescription, 150),
-						    Active = active,
-						    LocationId = locationId
-					    };
+                    if (!frameColors.Any(x => x.ColorCode == frameColor.ColorCode && !string.IsNullOrEmpty(frameColor.ColorCode))) {
+                        var newFrameColor = new Brady_s_Conversion_Program.ModelsA.FrameColor {
+                            ColorCode = TruncateString(frameColor.ColorCode, 50),
+                            ColorDescription = TruncateString(frameColor.ColorDescription, 150),
+                            Active = active,
+                            LocationId = locationId
+                        };
                         frameColors.Add(newFrameColor);
-			        }
+                    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Color with ID: {frameColor.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Color with ID: {frameColor.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameColors.UpdateRange(frameColors);
+
+            // Update and save changes
+            ffpmDbContext.FrameColors.UpdateRange(frameColors);
             ffpmDbContext.SaveChanges();
             frameColors = ffpmDbContext.FrameColors.ToList();
-		}
+        }
 
         public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
             List<ModelsA.FrameShape> frameShapes) {
+
             foreach (var frameShape in invFrameShapes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string shape = "";
-                    if (frameShape.FrameShape1 != null) {
-                        shape = frameShape.FrameShape1;
-                    }
-                    bool active = false;
-                    if (frameShape.Active != null && frameShape.Active.ToLower() == "yes" || frameShape.Active == "1") {
-                        active = true;
-                    }
-                    long sortOrder = -1;
-                    if (frameShape.SortOrder != null) {
-                        if (long.TryParse(frameShape.SortOrder, out long locum)) {
-                            sortOrder = locum;
-                        }
-                    }
-                    long? locationId = null;
-                    if (frameShape.LocationId != null) {
-                        if (long.TryParse(frameShape.LocationId, out long locum)) {
-                            locationId = locum;
-                        }
-                    }
-
-                    var invList = ffpmDbContext.FrameShapes.FirstOrDefault(x => x.FrameShape1 == shape);
-
-                    if (invList != null) {
-                        invList.ShapeDescription = TruncateString(frameShape.ShapeDescription, 250);
-                        invList.Active = active;
-                        invList.SortOrder = sortOrder;
-                        invList.LocationId = locationId;
-                        ffpmDbContext.SaveChanges();
-                        continue;
-                    }
-
-
-                    var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
-                        FrameShape1 = TruncateString(shape, 50),
-                        ShapeDescription = TruncateString(frameShape.ShapeDescription, 250),
-                        Active = active,
-                        SortOrder = sortOrder,
-                        LocationId = locationId
+                    string shape = frameShape.FrameShape1 ?? string.Empty;
+                    bool active = frameShape.Active?.ToLower() switch {
+                        "yes" or "1" => true,
+                        _ => false
                     };
-                    ffpmDbContext.FrameShapes.Add(newFrameShape);
+                    long sortOrder = long.TryParse(frameShape.SortOrder, out var parsedSortOrder) ? parsedSortOrder : -1;
+                    long? locationId = long.TryParse(frameShape.LocationId, out var parsedLocationId) ? parsedLocationId : (long?)null;
 
-                    ffpmDbContext.SaveChanges();
+                    if (!frameShapes.Any(x => x.FrameShape1 == shape)) {
+                        var newFrameShape = new Brady_s_Conversion_Program.ModelsA.FrameShape {
+                            FrameShape1 = TruncateString(shape, 50),
+                            ShapeDescription = TruncateString(frameShape.ShapeDescription, 250),
+                            Active = active,
+                            SortOrder = sortOrder,
+                            LocationId = locationId
+                        };
+                        frameShapes.Add(newFrameShape);
+                    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Shape with ID: {frameShape.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Shape with ID: {frameShape.Id}. Error: {e.Message}");
                 }
             }
+
+            // Update and save changes
             ffpmDbContext.FrameShapes.UpdateRange(frameShapes);
-			ffpmDbContext.SaveChanges();
-			frameShapes = ffpmDbContext.FrameShapes.ToList();
-		}
+            ffpmDbContext.SaveChanges();
+            frameShapes = ffpmDbContext.FrameShapes.ToList();
+        }
 
         public static void FrameStatusConvert(List<ModelsD.FrameStatus> invFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<ModelsA.FrameStatus> frameStatuses) {
+    List<ModelsA.FrameStatus> frameStatuses) {
+
             foreach (var frameStatus in invFrameStatuses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string status = "";
-                    if (frameStatus.OldStatusId != null) {
-                        status = frameStatus.OldStatusId;
+                    string status = frameStatus.OldStatusId ?? string.Empty;
+
+                    var existingFrameStatus = frameStatuses.FirstOrDefault(x => x.Status == status);
+                    if (existingFrameStatus == null) {
+                        var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
+                            Status = TruncateString(status, 100),
+                            Description = TruncateString(frameStatus.Description, 100),
+                            LabCode = TruncateString(frameStatus.LabCode, 25)
+                        };
+                        frameStatuses.Add(newFrameStatus);
                     }
-
-                    var invList = ffpmDbContext.FrameStatuses.FirstOrDefault(x => x.Status == status);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameStatus.Description, 100);
-                        invList.LabCode = TruncateString(frameStatus.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        continue;
-                    }
-
-                    var newFrameStatus = new Brady_s_Conversion_Program.ModelsA.FrameStatus {
-                        Status = TruncateString(status, 100),
-                        Description = TruncateString(frameStatus.Description, 100),
-                        LabCode = TruncateString(frameStatus.LabCode, 25)
-                    };
-                    ffpmDbContext.FrameStatuses.Add(newFrameStatus);
-
-                    ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Status with ID: {frameStatus.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Status with ID: {frameStatus.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameStatuses.UpdateRange(frameStatuses);
-			ffpmDbContext.SaveChanges();
-			frameStatuses = ffpmDbContext.FrameStatuses.ToList();
-		}
+
+            // Update and save changes
+            ffpmDbContext.FrameStatuses.UpdateRange(frameStatuses);
+            ffpmDbContext.SaveChanges();
+            frameStatuses = ffpmDbContext.FrameStatuses.ToList();
+        }
 
         public static void FrameTempleConvert(List<ModelsD.FrameTemple> invFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<ModelsA.FrameTempleStyle> frameTemples) {
+            List<ModelsA.FrameTempleStyle> frameTemples) {
+
             foreach (var frameTemple in invFrameTemples) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string temple = "";
-                    if (frameTemple.OldTempleId != null) {
-                        temple = frameTemple.OldTempleId;
+                    string temple = frameTemple.OldTempleId ?? string.Empty;
+
+                    var existingFrameTemple = frameTemples.FirstOrDefault(x => x.Temple == temple);
+                    if (existingFrameTemple == null) {
+                        var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
+                            Temple = TruncateString(temple, 100),
+                            Description = TruncateString(frameTemple.Description, 100),
+                            LabCode = TruncateString(frameTemple.LabCode, 25)
+                        };
+                        frameTemples.Add(newFrameTemple);
                     }
-
-                    var invList = ffpmDbContext.FrameTempleStyles.FirstOrDefault(x => x.Temple == temple);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameTemple.Description, 100);
-                        invList.LabCode = TruncateString(frameTemple.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        continue;
-                    }
-
-                    var newFrameTemple = new Brady_s_Conversion_Program.ModelsA.FrameTempleStyle {
-                        Temple = TruncateString(temple, 100),
-                        Description = TruncateString(frameTemple.Description, 100),
-                        LabCode = TruncateString(frameTemple.LabCode, 25)
-                    };
-                    ffpmDbContext.FrameTempleStyles.Add(newFrameTemple);
-
-                    ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame Temple with ID: {frameTemple.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame Temple with ID: {frameTemple.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameTempleStyles.UpdateRange(frameTemples);
-			ffpmDbContext.SaveChanges();
-			frameTemples = ffpmDbContext.FrameTempleStyles.ToList();
-		}
+
+            // Update and save changes
+            ffpmDbContext.FrameTempleStyles.UpdateRange(frameTemples);
+            ffpmDbContext.SaveChanges();
+            frameTemples = ffpmDbContext.FrameTempleStyles.ToList();
+        }
 
         public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<ModelsA.FrameEtype> frameEtypes) {
+            List<ModelsA.FrameEtype> frameEtypes) {
+
             foreach (var frameEType in invFrameETypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string eType = "";
-                    if (frameEType.OldEtypeId != null) {
-                        eType = frameEType.OldEtypeId;
+                    string eType = frameEType.Etype ?? string.Empty;
+
+                    var existingFrameEType = frameEtypes.FirstOrDefault(x => x.Etype == eType);
+                    if (existingFrameEType == null) {
+                        var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
+                            Etype = TruncateString(eType, 100),
+                            Description = TruncateString(frameEType.Description, 100),
+                            LabCode = TruncateString(frameEType.LabCode, 25)
+                        };
+                        frameEtypes.Add(newFrameEType);
                     }
-
-                    var invList = ffpmDbContext.FrameEtypes.FirstOrDefault(x => x.Etype == eType);
-
-                    if (invList != null) {
-                        invList.Description = TruncateString(frameEType.Description, 100);
-                        invList.LabCode = TruncateString(frameEType.LabCode, 25);
-                        ffpmDbContext.SaveChanges();
-                        continue;
-                    }
-
-                    var newFrameEType = new Brady_s_Conversion_Program.ModelsA.FrameEtype {
-                        Etype = TruncateString(eType, 100),
-                        Description = TruncateString(frameEType.Description, 100),
-                        LabCode = TruncateString(frameEType.LabCode, 25)
-                    };
-                    ffpmDbContext.FrameEtypes.Add(newFrameEType);
-
-                    ffpmDbContext.SaveChanges();
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame EType with ID: {frameEType.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame EType with ID: {frameEType.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameEtypes.UpdateRange(frameEtypes);
-			ffpmDbContext.SaveChanges();
-			frameEtypes = ffpmDbContext.FrameEtypes.ToList();
-		}
+
+            // Update and save changes
+            ffpmDbContext.FrameEtypes.UpdateRange(frameEtypes);
+            ffpmDbContext.SaveChanges();
+            frameEtypes = ffpmDbContext.FrameEtypes.ToList();
+        }
 
         public static void FrameFTypeConvert(List<ModelsD.FrameFtype> invFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
-			List<ModelsA.FrameFtype> frameFtypes) {
+            List<ModelsA.FrameFtype> frameFtypes) {
+
             foreach (var frameFType in invFrameFTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
-                    string fType = "";
-                    if (frameFType.OldFtypeId != null) {
-                        fType = frameFType.OldFtypeId;
-                    }
+                    string fType = frameFType.Ftype ?? string.Empty;
 
-                    var invList = frameFtypes.FirstOrDefault(x => x.Ftype == fType);
-
-                    if (invList != null) {
-						var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
-							Ftype = TruncateString(fType, 100),
-							Description = TruncateString(frameFType.Description, 100),
-							LabCode = TruncateString(frameFType.LabCode, 25)
-						};
+                    if (!frameFtypes.Any(x => x.Ftype == fType)) {
+                        var newFrameFType = new Brady_s_Conversion_Program.ModelsA.FrameFtype {
+                            Ftype = TruncateString(fType, 100),
+                            Description = TruncateString(frameFType.Description, 100),
+                            LabCode = TruncateString(frameFType.LabCode, 25)
+                        };
                         frameFtypes.Add(newFrameFType);
-					}
+                    }
                 }
                 catch (Exception e) {
-                    logger.Log($"INV: INV An error occurred while converting the Frame FType with ID: {frameFType.Id}. Error: {e.Message}");
+                    logger.Log($"INV: An error occurred while converting the Frame FType with ID: {frameFType.Id}. Error: {e.Message}");
                 }
             }
-			ffpmDbContext.FrameFtypes.UpdateRange(frameFtypes);
-			ffpmDbContext.SaveChanges();
-			frameFtypes = ffpmDbContext.FrameFtypes.ToList();
-		}
+
+            // Update and save changes
+            ffpmDbContext.FrameFtypes.UpdateRange(frameFtypes);
+            ffpmDbContext.SaveChanges();
+            frameFtypes = ffpmDbContext.FrameFtypes.ToList();
+        }
 
         public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
 			List<ModelsA.Inventory> frameInventories, List<ModelsD.Frame> invFrames, List<ModelsA.Frame> frames) {
@@ -9598,7 +9529,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = frameLensColors.FirstOrDefault(x => x.ColorCode == colorCode);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newFrameLensColor = new Brady_s_Conversion_Program.ModelsA.FrameDblensColor {
 						    ColorCode = TruncateString(colorCode, 50),
 						    ColorDescription = TruncateString(colorDescription, 150),
@@ -9647,7 +9578,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = frameMaterials.FirstOrDefault(x => x.MaterialName == materialName);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newFrameMaterial = new Brady_s_Conversion_Program.ModelsA.FrameMaterial {
 						    MaterialName = TruncateString(materialName, 50),
 						    MaterialDescription = TruncateString(frameMaterial.MaterialDescription, 250),
@@ -9697,7 +9628,7 @@ namespace Brady_s_Conversion_Program {
 
                     var invList = frameMounts.FirstOrDefault(x => x.FrameMount1 == frameMount1);
 
-                    if (invList != null) {
+                    if (invList == null) {
 					    var newFrameMount = new Brady_s_Conversion_Program.ModelsA.FrameMount {
 						    FrameMount1 = TruncateString(frameMount1, 50),
 						    MountDescription = TruncateString(frameMount.MountDescription, 250),
@@ -10142,13 +10073,8 @@ namespace Brady_s_Conversion_Program {
                         LastUpdated = lastUpdated
                     };
 
-                    bool duplicate = false;
-                    foreach (var f in frames) {
-                        if (f.Fpc == newFrame.Fpc) {
-                            duplicate = true;
-                            break;
-                        }
-                    }
+                    bool duplicate = frames.Any(f => f.Equals(newFrame));
+
 
                     if (!duplicate) {
                         frames.Add(newFrame);
