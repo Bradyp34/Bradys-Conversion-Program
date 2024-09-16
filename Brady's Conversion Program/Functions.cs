@@ -175,7 +175,7 @@ namespace Brady_s_Conversion_Program {
 
                         // SQL query to fetch OldInsCompanyId and InsCode, without hardcoding the database name
                         string query = @"
-                        SELECT  
+                        SELECT
                             i.InsCode,
                             i.NavCode
                         FROM [dbo].[Insurance_Xref] i  -- Use just the schema and table name";
@@ -593,7 +593,7 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     // Xref Lookups
-                    short? licenseShort = stateXrefs.FirstOrDefault(s => s.StateCode == patient.LicenseState)?.StateId;
+                    short? licenseShort = stateXrefs.FirstOrDefault(s => s.StateCode == patient.LicenseState || s.State == patient.LicenseState)?.StateId;
                     DateTime dob = minAcceptableDate;
                     if (!string.IsNullOrEmpty(patient.Dob)) {
                         string dobString = CleanUpDateString(patient.Dob.Trim());
@@ -999,7 +999,7 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     int stateId = -1;
-                    var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState);
+                    var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState || s.State == insurance.InsCompanyState);
                     if (stateXref != null) {
                         stateId = stateXref.StateId;
                     }
@@ -1051,8 +1051,7 @@ namespace Brady_s_Conversion_Program {
                     if (insurance.InsCompanyName != null) {
                         companyName = insurance.InsCompanyName;
                     }
-                    string? code = insurance.InsuranceCompanyCode;
-/*                  re- instate before implementing, this is the code for the insurance company code
+
                     string? code = "";
                     if (insurance.InsuranceCompanyCode != null && insurance.InsuranceCompanyCode != "") {
                         code = insuranceCodes.GetValueOrDefault(insurance.InsuranceCompanyCode);
@@ -1065,7 +1064,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"FFPM: FFPM Insurance company code not found (null or empty) for insurance with ID: {insurance.Id}");
                         continue;
                     }
-*/
+
                     int companyId = -1;
                     if (insurance.OldInsCompanyId != null) {
                         if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
@@ -1467,7 +1466,7 @@ namespace Brady_s_Conversion_Program {
 
                 try {
                     short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId;
-                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State)?.StateId;
+                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId;
                     short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId;
 
                     string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : null;
@@ -1540,7 +1539,7 @@ namespace Brady_s_Conversion_Program {
 
                 try {
                     short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId;
-                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State)?.StateId;
+                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId;
                     short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId;
 
                     string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : null;
@@ -1932,10 +1931,9 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Insurance company code not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insCompanyCode);
-/*                  Re-enable this before implementation
+
                     var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insuranceCodes.GetValueOrDefault(insCompanyCode));
-*/
+
                     if (patientInsuranceCompany == null) {
                         logger.Log($"Conv: FFPM Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
@@ -10254,7 +10252,7 @@ namespace Brady_s_Conversion_Program {
                     short? stateId = null;
                     short? countryId = null;
                     if (address.State != null) {
-                        var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == address.State);
+                        var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State);
                         if (stateXref != null) {
                             stateId = stateXref.StateId;
                             countryId = (short?)stateXref.CountryId;
