@@ -164,6 +164,7 @@ namespace Brady_s_Conversion_Program {
             EyeMDString = EyeMDConnection;
             try {
 				ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
+                ILogger report = new FileLogger("LogFiles/report.txt"); // Report file path
 
 
                 int totalEntries = 0;
@@ -237,7 +238,7 @@ namespace Brady_s_Conversion_Program {
                             });
 
 
-                            ConvertFFPM(convDbContext, ffpmDbContext, logger, progress, resultsBox);
+                            ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox);
 
                             // Save changes to databases
                             ffpmDbContext.SaveChanges();
@@ -295,7 +296,7 @@ namespace Brady_s_Conversion_Program {
 
 
                             eyeMDDbContext.Database.OpenConnection();
-                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, progress, resultsBox); // convert eyemd data
+                            ConvertEyeMD(eHRDbContext, eyeMDDbContext, logger, report, progress, resultsBox); // convert eyemd data
                             eyeMDDbContext.SaveChanges();
                         }
                     }
@@ -343,7 +344,7 @@ namespace Brady_s_Conversion_Program {
 
 
                             ffpmDbContext.Database.OpenConnection();
-                            ConvertInv(invDbContext, ffpmDbContext, logger, progress, resultsBox); // convert inv data
+                            ConvertInv(invDbContext, ffpmDbContext, logger, report, progress, resultsBox); // convert inv data
                             ffpmDbContext.SaveChanges();
                         }
                     }
@@ -360,7 +361,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         #region FFPMConversion
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, RichTextBox resultsBox) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -413,7 +414,7 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, progress, locations);
+            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -421,7 +422,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
+            PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
                 raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
 
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
@@ -430,7 +431,7 @@ namespace Brady_s_Conversion_Program {
             });
 
             // moved the foreach loops into the functions
-            ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, progress, appointmentTypes);
+            ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -438,7 +439,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
+            ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -446,7 +447,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, progress, insurances, stateXrefs);
+            ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, report, progress, insurances, stateXrefs);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -454,7 +455,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, ffpmProviders);
+            ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -462,7 +463,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
+            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, report, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -470,7 +471,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
+            ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -478,7 +479,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientDocuments);
+            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -486,7 +487,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, insurances, patientInsurances,
+            ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, insurances, patientInsurances,
                 convInsurances);
 
 
@@ -495,7 +496,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPatientNote(convPatientNotes, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, patientNotes);
+            ConvertPatientNote(convPatientNotes, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientNotes);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -503,7 +504,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, progress, convPatientInsurances, convPatients, ffpmPatients,
+            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, report, progress, convPatientInsurances, convPatients, ffpmPatients,
                 patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs);
 
 
@@ -512,7 +513,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, progress, schedulingAppointmentTypes);
+            ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -520,7 +521,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
+            ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -528,7 +529,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
+            ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -536,7 +537,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, progress, schedulingCodes);
+            ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -544,7 +545,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients,
+            ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, report, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients,
                 referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations, locations, convReferrals);
 
 
@@ -553,7 +554,7 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPhone(phones, convDbContext, ffpmDbContext, logger, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convGuarantors, guarantors, convProviders,
+            ConvertPhone(phones, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convGuarantors, guarantors, convProviders,
                 ffpmProviders, otherAddresses, convReferrals, convLocations, locations);
 
 
@@ -562,7 +563,7 @@ namespace Brady_s_Conversion_Program {
             });
         }
 
-        public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
                 List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
                     List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
@@ -712,7 +713,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-           ILogger logger, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
+           ILogger logger, ILogger report, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
             foreach (var appointmentType in convAppointmentTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -782,7 +783,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAppointment(List<Models.Appointment> convAppointments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes,
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes,
                 List<SchedulingAppointment> appointments) {
             foreach (var appointment in convAppointments) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -984,7 +985,7 @@ namespace Brady_s_Conversion_Program {
             appointments = ffpmDbContext.SchedulingAppointments.ToList();
         }
 
-        public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs) {
             foreach (var insurance in convInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1142,7 +1143,7 @@ namespace Brady_s_Conversion_Program {
             insuranceCompanies = ffpmDbContext.InsInsuranceCompanies.ToList();
         }
 
-        public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<BillingLocation> locations) {
             foreach (var location in convLocations) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1330,7 +1331,7 @@ namespace Brady_s_Conversion_Program {
             locations = ffpmDbContext.BillingLocations.ToList();
         }
 
-        public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients, List<Models.Patient> convPatients) {
             foreach (var guarantor in convGuarantors) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1437,7 +1438,7 @@ namespace Brady_s_Conversion_Program {
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
         }
 
-        public static void ConvertAddress(List<Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertAddress(List<Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
     List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
     List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
     List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
@@ -1749,7 +1750,7 @@ namespace Brady_s_Conversion_Program {
 
 
         public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs,
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs,
                 List<DmgPatientAlert> patientAlerts) {
             foreach (var patientAlert in convPatientAlerts) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1838,7 +1839,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<ImgPatientDocument> patientDocuments) {
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<ImgPatientDocument> patientDocuments) {
             foreach (var patientDocument in convPatientDocuments) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1900,7 +1901,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
                 List<DmgPatientInsurance> patientInsurances, List<Models.Insurance> convInsuranceCompanies) {
             foreach (var patientInsurance in convPatientInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2045,7 +2046,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes) {
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes) {
             foreach (var patientNote in convPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2118,7 +2119,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPolicyHolder(List<Models.PolicyHolder> policyHolders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Patient> convPatients,
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.PatientInsurance> convPatientInsurances, List<Models.Patient> convPatients,
                 List<DmgPatient> ffpmPatients, List<DmgPatientInsurance> ffpmPatientInsurances, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs,
                     List<MntRelationship> relationshipXrefs) {
             long subscriberId = 1;
@@ -2223,7 +2224,7 @@ namespace Brady_s_Conversion_Program {
         }
 
 
-        public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
             foreach (var provider in convProviders) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2483,7 +2484,7 @@ namespace Brady_s_Conversion_Program {
             ffpmProviders = ffpmDbContext.DmgProviders.ToList();
         }
 
-        public static void ConvertRecall(List<Models.Recall> convRecalls, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertRecall(List<Models.Recall> convRecalls, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations,
                 List<SchedulingPatientRecallList> patientRecallLists) {
             foreach (var recall in convRecalls) {
@@ -2566,7 +2567,7 @@ namespace Brady_s_Conversion_Program {
             patientRecallLists = ffpmDbContext.SchedulingPatientRecallLists.ToList();
         }
 
-        public static void ConvertRecallType(List<Models.RecallType> convRecallTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertRecallType(List<Models.RecallType> convRecallTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<SchedulingAppointmentType> schedulingAppointmentTypes) {
             foreach (var recallType in convRecallTypes) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2621,7 +2622,7 @@ namespace Brady_s_Conversion_Program {
             schedulingAppointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
         }
 
-        public static void ConvertReferral(List<Models.Referral> convReferrals, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertReferral(List<Models.Referral> convReferrals, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders) {
             foreach (var referral in convReferrals) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2919,7 +2920,7 @@ namespace Brady_s_Conversion_Program {
             referringProviders = ffpmDbContext.ReferringProviders.ToList();
         }
 
-        public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<SchedulingCode> schedulingCodes) {
             foreach (var schedCode in convSchedCodes) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2974,7 +2975,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         // IMPORTANT, THE OWNER TYPES IN OTHER ADDRESSES IS A SHORT, BUT I CANNOT FIND THE REFERENCE FOR SHORTS TO ACTUAL VALUE. WILL NEED TO CHANGE ACCORDINGLY.
-        public static void ConvertPhone(List<Models.Phone> phones, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void ConvertPhone(List<Models.Phone> phones, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientAddress> patientAddresses, List<Guarantor> convGuarantors, List<DmgGuarantor> guarantors,
                 List<Provider> convProviders, List<DmgProvider> providers, List<DmgOtherAddress> otherAddresses, List<Referral> convReferrals, List<Models.Location> convLocations,
                     List<BillingLocation> locations) {
@@ -3279,13 +3280,13 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
         }
 
-        public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress) {
+        public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress) {
             // currently not implementing renumbering
         }
         #endregion FFPMConversion
 
         #region EyeMDConversion
-        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertEyeMD(EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress, RichTextBox resultsBox) {
             if (eyeMDDbContext.Emrpatients.Count() == 0) {
                 logger.Log("EyeMD: EyeMD No patients found in the database.");
                 return;
@@ -3339,21 +3340,21 @@ namespace Brady_s_Conversion_Program {
 
 
             // not even using this
-            // PatientsConvert(ehrPatients, eHRDbContext, eyeMDDbContext, logger, progress);
+            // PatientsConvert(ehrPatients, eHRDbContext, eyeMDDbContext, logger, report, progress);
             
             //resultsBox.Invoke((MethodInvoker)delegate {
             //    resultsBox.AppendText("Patients converted.\n");
             //});
 
             
-            VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, progress, visits, eyeMDPatients);
+            VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, report, progress, visits, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visits converted.\n");
             });
 
             
-            VisitOrdersConvert(ehrVisitOrders, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients,
+            VisitOrdersConvert(ehrVisitOrders, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients,
                     eyeMDVisitOrders, visitOrders);
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -3361,21 +3362,21 @@ namespace Brady_s_Conversion_Program {
             });
 
             
-            VisitDoctorsConvert(ehrVisitDoctors, eHRDbContext, eyeMDDbContext, logger, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
+            VisitDoctorsConvert(ehrVisitDoctors, eHRDbContext, eyeMDDbContext, logger, report, progress, visitDoctors, ehrVisits, visits, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Visit doctors converted.\n");
             });
 
             
-            MedicalHistoriesConvert(ehrMedicalHistories, eHRDbContext, eyeMDDbContext, logger, progress, eyeMDPatients, medicalHistories, visits);
+            MedicalHistoriesConvert(ehrMedicalHistories, eHRDbContext, eyeMDDbContext, logger, report, progress, eyeMDPatients, medicalHistories, visits);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Medical histories converted.\n");
             });
 
             
-            AllergiesConvert(ehrAllergies, eHRDbContext, eyeMDDbContext, logger, progress, allergies, visits, eyeMDPatients);
+            AllergiesConvert(ehrAllergies, eHRDbContext, eyeMDDbContext, logger, report, progress, allergies, visits, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Allergies converted.\n");
@@ -3383,127 +3384,127 @@ namespace Brady_s_Conversion_Program {
 
             // only for in in case we need it, we shouldnt
             /*foreach (var appointments in eHRDbContext.Appointments) {
-                AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, progress);
+                AppointmentsConvert(appointments, eHRDbContext, eyeMDDbContext, logger, report, progress);
             }
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Appointments converted.\n");
             });*/
 
 
-            ContactLensesConvert(ehrContactLenses, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
+            ContactLensesConvert(ehrContactLenses, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, contactLenses);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Contact lenses converted.\n");
             });
 
 
-            DiagCodePoolsConvert(ehrDiagCodePools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
+            DiagCodePoolsConvert(ehrDiagCodePools, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, diagCodePools);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag code pools converted.\n");
             });
 
             
-            DiagTestsConvert(ehrDiagTests, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, diagTests);
+            DiagTestsConvert(ehrDiagTests, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, diagTests);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Diag tests converted.\n");
             });
 
             
-            ExamConditionsConvert(ehrExamConditions, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, examConditions);
+            ExamConditionsConvert(ehrExamConditions, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, examConditions);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Exam conditions converted.\n");
             });
 
 
-            FamilyHistoriesConvert(ehrFamilyHistories, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, familyHistories);
+            FamilyHistoriesConvert(ehrFamilyHistories, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, familyHistories);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Family histories converted.\n");
             });
 
-            IopsConvert(ehrIops, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, iops);
+            IopsConvert(ehrIops, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, iops);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("IOPs converted.\n");
             });
 
             
-           /* PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, progress);
+           /* PatientDocumentsConvert(patientDocument, eHRDbContext, eyeMDDbContext, logger, report, progress);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient documents converted.\n");
             });*/
 
             
-            PatientNotesConvert(ehrPatientNotes, eHRDbContext, eyeMDDbContext, logger, progress, patientNotes, ehrVisits, visits, eyeMDPatients);
+            PatientNotesConvert(ehrPatientNotes, eHRDbContext, eyeMDDbContext, logger, report, progress, patientNotes, ehrVisits, visits, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Patient notes converted.\n");
             });
             
-            PlanNarrativesConvert(ehrPlanNarratives, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, planNarratives);
+            PlanNarrativesConvert(ehrPlanNarratives, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, planNarratives);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Plan narratives converted.\n");
             });
 
-            ProcDiagPoolsConvert(ehrProcDiagPools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procDiagPools, eyeMDPatients);
+            ProcDiagPoolsConvert(ehrProcDiagPools, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, procDiagPools, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc diag pools converted.\n");
             });
 
-            ProcPoolsConvert(ehrProcPools, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, procCodePools, eyeMDPatients);
+            ProcPoolsConvert(ehrProcPools, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, procCodePools, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Proc pools converted.\n");
             });
 
-            RefractionsConvert(ehrRefractions, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, refractions);
+            RefractionsConvert(ehrRefractions, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, refractions);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Refractions converted.\n");
             });
 
-            RosConvert(ehrRos, eHRDbContext, eyeMDDbContext, logger, progress, ross);
+            RosConvert(ehrRos, eHRDbContext, eyeMDDbContext, logger, report, progress, ross);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("ROS converted.\n");
             });
 
 
-            RxConvert(ehrRxs, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
+            RxConvert(ehrRxs, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, rxMedications, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Rx medications converted.\n");
             });
 
 
-            SurgHistoriesConvert(ehrSurgHistories, eHRDbContext, eyeMDDbContext, logger, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
+            SurgHistoriesConvert(ehrSurgHistories, eHRDbContext, eyeMDDbContext, logger, report, progress, visits, surgicalHistories, eyeMDPatients, ehrVisits);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Surg histories converted.\n");
             });
 
 
-            TechsConvert(ehrTechs, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, techs);
+            TechsConvert(ehrTechs, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, techs);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Techs converted.\n");
             });
             
 
-            Tech2sConvert(ehrTech2s, eHRDbContext, eyeMDDbContext, logger, progress, ehrVisits, visits, eyeMDPatients, tech2s);
+            Tech2sConvert(ehrTech2s, eHRDbContext, eyeMDDbContext, logger, report, progress, ehrVisits, visits, eyeMDPatients, tech2s);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Tech2s converted.\n");
             });
         }
 /*
-        public static void PatientsConvert(List<ModelsC.Patient> ehrPatients, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void PatientsConvert(List<ModelsC.Patient> ehrPatients, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress) {
             foreach (var ehrPatient in ehrPatients) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3518,7 +3519,7 @@ namespace Brady_s_Conversion_Program {
             }
         }*/
 
-        public static void AllergiesConvert(List<ModelsC.Allergy> ehrAllergies, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void AllergiesConvert(List<ModelsC.Allergy> ehrAllergies, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             foreach (var allergy in ehrAllergies) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -3602,7 +3603,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void MedicalHistoriesConvert(List<ModelsC.MedicalHistory> ehrMedicalHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
-            ProgressBar progress, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, List<ModelsB.Emrvisit> visits) {
+            ILogger report, ProgressBar progress, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, List<ModelsB.Emrvisit> visits) {
             foreach (var medicalHistory in ehrMedicalHistories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3866,7 +3867,7 @@ namespace Brady_s_Conversion_Program {
             medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
         }
 
-        public static void VisitsConvert(List<Visit> ehrVisits, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
+        public static void VisitsConvert(List<Visit> ehrVisits, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report,
             ProgressBar progress, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             foreach (var visit in ehrVisits) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -4191,7 +4192,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void VisitOrdersConvert(List<ModelsC.VisitOrder> ehrVisitOrders, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext,
-            ILogger logger, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
+            ILogger logger, ILogger report, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
                 List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders) {
             foreach (var visitOrder in ehrVisitOrders) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -4405,7 +4406,7 @@ namespace Brady_s_Conversion_Program {
             eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
         }
 
-        public static void VisitDoctorsConvert(List<ModelsC.VisitDoctor> ehrVisitDoctors, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void VisitDoctorsConvert(List<ModelsC.VisitDoctor> ehrVisitDoctors, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             foreach (var visitDoctor in ehrVisitDoctors) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -4645,7 +4646,7 @@ namespace Brady_s_Conversion_Program {
             visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
         }
 
-        public static void AppointmentsConvert(ModelsC.Appointment appointment, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void AppointmentsConvert(ModelsC.Appointment appointment, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -4657,7 +4658,7 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void ContactLensesConvert(List<ModelsC.ContactLen> ehrContactLenses, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ContactLensesConvert(List<ModelsC.ContactLen> ehrContactLenses, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses) {
             foreach (var contactLens in ehrContactLenses) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -5343,7 +5344,7 @@ namespace Brady_s_Conversion_Program {
             contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
         }
 
-        public static void DiagCodePoolsConvert(List<ModelsC.DiagCodePool> ehrDiagCodePools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void DiagCodePoolsConvert(List<ModelsC.DiagCodePool> ehrDiagCodePools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagCodePool> diagCodePools) {
             foreach (var diagCodePool in ehrDiagCodePools) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -5569,7 +5570,7 @@ namespace Brady_s_Conversion_Program {
             diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
         }
 
-        public static void DiagTestsConvert(List<ModelsC.DiagTest> ehrDiagTests, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void DiagTestsConvert(List<ModelsC.DiagTest> ehrDiagTests, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
             foreach (var diagTest in ehrDiagTests) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -5814,7 +5815,7 @@ namespace Brady_s_Conversion_Program {
             diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
         }
 
-        public static void ExamConditionsConvert(List<ModelsC.ExamCondition> ehrExamConditions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ExamConditionsConvert(List<ModelsC.ExamCondition> ehrExamConditions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitExamCondition> examConditions) {
             foreach (var examCondition in ehrExamConditions) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -5890,7 +5891,7 @@ namespace Brady_s_Conversion_Program {
             examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
         }
 
-        public static void FamilyHistoriesConvert(List<ModelsC.FamilyHistory> ehrFamilyHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void FamilyHistoriesConvert(List<ModelsC.FamilyHistory> ehrFamilyHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitFamilyHistory> familyHistories) {
             foreach (var familyHistory in ehrFamilyHistories) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -5978,7 +5979,7 @@ namespace Brady_s_Conversion_Program {
             familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
         }
 
-        public static void IopsConvert(List<ModelsC.Iop> ehrIops, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void IopsConvert(List<ModelsC.Iop> ehrIops, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitIop> iops) {
             eyeMDPatients = eyeMDDbContext.Emrpatients.ToList();
             visits = eyeMDDbContext.Emrvisits.ToList();
@@ -6081,7 +6082,7 @@ namespace Brady_s_Conversion_Program {
             iops = eyeMDDbContext.EmrvisitIops.ToList();
         }
 
-        public static void PatientDocumentsConvert(ModelsC.PatientDocument patientDocument, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress) {
+        public static void PatientDocumentsConvert(ModelsC.PatientDocument patientDocument, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress) {
             progress.Invoke((MethodInvoker)delegate {
                 progress.PerformStep();
             });
@@ -6100,7 +6101,7 @@ namespace Brady_s_Conversion_Program {
             }
         }
 
-        public static void PatientNotesConvert(List<ModelsC.PatientNote> ehrPatientNotes, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void PatientNotesConvert(List<ModelsC.PatientNote> ehrPatientNotes, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrptNote> patientNotes, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
             foreach (var patientNote in ehrPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6166,7 +6167,7 @@ namespace Brady_s_Conversion_Program {
             patientNotes = eyeMDDbContext.EmrptNotes.ToList();
         }
 
-        public static void PlanNarrativesConvert(List<ModelsC.PlanNarrative> ehrPlanNarratives, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void PlanNarrativesConvert(List<ModelsC.PlanNarrative> ehrPlanNarratives, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitPlanNarrative> planNarratives) {
             foreach (var planNarrative in ehrPlanNarratives) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6269,7 +6270,7 @@ namespace Brady_s_Conversion_Program {
             planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
         }
 
-        public static void ProcDiagPoolsConvert(List<ModelsC.ProcDiagPool> ehrProcDiagPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ProcDiagPoolsConvert(List<ModelsC.ProcDiagPool> ehrProcDiagPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePoolDiag> procDiagPools, List<Emrpatient> eyeMDPatients) {
             foreach (var procDiagPool in ehrProcDiagPools) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6344,7 +6345,7 @@ namespace Brady_s_Conversion_Program {
             procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
         }
 
-        public static void ProcPoolsConvert(List<ModelsC.ProcPool> ehrProcPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void ProcPoolsConvert(List<ModelsC.ProcPool> ehrProcPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePool> procCodePools, List<Emrpatient> eyeMDPatients) {
             foreach (var procPool in ehrProcPools) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6586,7 +6587,7 @@ namespace Brady_s_Conversion_Program {
             procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
         }
 
-        public static void RefractionsConvert(List<ModelsC.Refraction> ehrRefractions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void RefractionsConvert(List<ModelsC.Refraction> ehrRefractions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitRefraction> refractions) {
             foreach (var refraction in ehrRefractions) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6803,7 +6804,7 @@ namespace Brady_s_Conversion_Program {
             refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
         }
 
-        public static void RosConvert(List<ModelsC.Ro> ehrRos, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void RosConvert(List<ModelsC.Ro> ehrRos, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Emrrosdefault> ross) {
             foreach (var ros in ehrRos) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -6893,7 +6894,7 @@ namespace Brady_s_Conversion_Program {
             ross = eyeMDDbContext.Emrrosdefaults.ToList();
         }
 
-        public static void RxConvert(List<ModelsC.RxMedication> ehrRxs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void RxConvert(List<ModelsC.RxMedication> ehrRxs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitRxMedication> rxMedications, List<Emrpatient> eyeMDPatients) {
             foreach (var rx in ehrRxs) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -7232,7 +7233,7 @@ namespace Brady_s_Conversion_Program {
             rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
         }
 
-        public static void SurgHistoriesConvert(List<ModelsC.SurgHistory> ehrSurgHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void SurgHistoriesConvert(List<ModelsC.SurgHistory> ehrSurgHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Emrvisit> visits, List<EmrvisitSurgicalHistory> surgicalHistories, List<Emrpatient> eyeMDPatients, List<Visit> ehrVisits) {
             foreach (var surgHistory in ehrSurgHistories) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -7467,7 +7468,7 @@ namespace Brady_s_Conversion_Program {
             surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
         }
 
-        public static void TechsConvert(List<ModelsC.Tech> ehrTechs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void TechsConvert(List<ModelsC.Tech> ehrTechs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech> techs) {
             foreach (var tech in ehrTechs) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -7830,7 +7831,7 @@ namespace Brady_s_Conversion_Program {
             techs = eyeMDDbContext.EmrvisitTeches.ToList();
         }
 
-        public static void Tech2sConvert(List<ModelsC.Tech2> ehrTech2s, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ProgressBar progress,
+        public static void Tech2sConvert(List<ModelsC.Tech2> ehrTech2s, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech2> tech2s) {
             foreach (var tech2 in ehrTech2s) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8014,7 +8015,7 @@ namespace Brady_s_Conversion_Program {
         #endregion EyeMDConversion
 
         #region InvConversion
-        public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertInv(InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, RichTextBox resultsBox) {
             var clnsBrands = ffpmDbContext.ClnsBrands.ToList();
             var clLenses = ffpmDbContext.ClnsContactLens.ToList();
             var clInventories = ffpmDbContext.ClnsInventories.ToList();
@@ -8069,152 +8070,152 @@ namespace Brady_s_Conversion_Program {
 
 
 
-            CLBrandsConvert(invClBrands, invDbContext, ffpmDbContext, logger, progress, clnsBrands);
+            CLBrandsConvert(invClBrands, invDbContext, ffpmDbContext, logger, report, progress, clnsBrands);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Brands converted\n");
             });
 
-            CLLensesConvert(invClLenses, invDbContext, ffpmDbContext, logger, progress, clLenses);
+            CLLensesConvert(invClLenses, invDbContext, ffpmDbContext, logger, report, progress, clLenses);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Lenses converted\n");
             });
 
-            clInventoryConvert(invClInventories, invDbContext, ffpmDbContext, logger, progress, clInventories);
+            clInventoryConvert(invClInventories, invDbContext, ffpmDbContext, logger, report, progress, clInventories);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CL Inventory converted\n");
             });
 
-            CPTDeptConvert(invCptDepts, invDbContext, ffpmDbContext, logger, progress, cptDepts);
+            CPTDeptConvert(invCptDepts, invDbContext, ffpmDbContext, logger, report, progress, cptDepts);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Depts converted\n");
             });
 
-            CPTMappingConvert(invCptMappings, invDbContext, ffpmDbContext, logger, progress, cptMappings);
+            CPTMappingConvert(invCptMappings, invDbContext, ffpmDbContext, logger, report, progress, cptMappings);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPT Mappings converted\n");
             });
 
-            CPTConvert(invCpts, invDbContext, ffpmDbContext, logger, progress, cpts);
+            CPTConvert(invCpts, invDbContext, ffpmDbContext, logger, report, progress, cpts);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("CPTs converted\n");
             });
 
-            FrameCategoryConvert(invFrameCategories, invDbContext, ffpmDbContext, logger, progress, frameCategories);
+            FrameCategoryConvert(invFrameCategories, invDbContext, ffpmDbContext, logger, report, progress, frameCategories);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Categories converted\n");
             });
 
-            FrameCollectionConvert(invFrameCollections, invDbContext, ffpmDbContext, logger, progress, frameCollections);
+            FrameCollectionConvert(invFrameCollections, invDbContext, ffpmDbContext, logger, report, progress, frameCollections);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Collections converted\n");
             });
 
-            FrameColorConvert(invFrameColors, invDbContext, ffpmDbContext, logger, progress, frameColors);
+            FrameColorConvert(invFrameColors, invDbContext, ffpmDbContext, logger, report, progress, frameColors);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Colors converted\n");
             });
 
-            FrameShapeConvert(invFrameShapes, invDbContext, ffpmDbContext, logger, progress, frameShapes);
+            FrameShapeConvert(invFrameShapes, invDbContext, ffpmDbContext, logger, report, progress, frameShapes);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Shapes converted\n");
             });
 
-            FrameStatusConvert(invFrameStatuses, invDbContext, ffpmDbContext, logger, progress, frameStatuses);
+            FrameStatusConvert(invFrameStatuses, invDbContext, ffpmDbContext, logger, report, progress, frameStatuses);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Statuses converted\n");
             });
 
-            FrameTempleConvert(invFrameTemples, invDbContext, ffpmDbContext, logger, progress, frameTemples);
+            FrameTempleConvert(invFrameTemples, invDbContext, ffpmDbContext, logger, report, progress, frameTemples);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Temples converted\n");
             });
 
-            FrameETypeConvert(invFrameEtypes, invDbContext, ffpmDbContext, logger, progress, frameEtypes);
+            FrameETypeConvert(invFrameEtypes, invDbContext, ffpmDbContext, logger, report, progress, frameEtypes);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame ETypes converted\n");
             });
 
-            FrameFTypeConvert(invFrameFtypes, invDbContext, ffpmDbContext, logger, progress, frameFtypes);
+            FrameFTypeConvert(invFrameFtypes, invDbContext, ffpmDbContext, logger, report, progress, frameFtypes);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame FTypes converted\n");
             });
 
-            FrameLensColorConvert(invFrameLensColors, invDbContext, ffpmDbContext, logger, progress, frameLensColors);
+            FrameLensColorConvert(invFrameLensColors, invDbContext, ffpmDbContext, logger, report, progress, frameLensColors);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Lens Colors converted\n");
             });
 
-            FrameMaterialConvert(invFrameMaterials, invDbContext, ffpmDbContext, logger, progress, frameMaterials);
+            FrameMaterialConvert(invFrameMaterials, invDbContext, ffpmDbContext, logger, report, progress, frameMaterials);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Materials converted\n");
             });
 
-            FrameOrderConvert(invFrameOrders, invDbContext, ffpmDbContext, logger, progress, frameOrders);
+            FrameOrderConvert(invFrameOrders, invDbContext, ffpmDbContext, logger, report, progress, frameOrders);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Orders converted\n");
             });
 
-            FrameConvert(invFrames, invDbContext, ffpmDbContext, logger, progress, frames);
+            FrameConvert(invFrames, invDbContext, ffpmDbContext, logger, report, progress, frames);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frames converted\n");
             });
 
-            FrameVendorConvert(invFrameVendors, invDbContext, ffpmDbContext, logger, progress, vendors, otherAddresses, locations);
+            FrameVendorConvert(invFrameVendors, invDbContext, ffpmDbContext, logger, report, progress, vendors, otherAddresses, locations);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Vendors converted\n");
             });
 
-            FrameManufacturerConvert(invFrameManufacturers, invDbContext, ffpmDbContext, logger, progress, frameManufacturers);
+            FrameManufacturerConvert(invFrameManufacturers, invDbContext, ffpmDbContext, logger, report, progress, frameManufacturers);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Manufacturers converted\n");
             });
 
-            FrameBrandConvert(invFrameBrands, invDbContext, ffpmDbContext, logger, progress, frameBrands, locations);
+            FrameBrandConvert(invFrameBrands, invDbContext, ffpmDbContext, logger, report, progress, frameBrands, locations);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Brands converted\n");
             });
 
-            FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, progress, frameInventories, invFrames, frames);
+            FrameInventoryConvert(invFrameInventories, invDbContext, ffpmDbContext, logger, report, progress, frameInventories, invFrames, frames);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Frame Inventories converted\n");
             });
 
-            AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, progress, otherAddresses, vendors, stateXrefs);
+            AddressConvert(invAddresses, invDbContext, ffpmDbContext, logger, report, progress, otherAddresses, vendors, stateXrefs);
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Addresses converted\n");
             });
 
-            PhoneConvert(invPhones, invDbContext, ffpmDbContext, logger, progress, otherAddresses);
+            PhoneConvert(invPhones, invDbContext, ffpmDbContext, logger, report, progress, otherAddresses);
             
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.AppendText("Phones converted\n");
             });
         }
 
-        public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsBrand> clnsBrands) {
             foreach (var clBrand in invClBrands) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8271,7 +8272,7 @@ namespace Brady_s_Conversion_Program {
 			clnsBrands = ffpmDbContext.ClnsBrands.ToList();
 		}
 
-        public static void clInventoryConvert(List<Clinventory> invClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void clInventoryConvert(List<Clinventory> invClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsInventory> clnsInventories) {
             foreach (var clInventory in invClInventories) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8406,7 +8407,7 @@ namespace Brady_s_Conversion_Program {
 			clnsInventories = ffpmDbContext.ClnsInventories.ToList();
 		}
 
-        public static void CLLensesConvert(List<Cllense> invClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CLLensesConvert(List<Cllense> invClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsContactLen> clLenses) {
             foreach (var clLense in invClLenses) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8540,7 +8541,7 @@ namespace Brady_s_Conversion_Program {
             clLenses = ffpmDbContext.ClnsContactLens.ToList();
 		}
 
-        public static void CPTDeptConvert(List<Cptdept> invCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTDeptConvert(List<Cptdept> invCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.CptDepartment> cptDepartments) {
             foreach (var cptDept in invCptDepts) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8592,7 +8593,7 @@ namespace Brady_s_Conversion_Program {
             cptDepartments = ffpmDbContext.CptDepartments.ToList();
         }
 
-        public static void CPTMappingConvert(List<Cptmapping> invCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTMappingConvert(List<Cptmapping> invCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.CptGroupMapping> cptMappings) {
             foreach (var cptMapping in invCptMappings) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -8646,7 +8647,7 @@ namespace Brady_s_Conversion_Program {
 			cptMappings = ffpmDbContext.CptGroupMappings.ToList();
 		}
 
-        public static void CPTConvert(List<Cpt> invCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void CPTConvert(List<Cpt> invCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.Cptid> cptIds) {
             foreach (var cpt in invCpts) {
 				progress.Invoke((MethodInvoker)delegate {
@@ -8782,7 +8783,7 @@ namespace Brady_s_Conversion_Program {
 			cptIds = ffpmDbContext.Cptids.ToList();
 		}
 
-        public static void FrameCategoryConvert(List<ModelsD.FrameCategory> invFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameCategoryConvert(List<ModelsD.FrameCategory> invFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameCategory> frameCategories) {
 
             foreach (var frameCategory in invFrameCategories) {
@@ -8822,7 +8823,7 @@ namespace Brady_s_Conversion_Program {
             frameCategories = ffpmDbContext.FrameCategories.ToList();
         }
 
-        public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameCollection> frameCollections) {
 
             foreach (var frameCollection in invFrameCollections) {
@@ -8858,7 +8859,7 @@ namespace Brady_s_Conversion_Program {
             frameCollections = ffpmDbContext.FrameCollections.ToList();
         }
 
-        public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameColor> frameColors) {
 
             foreach (var frameColor in invFrameColors) {
@@ -8894,7 +8895,7 @@ namespace Brady_s_Conversion_Program {
             frameColors = ffpmDbContext.FrameColors.ToList();
         }
 
-        public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameShape> frameShapes) {
 
             foreach (var frameShape in invFrameShapes) {
@@ -8933,7 +8934,7 @@ namespace Brady_s_Conversion_Program {
             frameShapes = ffpmDbContext.FrameShapes.ToList();
         }
 
-        public static void FrameStatusConvert(List<ModelsD.FrameStatus> invFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameStatusConvert(List<ModelsD.FrameStatus> invFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
     List<ModelsA.FrameStatus> frameStatuses) {
 
             foreach (var frameStatus in invFrameStatuses) {
@@ -8965,7 +8966,7 @@ namespace Brady_s_Conversion_Program {
             frameStatuses = ffpmDbContext.FrameStatuses.ToList();
         }
 
-        public static void FrameTempleConvert(List<ModelsD.FrameTemple> invFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameTempleConvert(List<ModelsD.FrameTemple> invFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameTempleStyle> frameTemples) {
 
             foreach (var frameTemple in invFrameTemples) {
@@ -8997,7 +8998,7 @@ namespace Brady_s_Conversion_Program {
             frameTemples = ffpmDbContext.FrameTempleStyles.ToList();
         }
 
-        public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameEtype> frameEtypes) {
 
             foreach (var frameEType in invFrameETypes) {
@@ -9029,7 +9030,7 @@ namespace Brady_s_Conversion_Program {
             frameEtypes = ffpmDbContext.FrameEtypes.ToList();
         }
 
-        public static void FrameFTypeConvert(List<ModelsD.FrameFtype> invFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameFTypeConvert(List<ModelsD.FrameFtype> invFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameFtype> frameFtypes) {
 
             foreach (var frameFType in invFrameFTypes) {
@@ -9060,7 +9061,7 @@ namespace Brady_s_Conversion_Program {
             frameFtypes = ffpmDbContext.FrameFtypes.ToList();
         }
 
-        public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.Inventory> frameInventories, List<ModelsD.Frame> invFrames, List<ModelsA.Frame> frames) {
             foreach (var frameInventory in invFrameInventories) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -9497,7 +9498,7 @@ namespace Brady_s_Conversion_Program {
 			frameInventories = ffpmDbContext.Inventories.ToList();
 		}
 
-        public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> invFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> invFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameDblensColor> frameLensColors) {
             foreach (var frameLensColor in invFrameLensColors) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -9546,7 +9547,7 @@ namespace Brady_s_Conversion_Program {
 			frameLensColors = ffpmDbContext.FrameDblensColors.ToList();
 		}
 
-        public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> invFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> invFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameMaterial> frameMaterials) {
             foreach (var frameMaterial in invFrameMaterials) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -9596,7 +9597,7 @@ namespace Brady_s_Conversion_Program {
 			frameMaterials = ffpmDbContext.FrameMaterials.ToList();
 		}
 
-        public static void FrameMountConvert(List<ModelsD.FrameMount> invFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameMountConvert(List<ModelsD.FrameMount> invFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameMount> frameMounts) {
             foreach (var frameMount in invFrameMounts) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -9646,7 +9647,7 @@ namespace Brady_s_Conversion_Program {
             frameMounts = ffpmDbContext.FrameMounts.ToList();
 		}
 
-        public static void FrameOrderConvert(List<ModelsD.FrameOrder> invFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameOrderConvert(List<ModelsD.FrameOrder> invFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameOrderInfo> frameOrders) {
             foreach (var frameOrder in invFrameOrders) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -9806,7 +9807,7 @@ namespace Brady_s_Conversion_Program {
 			frameOrders = ffpmDbContext.FrameOrderInfos.ToList();
 		}
 
-        public static void FrameConvert(List<ModelsD.Frame> invFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameConvert(List<ModelsD.Frame> invFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.Frame> frames) {
             foreach (var frame in invFrames) {
 				progress.Invoke((MethodInvoker)delegate {
@@ -10087,7 +10088,7 @@ namespace Brady_s_Conversion_Program {
 			frames = ffpmDbContext.Frames.ToList();
 		}
 
-        public static void FrameVendorConvert(List<ModelsD.FrameVendor> invFrameVendors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void FrameVendorConvert(List<ModelsD.FrameVendor> invFrameVendors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List <ModelsA.Vendor> vendors, List<DmgOtherAddress> otherAddresses, List<BillingLocation> locations) {
             foreach (var vendor in invFrameVendors) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -10142,7 +10143,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void FrameManufacturerConvert(List<ModelsD.FrameManufacturer> invFrameManufacturers, InvDbContext invDbContext, FfpmContext ffpmDbContext, 
-            ILogger logger, ProgressBar progress, List<Manufacturer> frameManufacturers) {
+            ILogger logger, ILogger report, ProgressBar progress, List<Manufacturer> frameManufacturers) {
             foreach (var frameManufacturer in invFrameManufacturers) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10195,7 +10196,7 @@ namespace Brady_s_Conversion_Program {
             frameManufacturers = ffpmDbContext.Manufacturers.ToList();
         }
 
-        public static void FrameBrandConvert(List<ModelsD.FrameBrand> invFrameBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, 
+        public static void FrameBrandConvert(List<ModelsD.FrameBrand> invFrameBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, 
             ProgressBar progress, List<Brand> frameBrands, List<BillingLocation> locations) {
             foreach (var frameBrand in invFrameBrands) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -10234,7 +10235,7 @@ namespace Brady_s_Conversion_Program {
             frameBrands = ffpmDbContext.Brands.ToList();
         }
 
-        public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<DmgOtherAddress> otherAddresses, List<Vendor> vendors, List<MntState> stateXrefs) {
             foreach (var address in invAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -10296,7 +10297,7 @@ namespace Brady_s_Conversion_Program {
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
         }
 
-        public static void PhoneConvert(List<ModelsD.Phone> invPhones, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ProgressBar progress,
+        public static void PhoneConvert(List<ModelsD.Phone> invPhones, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<DmgOtherAddress> otherAddresses) {
             foreach (var phone in invPhones) {
                 progress.Invoke((MethodInvoker)delegate {
