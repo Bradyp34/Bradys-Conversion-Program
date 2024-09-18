@@ -5454,7 +5454,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Contact Lenses: {added} Added.");
+            report.Log($"Contact Lenses: {added} added");
             eyeMDDbContext.EmrvisitContactLenses.AddRange(contactLenses);
             eyeMDDbContext.SaveChanges();
             contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
@@ -5682,7 +5682,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
                 }
             }
-            report.Log($"Diag Code Pools: {added} Added.");
+            report.Log($"Diag Code Pools: {added} added");
             eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
             eyeMDDbContext.SaveChanges();
             diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
@@ -5930,7 +5930,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Diag Tests: {added} Added.");
+            report.Log($"Diag Tests: {added} added");
             eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
             eyeMDDbContext.SaveChanges();
             diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
@@ -6009,7 +6009,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Exam Conditions: {added} Added.");
+            report.Log($"Exam Conditions: {added} added");
             eyeMDDbContext.EmrvisitExamConditions.UpdateRange(examConditions);
             eyeMDDbContext.SaveChanges();
             examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
@@ -6100,7 +6100,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Family Histories: {added} Added.");
+            report.Log($"Family Histories: {added} added");
             eyeMDDbContext.EmrvisitFamilyHistories.UpdateRange(familyHistories);
             eyeMDDbContext.SaveChanges();
             familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
@@ -6206,7 +6206,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Iops: {added} Added.");
+            report.Log($"Iops: {added} added");
             eyeMDDbContext.EmrvisitIops.UpdateRange(iops);
             eyeMDDbContext.SaveChanges();
             iops = eyeMDDbContext.EmrvisitIops.ToList();
@@ -6294,7 +6294,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Patient Notes: {added} Added.");
+            report.Log($"Patient Notes: {added} added");
             eyeMDDbContext.EmrptNotes.UpdateRange(patientNotes);
             eyeMDDbContext.SaveChanges();
             patientNotes = eyeMDDbContext.EmrptNotes.ToList();
@@ -6400,7 +6400,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Plan Narratives: {added} Added.");
+            report.Log($"Plan Narratives: {added} added");
             eyeMDDbContext.EmrvisitPlanNarratives.UpdateRange(planNarratives);
             eyeMDDbContext.SaveChanges();
             planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
@@ -6478,7 +6478,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Proc Diag Pools: {added} Added.");
+            report.Log($"Proc Diag Pools: {added} added");
             eyeMDDbContext.EmrvisitProcCodePoolDiags.UpdateRange(procDiagPools);
             eyeMDDbContext.SaveChanges();
             procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
@@ -6723,7 +6723,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Proc Pools: {added} Added.");
+            report.Log($"Proc Pools: {added} added");
             eyeMDDbContext.EmrvisitProcCodePools.UpdateRange(procCodePools);
             eyeMDDbContext.SaveChanges();
             procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
@@ -6943,7 +6943,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Refractions: {added} Added.");
+            report.Log($"Refractions: {added} added");
             eyeMDDbContext.EmrvisitRefractions.UpdateRange(refractions);
             eyeMDDbContext.SaveChanges();
             refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
@@ -7036,7 +7036,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Ros: {added} Added.");
+            report.Log($"Ros: {added} added");
             eyeMDDbContext.Emrrosdefaults.UpdateRange(ross);
             eyeMDDbContext.SaveChanges();
             ross = eyeMDDbContext.Emrrosdefaults.ToList();
@@ -7378,7 +7378,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"RxMedications: {added} Added.");
+            report.Log($"RxMedications: {added} added");
             eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
             eyeMDDbContext.SaveChanges();
             rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
@@ -7616,7 +7616,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"SurgicalHistories: {added} Added.");
+            report.Log($"SurgicalHistories: {added} added");
             eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
             eyeMDDbContext.SaveChanges();
             surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
@@ -7982,7 +7982,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Techs: {added} Added.");
+            report.Log($"Techs: {added} added");
             eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
             eyeMDDbContext.SaveChanges();
             techs = eyeMDDbContext.EmrvisitTeches.ToList();
@@ -8167,7 +8167,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Tech2s: {added} Added.");
+            report.Log($"Tech2s: {added} added");
             eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
             eyeMDDbContext.SaveChanges();
             tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
@@ -8429,7 +8429,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the CL Brand with ID: {clBrand.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"CL Brands: {added} Added.");
+            report.Log($"CL Brands: {added} added");
             ffpmDbContext.ClnsBrands.UpdateRange(clnsBrands);
 			ffpmDbContext.SaveChanges();
 			clnsBrands = ffpmDbContext.ClnsBrands.ToList();
@@ -8567,7 +8567,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID: {clInventory.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"CL Inventories: {added} Added.");
+            report.Log($"CL Inventories: {added} added");
 			ffpmDbContext.ClnsInventories.UpdateRange(clnsInventories);
 			ffpmDbContext.SaveChanges();
 			clnsInventories = ffpmDbContext.ClnsInventories.ToList();
@@ -8704,7 +8704,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the CL Lens with ID: {clLense.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"CL Lenses: {added} Added.");
+            report.Log($"CL Lenses: {added} added");
 			ffpmDbContext.ClnsContactLens.UpdateRange(clLenses);
 			ffpmDbContext.SaveChanges();
             clLenses = ffpmDbContext.ClnsContactLens.ToList();
@@ -8712,6 +8712,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void CPTDeptConvert(List<Cptdept> invCptDepts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.CptDepartment> cptDepartments) {
+            int added = 0;
             foreach (var cptDept in invCptDepts) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8751,12 +8752,14 @@ namespace Brady_s_Conversion_Program {
 							SortNumber = TruncateString(sortNumber, 3)
 						};
                         cptDepartments.Add(newCptdept);
+                        added++;
 					}
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT Dept with ID: {cptDept.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"CPT Depts: {added} added");
 		    ffpmDbContext.CptDepartments.UpdateRange(cptDepartments);
             ffpmDbContext.SaveChanges();
             cptDepartments = ffpmDbContext.CptDepartments.ToList();
@@ -8764,6 +8767,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void CPTMappingConvert(List<Cptmapping> invCptMappings, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.CptGroupMapping> cptMappings) {
+            int added = 0;
             foreach (var cptMapping in invCptMappings) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8805,12 +8809,14 @@ namespace Brady_s_Conversion_Program {
 						    Active = Active
 					    };
                         cptMappings.Add(newCptmapping);
+                        added++;
 			        }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT Mapping with ID: {cptMapping.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"CPT Mappings: {added} added");
 			ffpmDbContext.CptGroupMappings.UpdateRange(cptMappings);
 			ffpmDbContext.SaveChanges();
 			cptMappings = ffpmDbContext.CptGroupMappings.ToList();
@@ -8818,6 +8824,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void CPTConvert(List<Cpt> invCpts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.Cptid> cptIds) {
+            int added = 0;
             foreach (var cpt in invCpts) {
 				progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8941,12 +8948,14 @@ namespace Brady_s_Conversion_Program {
 						    AutoUpdateReferringProvider = autoUpdateReferringProvider
 					    };
                         cptIds.Add(newCpt);
+                        added++;
 				    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CPT with ID: {cpt.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"CPTs: {added} added");
 			ffpmDbContext.Cptids.UpdateRange(cptIds);
 			ffpmDbContext.SaveChanges();
 			cptIds = ffpmDbContext.Cptids.ToList();
@@ -8954,7 +8963,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameCategoryConvert(List<ModelsD.FrameCategory> invFrameCategories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameCategory> frameCategories) {
-
+            int added = 0;
             foreach (var frameCategory in invFrameCategories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8979,12 +8988,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         frameCategories.Add(newFrameCategory);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Category with ID: {frameCategory.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Categories: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameCategories.UpdateRange(frameCategories);
@@ -8994,7 +9005,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameCollectionConvert(List<ModelsD.FrameCollection> invFrameCollections, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameCollection> frameCollections) {
-
+            int added = 0;
             foreach (var frameCollection in invFrameCollections) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9015,12 +9026,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         frameCollections.Add(newFrameCollection);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Collection with ID: {frameCollection.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Collections: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameCollections.UpdateRange(frameCollections);
@@ -9030,7 +9043,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameColorConvert(List<ModelsD.FrameColor> invFrameColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameColor> frameColors) {
-
+            int added = 0;
             foreach (var frameColor in invFrameColors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9051,12 +9064,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         frameColors.Add(newFrameColor);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Color with ID: {frameColor.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Colors: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameColors.UpdateRange(frameColors);
@@ -9066,7 +9081,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameShapeConvert(List<ModelsD.FrameShape> invFrameShapes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameShape> frameShapes) {
-
+            int added = 0;
             foreach (var frameShape in invFrameShapes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9074,10 +9089,12 @@ namespace Brady_s_Conversion_Program {
 
                 try {
                     string shape = frameShape.FrameShape1 ?? string.Empty;
-                    bool active = frameShape.Active?.ToLower() switch {
-                        "yes" or "1" => true,
-                        _ => false
-                    };
+                    bool active = true;
+                    if (frameShape.Active != null) {
+                        if (frameShape.Active.ToLower() == "no" || frameShape.Active == "0" || frameShape.Active.ToLower() == "false") {
+                            active = false;
+                        }
+                    }
                     long sortOrder = long.TryParse(frameShape.SortOrder, out var parsedSortOrder) ? parsedSortOrder : -1;
                     long? locationId = long.TryParse(frameShape.LocationId, out var parsedLocationId) ? parsedLocationId : (long?)null;
 
@@ -9090,12 +9107,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         frameShapes.Add(newFrameShape);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Shape with ID: {frameShape.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Shapes: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameShapes.UpdateRange(frameShapes);
@@ -9104,8 +9123,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void FrameStatusConvert(List<ModelsD.FrameStatus> invFrameStatuses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-    List<ModelsA.FrameStatus> frameStatuses) {
-
+            List<ModelsA.FrameStatus> frameStatuses) {
+            int added = 0;
             foreach (var frameStatus in invFrameStatuses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9122,12 +9141,14 @@ namespace Brady_s_Conversion_Program {
                             LabCode = TruncateString(frameStatus.LabCode, 25)
                         };
                         frameStatuses.Add(newFrameStatus);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Status with ID: {frameStatus.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Statuses: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameStatuses.UpdateRange(frameStatuses);
@@ -9137,7 +9158,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameTempleConvert(List<ModelsD.FrameTemple> invFrameTemples, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameTempleStyle> frameTemples) {
-
+            int added = 0;
             foreach (var frameTemple in invFrameTemples) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9154,12 +9175,14 @@ namespace Brady_s_Conversion_Program {
                             LabCode = TruncateString(frameTemple.LabCode, 25)
                         };
                         frameTemples.Add(newFrameTemple);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame Temple with ID: {frameTemple.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Temples: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameTempleStyles.UpdateRange(frameTemples);
@@ -9169,7 +9192,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameETypeConvert(List<ModelsD.FrameEtype> invFrameETypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameEtype> frameEtypes) {
-
+            int added = 0;
             foreach (var frameEType in invFrameETypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9186,12 +9209,14 @@ namespace Brady_s_Conversion_Program {
                             LabCode = TruncateString(frameEType.LabCode, 25)
                         };
                         frameEtypes.Add(newFrameEType);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame EType with ID: {frameEType.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame ETypes: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameEtypes.UpdateRange(frameEtypes);
@@ -9201,7 +9226,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameFTypeConvert(List<ModelsD.FrameFtype> invFrameFTypes, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.FrameFtype> frameFtypes) {
-
+            int added = 0;
             foreach (var frameFType in invFrameFTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9217,12 +9242,14 @@ namespace Brady_s_Conversion_Program {
                             LabCode = TruncateString(frameFType.LabCode, 25)
                         };
                         frameFtypes.Add(newFrameFType);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: An error occurred while converting the Frame FType with ID: {frameFType.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame FTypes: {added} added");
 
             // Update and save changes
             ffpmDbContext.FrameFtypes.UpdateRange(frameFtypes);
@@ -9232,6 +9259,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameInventoryConvert(List<ModelsD.FrameInventory> invFrameInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.Inventory> frameInventories, List<ModelsD.Frame> invFrames, List<ModelsA.Frame> frames) {
+            int added = 0;
             foreach (var frameInventory in invFrameInventories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9657,11 +9685,13 @@ namespace Brady_s_Conversion_Program {
                         DateAdded = dateAdded
                     };
                     frameInventories.Add(newInventory);
+                    added++;
 				}
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Inventory with ID: {frameInventory.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Inventories: {added} added");
             ffpmDbContext.Inventories.UpdateRange(frameInventories);
 			ffpmDbContext.SaveChanges();
 			frameInventories = ffpmDbContext.Inventories.ToList();
@@ -9669,6 +9699,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameLensColorConvert(List<ModelsD.FrameLensColor> invFrameLensColors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameDblensColor> frameLensColors) {
+            int added = 0;
             foreach (var frameLensColor in invFrameLensColors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9705,12 +9736,14 @@ namespace Brady_s_Conversion_Program {
 						    LocationId = locationId
 					    };
 					    frameLensColors.Add(newFrameLensColor);
+                        added++;
 				    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Lens Color with ID: {frameLensColor.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Lens Colors: {added} added");
 			ffpmDbContext.FrameDblensColors.UpdateRange(frameLensColors);
 			ffpmDbContext.SaveChanges();
 			frameLensColors = ffpmDbContext.FrameDblensColors.ToList();
@@ -9718,6 +9751,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameMaterialConvert(List<ModelsD.FrameMaterial> invFrameMaterials, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameMaterial> frameMaterials) {
+            int added = 0;
             foreach (var frameMaterial in invFrameMaterials) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9755,12 +9789,14 @@ namespace Brady_s_Conversion_Program {
 						    LocationId = locationId
 					    };
 					    frameMaterials.Add(newFrameMaterial);
+                        added++;
 				    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Material with ID: {frameMaterial.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Materials: {added} added");
 			ffpmDbContext.FrameMaterials.UpdateRange(frameMaterials);
 			ffpmDbContext.SaveChanges();
 			frameMaterials = ffpmDbContext.FrameMaterials.ToList();
@@ -9768,6 +9804,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameMountConvert(List<ModelsD.FrameMount> invFrameMounts, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameMount> frameMounts) {
+            int added = 0;
             foreach (var frameMount in invFrameMounts) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9805,12 +9842,14 @@ namespace Brady_s_Conversion_Program {
 						    LocationId = locationId
 					    };
 					    frameMounts.Add(newFrameMount);
+                        added++;
 				    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Mount with ID: {frameMount.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Mounts: {added} added");
 			ffpmDbContext.FrameMounts.UpdateRange(frameMounts);
 			ffpmDbContext.SaveChanges();
             frameMounts = ffpmDbContext.FrameMounts.ToList();
@@ -9818,6 +9857,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameOrderConvert(List<ModelsD.FrameOrder> invFrameOrders, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.FrameOrderInfo> frameOrders) {
+            int added = 0;
             foreach (var frameOrder in invFrameOrders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -9966,11 +10006,13 @@ namespace Brady_s_Conversion_Program {
                         IsLmsframe = isLmsFrame
                     };
                     frameOrders.Add(newFrameOrder);
+                    added++;
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Order with ID: {frameOrder.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Orders: {added} added");
 			ffpmDbContext.FrameOrderInfos.UpdateRange(frameOrders);
 			ffpmDbContext.SaveChanges();
 			frameOrders = ffpmDbContext.FrameOrderInfos.ToList();
@@ -9978,6 +10020,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameConvert(List<ModelsD.Frame> invFrames, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
 			List<ModelsA.Frame> frames) {
+            int added = 0;
             foreach (var frame in invFrames) {
 				progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10246,12 +10289,14 @@ namespace Brady_s_Conversion_Program {
 
                     if (!duplicate) {
                         frames.Add(newFrame);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame with ID: {frame.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frames: {added} added");
 			ffpmDbContext.Frames.UpdateRange(frames);
 			ffpmDbContext.SaveChanges();
 			frames = ffpmDbContext.Frames.ToList();
@@ -10259,6 +10304,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameVendorConvert(List<ModelsD.FrameVendor> invFrameVendors, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List <ModelsA.Vendor> vendors, List<DmgOtherAddress> otherAddresses, List<BillingLocation> locations) {
+            int added = 0;
             foreach (var vendor in invFrameVendors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10300,12 +10346,14 @@ namespace Brady_s_Conversion_Program {
                             StatusId = statusId
                         };
                         vendors.Add(newVendor);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Vendor with ID: {vendor.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Vendors: {added} added");
             ffpmDbContext.Vendors.UpdateRange(vendors);
             ffpmDbContext.SaveChanges();
             vendors = ffpmDbContext.Vendors.ToList();
@@ -10313,6 +10361,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameManufacturerConvert(List<ModelsD.FrameManufacturer> invFrameManufacturers, InvDbContext invDbContext, FfpmContext ffpmDbContext, 
             ILogger logger, ILogger report, ProgressBar progress, List<Manufacturer> frameManufacturers) {
+            int added = 0;
             foreach (var frameManufacturer in invFrameManufacturers) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10355,11 +10404,13 @@ namespace Brady_s_Conversion_Program {
                         Active = active
                     };
                     frameManufacturers.Add(newFrameManufacturer);
+                    added++;
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Manufacturer with ID: {frameManufacturer.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Manufacturers: {added} added");
             ffpmDbContext.Manufacturers.UpdateRange(frameManufacturers);
             ffpmDbContext.SaveChanges();
             frameManufacturers = ffpmDbContext.Manufacturers.ToList();
@@ -10367,6 +10418,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FrameBrandConvert(List<ModelsD.FrameBrand> invFrameBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, 
             ProgressBar progress, List<Brand> frameBrands, List<BillingLocation> locations) {
+            int added = 0;
             foreach (var frameBrand in invFrameBrands) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10393,12 +10445,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         frameBrands.Add(newFrameBrand);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the Frame Brand with ID: {frameBrand.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Frame Brands: {added} added");
             ffpmDbContext.Brands.UpdateRange(frameBrands);
             ffpmDbContext.SaveChanges();
             frameBrands = ffpmDbContext.Brands.ToList();
@@ -10406,6 +10460,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void AddressConvert(List<ModelsD.Address> invAddresses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<DmgOtherAddress> otherAddresses, List<Vendor> vendors, List<MntState> stateXrefs) {
+            int added = 0;
             foreach (var address in invAddresses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10453,6 +10508,7 @@ namespace Brady_s_Conversion_Program {
                                     OwnerType = 5
                                 };
                                 otherAddresses.Add(newAddress);
+                                added++;
                             }
                             break;
                     }
@@ -10461,6 +10517,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the Address with ID: {address.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Addresses: {added} added");
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
             ffpmDbContext.SaveChanges();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
@@ -10468,6 +10525,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void PhoneConvert(List<ModelsD.Phone> invPhones, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<DmgOtherAddress> otherAddresses) {
+            int added = 0;
             foreach (var phone in invPhones) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -10480,30 +10538,40 @@ namespace Brady_s_Conversion_Program {
                         case "vend":
                         default:
                             var vendorAddress = otherAddresses.FirstOrDefault(v => v.AddressId == phone.PrimaryFileId);
-                            if (vendorAddress != null) {
-                                if (phone.Type == null) {
+
+                            if (vendorAddress == null) {
+                                var newVendorAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                                    CellPhone = TruncateString(phone.PhoneNumber, 15),
+                                    Extension = TruncateString(phone.Extension, 10),
+                                    AddressId = phone.PrimaryFileId
+                                };
+                                otherAddresses.Add(newVendorAddress);
+                                added++;
+                                vendorAddress = newVendorAddress;
+                            }
+
+                            if (phone.Type == null) {
+                                vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                continue;
+                            }
+                            switch (phone.Type.ToLower()) {
+                                case "cell":
                                     vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
                                     vendorAddress.Extension = TruncateString(phone.Extension, 10);
-                                    continue;
-                                }
-                                switch (phone.Type.ToLower()) {
-                                    case "cell":
-                                        vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "home":
-                                        vendorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
-                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    case "work":
-                                        vendorAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
-                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                    default:
-                                        vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
-                                        vendorAddress.Extension = TruncateString(phone.Extension, 10);
-                                        break;
-                                }
+                                    break;
+                                case "home":
+                                    vendorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
+                                    vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                case "work":
+                                    vendorAddress.WorkPhone = TruncateString(phone.PhoneNumber, 15);
+                                    vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
+                                default:
+                                    vendorAddress.CellPhone = TruncateString(phone.PhoneNumber, 15);
+                                    vendorAddress.Extension = TruncateString(phone.Extension, 10);
+                                    break;
                             }
                             break;
                     }
@@ -10512,6 +10580,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the Phone with ID: {phone.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Other Addresses: {added} added");
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
             ffpmDbContext.SaveChanges();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
