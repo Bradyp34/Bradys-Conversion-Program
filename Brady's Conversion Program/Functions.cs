@@ -3621,6 +3621,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void AllergiesConvert(List<ModelsC.Allergy> ehrAllergies, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrvisitAllergy> allergies, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var allergy in ehrAllergies) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3691,19 +3692,22 @@ namespace Brady_s_Conversion_Program {
                             // No add and save as per instruction
                         };
                         allergies.Add(newVisitAllergy);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the allergy with ID: {allergy.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(allergies);
+            report.Log($"Allergies: {added} added");
+            eyeMDDbContext.EmrvisitAllergies.UpdateRange(allergies);
             eyeMDDbContext.SaveChanges();
             allergies = eyeMDDbContext.EmrvisitAllergies.ToList();
         }
 
         public static void MedicalHistoriesConvert(List<ModelsC.MedicalHistory> ehrMedicalHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger,
             ILogger report, ProgressBar progress, List<Emrpatient> eyeMDPatients, List<EmrvisitMedicalHistory> medicalHistories, List<ModelsB.Emrvisit> visits) {
+            int added = 0;
             foreach (var medicalHistory in ehrMedicalHistories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3956,19 +3960,22 @@ namespace Brady_s_Conversion_Program {
                             Location2OnsetVisitId = null
                         };
                         medicalHistories.Add(newMedicalHistory);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the medical history with ID: {medicalHistory.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(medicalHistories);
+            report.Log($"Medical Histories: {added} added");
+            eyeMDDbContext.EmrvisitMedicalHistories.UpdateRange(medicalHistories);
             eyeMDDbContext.SaveChanges();
             medicalHistories = eyeMDDbContext.EmrvisitMedicalHistories.ToList();
         }
 
         public static void VisitsConvert(List<Visit> ehrVisits, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report,
             ProgressBar progress, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var visit in ehrVisits) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -4208,9 +4215,7 @@ namespace Brady_s_Conversion_Program {
                         reconciledCCDA = true;
                     }
 
-                    // one patient can have multiple visits, so I wont check this one
-
-
+                    // one patient can have multiple visits,even on the same day, so I wont check this one
 
 
                     var newVisit = new Brady_s_Conversion_Program.ModelsB.Emrvisit {
@@ -4281,12 +4286,14 @@ namespace Brady_s_Conversion_Program {
                         Wu2visitTypeId = null
                     };
                     visits.Add(newVisit);
+                    added++;
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the visit with ID: {visit.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(visits);
+            report.Log($"Visits: {added} added");
+            eyeMDDbContext.Emrvisits.UpdateRange(visits);
             eyeMDDbContext.SaveChanges();
             visits = eyeMDDbContext.Emrvisits.ToList();
         }
@@ -4294,6 +4301,7 @@ namespace Brady_s_Conversion_Program {
         public static void VisitOrdersConvert(List<ModelsC.VisitOrder> ehrVisitOrders, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients,
                 List<EmrvisitOrder> eyeMDVisitOrders, List<EmrvisitOrder> visitOrders) {
+            int added = 0;
             foreach (var visitOrder in ehrVisitOrders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -4495,19 +4503,22 @@ namespace Brady_s_Conversion_Program {
                             RefProviderOrganizationName = refProvOrgName
                         };
                         visitOrders.Add(newVisitOrder);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the visit order with ID: {visitOrder.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(visitOrders);
+            report.Log($"Visit Orders: {added} added");
+            eyeMDDbContext.EmrvisitOrders.UpdateRange(visitOrders);
             eyeMDDbContext.SaveChanges();
             eyeMDVisitOrders = eyeMDDbContext.EmrvisitOrders.ToList();
         }
 
         public static void VisitDoctorsConvert(List<ModelsC.VisitDoctor> ehrVisitDoctors, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrvisitDoctor> visitDoctors, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var visitDoctor in ehrVisitDoctors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -4735,13 +4746,15 @@ namespace Brady_s_Conversion_Program {
                             SentToWebPortalDays = null
                         };
                         visitDoctors.Add(newVisitDoctor);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the visit doctor with ID: {visitDoctor.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(visitDoctors);
+            report.Log($"Visit Doctors: {added} added");
+            eyeMDDbContext.EmrvisitDoctors.UpdateRange(visitDoctors);
             eyeMDDbContext.SaveChanges();
             visitDoctors = eyeMDDbContext.EmrvisitDoctors.ToList();
         }
@@ -4760,6 +4773,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ContactLensesConvert(List<ModelsC.ContactLen> ehrContactLenses, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitContactLense> contactLenses) {
+            int added = 0;
             foreach (var contactLens in ehrContactLenses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -5433,19 +5447,22 @@ namespace Brady_s_Conversion_Program {
                             OrVaNOs = TruncateString(orVaNOs, 50)
                         };
                         contactLenses.Add(newContactLens);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the contact lens with ID: {contactLens.Id}. Error: {e.Message}");
                 }
             }
-            eyeMDDbContext.UpdateRange(contactLenses);
+            report.Log($"Contact Lenses: {added} Added.");
+            eyeMDDbContext.EmrvisitContactLenses.AddRange(contactLenses);
             eyeMDDbContext.SaveChanges();
             contactLenses = eyeMDDbContext.EmrvisitContactLenses.ToList();
         }
 
         public static void DiagCodePoolsConvert(List<ModelsC.DiagCodePool> ehrDiagCodePools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagCodePool> diagCodePools) {
+            int added = 0;
             foreach (var diagCodePool in ehrDiagCodePools) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -5657,14 +5674,15 @@ namespace Brady_s_Conversion_Program {
                             CreatedEmpId = createdEmpId,
                             Dosdate = dosDate
                         };
-
                         diagCodePools.Add(newDiagCodePool);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the diag code pool with visit ID: {diagCodePool.VisitId}. Error: {e.Message}");
                 }
             }
+            report.Log($"Diag Code Pools: {added} Added.");
             eyeMDDbContext.EmrvisitDiagCodePools.UpdateRange(diagCodePools);
             eyeMDDbContext.SaveChanges();
             diagCodePools = eyeMDDbContext.EmrvisitDiagCodePools.ToList();
@@ -5672,6 +5690,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void DiagTestsConvert(List<ModelsC.DiagTest> ehrDiagTests, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitDiagTest> diagTests) {
+            int added = 0;
             foreach (var diagTest in ehrDiagTests) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -5904,12 +5923,14 @@ namespace Brady_s_Conversion_Program {
                             // Continue mapping all other properties as needed
                         };
                         diagTests.Add(newDiagTest);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the diag test with ID: {diagTest.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Diag Tests: {added} Added.");
             eyeMDDbContext.EmrvisitDiagTests.UpdateRange(diagTests);
             eyeMDDbContext.SaveChanges();
             diagTests = eyeMDDbContext.EmrvisitDiagTests.ToList();
@@ -5917,6 +5938,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ExamConditionsConvert(List<ModelsC.ExamCondition> ehrExamConditions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitExamCondition> examConditions) {
+            int added = 0;
             foreach (var examCondition in ehrExamConditions) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -5980,12 +6002,14 @@ namespace Brady_s_Conversion_Program {
                             LocationId = locationId
                         };
                         examConditions.Add(newExamCondition);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the exam condition with ID: {examCondition.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Exam Conditions: {added} Added.");
             eyeMDDbContext.EmrvisitExamConditions.UpdateRange(examConditions);
             eyeMDDbContext.SaveChanges();
             examConditions = eyeMDDbContext.EmrvisitExamConditions.ToList();
@@ -5993,6 +6017,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void FamilyHistoriesConvert(List<ModelsC.FamilyHistory> ehrFamilyHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitFamilyHistory> familyHistories) {
+            int added = 0;
             foreach (var familyHistory in ehrFamilyHistories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6068,12 +6093,14 @@ namespace Brady_s_Conversion_Program {
                             CodeSnomed = TruncateString(codeSnomed, 50)
                         };
                         familyHistories.Add(newFamilyHistory);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the family history with ID: {familyHistory.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Family Histories: {added} Added.");
             eyeMDDbContext.EmrvisitFamilyHistories.UpdateRange(familyHistories);
             eyeMDDbContext.SaveChanges();
             familyHistories = eyeMDDbContext.EmrvisitFamilyHistories.ToList();
@@ -6083,6 +6110,7 @@ namespace Brady_s_Conversion_Program {
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitIop> iops) {
             eyeMDPatients = eyeMDDbContext.Emrpatients.ToList();
             visits = eyeMDDbContext.Emrvisits.ToList();
+            int added = 0;
             foreach (var iop in ehrIops) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6171,12 +6199,14 @@ namespace Brady_s_Conversion_Program {
                             CornealHysteresisOs = cornealHysteresisOs // decimal, no truncation needed
                         };
                         iops.Add(newIop);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the iop with ID: {iop.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Iops: {added} Added.");
             eyeMDDbContext.EmrvisitIops.UpdateRange(iops);
             eyeMDDbContext.SaveChanges();
             iops = eyeMDDbContext.EmrvisitIops.ToList();
@@ -6203,6 +6233,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void PatientNotesConvert(List<ModelsC.PatientNote> ehrPatientNotes, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<EmrptNote> patientNotes, List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var patientNote in ehrPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6256,12 +6287,14 @@ namespace Brady_s_Conversion_Program {
                             InsertGuid = TruncateString(guid, 50)
                         };
                         patientNotes.Add(newPatientNote);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Patient Notes: {added} Added.");
             eyeMDDbContext.EmrptNotes.UpdateRange(patientNotes);
             eyeMDDbContext.SaveChanges();
             patientNotes = eyeMDDbContext.EmrptNotes.ToList();
@@ -6269,6 +6302,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void PlanNarrativesConvert(List<ModelsC.PlanNarrative> ehrPlanNarratives, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitPlanNarrative> planNarratives) {
+            int added = 0;
             foreach (var planNarrative in ehrPlanNarratives) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6359,12 +6393,14 @@ namespace Brady_s_Conversion_Program {
                             InsertGuid = TruncateString(insertGUID, 50)
                         };
                         planNarratives.Add(newPlanNarrative);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the plan narrative with ID: {planNarrative.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Plan Narratives: {added} Added.");
             eyeMDDbContext.EmrvisitPlanNarratives.UpdateRange(planNarratives);
             eyeMDDbContext.SaveChanges();
             planNarratives = eyeMDDbContext.EmrvisitPlanNarratives.ToList();
@@ -6372,6 +6408,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ProcDiagPoolsConvert(List<ModelsC.ProcDiagPool> ehrProcDiagPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePoolDiag> procDiagPools, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var procDiagPool in ehrProcDiagPools) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6434,12 +6471,14 @@ namespace Brady_s_Conversion_Program {
                             InsertGuid = TruncateString(insertGUID, 50)
                         };
                         procDiagPools.Add(newProcDiagPool);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the proc diag pool with ID: {procDiagPool.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Proc Diag Pools: {added} Added.");
             eyeMDDbContext.EmrvisitProcCodePoolDiags.UpdateRange(procDiagPools);
             eyeMDDbContext.SaveChanges();
             procDiagPools = eyeMDDbContext.EmrvisitProcCodePoolDiags.ToList();
@@ -6447,6 +6486,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ProcPoolsConvert(List<ModelsC.ProcPool> ehrProcPools, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitProcCodePool> procCodePools, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var procPool in ehrProcPools) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6676,12 +6716,14 @@ namespace Brady_s_Conversion_Program {
                             BillingOrder = billingOrder
                         };
                         procCodePools.Add(newProcPool);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the proc pool with ID: {procPool.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Proc Pools: {added} Added.");
             eyeMDDbContext.EmrvisitProcCodePools.UpdateRange(procCodePools);
             eyeMDDbContext.SaveChanges();
             procCodePools = eyeMDDbContext.EmrvisitProcCodePools.ToList();
@@ -6689,6 +6731,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void RefractionsConvert(List<ModelsC.Refraction> ehrRefractions, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitRefraction> refractions) {
+            int added = 0;
             foreach (var refraction in ehrRefractions) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6893,12 +6936,14 @@ namespace Brady_s_Conversion_Program {
                             EnteredBy = TruncateString(enteredBy, 200)
                         };
                         refractions.Add(newRefraction);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the refraction with ID: {refraction.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Refractions: {added} Added.");
             eyeMDDbContext.EmrvisitRefractions.UpdateRange(refractions);
             eyeMDDbContext.SaveChanges();
             refractions = eyeMDDbContext.EmrvisitRefractions.ToList();
@@ -6906,6 +6951,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void RosConvert(List<ModelsC.Ro> ehrRos, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Emrrosdefault> ross) {
+            int added = 0;
             foreach (var ros in ehrRos) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -6983,12 +7029,14 @@ namespace Brady_s_Conversion_Program {
                     // If it doesn't exist, add it to the list
                     if (!exists) {
                         ross.Add(newRos);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the ros with ID: {ros.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Ros: {added} Added.");
             eyeMDDbContext.Emrrosdefaults.UpdateRange(ross);
             eyeMDDbContext.SaveChanges();
             ross = eyeMDDbContext.Emrrosdefaults.ToList();
@@ -6996,6 +7044,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void RxConvert(List<ModelsC.RxMedication> ehrRxs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<EmrvisitRxMedication> rxMedications, List<Emrpatient> eyeMDPatients) {
+            int added = 0;
             foreach (var rx in ehrRxs) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -7322,12 +7371,14 @@ namespace Brady_s_Conversion_Program {
                             ErxStatus = TruncateString(erxStatus, 100)
                         };
                         rxMedications.Add(newRx);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the rx with ID: {rx.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"RxMedications: {added} Added.");
             eyeMDDbContext.EmrvisitRxMedications.UpdateRange(rxMedications);
             eyeMDDbContext.SaveChanges();
             rxMedications = eyeMDDbContext.EmrvisitRxMedications.ToList();
@@ -7335,6 +7386,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void SurgHistoriesConvert(List<ModelsC.SurgHistory> ehrSurgHistories, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Emrvisit> visits, List<EmrvisitSurgicalHistory> surgicalHistories, List<Emrpatient> eyeMDPatients, List<Visit> ehrVisits) {
+            int added = 0;
             foreach (var surgHistory in ehrSurgHistories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -7373,7 +7425,7 @@ namespace Brady_s_Conversion_Program {
                     if (surgHistory.OrigVisitDate != null) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(surgHistory.OrigVisitDate, dateFormats,
-                                                                                                                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                             origVisitDate = tempDateTime;
                         }
                     }
@@ -7557,12 +7609,14 @@ namespace Brady_s_Conversion_Program {
                             PerformedbyRefProviderId2 = performedbyRefProviderId2
                         };
                         surgicalHistories.Add(newSurgHistory);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the surg history with ID: {surgHistory.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"SurgicalHistories: {added} Added.");
             eyeMDDbContext.EmrvisitSurgicalHistories.UpdateRange(surgicalHistories);
             eyeMDDbContext.SaveChanges();
             surgicalHistories = eyeMDDbContext.EmrvisitSurgicalHistories.ToList();
@@ -7570,6 +7624,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void TechsConvert(List<ModelsC.Tech> ehrTechs, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech> techs) {
+            int added = 0;
             foreach (var tech in ehrTechs) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -7920,12 +7975,14 @@ namespace Brady_s_Conversion_Program {
                             WuorientSituation = wuOrientSituation // int, no truncation needed
                         };
                         techs.Add(newTech);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the tech with ID: {tech.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Techs: {added} Added.");
             eyeMDDbContext.EmrvisitTeches.UpdateRange(techs);
             eyeMDDbContext.SaveChanges();
             techs = eyeMDDbContext.EmrvisitTeches.ToList();
@@ -7933,6 +7990,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void Tech2sConvert(List<ModelsC.Tech2> ehrTech2s, EHRDbContext eHRDbContext, EyeMdContext eyeMDDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Visit> ehrVisits, List<Emrvisit> visits, List<Emrpatient> eyeMDPatients, List<EmrvisitTech2> tech2s) {
+            int added = 0;
             foreach (var tech2 in ehrTech2s) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8102,12 +8160,14 @@ namespace Brady_s_Conversion_Program {
                             Wu2vaPamOs = TruncateString(tech2.Wu2vapamos, 50)
                         };
                         tech2s.Add(newTech2);
+                        added++;
                     }
                 }
                 catch (Exception e) {
                     logger.Log($"EHR: EHR An error occurred while converting the tech2 with ID: {tech2.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Tech2s: {added} Added.");
             eyeMDDbContext.EmrvisitTech2s.UpdateRange(tech2s);
             eyeMDDbContext.SaveChanges();
             tech2s = eyeMDDbContext.EmrvisitTech2s.ToList();
@@ -8317,6 +8377,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void CLBrandsConvert(List<Clbrand> invClBrands, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsBrand> clnsBrands) {
+            int added = 0;
             foreach (var clBrand in invClBrands) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8361,12 +8422,14 @@ namespace Brady_s_Conversion_Program {
 						    IsActive = isActive
 					    };
                         clnsBrands.Add(newClbrand);
+                        added++;
 				    }
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CL Brand with ID: {clBrand.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"CL Brands: {added} Added.");
             ffpmDbContext.ClnsBrands.UpdateRange(clnsBrands);
 			ffpmDbContext.SaveChanges();
 			clnsBrands = ffpmDbContext.ClnsBrands.ToList();
@@ -8374,6 +8437,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void clInventoryConvert(List<Clinventory> invClInventories, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsInventory> clnsInventories) {
+            int added = 0;
             foreach (var clInventory in invClInventories) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -8496,12 +8560,14 @@ namespace Brady_s_Conversion_Program {
 							LocationId = locationId
 						};
                         clnsInventories.Add(newClInventory);
+                        added++;
 					}
                 }
                 catch (Exception e) {
                     logger.Log($"INV: INV An error occurred while converting the CL Inventory with ID: {clInventory.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"CL Inventories: {added} Added.");
 			ffpmDbContext.ClnsInventories.UpdateRange(clnsInventories);
 			ffpmDbContext.SaveChanges();
 			clnsInventories = ffpmDbContext.ClnsInventories.ToList();
@@ -8509,133 +8575,136 @@ namespace Brady_s_Conversion_Program {
 
         public static void CLLensesConvert(List<Cllense> invClLenses, InvDbContext invDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<ModelsA.ClnsContactLen> clLenses) {
+            int added = 0;
             foreach (var clLense in invClLenses) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-                int clnsBrandId = -1;
-                if (clLense.ClndbrandId != null) {
-                    if (int.TryParse(clLense.ClndbrandId, out int locum)) {
-                        clnsBrandId = locum;
+                    int clnsBrandId = -1;
+                    if (clLense.ClndbrandId != null) {
+                        if (int.TryParse(clLense.ClndbrandId, out int locum)) {
+                            clnsBrandId = locum;
+                        }
                     }
-                }
-                if (clnsBrandId == -1) {
-                    logger.Log($"INV: INV Brand ID not found for CL Lense with ID: {clLense.Id}");
-                    continue;
-                }
-                int? clnsManufacturerId = null;
-                if (clLense.ClnsmanufacturerId != null) {
-                    if (int.TryParse(clLense.ClnsmanufacturerId, out int locum)) {
-                        clnsManufacturerId = locum;
+                    if (clnsBrandId == -1) {
+                        logger.Log($"INV: INV Brand ID not found for CL Lense with ID: {clLense.Id}");
+                        continue;
                     }
-                }
-                int? clnsLensTypeId = null;
-                if (clLense.ClnslensTypeId != null) {
-                    if (int.TryParse(clLense.ClnslensTypeId, out int locum)) {
-                        clnsLensTypeId = locum;
+                    int? clnsManufacturerId = null;
+                    if (clLense.ClnsmanufacturerId != null) {
+                        if (int.TryParse(clLense.ClnsmanufacturerId, out int locum)) {
+                            clnsManufacturerId = locum;
+                        }
                     }
-                }
-                int? cptId = null;
-                if (clLense.CptId != null) {
-                    if (int.TryParse(clLense.CptId, out int locum)) {
-                        cptId = locum;
+                    int? clnsLensTypeId = null;
+                    if (clLense.ClnslensTypeId != null) {
+                        if (int.TryParse(clLense.ClnslensTypeId, out int locum)) {
+                            clnsLensTypeId = locum;
+                        }
                     }
-                }
-                DateTime? addedDate = null;
-                if (clLense.AddedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clLense.AddedDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        addedDate = tempDateTime;
+                    int? cptId = null;
+                    if (clLense.CptId != null) {
+                        if (int.TryParse(clLense.CptId, out int locum)) {
+                            cptId = locum;
+                        }
                     }
-                }
-                long? addedBy = null;
-                if (clLense.AddedBy != null) {
-                    if (long.TryParse(clLense.AddedBy, out long locum)) {
-                        addedBy = locum;
+                    DateTime? addedDate = null;
+                    if (clLense.AddedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clLense.AddedDate, dateFormats,
+                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            addedDate = tempDateTime;
+                        }
                     }
-                }
-                DateTime? updatedDate = null;
-                if (clLense.UpdatedDate != null) {
-                    DateTime tempDateTime;
-                    if (DateTime.TryParseExact(clLense.UpdatedDate, dateFormats,
-                                              CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                        updatedDate = tempDateTime;
+                    long? addedBy = null;
+                    if (clLense.AddedBy != null) {
+                        if (long.TryParse(clLense.AddedBy, out long locum)) {
+                            addedBy = locum;
+                        }
                     }
-                }
-                long? updatedBy = null;
-                if (clLense.UpdatedBy != null) {
-                    if (long.TryParse(clLense.UpdatedBy, out long locum)) {
-                        updatedBy = locum;
+                    DateTime? updatedDate = null;
+                    if (clLense.UpdatedDate != null) {
+                        DateTime tempDateTime;
+                        if (DateTime.TryParseExact(clLense.UpdatedDate, dateFormats,
+                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                            updatedDate = tempDateTime;
+                        }
                     }
-                }
-                bool? isSoftContact = null;
-                if (clLense.IsSoftContact != null) {
-                    if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
-                        isSoftContact = locum;
+                    long? updatedBy = null;
+                    if (clLense.UpdatedBy != null) {
+                        if (long.TryParse(clLense.UpdatedBy, out long locum)) {
+                            updatedBy = locum;
+                        }
                     }
-                }
-                bool? isActive = null;
-                if (clLense.Active != null) {
-                    if (bool.TryParse(clLense.Active, out bool locum)) {
-                        isActive = locum;
+                    bool? isSoftContact = null;
+                    if (clLense.IsSoftContact != null) {
+                        if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
+                            isSoftContact = locum;
+                        }
                     }
-                }
-                long? locationId = null;
-                if (clLense.LocationId != null) {
-                    if (long.TryParse(clLense.LocationId, out long locum)) {
-                        locationId = locum;
+                    bool? isActive = null;
+                    if (clLense.Active != null) {
+                        if (bool.TryParse(clLense.Active, out bool locum)) {
+                            isActive = locum;
+                        }
                     }
-                }
-                int? lensPerBox = null;
-                if (clLense.LensPerBox != null) {
-                    if (int.TryParse(clLense.LensPerBox, out int locum)) {
-                        lensPerBox = locum;
+                    long? locationId = null;
+                    if (clLense.LocationId != null) {
+                        if (long.TryParse(clLense.LocationId, out long locum)) {
+                            locationId = locum;
+                        }
                     }
-                }
-                bool? isLensFromClxCatalog = null;
-                if (clLense.IsLensFromClxcatalog != null) {
-                    if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
-                        isLensFromClxCatalog = locum;
+                    int? lensPerBox = null;
+                    if (clLense.LensPerBox != null) {
+                        if (int.TryParse(clLense.LensPerBox, out int locum)) {
+                            lensPerBox = locum;
+                        }
                     }
-                }
+                    bool? isLensFromClxCatalog = null;
+                    if (clLense.IsLensFromClxcatalog != null) {
+                        if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
+                            isLensFromClxCatalog = locum;
+                        }
+                    }
 
-                var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
+                    var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
 
-                if (invList == null) {
-					var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
-						ClnsBrandId = clnsBrandId,
-						ClnsManufacturerId = clnsManufacturerId,
-						Sphere = TruncateString(clLense.Sphere, 10),
-						Cylinder = TruncateString(clLense.Cylinder, 10),
-						Axis = TruncateString(clLense.Axis, 10),
-						BaseCurve = TruncateString(clLense.BaseCurve, 10),
-						Diameter = TruncateString(clLense.Diameter, 10),
-						AddPower = TruncateString(clLense.AddPower, 10),
-						AddPowerName = TruncateString(clLense.AddPowerName, 20),
-						Multifocal = TruncateString(clLense.Multifocal, 50),
-						Color = TruncateString(clLense.Color, 50),
-						Upc = TruncateString(clLense.Upc, 15),
-						ClnsLensTypeId = clnsLensTypeId,
-						CptId = cptId,
-						AddedDate = addedDate,
-						AddedBy = addedBy,
-						UpdatedDate = updatedDate,
-						UpdatedBy = updatedBy,
-						IsSoftContact = isSoftContact,
-						IsActive = isActive,
-						LocationId = locationId,
-						LensPerBox = lensPerBox,
-						IsLensFromClxCatalog = isLensFromClxCatalog
-					};
+                    if (invList == null) {
+					    var newClLens = new Brady_s_Conversion_Program.ModelsA.ClnsContactLen {
+						    ClnsBrandId = clnsBrandId,
+						    ClnsManufacturerId = clnsManufacturerId,
+						    Sphere = TruncateString(clLense.Sphere, 10),
+						    Cylinder = TruncateString(clLense.Cylinder, 10),
+						    Axis = TruncateString(clLense.Axis, 10),
+						    BaseCurve = TruncateString(clLense.BaseCurve, 10),
+						    Diameter = TruncateString(clLense.Diameter, 10),
+						    AddPower = TruncateString(clLense.AddPower, 10),
+						    AddPowerName = TruncateString(clLense.AddPowerName, 20),
+						    Multifocal = TruncateString(clLense.Multifocal, 50),
+						    Color = TruncateString(clLense.Color, 50),
+						    Upc = TruncateString(clLense.Upc, 15),
+						    ClnsLensTypeId = clnsLensTypeId,
+						    CptId = cptId,
+						    AddedDate = addedDate,
+						    AddedBy = addedBy,
+						    UpdatedDate = updatedDate,
+						    UpdatedBy = updatedBy,
+						    IsSoftContact = isSoftContact,
+						    IsActive = isActive,
+						    LocationId = locationId,
+						    LensPerBox = lensPerBox,
+						    IsLensFromClxCatalog = isLensFromClxCatalog
+					    };
                         clLenses.Add(newClLens);
-				}
+                        added++;
+				    }
+                }
+                catch (Exception e) {
+                    logger.Log($"INV: INV An error occurred while converting the CL Lens with ID: {clLense.Id}. Error: {e.Message}");
+                }
             }
-            catch (Exception e) {
-                logger.Log($"INV: INV An error occurred while converting the CL Lens with ID: {clLense.Id}. Error: {e.Message}");
-            }
-            }
+            report.Log($"CL Lenses: {added} Added.");
 			ffpmDbContext.ClnsContactLens.UpdateRange(clLenses);
 			ffpmDbContext.SaveChanges();
             clLenses = ffpmDbContext.ClnsContactLens.ToList();
