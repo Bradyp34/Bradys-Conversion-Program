@@ -574,6 +574,8 @@ namespace Brady_s_Conversion_Program {
             // Enable IDENTITY_INSERT
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_PATIENT ON");
 
+            int added = 0;
+            int additionalAdded = 0;
             foreach (var patient in convPatients) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -675,6 +677,7 @@ namespace Brady_s_Conversion_Program {
                         LastModifiedDate = DateTime.Now,
                         LastModifiedBy = -1
                     };
+                    added++;
 
                     var patientAdditionalDetail = new DmgPatientAdditionalDetail {
                         PatientId = patientId,
@@ -698,12 +701,15 @@ namespace Brady_s_Conversion_Program {
                     ffpmDbContext.DmgPatientAdditionalDetails.Add(patientAdditionalDetail);
 
                     patientId++; // Increment patientId after adding
+                    additionalAdded++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
                 }
             }
 
+            report.Log($"Additional Details: {additionalAdded} added");
+            report.Log($"Patients: {added} added");
             // Save all changes at the end
             ffpmDbContext.SaveChanges();
 
@@ -714,6 +720,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
            ILogger logger, ILogger report, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
+            int added = 0;
             foreach (var appointmentType in convAppointmentTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -771,12 +778,14 @@ namespace Brady_s_Conversion_Program {
                             CanSchedule = schedule
                         };
                         appointmentTypes.Add(newAppointmentType);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the appointment type with ID: {appointmentType.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"AppointmentTypes: {added} added");
             ffpmDbContext.SchedulingAppointmentTypes.UpdateRange(appointmentTypes);
             ffpmDbContext.SaveChanges();
             appointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
@@ -785,6 +794,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertAppointment(List<Models.Appointment> convAppointments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<SchedulingAppointmentType> appointmentTypes,
                 List<SchedulingAppointment> appointments) {
+            int added = 0;
             foreach (var appointment in convAppointments) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -975,11 +985,13 @@ namespace Brady_s_Conversion_Program {
                         DateTimeUpdated = minAcceptableDate
                     };
                     appointments.Add(newAppointment);
+                    added++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the appointment with ID: {appointment.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Appointments: {added} added");
             ffpmDbContext.SchedulingAppointments.UpdateRange(appointments);
             ffpmDbContext.SaveChanges();
             appointments = ffpmDbContext.SchedulingAppointments.ToList();
@@ -987,6 +999,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertInsurance(List<Models.Insurance> convInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<InsInsuranceCompany> insuranceCompanies, List<MntState> stateXrefs) {
+            int added = 0;
             foreach (var insurance in convInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1132,6 +1145,7 @@ namespace Brady_s_Conversion_Program {
                             InsCompanyCarrierTypeId = carrierTypeId
                         };
                         insuranceCompanies.Add(newInsuranceCompany);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
@@ -1145,6 +1159,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertLocation(List<Models.Location> convLocations, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<BillingLocation> locations) {
+            int added = 0;
             foreach (var location in convLocations) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1320,12 +1335,14 @@ namespace Brady_s_Conversion_Program {
                             CaculateTaxOnTotalFee = false
                         };
                         locations.Add(newLocation);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the location with ID: {location.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Locations: {added} added");
             ffpmDbContext.BillingLocations.UpdateRange(locations);
             ffpmDbContext.SaveChanges();
             locations = ffpmDbContext.BillingLocations.ToList();
@@ -1333,6 +1350,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertGuarantor(List<Models.Guarantor> convGuarantors, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntRelationship> relationshipXrefs, List<MntGender> genderXrefs, List<DmgGuarantor> guarantors, List<DmgPatient> ffpmPatients, List<Models.Patient> convPatients) {
+            int added = 0;
             foreach (var guarantor in convGuarantors) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1427,22 +1445,24 @@ namespace Brady_s_Conversion_Program {
                             LastModifiedBy = null
                         };
                         guarantors.Add(newGuarantor);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the guarantor with ID: {guarantor.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Guarantors: {added} added");
             ffpmDbContext.DmgGuarantors.UpdateRange(guarantors);
             ffpmDbContext.SaveChanges();
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
         }
 
         public static void ConvertAddress(List<Models.Address> convAddresses, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-    List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
-    List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
-    List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
-    List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
+            List<MntAddressType> addressTypes, List<MntState> stateXrefs, List<MntCountry> countryXrefs, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
+                List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
+                    List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
+                       List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
             long patientAddressId = 1;
             long otherAddressId = 1;
 
@@ -1459,6 +1479,7 @@ namespace Brady_s_Conversion_Program {
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
             patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
 
+            int added = 0;
             // Process only "pat" addresses first
             foreach (var address in convAddresses.Where(a => a.PrimaryFile?.ToLower() == "pat")) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -1517,6 +1538,7 @@ namespace Brady_s_Conversion_Program {
                             ffpmPatient.AddressId = patientAddressId;
                         }
                         patientAddressId++;
+                        added++;
                     }
                 }
                 catch (Exception ex) {
@@ -1524,6 +1546,7 @@ namespace Brady_s_Conversion_Program {
                 }
             }
 
+            report.Log($"Patient Addresses: {added} added");
             // Save changes for DMG_PATIENT_ADDRESS
             ffpmDbContext.SaveChanges();
 
@@ -1533,6 +1556,7 @@ namespace Brady_s_Conversion_Program {
             // Now process the rest of the addresses
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_OTHER_ADDRESS ON");
 
+            added = 0;
             foreach (var address in convAddresses.Where(a => a.PrimaryFile?.ToLower() != "pat")) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1599,6 +1623,7 @@ namespace Brady_s_Conversion_Program {
                                 ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress);
                                 guarantor.AddressId = otherAddressId;
                                 otherAddressId++;
+                                added++;
                             }
                             break;
 
@@ -1614,22 +1639,27 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            var newDmgOtherAddress = new DmgOtherAddress {
-                                AddressId = otherAddressId,
-                                OwnerId = ffpmLocation.LocationId,
-                                Address1 = TruncateString(address.Address1, 50),
-                                Address2 = TruncateString(address.Address2, 50),
-                                City = TruncateString(address.City, 50),
-                                StateId = state,
-                                CountryId = country,
-                                Zip = TruncateString(zipCode, 10),
-                                IsActive = isActive,
-                                AddressType = addressType,
-                                OwnerType = 2
-                            };
-                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
-                            ffpmLocation.AddressId = otherAddressId;
-                            otherAddressId++;
+                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmLocation.LocationId && p.OwnerType == 2);
+
+                            if (otherAddress == null) {
+                                var newDmgOtherAddress = new DmgOtherAddress {
+                                    AddressId = otherAddressId,
+                                    OwnerId = ffpmLocation.LocationId,
+                                    Address1 = TruncateString(address.Address1, 50),
+                                    Address2 = TruncateString(address.Address2, 50),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = state,
+                                    CountryId = country,
+                                    Zip = TruncateString(zipCode, 10),
+                                    IsActive = isActive,
+                                    AddressType = addressType,
+                                    OwnerType = 2
+                                };
+                                ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress);
+                                ffpmLocation.AddressId = otherAddressId;
+                                otherAddressId++;
+                                added++;
+                            }
                             break;
 
                         case "prov":
@@ -1646,22 +1676,27 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            var newDmgOtherAddress2 = new DmgOtherAddress {
-                                AddressId = otherAddressId,
-                                OwnerId = ffpmProvider.ProviderId,
-                                Address1 = TruncateString(address.Address1, 50),
-                                Address2 = TruncateString(address.Address2, 50),
-                                City = TruncateString(address.City, 50),
-                                StateId = state,
-                                CountryId = country,
-                                Zip = TruncateString(zipCode, 10),
-                                IsActive = isActive,
-                                AddressType = addressType,
-                                OwnerType = 3
-                            };
-                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress2);
-                            ffpmProvider.ProviderAddressId = otherAddressId;
-                            otherAddressId++;
+                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmProvider.ProviderId && p.OwnerType == 3);
+
+                            if (otherAddress == null) {
+                                var newDmgOtherAddress2 = new DmgOtherAddress {
+                                    AddressId = otherAddressId,
+                                    OwnerId = ffpmProvider.ProviderId,
+                                    Address1 = TruncateString(address.Address1, 50),
+                                    Address2 = TruncateString(address.Address2, 50),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = state,
+                                    CountryId = country,
+                                    Zip = TruncateString(zipCode, 10),
+                                    IsActive = isActive,
+                                    AddressType = addressType,
+                                    OwnerType = 3
+                                };
+                                ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress2);
+                                ffpmProvider.ProviderAddressId = otherAddressId;
+                                otherAddressId++;
+                                added++;
+                            }
                             break;
 
                         case "ref":
@@ -1678,19 +1713,24 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            var newDmgOtherAddress3 = new DmgOtherAddress {
-                                OwnerId = ffpmReferral.RefProviderId,
-                                Address1 = TruncateString(address.Address1, 50),
-                                Address2 = TruncateString(address.Address2, 50),
-                                City = TruncateString(address.City, 50),
-                                StateId = state,
-                                CountryId = country,
-                                Zip = TruncateString(zipCode, 10),
-                                IsActive = isActive,
-                                AddressType = addressType,
-                                OwnerType = 4
-                            };
-                            ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress3);
+                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.RefProviderId && p.OwnerType == 4);
+
+                            if (otherAddress == null) {
+                                var newDmgOtherAddress3 = new DmgOtherAddress {
+                                    OwnerId = ffpmReferral.RefProviderId,
+                                    Address1 = TruncateString(address.Address1, 50),
+                                    Address2 = TruncateString(address.Address2, 50),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = state,
+                                    CountryId = country,
+                                    Zip = TruncateString(zipCode, 10),
+                                    IsActive = isActive,
+                                    AddressType = addressType,
+                                    OwnerType = 4
+                                };
+                                ffpmDbContext.DmgOtherAddresses.Add(newDmgOtherAddress3);
+                                added++;
+                            }
                             break;
 
                         case "emp":
@@ -1710,22 +1750,27 @@ namespace Brady_s_Conversion_Program {
                                 continue;
                             }
 
-                            var newOtherAddress4 = new DmgOtherAddress {
-                                AddressId = otherAddressId,
-                                OwnerId = ffpmPatientAdditional2.PatientAdditionalDetailsId,
-                                Address1 = TruncateString(address.Address1, 50),
-                                Address2 = TruncateString(address.Address2, 50),
-                                City = TruncateString(address.City, 50),
-                                StateId = state,
-                                CountryId = country,
-                                Zip = TruncateString(zipCode, 10),
-                                IsActive = isActive,
-                                AddressType = addressType,
-                                OwnerType = 5
-                            };
-                            ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress4);
-                            ffpmPatientAdditional2.EmployerAddressId = otherAddressId;
-                            otherAddressId++;
+                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmPatientAdditional2.PatientAdditionalDetailsId && p.OwnerType == 5);
+
+                            if (otherAddress == null) {
+                                var newOtherAddress4 = new DmgOtherAddress {
+                                    AddressId = otherAddressId,
+                                    OwnerId = ffpmPatientAdditional2.PatientAdditionalDetailsId,
+                                    Address1 = TruncateString(address.Address1, 50),
+                                    Address2 = TruncateString(address.Address2, 50),
+                                    City = TruncateString(address.City, 50),
+                                    StateId = state,
+                                    CountryId = country,
+                                    Zip = TruncateString(zipCode, 10),
+                                    IsActive = isActive,
+                                    AddressType = addressType,
+                                    OwnerType = 5
+                                };
+                                ffpmDbContext.DmgOtherAddresses.Add(newOtherAddress4);
+                                ffpmPatientAdditional2.EmployerAddressId = otherAddressId;
+                                otherAddressId++;
+                                added++;
+                            }
                             break;
 
                         default:
@@ -1737,6 +1782,8 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the address with ID: {address.Id}. Error: {ex.Message}");
                 }
             }
+
+            report.Log($"Other Addresses: {added} added");
 
             // Save changes for DMG_OTHER_ADDRESS
             ffpmDbContext.SaveChanges();
@@ -1752,6 +1799,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs,
                 List<DmgPatientAlert> patientAlerts) {
+            int added = 0;
             foreach (var patientAlert in convPatientAlerts) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1827,12 +1875,14 @@ namespace Brady_s_Conversion_Program {
                             AlertFlash = alertFlash
                         };
                         patientAlerts.Add(newPatientAlert);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient alert with ID: {patientAlert.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Patient Alerts: {added} added");
             ffpmDbContext.DmgPatientAlerts.UpdateRange(patientAlerts);
             ffpmDbContext.SaveChanges();
             patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
@@ -1840,6 +1890,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<ImgPatientDocument> patientDocuments) {
+            int added = 0;
             foreach (var patientDocument in convPatientDocuments) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1889,12 +1940,14 @@ namespace Brady_s_Conversion_Program {
                             IsActive = isActive
                         };
                         patientDocuments.Add(newPatientDocument);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Patient Documents: {added} added");
             ffpmDbContext.ImgPatientDocuments.UpdateRange(patientDocuments);
             ffpmDbContext.SaveChanges();
             patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
@@ -1903,6 +1956,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<InsInsuranceCompany> insuranceCompanies,
                 List<DmgPatientInsurance> patientInsurances, List<Models.Insurance> convInsuranceCompanies) {
+            int added = 0;
             foreach (var patientInsurance in convPatientInsurances) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2034,12 +2088,14 @@ namespace Brady_s_Conversion_Program {
                             IsSubscriberExistingPatient = isSubscriberExistingPatient
                         };
                         patientInsurances.Add(newPatientInsurance);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient insurance with ID: {patientInsurance.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Patient Insurances: {added} added");
             ffpmDbContext.DmgPatientInsurances.UpdateRange(patientInsurances);
             ffpmDbContext.SaveChanges();
             patientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
@@ -2047,6 +2103,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertPatientNote(List<Models.PatientNote> convPatientNotes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<DmgPatientRemark> patientNotes) {
+            int added = 0;
             foreach (var patientNote in convPatientNotes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2098,7 +2155,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-
+                    // can have multiple notes for a patient
                     var newPatientRemarks = new Brady_s_Conversion_Program.ModelsA.DmgPatientRemark {
                         PatientId = ffpmPatient.PatientId,
                         Remarks = patientNote.Note,
@@ -2108,11 +2165,13 @@ namespace Brady_s_Conversion_Program {
                         IsActive = active
                     };
                     patientNotes.Add(newPatientRemarks);
+                    added++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient note with ID: {patientNote.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Patient Notes: {added} added");
             ffpmDbContext.DmgPatientRemarks.UpdateRange(patientNotes);
             ffpmDbContext.SaveChanges();
             patientNotes = ffpmDbContext.DmgPatientRemarks.ToList();
@@ -2129,6 +2188,7 @@ namespace Brady_s_Conversion_Program {
             // Enable IDENTITY_INSERT for Subscriber
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_SUBSCRIBER ON");
 
+            int added = 0;
             foreach (var policyHolder in policyHolders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2181,6 +2241,13 @@ namespace Brady_s_Conversion_Program {
 
                     bool active = !(convPolicyPatient.Active?.ToLower() == "no" || convPolicyPatient.Active == "0");
 
+                    var subscriber = ffpmDbContext.DmgSubscribers.FirstOrDefault(s => s.PatientId == patientId);
+
+                    if (subscriber != null) {
+                        ffpmPatientInsurance.SubscriberId = subscriber.SubscriberId;
+                        continue;
+                    }
+
                     // Create new subscriber
                     var newSubscriber = new DmgSubscriber {
                         SubscriberId = subscriberId,  // Manually assigning Subscriber ID
@@ -2209,23 +2276,28 @@ namespace Brady_s_Conversion_Program {
                     // Update the patient insurance with the new subscriber ID
                     ffpmPatientInsurance.SubscriberId = subscriberId;
                     subscriberId++;
+                    added++;
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the policy holder with ID: {policyHolder.Id}. Error: {ex.Message}");
                 }
             }
 
+            report.Log($"Policy Holders: {added} added");
             // Save all changes at once
             ffpmDbContext.SaveChanges();
+            ffpmDbContext.DmgPatientInsurances.UpdateRange(ffpmPatientInsurances);
 
             // Disable IDENTITY_INSERT for Subscriber
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_SUBSCRIBER OFF");
             ffpmDbContext.SaveChanges();
+            ffpmPatientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
         }
 
 
         public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+            int added = 0;
             foreach (var provider in convProviders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2473,12 +2545,14 @@ namespace Brady_s_Conversion_Program {
                             AlternateTaxonomy20Id = taxId20
                         };
                         ffpmProviders.Add(newPatientProvider);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Providers: {added} added");
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.SaveChanges();
             ffpmProviders = ffpmDbContext.DmgProviders.ToList();
@@ -2487,6 +2561,7 @@ namespace Brady_s_Conversion_Program {
         public static void ConvertRecall(List<Models.Recall> convRecalls, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<Models.Location> convLocations, List<BillingLocation> ffpmLocations,
                 List<SchedulingPatientRecallList> patientRecallLists) {
+            int added = 0;
             foreach (var recall in convRecalls) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2556,12 +2631,14 @@ namespace Brady_s_Conversion_Program {
                             NumberOfRecallSent = number
                         };
                         patientRecallLists.Add(newRecallList);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Recalls: {added} added");
             ffpmDbContext.SchedulingPatientRecallLists.UpdateRange(patientRecallLists);
             ffpmDbContext.SaveChanges();
             patientRecallLists = ffpmDbContext.SchedulingPatientRecallLists.ToList();
@@ -2569,6 +2646,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertRecallType(List<Models.RecallType> convRecallTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<SchedulingAppointmentType> schedulingAppointmentTypes) {
+            int added = 0;
             foreach (var recallType in convRecallTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2611,12 +2689,14 @@ namespace Brady_s_Conversion_Program {
                             PatientRequired = false
                         };
                         schedulingAppointmentTypes.Add(newRecallType);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the recall type with ID: {recallType.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Recall Types: {added} added");
             ffpmDbContext.SchedulingAppointmentTypes.UpdateRange(schedulingAppointmentTypes);
             ffpmDbContext.SaveChanges();
             schedulingAppointmentTypes = ffpmDbContext.SchedulingAppointmentTypes.ToList();
@@ -2624,6 +2704,8 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertReferral(List<Models.Referral> convReferrals, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<ReferringProvider> referringProviders, List<DmgProvider> ffpmProviders) {
+            int added = 0;
+            int referralsAdded = 0;
             foreach (var referral in convReferrals) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2893,6 +2975,7 @@ namespace Brady_s_Conversion_Program {
                             AlternateTaxonomy20Id = tax20Id
                         };
                         ffpmProviders.Add(newProvider);
+                        added++;
 
                         // Handling the existing referring provider
                         if (ffpmOrig == null) {
@@ -2905,6 +2988,7 @@ namespace Brady_s_Conversion_Program {
                                 Active = isActive
                             };
                             referringProviders.Add(newReferral1);
+                            referralsAdded++;
                         }
                         
                     }
@@ -2913,6 +2997,8 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the referral with ID: {referral.Id}. Error: {e.Message}");
                 }
             }
+            report.Log($"Referring Providers: {added} added");
+            report.Log($"Referrals: {added} added");
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.ReferringProviders.UpdateRange(referringProviders);
             ffpmDbContext.SaveChanges();
@@ -2922,6 +3008,7 @@ namespace Brady_s_Conversion_Program {
 
         public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
             List<SchedulingCode> schedulingCodes) {
+            int added = 0;
             foreach (var schedCode in convSchedCodes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2963,12 +3050,14 @@ namespace Brady_s_Conversion_Program {
                             IsNoShow = noShow
                         };
                         schedulingCodes.Add(newSchedulingCode);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the scheduling code with ID: {schedCode.Id}. Error: {ex.Message}");
                 }
             }
+            report.Log($"Scheduling Codes: {added} added");
             ffpmDbContext.SchedulingCodes.UpdateRange(schedulingCodes);
             ffpmDbContext.SaveChanges();
             schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
@@ -2986,6 +3075,8 @@ namespace Brady_s_Conversion_Program {
             locations = ffpmDbContext.BillingLocations.ToList();
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
 
+            int added = 0;
+            int patAdded = 0;
             foreach (var phone in phones) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -3014,6 +3105,7 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 patientAddresses.Add(newPatientAddress);
                                 address = newPatientAddress;
+                                patAdded++;
                             }
 
                             if (phone.Type != null) {
@@ -3063,6 +3155,7 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 otherAddresses.Add(newProviderAddress);
                                 ffpmProviderAddress = newProviderAddress;
+                                added++;
                             }
                             if (phone.Type == null) {
                                 ffpmProviderAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
@@ -3109,6 +3202,7 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 otherAddresses.Add(newReferralAddress);
                                 ffpmReferralAddress = newReferralAddress;
+                                added++;
                             }
                             if (phone.Type == null) {
                                 ffpmReferralAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
@@ -3165,6 +3259,7 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 otherAddresses.Add(newGuarantorAddress);
                                 guarantorAddress = newGuarantorAddress;
+                                added++;
                             }
                             if (phone.Type == null) {
                                 guarantorAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
@@ -3193,6 +3288,7 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 otherAddresses.Add(newLocationAddress);
                                 ffpmLocationAddress = newLocationAddress;
+                                added++;
                             }
                             if (phone.Type == null) {
                                 ffpmLocationAddress.HomePhone = TruncateString(phone.PhoneNumber, 15);
@@ -3278,6 +3374,10 @@ namespace Brady_s_Conversion_Program {
                 }
             }
             ffpmDbContext.SaveChanges();
+
+            report.Log($"Patient Addresses: {patAdded} added");
+            report.Log($"Other Addresses: {added} added");
+            report.Log($"Phones: {phones.Count()} total read & converted");
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress) {
