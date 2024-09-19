@@ -412,7 +412,7 @@ namespace Brady_s_Conversion_Program {
             var convAddresses = convDbContext.Addresses.ToList();
             var phones = convDbContext.Phones.ToList();
 
-
+            report.Log($"FFPM Conversion:\n");
 
             ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
@@ -3377,7 +3377,7 @@ namespace Brady_s_Conversion_Program {
 
             report.Log($"Patient Addresses: {patAdded} added");
             report.Log($"Other Addresses: {added} added");
-            report.Log($"Phones: {phones.Count()} total read & converted");
+            report.Log($"Phones: {phones.Count()} total read & converted\n");
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress) {
@@ -3437,16 +3437,16 @@ namespace Brady_s_Conversion_Program {
             var ehrTech2s = eHRDbContext.Tech2s.ToList();
             var ross = eyeMDDbContext.Emrrosdefaults.ToList();
 
-
+            report.Log($"EHR Conversion:\n");
 
             // not even using this
             // PatientsConvert(ehrPatients, eHRDbContext, eyeMDDbContext, logger, report, progress);
-            
+
             //resultsBox.Invoke((MethodInvoker)delegate {
             //    resultsBox.AppendText("Patients converted.\n");
             //});
 
-            
+
             VisitsConvert(ehrVisits, eHRDbContext, eyeMDDbContext, logger, report, progress, visits, eyeMDPatients);
             
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -8228,7 +8228,7 @@ namespace Brady_s_Conversion_Program {
             var frameBrands = ffpmDbContext.Brands.ToList();
             var stateXrefs = ffpmDbContext.MntStates.ToList();
 
-
+            report.Log($"Inventory Conversion:\n");
 
             CLBrandsConvert(invClBrands, invDbContext, ffpmDbContext, logger, report, progress, clnsBrands);
 
@@ -10580,7 +10580,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"INV: INV An error occurred while converting the Phone with ID: {phone.Id}. Error: {e.Message}");
                 }
             }
-            report.Log($"Other Addresses: {added} added");
+            report.Log($"Other Addresses: {added} added\n");
             ffpmDbContext.DmgOtherAddresses.UpdateRange(otherAddresses);
             ffpmDbContext.SaveChanges();
             otherAddresses = ffpmDbContext.DmgOtherAddresses.ToList();
