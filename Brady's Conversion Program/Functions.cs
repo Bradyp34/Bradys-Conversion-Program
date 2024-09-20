@@ -962,7 +962,7 @@ namespace Brady_s_Conversion_Program {
                     }
 
 
-
+                    // there can be multiple appointments in a day, so dont duplicate check
                     var newAppointment = new SchedulingAppointment {
                         PatientId = patientId,
                         ResourceId = resource,
@@ -1470,21 +1470,17 @@ namespace Brady_s_Conversion_Program {
             long patientAddressId = 1;
             long otherAddressId = 1;
 
-            // Get current max IDs for patient and other addresses
             if (ffpmDbContext.DmgPatientAddresses.Any())
                 patientAddressId = ffpmDbContext.DmgPatientAddresses.Max(p => p.PatientAddressId) + 1;
             if (ffpmDbContext.DmgOtherAddresses.Any())
                 otherAddressId = ffpmDbContext.DmgOtherAddresses.Max(p => p.AddressId) + 1;
 
-            // Enable IDENTITY_INSERT for DMG_PATIENT_ADDRESS to process "pat" addresses first
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_PATIENT_ADDRESS ON");
 
-            // Load necessary data into memory
             guarantors = ffpmDbContext.DmgGuarantors.ToList();
             patientAdditionalDetails = ffpmDbContext.DmgPatientAdditionalDetails.ToList();
 
             int added = 0;
-            // Process only "pat" addresses first
             foreach (var address in convAddresses.Where(a => a.PrimaryFile?.ToLower() == "pat")) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -1551,13 +1547,10 @@ namespace Brady_s_Conversion_Program {
             }
 
             report.Log($"Patient Addresses: {added} added");
-            // Save changes for DMG_PATIENT_ADDRESS
             ffpmDbContext.SaveChanges();
 
-            // Turn off IDENTITY_INSERT for DMG_PATIENT_ADDRESS
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_PATIENT_ADDRESS OFF");
 
-            // Now process the rest of the addresses
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_OTHER_ADDRESS ON");
 
             added = 0;
@@ -1789,13 +1782,10 @@ namespace Brady_s_Conversion_Program {
 
             report.Log($"Other Addresses: {added} added");
 
-            // Save changes for DMG_OTHER_ADDRESS
             ffpmDbContext.SaveChanges();
 
-            // Turn off IDENTITY_INSERT for DMG_OTHER_ADDRESS
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_OTHER_ADDRESS OFF");
 
-            // Final save for any remaining changes
             ffpmDbContext.SaveChanges();
         }
 
