@@ -645,63 +645,67 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    DmgPatient newPatient = new DmgPatient {
-                        PatientId = patientId,
-                        DateCreated = minAcceptableDate,
-                        AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
-                        AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10),
-                        LastName = TruncateString(patient.LastName, 50),
-                        MiddleName = TruncateString(patient.MiddleName, 50),
-                        FirstName = TruncateString(patient.FirstName, 50),
-                        PreferredName = TruncateString(patient.PreferredName, 50),
-                        Ssn = TruncateString(ssn, 15),
-                        DateOfBirth = dob,
-                        MaritialStatusId = maritalStatusInt,
-                        TitleId = titleInt,
-                        IsActive = patientIsActive,
-                        IsDeceased = deceased,
-                        DeceasedDate = deceasedDate,
-                        LastExamDate = lastExamDate,
-                        PatientBalance = -1,
-                        InsuranceBalance = -1,
-                        OtherBalance = -1,
-                        GenderId = genderInt,
-                        SuffixId = suffixInt,
-                        BalanceLastUpdatedDateTime = minAcceptableDate,
-                        EmailNotApplicable = new EmailAddressAttribute().IsValid(patient.Email),
-                        DoNotSendStatements = false,
-                        EmailStatements = false,
-                        OpenEdgeCustomerId = TruncateString("", 100),
-                        TextStatements = true,
-                        LocationId = 0,
-                        LastModifiedDate = DateTime.Now,
-                        LastModifiedBy = -1
-                    };
-                    added++;
+                    var existingPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber);
 
-                    var patientAdditionalDetail = new DmgPatientAdditionalDetail {
-                        PatientId = patientId,
-                        DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
-                        DriversLicenseStateId = licenseShort,
-                        RaceId = race,
-                        EthnicityId = ethnicity,
-                        MedicareSecondaryId = medicareSecondaryId,
-                        MedicareSecondaryNotes = medicareSecondaryNotes,
-                        HippaConsent = consent,
-                        HippaConsentDate = consentDate,
-                        PreferredContactFirstId = prefContact1,
-                        PreferredContactSecondId = prefContact2,
-                        PreferredContactThirdId = prefContact3,
-                        PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
-                        DefaultLocationId = 0
-                    };
+                    if (existingPatient == null) {
+                        DmgPatient newPatient = new DmgPatient {
+                            PatientId = patientId,
+                            DateCreated = minAcceptableDate,
+                            AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                            AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10),
+                            LastName = TruncateString(patient.LastName, 50),
+                            MiddleName = TruncateString(patient.MiddleName, 50),
+                            FirstName = TruncateString(patient.FirstName, 50),
+                            PreferredName = TruncateString(patient.PreferredName, 50),
+                            Ssn = TruncateString(ssn, 15),
+                            DateOfBirth = dob,
+                            MaritialStatusId = maritalStatusInt,
+                            TitleId = titleInt,
+                            IsActive = patientIsActive,
+                            IsDeceased = deceased,
+                            DeceasedDate = deceasedDate,
+                            LastExamDate = lastExamDate,
+                            PatientBalance = -1,
+                            InsuranceBalance = -1,
+                            OtherBalance = -1,
+                            GenderId = genderInt,
+                            SuffixId = suffixInt,
+                            BalanceLastUpdatedDateTime = minAcceptableDate,
+                            EmailNotApplicable = new EmailAddressAttribute().IsValid(patient.Email),
+                            DoNotSendStatements = false,
+                            EmailStatements = false,
+                            OpenEdgeCustomerId = TruncateString("", 100),
+                            TextStatements = true,
+                            LocationId = 0,
+                            LastModifiedDate = DateTime.Now,
+                            LastModifiedBy = -1
+                        };
+                        added++;
 
-                    // Add new entities to EF Core DbContext
-                    ffpmDbContext.DmgPatients.Add(newPatient);
-                    ffpmDbContext.DmgPatientAdditionalDetails.Add(patientAdditionalDetail);
+                        var patientAdditionalDetail = new DmgPatientAdditionalDetail {
+                            PatientId = patientId,
+                            DriversLicenseNumber = TruncateString(patient.LicenseNo, 25),
+                            DriversLicenseStateId = licenseShort,
+                            RaceId = race,
+                            EthnicityId = ethnicity,
+                            MedicareSecondaryId = medicareSecondaryId,
+                            MedicareSecondaryNotes = medicareSecondaryNotes,
+                            HippaConsent = consent,
+                            HippaConsentDate = consentDate,
+                            PreferredContactFirstId = prefContact1,
+                            PreferredContactSecondId = prefContact2,
+                            PreferredContactThirdId = prefContact3,
+                            PreferredContactNotes = TruncateString(preferredContactsNotes, 500),
+                            DefaultLocationId = 0
+                        };
 
-                    patientId++; // Increment patientId after adding
-                    additionalAdded++;
+                        // Add new entities to EF Core DbContext
+                        ffpmDbContext.DmgPatients.Add(newPatient);
+                        ffpmDbContext.DmgPatientAdditionalDetails.Add(patientAdditionalDetail);
+
+                        patientId++; // Increment patientId after adding
+                        additionalAdded++;
+                    }
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the patient with ID: {patient.Id}. Error: {ex.Message}");
