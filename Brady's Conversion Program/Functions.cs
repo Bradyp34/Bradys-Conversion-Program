@@ -156,15 +156,16 @@ namespace Brady_s_Conversion_Program {
         public static string FFPMString = "";
         public static string EyeMDString = "";
 
-        public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> providerCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> billingLocationCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> billingProviderCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> recallTypes = new Dictionary<string, string>();
-        public static Dictionary<string, string> ReferralCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> appointmentLocationCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> appointmentTypeCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> appointmentProviderCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> appointmentProviderCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> appointmentLocationCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> appointmentTypeCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> billingProviderCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> billingLocationCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> recallLocationCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> recallProviderCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> recallTypeCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> referralCodes = new Dictionary<string, string>();
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
@@ -219,8 +220,8 @@ namespace Brady_s_Conversion_Program {
                                     string navCode = reader.GetString(1);   // NavCode
 
                                     // Only add if provCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(provCode) && !providerCodes.ContainsKey(provCode)) {
-                                        providerCodes.Add(provCode, navCode);
+                                    if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
+										billingProviderCodes.Add(provCode, navCode);
                                     }
                                 }
                             }
@@ -240,8 +241,8 @@ namespace Brady_s_Conversion_Program {
                                     string navCode = reader.GetString(1);   // NavCode
 
                                     // Only add if provCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(provCode) && !providerCodes.ContainsKey(provCode)) {
-                                        providerCodes.Add(provCode, navCode);
+                                    if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
+                                        recallProviderCodes.Add(provCode, navCode);
                                     }
                                 }
                             }
@@ -261,8 +262,8 @@ namespace Brady_s_Conversion_Program {
                                     string navCode = reader.GetString(1);   // NavCode
 
                                     // Only add if locCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(locCode) && !locationCodes.ContainsKey(locCode)) {
-                                        locationCodes.Add(locCode, navCode);
+                                    if (!string.IsNullOrEmpty(locCode) && !billingLocationCodes.ContainsKey(locCode)) {
+                                        billingLocationCodes.Add(locCode, navCode);
                                     }
                                 }
                             }
@@ -282,8 +283,8 @@ namespace Brady_s_Conversion_Program {
                                     string navCode = reader.GetString(1);   // NavCode
 
                                     // Only add if recallNo is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypes.ContainsKey(recallNo)) {
-                                        recallTypes.Add(recallNo, navCode);
+                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
+                                        recallTypeCodes.Add(recallNo, navCode);
                                     }
                                 }
                             }
@@ -303,8 +304,8 @@ namespace Brady_s_Conversion_Program {
                                     string navCode = reader.GetString(1);   // NavCode
 
                                     // Only add if refCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(refCode) && !ReferralCodes.ContainsKey(refCode)) {
-                                        ReferralCodes.Add(refCode, navCode);
+                                    if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
+                                        referralCodes.Add(refCode, navCode);
                                     }
                                 }
                             }
