@@ -162,207 +162,279 @@ namespace Brady_s_Conversion_Program {
 		public static Dictionary<string, string> billingProviderCodes = new Dictionary<string, string>();
 		public static Dictionary<string, string> billingLocationCodes = new Dictionary<string, string>();
 		public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> recallLocationCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> recallProviderCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> recallLocationCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> recallProviderCodes = new Dictionary<string, string>();
 		public static Dictionary<string, string> recallTypeCodes = new Dictionary<string, string>();
-        public static Dictionary<string, string> referralCodes = new Dictionary<string, string>();
+		public static Dictionary<string, string> referralCodes = new Dictionary<string, string>();
 
-        public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
-            bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
-            FFPMString = FFPMConnection;
-            EyeMDString = EyeMDConnection;
-            try {
+		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
+			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
+
+			FFPMString = FFPMConnection;
+			EyeMDString = EyeMDConnection;
+			try {
 				ILogger logger = new FileLogger("LogFiles/log.txt"); // Log file path
-                ILogger report = new FileLogger("LogFiles/report.txt"); // Report file path
+				ILogger report = new FileLogger("LogFiles/report.txt"); // Report file path
 
+				int totalEntries = 0;
 
-                int totalEntries = 0;
+				if (conv == true) { // if it is an ffpm conversion
+					using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
+						conn.Open();
 
-                if (conv == true) { // if it is an ffpm conversion
-                    // do customer info stuff here
-                    using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
-                        conn.Open();
-
-                        // SQL query to fetch OldInsCompanyId and InsCode, without hardcoding the database name
-                        string query = @"
+						// Insurance Codes Query
+						string insuranceQuery = @"
                         SELECT
                             i.InsCode,
                             i.NavCode
-                        FROM [dbo].[Insurance_Xref] i  -- Use just the schema and table name";
+                        FROM [dbo].[Insurance_Xref] i";
 
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(query, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    // Get the OldInsCompanyId (int) and InsCode (string)
-                                    string oldInsCode = reader.GetString(1);
-                                    string insCode = reader.GetString(1);
+						using (SqlCommand cmd = new SqlCommand(insuranceQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string oldInsCode = reader.GetString(1);
+									string insCode = reader.GetString(1);
 
-                                    // Add them as key-value pairs into the dictionary
-                                    if (!insuranceCodes.ContainsKey(oldInsCode)) {
-                                        insuranceCodes.Add(oldInsCode, insCode);
-                                    }
-                                }
-                            }
-                        }
+									if (!insuranceCodes.ContainsKey(oldInsCode)) {
+										insuranceCodes.Add(oldInsCode, insCode);
+									}
+								}
+							}
+						}
 
-                        string billingProviderQuery = @"
+						// Billing Provider Codes Query
+						string billingProviderQuery = @"
                         SELECT 
                             p.ProvCode,
                             p.NavCode
-                        FROM [dbo].[Billing_Provider_Xref] p;";  // Correct table alias
+                        FROM [dbo].[Billing_Provider_Xref] p";
 
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string provCode = reader.GetString(0);  // ProvCode
-                                    string navCode = reader.GetString(1);   // NavCode
+						using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string provCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
 
-                                    // Only add if provCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
+									if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
 										billingProviderCodes.Add(provCode, navCode);
-                                    }
-                                }
-                            }
-                        }
+									}
+								}
+							}
+						}
 
-                        string recallProviderQuery = @"
-                        SELECT 
-                            p.ProvCode,
-                            p.NavCode
-                        FROM [dbo].[Recall_Provider_Xref] p;";  // Correct table alias
-
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string provCode = reader.GetString(0);  // ProvCode
-                                    string navCode = reader.GetString(1);   // NavCode
-
-                                    // Only add if provCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
-                                        recallProviderCodes.Add(provCode, navCode);
-                                    }
-                                }
-                            }
-                        }
-
-                        string billingLocationQuery = @"
+						// Billing Location Codes Query
+						string billingLocationQuery = @"
                         SELECT
                             l.LocCode,
                             l.NavCode
-                        FROM [dbo].[Billing_Location_Xref] l;";  // Correct table alias
+                        FROM [dbo].[Billing_Location_Xref] l";
 
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string locCode = reader.GetString(0);  // LocCode
-                                    string navCode = reader.GetString(1);   // NavCode
+						using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string locCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
 
-                                    // Only add if locCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(locCode) && !billingLocationCodes.ContainsKey(locCode)) {
-                                        billingLocationCodes.Add(locCode, navCode);
-                                    }
-                                }
-                            }
-                        }
+									if (!string.IsNullOrEmpty(locCode) && !billingLocationCodes.ContainsKey(locCode)) {
+										billingLocationCodes.Add(locCode, navCode);
+									}
+								}
+							}
+						}
 
-                        string recallTypeQuery = @"
+						// Appointment Provider Codes Query
+						string appointmentProviderQuery = @"
+                        SELECT 
+                            ap.ProvCode,
+                            ap.NavCode
+                        FROM [dbo].[Appointment_Provider_Xref] ap";
+
+						using (SqlCommand cmd = new SqlCommand(appointmentProviderQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string provCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
+
+									if (!string.IsNullOrEmpty(provCode) && !appointmentProviderCodes.ContainsKey(provCode)) {
+										appointmentProviderCodes.Add(provCode, navCode);
+									}
+								}
+							}
+						}
+
+						// Appointment Location Codes Query
+						string appointmentLocationQuery = @"
+                        SELECT 
+                            al.LocCode,
+                            al.NavCode
+                        FROM [dbo].[Appointment_Location_Xref] al";
+
+						using (SqlCommand cmd = new SqlCommand(appointmentLocationQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string locCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
+
+									if (!string.IsNullOrEmpty(locCode) && !appointmentLocationCodes.ContainsKey(locCode)) {
+										appointmentLocationCodes.Add(locCode, navCode);
+									}
+								}
+							}
+						}
+
+						// Appointment Type Codes Query
+						string appointmentTypeQuery = @"
+                        SELECT 
+                            at.TypeCode,
+                            at.NavCode
+                        FROM [dbo].[Appointment_Type_Xref] at";
+
+						using (SqlCommand cmd = new SqlCommand(appointmentTypeQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string typeCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
+
+									if (!string.IsNullOrEmpty(typeCode) && !appointmentTypeCodes.ContainsKey(typeCode)) {
+										appointmentTypeCodes.Add(typeCode, navCode);
+									}
+								}
+							}
+						}
+
+						// Recall Provider Codes Query
+						string recallProviderQuery = @"
+                        SELECT 
+                            p.ProvCode,
+                            p.NavCode
+                        FROM [dbo].[Recall_Provider_Xref] p";
+
+						using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string provCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
+
+									if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
+										recallProviderCodes.Add(provCode, navCode);
+									}
+								}
+							}
+						}
+
+						// Recall Location Codes Query
+						string recallLocationQuery = @"
+                        SELECT 
+                            rl.LocCode,
+                            rl.NavCode
+                        FROM [dbo].[Recall_Location_Xref] rl";
+
+						using (SqlCommand cmd = new SqlCommand(recallLocationQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string locCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
+
+									if (!string.IsNullOrEmpty(locCode) && !recallLocationCodes.ContainsKey(locCode)) {
+										recallLocationCodes.Add(locCode, navCode);
+									}
+								}
+							}
+						}
+
+						// Recall Type Codes Query
+						string recallTypeQuery = @"
                         SELECT
                             r.recall_no,
                             r.NavCode
-                        FROM [dbo].[Recall_Type_Xref] r;";  // Correct table alias
+                        FROM [dbo].[Recall_Type_Xref] r";
 
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string recallNo = reader.GetString(0);  // RecallNo
-                                    string navCode = reader.GetString(1);   // NavCode
+						using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string recallNo = reader.GetString(0);
+									string navCode = reader.GetString(1);
 
-                                    // Only add if recallNo is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
-                                        recallTypeCodes.Add(recallNo, navCode);
-                                    }
-                                }
-                            }
-                        }
+									if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
+										recallTypeCodes.Add(recallNo, navCode);
+									}
+								}
+							}
+						}
 
-                        string referralQuery = @"
+						// Referral Codes Query
+						string referralQuery = @"
                         SELECT
                             r.RefCode,
                             r.NavCode
-                        FROM [dbo].[Referral_Xref] r;";  // Correct table alias
+                        FROM [dbo].[Referral_Xref] r";
 
-                        // Execute the query and read the results
-                        using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string refCode = reader.GetString(0);  // RefCode
-                                    string navCode = reader.GetString(1);   // NavCode
+						using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
+							using (SqlDataReader reader = cmd.ExecuteReader()) {
+								while (reader.Read()) {
+									string refCode = reader.GetString(0);
+									string navCode = reader.GetString(1);
 
-                                    // Only add if refCode is not empty and does not already exist in the dictionary
-                                    if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
-                                        referralCodes.Add(refCode, navCode);
-                                    }
-                                }
-                            }
-                        }
+									if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
+										referralCodes.Add(refCode, navCode);
+									}
+								}
+							}
+						}
+					}
+
+				    using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                    convDbContext.Database.OpenConnection();
+                    if (newFfpm) { // if it is a new ffpm database
+                        new FfpmContext(FFPMConnection).Database.EnsureCreated();
                     }
-                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
-                        convDbContext.Database.OpenConnection();
-                        if (newFfpm) { // if it is a new ffpm database
-                            new FfpmContext(FFPMConnection).Database.EnsureCreated();
-                        }
-                        using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                    using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
                             
-                            resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
-                                resultsBox.Text += "Foxfire Conversion Started\n";
-                            });
-                            ffpmDbContext.Database.OpenConnection();
+                        resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
+                            resultsBox.Text += "Foxfire Conversion Started\n";
+                        });
+                        ffpmDbContext.Database.OpenConnection();
 
-                            // Calculate total number of entries for progress tracking
-                            totalEntries = convDbContext.Patients.Count() +
-                                            convDbContext.Locations.Count() +
-                                            convDbContext.Appointments.Count() +
-                                            convDbContext.AppointmentTypes.Count() +
-                                            convDbContext.Insurances.Count() +
-                                            convDbContext.Providers.Count() +
-                                            convDbContext.Guarantors.Count() +
-                                            convDbContext.PolicyHolders.Count() +
-                                            convDbContext.PatientAlerts.Count() +
-                                            convDbContext.PatientDocuments.Count() +
-                                            convDbContext.PatientInsurances.Count() +
-                                            convDbContext.PatientNotes.Count() +
-                                            convDbContext.Recalls.Count() +
-                                            convDbContext.RecallTypes.Count() +
-                                            convDbContext.Referrals.Count() +
-                                            convDbContext.SchedCodes.Count() +
-                                            convDbContext.Addresses.Count() +
-                                            convDbContext.Phones.Count();
-
-
-                            // Set progress bar properties on UI thread
-                            progress.Invoke((MethodInvoker)delegate {
-                                progress.Maximum = totalEntries;
-                                progress.Step = 1;
-                                progress.Value = 0;
-                            });
+                        // Calculate total number of entries for progress tracking
+                        totalEntries = convDbContext.Patients.Count() +
+                                        convDbContext.Locations.Count() +
+                                        convDbContext.Appointments.Count() +
+                                        convDbContext.AppointmentTypes.Count() +
+                                        convDbContext.Insurances.Count() +
+                                        convDbContext.Providers.Count() +
+                                        convDbContext.Guarantors.Count() +
+                                        convDbContext.PolicyHolders.Count() +
+                                        convDbContext.PatientAlerts.Count() +
+                                        convDbContext.PatientDocuments.Count() +
+                                        convDbContext.PatientInsurances.Count() +
+                                        convDbContext.PatientNotes.Count() +
+                                        convDbContext.Recalls.Count() +
+                                        convDbContext.RecallTypes.Count() +
+                                        convDbContext.Referrals.Count() +
+                                        convDbContext.SchedCodes.Count() +
+                                        convDbContext.Addresses.Count() +
+                                        convDbContext.Phones.Count();
 
 
-                            ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox);
+                        // Set progress bar properties on UI thread
+                        progress.Invoke((MethodInvoker)delegate {
+                            progress.Maximum = totalEntries;
+                            progress.Step = 1;
+                            progress.Value = 0;
+                        });
 
-                            // Save changes to databases
-                            ffpmDbContext.SaveChanges();
-                            convDbContext.SaveChanges();
-                        }
+
+                        ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox);
+
+                        // Save changes to databases
+                        ffpmDbContext.SaveChanges();
+                        convDbContext.SaveChanges();
                     }
-                    resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
-                        resultsBox.Text += "Foxfire Conversion Successful\n";
-                    });
                 }
+                resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
+                    resultsBox.Text += "Foxfire Conversion Successful\n";
+                });
+            }
                 if (ehr == true) { // if it is (also) eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         if (newEyemd) { // if it is a new eyemd database
