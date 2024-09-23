@@ -1845,9 +1845,13 @@ namespace Brady_s_Conversion_Program {
                             if (convProvider == null) {
                                 logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
                                 continue;
-                            }
+                            } else if (convProvider.OldProviderCode == null || convProvider.OldProviderCode == "") {
+                                logger.Log($"Conv: Conv Provider code not found for address with ID: {address.Id}");
+								continue;
+							}
 
-                            var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == convProvider.OldProviderCode);
+                            string convProviderCode = convProvider.OldProviderCode;
+							var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == billingProviderCodes.GetValueOrDefault(convProviderCode));
                             if (ffpmProvider == null) {
                                 logger.Log($"Conv: FFPM Provider not found for address with ID: {address.Id}");
                                 continue;
@@ -1881,20 +1885,23 @@ namespace Brady_s_Conversion_Program {
                             if (convReferral == null) {
                                 logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
                                 continue;
-                            }
+                            } else if (convReferral.OldReferralCode == null || convReferral.OldReferralCode == "") {
+                                logger.Log($"Conv: Conv Referral code not found for address with ID: {address.Id}");
+								continue;
+							}
 
-                            var ffpmReferral = referringProviders.FirstOrDefault(p => p.FirstName == convReferral.FirstName && p.LastName == convReferral.LastName
-                                                            && p.MiddleName == convReferral.MiddleName && p.RefProviderCode == convReferral.OldReferralCode);
+                            string convReferralCode = convReferral.OldReferralCode;
+							var ffpmReferral = ffpmProviders.FirstOrDefault(p => p.IsReferringProvider && p.ProviderCode == billingProviderCodes.GetValueOrDefault(convReferralCode));
                             if (ffpmReferral == null) {
                                 logger.Log($"Conv: FFPM Referral not found for address with ID: {address.Id}");
                                 continue;
                             }
 
-                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.RefProviderId && p.OwnerType == 4);
+                            otherAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(p => p.OwnerId == ffpmReferral.ProviderId && p.OwnerType == 4);
 
                             if (otherAddress == null) {
                                 var newDmgOtherAddress3 = new DmgOtherAddress {
-                                    OwnerId = ffpmReferral.RefProviderId,
+                                    OwnerId = ffpmReferral.ProviderId,
                                     Address1 = TruncateString(address.Address1, 50),
                                     Address2 = TruncateString(address.Address2, 50),
                                     City = TruncateString(address.City, 50),
@@ -2668,15 +2675,19 @@ namespace Brady_s_Conversion_Program {
                     }
                     #endregion taxonomys
 
-
-                    var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == provider.OldProviderCode);
+                    if (provider.OldProviderCode == null || provider.OldProviderCode == "") {
+						logger.Log($"Conv: Conv Provider code not found for provider with ID: {provider.Id}");
+						continue;
+					}
+					string convProviderCode = provider.OldProviderCode;
+					var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == billingProviderCodes.GetValueOrDefault(provider.OldProviderCode));
 
                     if (ffpmOrig == null) {
                         var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
                             FirstName = TruncateString(provider.FirstName, 50),
                             MiddleName = TruncateString(provider.MiddleName, 10),
                             LastName = TruncateString(provider.LastName, 50),
-                            ProviderCode = TruncateString(provider.OldProviderCode, 15),
+                            ProviderCode = TruncateString(billingProviderCodes.GetValueOrDefault(provider.OldProviderCode), 15),
                             SuffixId = suffixInt,
                             TitleId = titleInt,
                             ProviderSsn = TruncateString(ssnString, 15),
