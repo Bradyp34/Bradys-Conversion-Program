@@ -156,7 +156,15 @@ namespace Brady_s_Conversion_Program {
         public static string FFPMString = "";
         public static string EyeMDString = "";
 
-        public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string> {};
+        public static Dictionary<string, string> insuranceCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> providerCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> billingLocationCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> billingProviderCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> recallTypes = new Dictionary<string, string>();
+        public static Dictionary<string, string> ReferralCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> appointmentLocationCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> appointmentTypeCodes = new Dictionary<string, string>();
+        public static Dictionary<string, string> appointmentProviderCodes = new Dictionary<string, string>();
 
         public static string ConvertToDB(string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
             bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
@@ -192,6 +200,111 @@ namespace Brady_s_Conversion_Program {
                                     // Add them as key-value pairs into the dictionary
                                     if (!insuranceCodes.ContainsKey(oldInsCode)) {
                                         insuranceCodes.Add(oldInsCode, insCode);
+                                    }
+                                }
+                            }
+                        }
+
+                        string billingProviderQuery = @"
+                        SELECT 
+                            p.ProvCode,
+                            p.NavCode
+                        FROM [dbo].[Billing_Provider_Xref] p;";  // Correct table alias
+
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string provCode = reader.GetString(0);  // ProvCode
+                                    string navCode = reader.GetString(1);   // NavCode
+
+                                    // Only add if provCode is not empty and does not already exist in the dictionary
+                                    if (!string.IsNullOrEmpty(provCode) && !providerCodes.ContainsKey(provCode)) {
+                                        providerCodes.Add(provCode, navCode);
+                                    }
+                                }
+                            }
+                        }
+
+                        string recallProviderQuery = @"
+                        SELECT 
+                            p.ProvCode,
+                            p.NavCode
+                        FROM [dbo].[Recall_Provider_Xref] p;";  // Correct table alias
+
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string provCode = reader.GetString(0);  // ProvCode
+                                    string navCode = reader.GetString(1);   // NavCode
+
+                                    // Only add if provCode is not empty and does not already exist in the dictionary
+                                    if (!string.IsNullOrEmpty(provCode) && !providerCodes.ContainsKey(provCode)) {
+                                        providerCodes.Add(provCode, navCode);
+                                    }
+                                }
+                            }
+                        }
+
+                        string billingLocationQuery = @"
+                        SELECT
+                            l.LocCode,
+                            l.NavCode
+                        FROM [dbo].[Billing_Location_Xref] l;";  // Correct table alias
+
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string locCode = reader.GetString(0);  // LocCode
+                                    string navCode = reader.GetString(1);   // NavCode
+
+                                    // Only add if locCode is not empty and does not already exist in the dictionary
+                                    if (!string.IsNullOrEmpty(locCode) && !locationCodes.ContainsKey(locCode)) {
+                                        locationCodes.Add(locCode, navCode);
+                                    }
+                                }
+                            }
+                        }
+
+                        string recallTypeQuery = @"
+                        SELECT
+                            r.recall_no,
+                            r.NavCode
+                        FROM [dbo].[Recall_Type_Xref] r;";  // Correct table alias
+
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string recallNo = reader.GetString(0);  // RecallNo
+                                    string navCode = reader.GetString(1);   // NavCode
+
+                                    // Only add if recallNo is not empty and does not already exist in the dictionary
+                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypes.ContainsKey(recallNo)) {
+                                        recallTypes.Add(recallNo, navCode);
+                                    }
+                                }
+                            }
+                        }
+
+                        string referralQuery = @"
+                        SELECT
+                            r.RefCode,
+                            r.NavCode
+                        FROM [dbo].[Referral_Xref] r;";  // Correct table alias
+
+                        // Execute the query and read the results
+                        using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string refCode = reader.GetString(0);  // RefCode
+                                    string navCode = reader.GetString(1);   // NavCode
+
+                                    // Only add if refCode is not empty and does not already exist in the dictionary
+                                    if (!string.IsNullOrEmpty(refCode) && !ReferralCodes.ContainsKey(refCode)) {
+                                        ReferralCodes.Add(refCode, navCode);
                                     }
                                 }
                             }
@@ -1009,13 +1122,6 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    foreach (var company in ffpmDbContext.InsInsuranceCompanies) {
-                        if (company.InsCompanyName == insurance.InsCompanyName) {
-                            logger.Log($"Conv: Conv duplicate insurance company with name: {insurance.InsCompanyName}");
-                            continue;
-                        }
-                    }
-
                     int stateId = -1;
                     var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState || s.State == insurance.InsCompanyState);
                     if (stateXref != null) {
@@ -1076,6 +1182,7 @@ namespace Brady_s_Conversion_Program {
 
                         if (code == null) {
                             logger.Log($"FFPM: FFPM Insurance company code not found (null) for insurance with ID: {insurance.Id}");
+                            continue;
                         }
                     }
                     else {
@@ -1115,7 +1222,7 @@ namespace Brady_s_Conversion_Program {
                         carrierTypeId = 2;
                     }
 
-                    var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyName == companyName);
+                    var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == code);
 
                     if (ffpmOrig == null) {
                         var newInsuranceCompany = new Brady_s_Conversion_Program.ModelsA.InsInsuranceCompany {
@@ -2627,6 +2734,21 @@ namespace Brady_s_Conversion_Program {
                         patientRecallLists.Add(newRecallList);
                         added++;
                     }
+                    /*
+                    var newAppointmentType = new Brady_s_Conversion_Program.ModelsA.SchedulingAppointmentType {
+                        IsRecallType = true,
+                        IsAppointmentType = false,
+                        IsExamType = false,
+                        Code = ,
+                        Description = ,
+                        DefaultDuration = 0,
+                        Active = true,
+                        Notes = ,
+                        LocationId = ,
+                        PatientRequired = false
+                    };
+                    appointmentTypes.Add(newAppointmentType);
+                    */
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the recall with ID: {recall.Id}. Error: {ex.Message}");
