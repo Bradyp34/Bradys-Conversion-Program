@@ -29,6 +29,7 @@ using static Azure.Core.HttpHeader;
 using System.Windows.Forms;
 using System.Configuration;
 using System.ComponentModel;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -168,7 +169,8 @@ namespace Brady_s_Conversion_Program {
         public static Dictionary<string, string> referralCodes = new Dictionary<string, string>();
 
 		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
-			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection) {
+			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection, 
+                string imageFolderPath, string imageDestinationFolderPath) {
 
 			FFPMString = FFPMConnection;
 			EyeMDString = EyeMDConnection;
@@ -178,263 +180,268 @@ namespace Brady_s_Conversion_Program {
 
 				int totalEntries = 0;
 
-				if (conv == true) { // if it is an ffpm conversion
-					using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
-						conn.Open();
+                if (conv == true) { // if it is an ffpm conversion
+                    using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
+                        conn.Open();
 
-						// Insurance Codes Query
-						string insuranceQuery = @"
+                        // Insurance Codes Query
+                        string insuranceQuery = @"
                         SELECT
                             i.InsCode,
                             i.NavCode
                         FROM [dbo].[Insurance_Xref] i";
 
-						using (SqlCommand cmd = new SqlCommand(insuranceQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string oldInsCode = reader.GetString(1);
-									string insCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(insuranceQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string oldInsCode = reader.GetString(1);
+                                    string insCode = reader.GetString(1);
 
-									if (!insuranceCodes.ContainsKey(oldInsCode)) {
-										insuranceCodes.Add(oldInsCode, insCode);
-									}
-								}
-							}
-						}
+                                    if (!insuranceCodes.ContainsKey(oldInsCode)) {
+                                        insuranceCodes.Add(oldInsCode, insCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Billing Provider Codes Query
-						string billingProviderQuery = @"
+                        // Billing Provider Codes Query
+                        string billingProviderQuery = @"
                         SELECT 
                             p.ProvCode,
                             p.NavCode
                         FROM [dbo].[Billing_Provider_Xref] p";
 
-						using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string provCode = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string provCode = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
-										billingProviderCodes.Add(provCode, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
+                                        billingProviderCodes.Add(provCode, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Billing Location Codes Query
-						string billingLocationQuery = @"
+                        // Billing Location Codes Query
+                        string billingLocationQuery = @"
                         SELECT
                             l.LocationID,
                             l.NavCode
                         FROM [dbo].[Billing_Location_Xref] l";
 
-						using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string LocationID = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string LocationID = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(LocationID) && !billingLocationCodes.ContainsKey(LocationID)) {
-										billingLocationCodes.Add(LocationID, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(LocationID) && !billingLocationCodes.ContainsKey(LocationID)) {
+                                        billingLocationCodes.Add(LocationID, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Appointment Provider Codes Query
-						string appointmentProviderQuery = @"
+                        // Appointment Provider Codes Query
+                        string appointmentProviderQuery = @"
                         SELECT 
                             ap.ProvCode,
                             ap.NavCode
                         FROM [dbo].[Appointment_Provider_Xref] ap";
 
-						using (SqlCommand cmd = new SqlCommand(appointmentProviderQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string provCode = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(appointmentProviderQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string provCode = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(provCode) && !appointmentProviderCodes.ContainsKey(provCode)) {
-										appointmentProviderCodes.Add(provCode, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(provCode) && !appointmentProviderCodes.ContainsKey(provCode)) {
+                                        appointmentProviderCodes.Add(provCode, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Appointment Location Codes Query
-						string appointmentLocationQuery = @"
+                        // Appointment Location Codes Query
+                        string appointmentLocationQuery = @"
                         SELECT 
                             al.LocationID,
                             al.NavCode
                         FROM [dbo].[Appointment_Location_Xref] al";
 
-						using (SqlCommand cmd = new SqlCommand(appointmentLocationQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string LocationID = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(appointmentLocationQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string LocationID = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(LocationID) && !appointmentLocationCodes.ContainsKey(LocationID)) {
-										appointmentLocationCodes.Add(LocationID, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(LocationID) && !appointmentLocationCodes.ContainsKey(LocationID)) {
+                                        appointmentLocationCodes.Add(LocationID, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Appointment Type Codes Query
-						string appointmentTypeQuery = @"
+                        // Appointment Type Codes Query
+                        string appointmentTypeQuery = @"
                         SELECT 
                             at.Appointment_no,
                             at.NavCode
                         FROM [dbo].[Appointment_Type_Xref] at";
 
-						using (SqlCommand cmd = new SqlCommand(appointmentTypeQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string appoinmentNo = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(appointmentTypeQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string appoinmentNo = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(appoinmentNo) && !appointmentTypeCodes.ContainsKey(appoinmentNo)) {
-										appointmentTypeCodes.Add(appoinmentNo, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(appoinmentNo) && !appointmentTypeCodes.ContainsKey(appoinmentNo)) {
+                                        appointmentTypeCodes.Add(appoinmentNo, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Recall Provider Codes Query
-						string recallProviderQuery = @"
+                        // Recall Provider Codes Query
+                        string recallProviderQuery = @"
                         SELECT 
                             p.ProvCode,
                             p.NavCode
                         FROM [dbo].[Recall_Provider_Xref] p";
 
-						using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string provCode = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string provCode = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
-										recallProviderCodes.Add(provCode, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
+                                        recallProviderCodes.Add(provCode, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Recall Location Codes Query
-						string recallLocationQuery = @"
+                        // Recall Location Codes Query
+                        string recallLocationQuery = @"
                         SELECT 
                             rl.LocationID,
                             rl.NavCode
                         FROM [dbo].[Recall_Location_Xref] rl";
 
-						using (SqlCommand cmd = new SqlCommand(recallLocationQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string LocationID = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(recallLocationQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string LocationID = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(LocationID) && !recallLocationCodes.ContainsKey(LocationID)) {
-										recallLocationCodes.Add(LocationID, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(LocationID) && !recallLocationCodes.ContainsKey(LocationID)) {
+                                        recallLocationCodes.Add(LocationID, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Recall Type Codes Query
-						string recallTypeQuery = @"
+                        // Recall Type Codes Query
+                        string recallTypeQuery = @"
                         SELECT
                             r.recall_no,
                             r.NavCode
                         FROM [dbo].[Recall_Type_Xref] r";
 
-						using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string recallNo = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string recallNo = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
-										recallTypeCodes.Add(recallNo, navCode);
-									}
-								}
-							}
-						}
+                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
+                                        recallTypeCodes.Add(recallNo, navCode);
+                                    }
+                                }
+                            }
+                        }
 
-						// Referral Codes Query
-						string referralQuery = @"
+                        // Referral Codes Query
+                        string referralQuery = @"
                         SELECT
                             r.RefCode,
                             r.NavCode
                         FROM [dbo].[Referral_Xref] r";
 
-						using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
-							using (SqlDataReader reader = cmd.ExecuteReader()) {
-								while (reader.Read()) {
-									string refCode = reader.GetString(0);
-									string navCode = reader.GetString(1);
+                        using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
+                            using (SqlDataReader reader = cmd.ExecuteReader()) {
+                                while (reader.Read()) {
+                                    string refCode = reader.GetString(0);
+                                    string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
-										referralCodes.Add(refCode, navCode);
-									}
-								}
-							}
-						}
-					}
-
-				    using (var convDbContext = new FoxfireConvContext(convConnection)) {
-                    convDbContext.Database.OpenConnection();
-                    if (newFfpm) { // if it is a new ffpm database
-                        new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                                    if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
+                                        referralCodes.Add(refCode, navCode);
+                                    }
+                                }
+                            }
+                        }
                     }
-                    using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
-                            
+
+                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
+                            using (var ehrDbContext = new EHRDbContext(ehrConnection)) {
+                                convDbContext.Database.OpenConnection();
+                                if (newFfpm) { // if it is a new ffpm database
+                                    new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                                }
+                                using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+
+                                    resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
+                                        resultsBox.Text += "Foxfire Conversion Started\n";
+                                    });
+                                    ffpmDbContext.Database.OpenConnection();
+
+                                    // Calculate total number of entries for progress tracking
+                                    totalEntries = convDbContext.Patients.Count() +
+                                                    convDbContext.Locations.Count() +
+                                                    convDbContext.Appointments.Count() +
+                                                    convDbContext.AppointmentTypes.Count() +
+                                                    convDbContext.Insurances.Count() +
+                                                    convDbContext.Providers.Count() +
+                                                    convDbContext.Guarantors.Count() +
+                                                    convDbContext.PolicyHolders.Count() +
+                                                    convDbContext.PatientAlerts.Count() +
+                                                    convDbContext.PatientDocuments.Count() +
+                                                    convDbContext.PatientInsurances.Count() +
+                                                    convDbContext.PatientNotes.Count() +
+                                                    convDbContext.Recalls.Count() +
+                                                    convDbContext.RecallTypes.Count() +
+                                                    convDbContext.Referrals.Count() +
+                                                    convDbContext.SchedCodes.Count() +
+                                                    convDbContext.Addresses.Count() +
+                                                    convDbContext.Phones.Count();
+
+
+                                    // Set progress bar properties on UI thread
+                                    progress.Invoke((MethodInvoker)delegate {
+                                        progress.Maximum = totalEntries;
+                                        progress.Step = 1;
+                                        progress.Value = 0;
+                                    });
+
+
+                                    ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, ehrDbContext, imageFolderPath, 
+                                        imageDestinationFolderPath);
+
+                                    // Save changes to databases
+                                    ffpmDbContext.SaveChanges();
+                                    convDbContext.SaveChanges();
+                                }
+                            }
+                        }
                         resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
-                            resultsBox.Text += "Foxfire Conversion Started\n";
+                            resultsBox.Text += "Foxfire Conversion Successful\n";
                         });
-                        ffpmDbContext.Database.OpenConnection();
-
-                        // Calculate total number of entries for progress tracking
-                        totalEntries = convDbContext.Patients.Count() +
-                                        convDbContext.Locations.Count() +
-                                        convDbContext.Appointments.Count() +
-                                        convDbContext.AppointmentTypes.Count() +
-                                        convDbContext.Insurances.Count() +
-                                        convDbContext.Providers.Count() +
-                                        convDbContext.Guarantors.Count() +
-                                        convDbContext.PolicyHolders.Count() +
-                                        convDbContext.PatientAlerts.Count() +
-                                        convDbContext.PatientDocuments.Count() +
-                                        convDbContext.PatientInsurances.Count() +
-                                        convDbContext.PatientNotes.Count() +
-                                        convDbContext.Recalls.Count() +
-                                        convDbContext.RecallTypes.Count() +
-                                        convDbContext.Referrals.Count() +
-                                        convDbContext.SchedCodes.Count() +
-                                        convDbContext.Addresses.Count() +
-                                        convDbContext.Phones.Count();
-
-
-                        // Set progress bar properties on UI thread
-                        progress.Invoke((MethodInvoker)delegate {
-                            progress.Maximum = totalEntries;
-                            progress.Step = 1;
-                            progress.Value = 0;
-                        });
-
-
-                        ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox);
-
-                        // Save changes to databases
-                        ffpmDbContext.SaveChanges();
-                        convDbContext.SaveChanges();
                     }
                 }
-                resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
-                    resultsBox.Text += "Foxfire Conversion Successful\n";
-                });
-            }
                 if (ehr == true) { // if it is (also) eyemd/ehr conversion
                     using (var eHRDbContext = new EHRDbContext(ehrConnection)) {
                         if (newEyemd) { // if it is a new eyemd database
@@ -547,7 +554,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         #region FFPMConversion
-        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, RichTextBox resultsBox) {
+        public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
+            RichTextBox resultsBox, EyeMdContext eyeMDDbContext, EHRDbContext ehrDbContext, string imageFolderPath, string imageDestinationFolderPath) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -665,14 +673,6 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments);
-
-
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PatientDocuments Converted\n";
-            });
-
-
             ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, insurances, patientInsurances,
                 convInsurances);
 
@@ -746,6 +746,15 @@ namespace Brady_s_Conversion_Program {
 
             resultsBox.Invoke((MethodInvoker)delegate {
                 resultsBox.Text += "Phones Converted\n";
+            });
+
+
+            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments, 
+                eyeMDDbContext, ehrDbContext, imageFolderPath, imageDestinationFolderPath, false); // patrenum will always be false until implemented
+
+
+            resultsBox.Invoke((MethodInvoker)delegate {
+                resultsBox.Text += "PatientDocuments Converted\n";
             });
         }
 
@@ -2117,72 +2126,6 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.DmgPatientAlerts.UpdateRange(patientAlerts);
             ffpmDbContext.SaveChanges();
             patientAlerts = ffpmDbContext.DmgPatientAlerts.ToList();
-        }
-
-        public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<ImgPatientDocument> patientDocuments) {
-            int added = 0;
-            foreach (var patientDocument in convPatientDocuments) {
-                progress.Invoke((MethodInvoker)delegate {
-                    progress.PerformStep();
-                });
-                try {
-                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
-                    if (convPatient == null) {
-                        logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
-                        continue;
-                    }
-                    DmgPatient? ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == convPatient.OldPatientAccountNumber);
-                    if (ffpmPatient == null) {
-                        logger.Log($"Conv: FFPM Patient not found for patient document with ID: {patientDocument.Id}");
-                        continue;
-                    }
-                    short? imageType = null;
-                    // this will be the document type id
-                    if (patientDocument.DocumentImageType != null) {
-                        if (short.TryParse(patientDocument.DocumentImageType, out short type)) {
-                            imageType = type;
-                        }
-                    }
-                    DateTime? dateDocument = null;
-                    if (patientDocument.Date != null && patientDocument.Date != "" && !int.TryParse(patientDocument.Date, out int dontCare)) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientDocument.Date, dateFormats,
-                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
-                            dateDocument = tempDateTime;
-                        }
-                    }
-                    bool? isActive = true;
-                    if (patientDocument.Active != null) {
-                        if (patientDocument.Active.ToLower() == "no" || patientDocument.Active == "0") {
-                            isActive = false;
-                        }
-                    }
-
-                    var ffpmOrig = patientDocuments.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.DocumentName == patientDocument.DocumentDescription);
-
-                    if (ffpmOrig == null) {
-                        var newPatientDocument = new Brady_s_Conversion_Program.ModelsA.ImgPatientDocument {
-                            PatientId = ffpmPatient.PatientId,
-                            DocumentType = imageType,
-                            DocumentRemarks = patientDocument.DocumentNotes,  // No need to truncate due to VARCHAR(MAX)
-                            AddedDate = dateDocument,
-                            DocumentName = TruncateString(patientDocument.DocumentDescription, 250),
-                            DocumentLocation = TruncateString(patientDocument.FilePathName, 250),
-                            IsActive = isActive
-                        };
-                        patientDocuments.Add(newPatientDocument);
-                        added++;
-                    }
-                }
-                catch (Exception ex) {
-                    logger.Log($"Conv: Conv An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
-                }
-            }
-            report.Log($"Patient Documents: {added} added");
-            ffpmDbContext.ImgPatientDocuments.UpdateRange(patientDocuments);
-            ffpmDbContext.SaveChanges();
-            patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
         }
 
         public static void ConvertPatientInsurance(List<Models.PatientInsurance> convPatientInsurances, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
@@ -3720,6 +3663,313 @@ namespace Brady_s_Conversion_Program {
             report.Log($"Patient Addresses: {patAdded} added");
             report.Log($"Other Addresses: {added} added");
             report.Log($"Phones: {phones.Count()} total read & converted\n");
+        }
+
+        public static void ConvertPatientDocument(
+    List<Models.PatientDocument> convPatientDocuments,
+    FoxfireConvContext convDbContext,
+    FfpmContext ffpmDbContext,
+    ILogger logger,
+    ILogger report,
+    ProgressBar progress,
+    List<Models.Patient> convPatients,
+    List<DmgPatient> ffpmPatients,
+    List<ImgPatientDocument> patientDocuments,
+    EyeMdContext eyeMDDbContext,
+    EHRDbContext ehrDbContext,
+    string imageSourceFolder,
+    string imageDestinationFolder,
+    bool PatRenumEyeMD) {
+            int added = 0;
+            int[] errorCount = new int[10]; // Error counts
+
+            // Define date formats if needed
+            string[] dateFormats = { "MM/dd/yyyy", "M/d/yyyy", "MM/dd/yy", "M/d/yy", "yyyy-MM-dd" };
+
+            foreach (var patientDocument in convPatientDocuments) {
+                progress.Invoke((MethodInvoker)delegate
+                {
+                    progress.PerformStep();
+                });
+                try {
+                    // Get the convPatient from convPatients using PatientID
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.Id == patientDocument.PatientId);
+                    if (convPatient == null) {
+                        logger.Log($"Conv: Conv Patient not found for patient document with ID: {patientDocument.Id}");
+                        errorCount[0]++;
+                        continue;
+                    }
+
+                    // Get the account number from convPatient
+                    string? eyeMDAcct = convPatient.OldPatientAccountNumber; // Account number
+                    if (string.IsNullOrEmpty(eyeMDAcct)) {
+                        logger.Log($"Conv: EyeMD Account Number not found for patient document with ID: {patientDocument.Id}");
+                        errorCount[0]++;
+                        continue;
+                    }
+
+                    if (PatRenumEyeMD) {
+                        eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, ffpmDbContext); // Implement this method
+                    }
+
+                    // Get patient ID from EyeMD using the account number
+                    int patientId = GetPatientIdFromEyeMd(eyeMDAcct, eyeMDDbContext); // Implement this method
+
+                    if (patientId > 0) {
+                        // Build the source file path
+                        if (string.IsNullOrEmpty(patientDocument.FilePathName)) {
+                            logger.Log($"Conv: Source file path not found for patient document with ID: {patientDocument.Id}");
+                            errorCount[1]++;
+                            continue;
+                        }
+                        string tmpName = Path.GetFileName(patientDocument.FilePathName.Replace(@"/", @"\"));
+                        string ptSrcFile = Path.Combine(imageSourceFolder, tmpName);
+
+                        // Check if the source file exists
+                        if (File.Exists(ptSrcFile)) {
+                            // Check if the file length is not zero
+                            long fileLength = new FileInfo(ptSrcFile).Length;
+                            if (fileLength != 0) {
+                                // Check if the document is not marked as "DELETE" or inactive
+                                if (string.IsNullOrEmpty(patientDocument.Active) || (patientDocument.Active.ToUpper() != "DELETE" && patientDocument.Active != "0")) {
+                                    // Get the image type from the document
+                                    string imageType = patientDocument.DocumentImageType?.Trim().ToUpper() ?? "";
+
+                                    // Replace this with hardcoded mapping
+                                    long IMGID = MapImageTypeToIMGID(imageType);
+
+                                    if (IMGID != 0) {
+                                        // Get EyeMDType array
+                                        string[] EyeMDType = GetImgXrefFromEyeMD(IMGID); // Implement this method with hardcoded data
+
+                                        if (!string.IsNullOrEmpty(EyeMDType[3])) // Check if ControlID is not empty
+                                        {
+                                            string filename = Path.GetFileName(ptSrcFile);
+                                            DateTime dos;
+
+                                            // Parse the date from the document
+                                            if (!string.IsNullOrEmpty(patientDocument.Date) &&
+                                                DateTime.TryParseExact(patientDocument.Date, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime tempDate)) {
+                                                dos = tempDate;
+                                            }
+                                            else {
+                                                dos = DateTime.Now;
+                                            }
+
+                                            // Get the visit ID from EyeMD
+                                            int visitId = GetVisitIdFromEyeMD(patientId, dos, eyeMDDbContext); // Implement this method
+
+                                            if (EyeMDType[3] != "1302") // Not PTPHOTO
+                                            {
+                                                string relFolder = visitId > 0
+                                                    ? $@"PT{patientId}\VISIT{visitId}\"
+                                                    : $@"PT{patientId}\";
+
+                                                string visitFolder = Path.Combine(imageDestinationFolder, relFolder);
+
+                                                if (!Directory.Exists(visitFolder)) {
+                                                    Directory.CreateDirectory(visitFolder);
+                                                }
+
+                                                string destFilePath = Path.Combine(visitFolder, "IMP_" + filename);
+
+                                                if (!File.Exists(destFilePath)) {
+                                                    File.Copy(ptSrcFile, destFilePath);
+                                                    AddNewEyeMDImageLink(
+                                                        patientId,
+                                                        visitId,
+                                                        dos,
+                                                        imageType,
+                                                        Path.Combine(relFolder, "IMP_" + filename),
+                                                        EyeMDType[1],
+                                                        EyeMDType[2],
+                                                        EyeMDType[3],
+                                                        eyeMDDbContext
+                                                    );
+                                                    added++;
+                                                }
+                                                else {
+                                                    // Duplicate image
+                                                    LogImage("Duplicate Image", patientDocument, logger);
+                                                    errorCount[3]++; // Increment duplicate images error count
+                                                }
+                                            }
+                                            else // PTPHOTO
+                                            {
+                                                string existLink = GetPatientPhotoInEyeMd(patientId, eyeMDDbContext);
+                                                string relFolder = $@"PT{patientId}\";
+                                                string visitFolder = Path.Combine(imageDestinationFolder, relFolder);
+
+                                                if (!Directory.Exists(visitFolder)) {
+                                                    Directory.CreateDirectory(visitFolder);
+                                                }
+
+                                                filename = $"{patientId}_PTPHOTO_{filename}";
+                                                string destFilePath = Path.Combine(visitFolder, filename);
+
+                                                if (!File.Exists(destFilePath)) {
+                                                    File.Copy(ptSrcFile, destFilePath);
+                                                }
+
+                                                if (string.IsNullOrEmpty(existLink)) {
+                                                    AddNewEyeMDImageLink(
+                                                        patientId,
+                                                        0,
+                                                        dos,
+                                                        imageType,
+                                                        Path.Combine(relFolder, filename),
+                                                        EyeMDType[1],
+                                                        EyeMDType[2],
+                                                        EyeMDType[3],
+                                                        eyeMDDbContext
+                                                    );
+                                                    added++;
+                                                }
+                                                else {
+                                                    UpdateEyeMDImageLink(
+                                                        patientId,
+                                                        dos,
+                                                        Path.Combine(relFolder, filename),
+                                                        existLink,
+                                                        eyeMDDbContext
+                                                    );
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            // Type is not valid
+                                            LogImage("No Match for Type", patientDocument, logger);
+                                            errorCount[5]++;
+                                        }
+                                    }
+                                    else {
+                                        // Marked to not convert
+                                        LogImage("Marked as Don't Convert", patientDocument, logger);
+                                        errorCount[4]++;
+                                    }
+                                }
+                                else {
+                                    // Marked as deleted
+                                    LogImage("Marked as Deleted, added to Don't Convert", patientDocument, logger);
+                                    errorCount[4]++;
+                                }
+                            }
+                            else {
+                                // File length is zero
+                                LogImage("Source File Blank", patientDocument, logger);
+                                errorCount[2]++;
+                            }
+                        }
+                        else {
+                            // Source file not found
+                            LogImage("Source File Not Found", patientDocument, logger);
+                            errorCount[1]++;
+                        }
+                    }
+                    else {
+                        // Patient ID not found
+                        LogImage("Patient ID Not Found", patientDocument, logger);
+                        errorCount[0]++;
+                    }
+                }
+                catch (Exception ex) {
+                    logger.Log($"An error occurred while converting the patient document with ID: {patientDocument.Id}. Error: {ex.Message}");
+                    errorCount[9]++;
+                }
+            }
+
+            report.Log($"Patient Documents: {added} added");
+            ffpmDbContext.ImgPatientDocuments.UpdateRange(patientDocuments);
+            ffpmDbContext.SaveChanges();
+            patientDocuments = ffpmDbContext.ImgPatientDocuments.ToList();
+        }
+
+        // Supporting methods
+
+        private static string GetNewAcctFromXref(string oldAcctNumber, FfpmContext ffpmDbContext) {
+            return oldAcctNumber; // Assume no mapping for now
+        }
+
+        private static int GetPatientIdFromEyeMd(string accountNumber, EyeMdContext eyeMDDbContext) {
+            // Implement logic to get patient ID from EyeMD using the account number
+            var patient = eyeMDDbContext.Emrpatients.FirstOrDefault(p => p.ClientSoftwarePtId == accountNumber);
+            return patient != null ? patient.PtId : 0;
+        }
+
+        private static long MapImageTypeToIMGID(string imageType) {
+            // Use a simple mapping for image types to IMGIDs, modify as needed
+            return imageType switch {
+                "PHOTO" => 1001,
+                "XRAY" => 1002,
+                "PDF" => 1003,
+                _ => 0 // No mapping found
+            };
+        }
+
+        private static string[] GetImgXrefFromEyeMD(long ImgType) {
+            // Use hardcoded values or map data as per your needs
+            return ImgType switch {
+                1001 => new string[] { "CATEGORY_PHOTO", "TYPE_PHOTO", "CLASS_PHOTO", "CONTROL_PHOTO" },
+                1002 => new string[] { "CATEGORY_XRAY", "TYPE_XRAY", "CLASS_XRAY", "CONTROL_XRAY" },
+                1003 => new string[] { "CATEGORY_PDF", "TYPE_PDF", "CLASS_PDF", "CONTROL_PDF" },
+                _ => new string[] { "", "", "", "" }
+            };
+        }
+
+        private static int GetVisitIdFromEyeMD(int patientId, DateTime dos, EyeMdContext eyeMDDbContext) {
+            // Implement logic to retrieve the visit ID based on patient ID and date of service
+            var visit = eyeMDDbContext.Emrvisits.FirstOrDefault(v => v.PtId == patientId && v.Dosdate == dos.Date);
+            return visit != null ? visit.VisitId : -1;
+        }
+
+        private static string GetPatientPhotoInEyeMd(int ptId, EyeMdContext eyeMDDbContext) {
+            // Implement logic to get existing patient photo link from EyeMD
+            var imageLink = eyeMDDbContext.EmrimagesLinkeds.FirstOrDefault(il => il.PtId == ptId && !string.IsNullOrEmpty(il.ImagePath) && il.ImagePath.Contains("PTPHOTO"));
+            return imageLink != null ? imageLink.LinkedImageId.ToString() : "";
+        }
+
+        private static void AddNewEyeMDImageLink(
+            int ptid,
+            int visitid,
+            DateTime dt,
+            string imageDescription,
+            string imagePath,
+            string imageType,
+            string docClass,
+            string controlId,
+            EyeMdContext eyeMDDbContext) {
+            var newImageLink = new Brady_s_Conversion_Program.ModelsB.EmrimagesLinked {
+                ImageDescription = imageDescription,
+                ImageDevice = 1,
+                ImagePath = imagePath,
+                ImageType = int.Parse(imageType),
+                DocumentClass = int.Parse(docClass),
+                VisitId = visitid > 0 ? (int?)visitid : null,
+                PtId = ptid,
+                ControlId = int.Parse(controlId),
+                TimeStamp = dt
+            };
+            eyeMDDbContext.EmrimagesLinkeds.Add(newImageLink);
+            eyeMDDbContext.SaveChanges();
+        }
+
+        private static void UpdateEyeMDImageLink(
+            int ptid,
+            DateTime dt,
+            string imagePath,
+            string linkId,
+            EyeMdContext eyeMDDbContext) {
+            int linkedImageId = int.Parse(linkId);
+            var imageLink = eyeMDDbContext.EmrimagesLinkeds.FirstOrDefault(il => il.LinkedImageId == linkedImageId);
+            if (imageLink != null) {
+                imageLink.ImagePath = imagePath;
+                imageLink.TimeStamp = dt;
+                eyeMDDbContext.SaveChanges();
+            }
+        }
+
+        private static void LogImage(string message, Models.PatientDocument patientDocument, ILogger logger) {
+            logger.Log($"{message}: PatientDocument ID: {patientDocument.Id}, PatientID: {patientDocument.PatientId}, FilePathName: {patientDocument.FilePathName}");
         }
 
         public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress) {

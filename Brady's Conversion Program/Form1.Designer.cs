@@ -50,6 +50,12 @@
             InvServerTextBox = new TextBox();
             CustomerInfoServerTextBox = new TextBox();
             CustomerInfoDatabaseTextBox = new TextBox();
+            DocumentsGiveText = new TextBox();
+            ImageFolderSelectButton = new Button();
+            ImageFolderTextBox = new TextBox();
+            ImageDestinationFolderTextBox = new TextBox();
+            ImageDestinationFolderSelectButton = new Button();
+            SelectDestinationBox = new TextBox();
             SuspendLayout();
             // 
             // ConvServerTextBox
@@ -251,12 +257,79 @@
             CustomerInfoDatabaseTextBox.Size = new Size(132, 23);
             CustomerInfoDatabaseTextBox.TabIndex = 22;
             // 
+            // DocumentsGiveText
+            // 
+            DocumentsGiveText.BackColor = Color.Ivory;
+            DocumentsGiveText.BorderStyle = BorderStyle.None;
+            DocumentsGiveText.Location = new Point(12, 312);
+            DocumentsGiveText.Name = "DocumentsGiveText";
+            DocumentsGiveText.ReadOnly = true;
+            DocumentsGiveText.Size = new Size(132, 16);
+            DocumentsGiveText.TabIndex = 23;
+            DocumentsGiveText.Text = "Select the image folder: ";
+            // 
+            // ImageFolderSelectButton
+            // 
+            ImageFolderSelectButton.Location = new Point(12, 331);
+            ImageFolderSelectButton.Name = "ImageFolderSelectButton";
+            ImageFolderSelectButton.Size = new Size(408, 23);
+            ImageFolderSelectButton.TabIndex = 24;
+            ImageFolderSelectButton.Text = "Select Image Folder";
+            ImageFolderSelectButton.UseVisualStyleBackColor = true;
+            ImageFolderSelectButton.Click += ImageFolderSelectButton_Click;
+            // 
+            // ImageFolderTextBox
+            // 
+            ImageFolderTextBox.BackColor = Color.Ivory;
+            ImageFolderTextBox.BorderStyle = BorderStyle.None;
+            ImageFolderTextBox.Location = new Point(150, 312);
+            ImageFolderTextBox.Name = "ImageFolderTextBox";
+            ImageFolderTextBox.ReadOnly = true;
+            ImageFolderTextBox.Size = new Size(270, 16);
+            ImageFolderTextBox.TabIndex = 25;
+            // 
+            // ImageDestinationFolderTextBox
+            // 
+            ImageDestinationFolderTextBox.BackColor = Color.Ivory;
+            ImageDestinationFolderTextBox.BorderStyle = BorderStyle.None;
+            ImageDestinationFolderTextBox.Location = new Point(174, 365);
+            ImageDestinationFolderTextBox.Name = "ImageDestinationFolderTextBox";
+            ImageDestinationFolderTextBox.ReadOnly = true;
+            ImageDestinationFolderTextBox.Size = new Size(246, 16);
+            ImageDestinationFolderTextBox.TabIndex = 28;
+            // 
+            // ImageDestinationFolderSelectButton
+            // 
+            ImageDestinationFolderSelectButton.Location = new Point(12, 384);
+            ImageDestinationFolderSelectButton.Name = "ImageDestinationFolderSelectButton";
+            ImageDestinationFolderSelectButton.Size = new Size(408, 23);
+            ImageDestinationFolderSelectButton.TabIndex = 27;
+            ImageDestinationFolderSelectButton.Text = "Select Image Destination Folder";
+            ImageDestinationFolderSelectButton.UseVisualStyleBackColor = true;
+            // 
+            // SelectDestinationBox
+            // 
+            SelectDestinationBox.BackColor = Color.Ivory;
+            SelectDestinationBox.BorderStyle = BorderStyle.None;
+            SelectDestinationBox.Location = new Point(12, 365);
+            SelectDestinationBox.Name = "SelectDestinationBox";
+            SelectDestinationBox.ReadOnly = true;
+            SelectDestinationBox.Size = new Size(156, 16);
+            SelectDestinationBox.TabIndex = 26;
+            SelectDestinationBox.Text = "Select the destination folder: ";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 312);
+            ClientSize = new Size(432, 419);
+            Controls.Add(ImageDestinationFolderTextBox);
+            Controls.Add(ImageDestinationFolderSelectButton);
+            Controls.Add(SelectDestinationBox);
+            Controls.Add(ImageFolderTextBox);
+            Controls.Add(ImageFolderSelectButton);
+            Controls.Add(DocumentsGiveText);
             Controls.Add(CustomerInfoDatabaseTextBox);
             Controls.Add(CustomerInfoServerTextBox);
             Controls.Add(InvServerTextBox);
@@ -311,5 +384,11 @@
         public TextBox InvServerTextBox;
         private TextBox CustomerInfoServerTextBox;
         private TextBox CustomerInfoDatabaseTextBox;
+        private TextBox DocumentsGiveText;
+        private Button ImageFolderSelectButton;
+        private TextBox ImageFolderTextBox;
+        private TextBox ImageDestinationFolderTextBox;
+        private Button ImageDestinationFolderSelectButton;
+        private TextBox SelectDestinationBox;
     }
 }

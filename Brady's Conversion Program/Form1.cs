@@ -19,7 +19,7 @@ namespace Brady_s_Conversion_Program
                 return;
             }
             else if (ConvCheckBox.Checked && ConvServerTextBox.Text == "") {
-                MessageBox.Show("Please enter a server name.");
+                MessageBox.Show("Please enter a server name for Conv Server on FFPM Conversion.");
                 return;
             }
             else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
@@ -32,6 +32,22 @@ namespace Brady_s_Conversion_Program
             }
             else if (ConvCheckBox.Checked && CustomerInfoDatabaseTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Customer Info database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for EyeMD database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for EyeMD database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EHRServerTextBox.Text == "") {
+                MessageBox.Show("Please enter the server name for EHR database on FFPM Conversion.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && EHRTextBox.Text == "") {
+                MessageBox.Show("Please enter the database name for EHR database on FFPM Conversion.");
                 return;
             }
             else if (EHRCheckBox.Checked && EHRServerTextBox.Text == "") {
@@ -79,11 +95,11 @@ namespace Brady_s_Conversion_Program
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
-                    customerInfoConnectionString); // this is the actual work
+                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
-            progressBar1.Invoke((MethodInvoker)delegate { 
+            progressBar1.Invoke((MethodInvoker)delegate {
                 progressBar1.Hide();
                 progressBar1.Value = 0;
             });
@@ -155,7 +171,7 @@ namespace Brady_s_Conversion_Program
                 FFPMNewDBCheckBox.Show();
             }
             else if (!ConvCheckBox.Checked) {
-                    FFPMNewDBCheckBox.Hide();
+                FFPMNewDBCheckBox.Hide();
             }
         }
 
@@ -179,6 +195,21 @@ namespace Brady_s_Conversion_Program
             InvCheckBox.Checked = false;
             FFPMNewDBCheckBox.Checked = false;
             EyeMDNewDBCheckBox.Checked = false;
+        }
+
+        private void ImageFolderSelectButton_Click(object sender, EventArgs e) {
+            // Create a new instance of FolderBrowserDialog
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()) {
+                // Optionally set the description or other properties of the dialog
+                folderBrowserDialog.Description = "Select the folder containing the images.";
+                folderBrowserDialog.ShowNewFolderButton = true;  // Allow the user to create new folders
+
+                // Show the dialog and check if the user selected a folder
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) {
+                    // Update the ImageFolderTextBox with the selected folder path
+                    ImageFolderTextBox.Text = folderBrowserDialog.SelectedPath;
+                }
+            }
         }
     }
 }
