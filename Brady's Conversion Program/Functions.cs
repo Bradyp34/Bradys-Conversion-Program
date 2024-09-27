@@ -285,18 +285,18 @@ namespace Brady_s_Conversion_Program {
 						// Appointment Type Codes Query
 						string appointmentTypeQuery = @"
                         SELECT 
-                            at.TypeCode,
+                            at.Appointment_no,
                             at.NavCode
                         FROM [dbo].[Appointment_Type_Xref] at";
 
 						using (SqlCommand cmd = new SqlCommand(appointmentTypeQuery, conn)) {
 							using (SqlDataReader reader = cmd.ExecuteReader()) {
 								while (reader.Read()) {
-									string typeCode = reader.GetString(0);
+									string appoinmentNo = reader.GetString(0);
 									string navCode = reader.GetString(1);
 
-									if (!string.IsNullOrEmpty(typeCode) && !appointmentTypeCodes.ContainsKey(typeCode)) {
-										appointmentTypeCodes.Add(typeCode, navCode);
+									if (!string.IsNullOrEmpty(appoinmentNo) && !appointmentTypeCodes.ContainsKey(appoinmentNo)) {
+										appointmentTypeCodes.Add(appoinmentNo, navCode);
 									}
 								}
 							}
@@ -2138,6 +2138,7 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
                     short? imageType = null;
+                    // this will be the document type id
                     if (patientDocument.DocumentImageType != null) {
                         if (short.TryParse(patientDocument.DocumentImageType, out short type)) {
                             imageType = type;
