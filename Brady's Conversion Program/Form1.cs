@@ -74,6 +74,14 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please enter a server and database name for EyeMD.");
                 return;
             }
+            else if (ConvCheckBox.Checked && ImageFolderTextBox.Text == "") {
+                MessageBox.Show("Please select a folder containing the images.");
+                return;
+            }
+            else if (ConvCheckBox.Checked && ImageDestinationFolderTextBox.Text == "") {
+                MessageBox.Show("Please select a folder to save the converted images.");
+                return;
+            }
             FFPMNewDBCheckBox.Hide();
             EyeMDNewDBCheckBox.Hide();
             ConvCheckBox.Hide();
@@ -208,6 +216,21 @@ namespace Brady_s_Conversion_Program
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK) {
                     // Update the ImageFolderTextBox with the selected folder path
                     ImageFolderTextBox.Text = folderBrowserDialog.SelectedPath;
+                }
+            }
+        }
+
+        private void ImageDestinationFolderSelectButton_Click(object sender, EventArgs e) {
+            // Create a new instance of FolderBrowserDialog
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()) {
+                // Optionally set the description or other properties of the dialog
+                folderBrowserDialog.Description = "Select the folder containing the images.";
+                folderBrowserDialog.ShowNewFolderButton = true;  // Allow the user to create new folders
+
+                // Show the dialog and check if the user selected a folder
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK) {
+                    // Update the ImageFolderTextBox with the selected folder path
+                    ImageDestinationFolderTextBox.Text = folderBrowserDialog.SelectedPath;
                 }
             }
         }

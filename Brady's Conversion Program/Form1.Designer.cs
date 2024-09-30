@@ -306,6 +306,7 @@
             ImageDestinationFolderSelectButton.TabIndex = 27;
             ImageDestinationFolderSelectButton.Text = "Select Image Destination Folder";
             ImageDestinationFolderSelectButton.UseVisualStyleBackColor = true;
+            ImageDestinationFolderSelectButton.Click += ImageDestinationFolderSelectButton_Click;
             // 
             // SelectDestinationBox
             // 

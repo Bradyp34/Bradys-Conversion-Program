@@ -3666,22 +3666,23 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertPatientDocument(
-    List<Models.PatientDocument> convPatientDocuments,
-    FoxfireConvContext convDbContext,
-    FfpmContext ffpmDbContext,
-    ILogger logger,
-    ILogger report,
-    ProgressBar progress,
-    List<Models.Patient> convPatients,
-    List<DmgPatient> ffpmPatients,
-    List<ImgPatientDocument> patientDocuments,
-    EyeMdContext eyeMDDbContext,
-    EHRDbContext ehrDbContext,
-    string imageSourceFolder,
-    string imageDestinationFolder,
-    bool PatRenumEyeMD) {
+            List<Models.PatientDocument> convPatientDocuments,
+            FoxfireConvContext convDbContext,
+            FfpmContext ffpmDbContext,
+            ILogger logger,
+            ILogger report,
+            ProgressBar progress,
+            List<Models.Patient> convPatients,
+            List<DmgPatient> ffpmPatients,
+            List<ImgPatientDocument> patientDocuments,
+            EyeMdContext eyeMDDbContext,
+            EHRDbContext ehrDbContext,
+            string imageSourceFolder,
+            string imageDestinationFolder,
+            bool PatRenumEyeMD) {
+
             int added = 0;
-            int[] errorCount = new int[10]; // Error counts
+            int[] errorCount = new int[10]; // Error counts as per the logic in ImportImagesIntoEyeMD
 
             // Define date formats if needed
             string[] dateFormats = { "MM/dd/yyyy", "M/d/yyyy", "MM/dd/yy", "M/d/yy", "yyyy-MM-dd" };
@@ -3699,14 +3700,14 @@ namespace Brady_s_Conversion_Program {
                         errorCount[0]++;
                         continue;
                     }
-
-                    // Get the account number from convPatient
-                    string? eyeMDAcct = convPatient.OldPatientAccountNumber; // Account number
-                    if (string.IsNullOrEmpty(eyeMDAcct)) {
-                        logger.Log($"Conv: EyeMD Account Number not found for patient document with ID: {patientDocument.Id}");
-                        errorCount[0]++;
+                    else if (convPatient.OldPatientAccountNumber == null || convPatient.OldPatientAccountNumber == "") {
+                        logger.Log($"Conv: Conv Patient account number not found for patient document with ID: {patientDocument.Id}");
+                        errorCount[1]++;
                         continue;
                     }
+
+                    // Get the account number from convPatient
+                    string eyeMDAcct = convPatient.OldPatientAccountNumber; // Account number
 
                     if (PatRenumEyeMD) {
                         eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, ffpmDbContext); // Implement this method
@@ -3716,12 +3717,12 @@ namespace Brady_s_Conversion_Program {
                     int patientId = GetPatientIdFromEyeMd(eyeMDAcct, eyeMDDbContext); // Implement this method
 
                     if (patientId > 0) {
-                        // Build the source file path
-                        if (string.IsNullOrEmpty(patientDocument.FilePathName)) {
-                            logger.Log($"Conv: Source file path not found for patient document with ID: {patientDocument.Id}");
-                            errorCount[1]++;
+                        if (patientDocument.FilePathName == null) {
+                            logger.Log($"Conv: File path name not found for patient document with ID: {patientDocument.Id}");
+                            errorCount[2]++;
                             continue;
                         }
+                        // Build the source file path
                         string tmpName = Path.GetFileName(patientDocument.FilePathName.Replace(@"/", @"\"));
                         string ptSrcFile = Path.Combine(imageSourceFolder, tmpName);
 
@@ -3735,12 +3736,12 @@ namespace Brady_s_Conversion_Program {
                                     // Get the image type from the document
                                     string imageType = patientDocument.DocumentImageType?.Trim().ToUpper() ?? "";
 
-                                    // Replace this with hardcoded mapping
-                                    long IMGID = MapImageTypeToIMGID(imageType);
+                                    // Get IMGID from the cross-reference
+                                    long IMGID = GetImgXrefFromXref(imageType, "EyeMD", ffpmDbContext); // Implement this method
 
                                     if (IMGID != 0) {
                                         // Get EyeMDType array
-                                        string[] EyeMDType = GetImgXrefFromEyeMD(IMGID); // Implement this method with hardcoded data
+                                        string[] EyeMDType = GetImgXrefFromEyeMD(IMGID, ffpmDbContext); // Implement this method
 
                                         if (!string.IsNullOrEmpty(EyeMDType[3])) // Check if ControlID is not empty
                                         {
@@ -3887,7 +3888,10 @@ namespace Brady_s_Conversion_Program {
         // Supporting methods
 
         private static string GetNewAcctFromXref(string oldAcctNumber, FfpmContext ffpmDbContext) {
-            return oldAcctNumber; // Assume no mapping for now
+            // Implement logic to get new account number based on old account number
+            /*var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(x => x.OldAccount.ToString() == oldAcctNumber);
+            return xref != null ? xref.NewAccount.ToString() : oldAcctNumber;*/
+            return oldAcctNumber; // not yet implemented
         }
 
         private static int GetPatientIdFromEyeMd(string accountNumber, EyeMdContext eyeMDDbContext) {
@@ -3896,24 +3900,22 @@ namespace Brady_s_Conversion_Program {
             return patient != null ? patient.PtId : 0;
         }
 
-        private static long MapImageTypeToIMGID(string imageType) {
-            // Use a simple mapping for image types to IMGIDs, modify as needed
-            return imageType switch {
-                "PHOTO" => 1001,
-                "XRAY" => 1002,
-                "PDF" => 1003,
-                _ => 0 // No mapping found
-            };
+        private static long GetImgXrefFromXref(string imageType, string system, FfpmContext ffpmDbContext) {
+            // Implement logic to get IMGID from image type cross-reference
+            var imgXref = ffpmDbContext.ImgImageSettings.FirstOrDefault(x => x.ImageType == imageType && x.System == system);
+            return imgXref != null ? imgXref.ImageCatId : 0;
         }
 
-        private static string[] GetImgXrefFromEyeMD(long ImgType) {
-            // Use hardcoded values or map data as per your needs
-            return ImgType switch {
-                1001 => new string[] { "CATEGORY_PHOTO", "TYPE_PHOTO", "CLASS_PHOTO", "CONTROL_PHOTO" },
-                1002 => new string[] { "CATEGORY_XRAY", "TYPE_XRAY", "CLASS_XRAY", "CONTROL_XRAY" },
-                1003 => new string[] { "CATEGORY_PDF", "TYPE_PDF", "CLASS_PDF", "CONTROL_PDF" },
-                _ => new string[] { "", "", "", "" }
-            };
+        private static string[] GetImgXrefFromEyeMD(long ImgType, FfpmContext ffpmDbContext) {
+            string[] EyeMDType = new string[4] { "", "", "", "" };
+            var xref = ffpmDbContext.ImageEyeMDXrefs.FirstOrDefault(x => x.ImageCatId == ImgType);
+            if (xref != null) {
+                EyeMDType[0] = xref.EyeMDImageCategory;
+                EyeMDType[1] = xref.EyeMDImageType.ToString();
+                EyeMDType[2] = xref.EyeMDDocumentClass.ToString();
+                EyeMDType[3] = xref.EyeMDControlID.ToString();
+            }
+            return EyeMDType;
         }
 
         private static int GetVisitIdFromEyeMD(int patientId, DateTime dos, EyeMdContext eyeMDDbContext) {
@@ -3924,7 +3926,7 @@ namespace Brady_s_Conversion_Program {
 
         private static string GetPatientPhotoInEyeMd(int ptId, EyeMdContext eyeMDDbContext) {
             // Implement logic to get existing patient photo link from EyeMD
-            var imageLink = eyeMDDbContext.EmrimagesLinkeds.FirstOrDefault(il => il.PtId == ptId && !string.IsNullOrEmpty(il.ImagePath) && il.ImagePath.Contains("PTPHOTO"));
+            var imageLink = eyeMDDbContext.EmrimagesLinkeds.FirstOrDefault(il => il.PtId == ptId && il.ImagePath != null && il.ImagePath.Contains("PTPHOTO"));
             return imageLink != null ? imageLink.LinkedImageId.ToString() : "";
         }
 
@@ -3938,7 +3940,7 @@ namespace Brady_s_Conversion_Program {
             string docClass,
             string controlId,
             EyeMdContext eyeMDDbContext) {
-            var newImageLink = new Brady_s_Conversion_Program.ModelsB.EmrimagesLinked {
+            var newImageLink = new EmrimagesLinked {
                 ImageDescription = imageDescription,
                 ImageDevice = 1,
                 ImagePath = imagePath,
