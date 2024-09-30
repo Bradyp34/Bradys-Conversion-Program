@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.ComponentModel;
 using Microsoft.IdentityModel.Tokens;
+using Brady_s_Conversion_Program.ModelsE;
 
 namespace Brady_s_Conversion_Program {
     public static class Functions {
@@ -181,218 +182,193 @@ namespace Brady_s_Conversion_Program {
 				int totalEntries = 0;
 
                 if (conv == true) { // if it is an ffpm conversion
-                    using (SqlConnection conn = new SqlConnection(customerInfoConnection)) {
-                        conn.Open();
-
+                    using (var customerInfoDbContext = new CustomerInfoContext(customerInfoConnection)) {
                         // Insurance Codes Query
-                        string insuranceQuery = @"
-                        SELECT
-                            i.InsCode,
-                            i.NavCode
-                        FROM [dbo].[Insurance_Xref] i";
+                        var insuranceList = customerInfoDbContext.InsuranceXrefs
+                            .Select(i => new { i.InsCode, i.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(insuranceQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string oldInsCode = reader.GetString(1);
-                                    string insCode = reader.GetString(1);
+                        foreach (var item in insuranceList) {
+                            if (item.InsCode == null || item.NavCode == null) {
+                                logger.Log($"Conv: Insurance Code or Nav Code is null for insurance with InsCode: {item.InsCode}");
+                                continue;
+                            }
+                            string oldInsCode = item.InsCode;
+                            string navCode = item.NavCode;
 
-                                    if (!insuranceCodes.ContainsKey(oldInsCode)) {
-                                        insuranceCodes.Add(oldInsCode, insCode);
-                                    }
-                                }
+                            if (!insuranceCodes.ContainsKey(oldInsCode)) {
+                                insuranceCodes.Add(oldInsCode, navCode);
                             }
                         }
 
                         // Billing Provider Codes Query
-                        string billingProviderQuery = @"
-                        SELECT 
-                            p.ProvCode,
-                            p.NavCode
-                        FROM [dbo].[Billing_Provider_Xref] p";
+                        var billingProviderList = customerInfoDbContext.BillingProviderXrefs
+                            .Select(p => new { p.ProvCode, p.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(billingProviderQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string provCode = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in billingProviderList) {
+                            if (item.ProvCode == null || item.NavCode == null) {
+                                logger.Log($"Conv: Billing Provider Code or Nav Code is null for provider with ProvCode: {item.ProvCode}");
+                                continue;
+                            }
+                            string provCode = item.ProvCode;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
-                                        billingProviderCodes.Add(provCode, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(provCode) && !billingProviderCodes.ContainsKey(provCode)) {
+                                billingProviderCodes.Add(provCode, navCode);
                             }
                         }
 
                         // Billing Location Codes Query
-                        string billingLocationQuery = @"
-                        SELECT
-                            l.LocationID,
-                            l.NavCode
-                        FROM [dbo].[Billing_Location_Xref] l";
+                        var billingLocationList = customerInfoDbContext.BillingLocationXrefs
+                            .Select(l => new { l.LocationId, l.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(billingLocationQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string LocationID = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in billingLocationList) {
+                            if (item.LocationId == null || item.NavCode == null) {
+                                logger.Log($"Conv: Billing Location ID or Nav Code is null for location with LocationId: {item.LocationId}");
+                                continue;
+                            }
+                            string locationID = item.LocationId;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(LocationID) && !billingLocationCodes.ContainsKey(LocationID)) {
-                                        billingLocationCodes.Add(LocationID, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(locationID) && !billingLocationCodes.ContainsKey(locationID)) {
+                                billingLocationCodes.Add(locationID, navCode);
                             }
                         }
 
                         // Appointment Provider Codes Query
-                        string appointmentProviderQuery = @"
-                        SELECT 
-                            ap.ProvCode,
-                            ap.NavCode
-                        FROM [dbo].[Appointment_Provider_Xref] ap";
+                        var appointmentProviderList = customerInfoDbContext.AppointmentProviderXrefs
+                            .Select(ap => new { ap.ProvCode, ap.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(appointmentProviderQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string provCode = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in appointmentProviderList) {
+                            if (item.ProvCode == null || item.NavCode == null) {
+                                logger.Log($"Conv: Appointment Provider Code or Nav Code is null for provider with ProvCode: {item.ProvCode}");
+                                continue;
+                            }
+                            string provCode = item.ProvCode;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(provCode) && !appointmentProviderCodes.ContainsKey(provCode)) {
-                                        appointmentProviderCodes.Add(provCode, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(provCode) && !appointmentProviderCodes.ContainsKey(provCode)) {
+                                appointmentProviderCodes.Add(provCode, navCode);
                             }
                         }
 
                         // Appointment Location Codes Query
-                        string appointmentLocationQuery = @"
-                        SELECT 
-                            al.LocationID,
-                            al.NavCode
-                        FROM [dbo].[Appointment_Location_Xref] al";
+                        var appointmentLocationList = customerInfoDbContext.AppointmentLocationXrefs
+                            .Select(al => new { al.LocationId, al.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(appointmentLocationQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string LocationID = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in appointmentLocationList) {
+                            if (item.LocationId == null || item.NavCode == null) {
+                                logger.Log($"Conv: Appointment Location ID or Nav Code is null for location with LocationId: {item.LocationId}");
+                                continue;
+                            }
+                            string locationID = item.LocationId;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(LocationID) && !appointmentLocationCodes.ContainsKey(LocationID)) {
-                                        appointmentLocationCodes.Add(LocationID, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(locationID) && !appointmentLocationCodes.ContainsKey(locationID)) {
+                                appointmentLocationCodes.Add(locationID, navCode);
                             }
                         }
 
                         // Appointment Type Codes Query
-                        string appointmentTypeQuery = @"
-                        SELECT 
-                            at.Appointment_no,
-                            at.NavCode
-                        FROM [dbo].[Appointment_Type_Xref] at";
+                        var appointmentTypeList = customerInfoDbContext.AppointmentTypeXrefs
+                            .Select(at => new { at.AppointmentNo, at.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(appointmentTypeQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string appoinmentNo = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in appointmentTypeList) {
+                            if (item.AppointmentNo == null || item.NavCode == null) {
+                                logger.Log($"Conv: Appointment Type Code or Nav Code is null for appointment with AppointmentNo: {item.AppointmentNo}");
+                                continue;
+                            }
+                            string appointmentNo = item.AppointmentNo;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(appoinmentNo) && !appointmentTypeCodes.ContainsKey(appoinmentNo)) {
-                                        appointmentTypeCodes.Add(appoinmentNo, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(appointmentNo) && !appointmentTypeCodes.ContainsKey(appointmentNo)) {
+                                appointmentTypeCodes.Add(appointmentNo, navCode);
                             }
                         }
 
                         // Recall Provider Codes Query
-                        string recallProviderQuery = @"
-                        SELECT 
-                            p.ProvCode,
-                            p.NavCode
-                        FROM [dbo].[Recall_Provider_Xref] p";
+                        var recallProviderList = customerInfoDbContext.RecallProviderXrefs
+                            .Select(p => new { p.ProvCode, p.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(recallProviderQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string provCode = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in recallProviderList) {
+                            if (item.ProvCode == null || item.NavCode == null) {
+                                logger.Log($"Conv: Recall Provider Code or Nav Code is null for provider with ProvCode: {item.ProvCode}");
+                                continue;
+                            }
+                            string provCode = item.ProvCode;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
-                                        recallProviderCodes.Add(provCode, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(provCode) && !recallProviderCodes.ContainsKey(provCode)) {
+                                recallProviderCodes.Add(provCode, navCode);
                             }
                         }
 
                         // Recall Location Codes Query
-                        string recallLocationQuery = @"
-                        SELECT 
-                            rl.LocationID,
-                            rl.NavCode
-                        FROM [dbo].[Recall_Location_Xref] rl";
+                        var recallLocationList = customerInfoDbContext.RecallLocationXrefs
+                            .Select(rl => new { rl.LocationId, rl.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(recallLocationQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string LocationID = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in recallLocationList) {
+                            if (item.LocationId == null || item.NavCode == null) {
+                                logger.Log($"Conv: Recall Location ID or Nav Code is null for location with LocationId: {item.LocationId}");
+                                continue;
+                            }
+                            string locationID = item.LocationId;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(LocationID) && !recallLocationCodes.ContainsKey(LocationID)) {
-                                        recallLocationCodes.Add(LocationID, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(locationID) && !recallLocationCodes.ContainsKey(locationID)) {
+                                recallLocationCodes.Add(locationID, navCode);
                             }
                         }
 
                         // Recall Type Codes Query
-                        string recallTypeQuery = @"
-                        SELECT
-                            r.recall_no,
-                            r.NavCode
-                        FROM [dbo].[Recall_Type_Xref] r";
+                        var recallTypeList = customerInfoDbContext.RecallTypeXrefs
+                            .Select(r => new { r.RecallNo, r.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(recallTypeQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string recallNo = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in recallTypeList) {
+                            if (item.RecallNo == null || item.NavCode == null) {
+                                logger.Log($"Conv: Recall Type Code or Nav Code is null for recall with RecallNo: {item.RecallNo}");
+                                continue;
+                            }
+                            string recallNo = item.RecallNo;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
-                                        recallTypeCodes.Add(recallNo, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(recallNo) && !recallTypeCodes.ContainsKey(recallNo)) {
+                                recallTypeCodes.Add(recallNo, navCode);
                             }
                         }
 
                         // Referral Codes Query
-                        string referralQuery = @"
-                        SELECT
-                            r.RefCode,
-                            r.NavCode
-                        FROM [dbo].[Referral_Xref] r";
+                        var referralList = customerInfoDbContext.ReferralXrefs
+                            .Select(r => new { r.RefCode, r.NavCode })
+                            .ToList();
 
-                        using (SqlCommand cmd = new SqlCommand(referralQuery, conn)) {
-                            using (SqlDataReader reader = cmd.ExecuteReader()) {
-                                while (reader.Read()) {
-                                    string refCode = reader.GetString(0);
-                                    string navCode = reader.GetString(1);
+                        foreach (var item in referralList) {
+                            if (item.RefCode == null || item.NavCode == null) {
+                                logger.Log($"Conv: Referral Code or Nav Code is null for referral with RefCode: {item.RefCode}");
+                                continue;
+                            }
+                            string refCode = item.RefCode;
+                            string navCode = item.NavCode;
 
-                                    if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
-                                        referralCodes.Add(refCode, navCode);
-                                    }
-                                }
+                            if (!string.IsNullOrEmpty(refCode) && !referralCodes.ContainsKey(refCode)) {
+                                referralCodes.Add(refCode, navCode);
                             }
                         }
-                    }
-
-                    using (var convDbContext = new FoxfireConvContext(convConnection)) {
-                        using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
-                            using (var ehrDbContext = new EHRDbContext(ehrConnection)) {
-                                convDbContext.Database.OpenConnection();
-                                if (newFfpm) { // if it is a new ffpm database
-                                    new FfpmContext(FFPMConnection).Database.EnsureCreated();
-                                }
+                        using (var convDbContext = new FoxfireConvContext(convConnection)) {
+                            using (var eyeMDDbContext = new EyeMdContext(EyeMDConnection)) {
                                 using (var ffpmDbContext = new FfpmContext(FFPMConnection)) {
+                                    convDbContext.Database.OpenConnection();
+                                    if (newFfpm) { // if it is a new ffpm database
+                                        new FfpmContext(FFPMConnection).Database.EnsureCreated();
+                                    }
 
                                     resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
                                         resultsBox.Text += "Foxfire Conversion Started\n";
@@ -428,18 +404,18 @@ namespace Brady_s_Conversion_Program {
                                     });
 
 
-                                    ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, ehrDbContext, imageFolderPath, 
-                                        imageDestinationFolderPath);
+                                    ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, imageFolderPath,
+                                        imageDestinationFolderPath, customerInfoDbContext);
 
                                     // Save changes to databases
                                     ffpmDbContext.SaveChanges();
                                     convDbContext.SaveChanges();
                                 }
                             }
+                            resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
+                                resultsBox.Text += "Foxfire Conversion Successful\n";
+                            });
                         }
-                        resultsBox.Invoke((MethodInvoker)delegate { // change the results box text
-                            resultsBox.Text += "Foxfire Conversion Successful\n";
-                        });
                     }
                 }
                 if (ehr == true) { // if it is (also) eyemd/ehr conversion
@@ -555,7 +531,7 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
-            RichTextBox resultsBox, EyeMdContext eyeMDDbContext, EHRDbContext ehrDbContext, string imageFolderPath, string imageDestinationFolderPath) {
+            RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -750,7 +726,7 @@ namespace Brady_s_Conversion_Program {
 
 
             ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments, 
-                eyeMDDbContext, ehrDbContext, imageFolderPath, imageDestinationFolderPath, false); // patrenum will always be false until implemented
+                eyeMDDbContext, imageFolderPath, imageDestinationFolderPath, false, customerInfoDbContext); // patrenum will always be false until implemented
 
 
             resultsBox.Invoke((MethodInvoker)delegate {
@@ -3665,21 +3641,10 @@ namespace Brady_s_Conversion_Program {
             report.Log($"Phones: {phones.Count()} total read & converted\n");
         }
 
-        public static void ConvertPatientDocument(
-            List<Models.PatientDocument> convPatientDocuments,
-            FoxfireConvContext convDbContext,
-            FfpmContext ffpmDbContext,
-            ILogger logger,
-            ILogger report,
-            ProgressBar progress,
-            List<Models.Patient> convPatients,
-            List<DmgPatient> ffpmPatients,
-            List<ImgPatientDocument> patientDocuments,
-            EyeMdContext eyeMDDbContext,
-            EHRDbContext ehrDbContext,
-            string imageSourceFolder,
-            string imageDestinationFolder,
-            bool PatRenumEyeMD) {
+        public static void ConvertPatientDocument(List<Models.PatientDocument> convPatientDocuments, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
+            ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients,
+                List<ImgPatientDocument> patientDocuments, EyeMdContext eyeMDDbContext, string imageSourceFolder, string imageDestinationFolder,
+                    bool PatRenumEyeMD, CustomerInfoContext customerInfoDbContext) {
 
             int added = 0;
             int[] errorCount = new int[10]; // Error counts as per the logic in ImportImagesIntoEyeMD
@@ -3710,7 +3675,7 @@ namespace Brady_s_Conversion_Program {
                     string eyeMDAcct = convPatient.OldPatientAccountNumber; // Account number
 
                     if (PatRenumEyeMD) {
-                        eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, ffpmDbContext); // Implement this method
+                        eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, customerInfoDbContext); // Implement this method
                     }
 
                     // Get patient ID from EyeMD using the account number
@@ -3737,11 +3702,11 @@ namespace Brady_s_Conversion_Program {
                                     string imageType = patientDocument.DocumentImageType?.Trim().ToUpper() ?? "";
 
                                     // Get IMGID from the cross-reference
-                                    long IMGID = GetImgXrefFromXref(imageType, "EyeMD", ffpmDbContext); // Implement this method
+                                    long IMGID = GetImgXrefFromXref(imageType, "EyeMD", customerInfoDbContext); // Implement this method
 
                                     if (IMGID != 0) {
                                         // Get EyeMDType array
-                                        string[] EyeMDType = GetImgXrefFromEyeMD(IMGID, ffpmDbContext); // Implement this method
+                                        string[] EyeMDType = GetImgXrefFromEyeMD(IMGID, customerInfoDbContext); // Implement this method
 
                                         if (!string.IsNullOrEmpty(EyeMDType[3])) // Check if ControlID is not empty
                                         {
@@ -3887,9 +3852,9 @@ namespace Brady_s_Conversion_Program {
 
         // Supporting methods
 
-        private static string GetNewAcctFromXref(string oldAcctNumber, FfpmContext ffpmDbContext) {
+        private static string GetNewAcctFromXref(string oldAcctNumber, CustomerInfoContext customerInfoDbContext) {
             // Implement logic to get new account number based on old account number
-            /*var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(x => x.OldAccount.ToString() == oldAcctNumber);
+            /*var xref = customerInfoDbContext.AccountXrefs.FirstOrDefault(x => x.OldAccount.ToString() == oldAcctNumber);
             return xref != null ? xref.NewAccount.ToString() : oldAcctNumber;*/
             return oldAcctNumber; // not yet implemented
         }
@@ -3900,20 +3865,46 @@ namespace Brady_s_Conversion_Program {
             return patient != null ? patient.PtId : 0;
         }
 
-        private static long GetImgXrefFromXref(string imageType, string system, FfpmContext ffpmDbContext) {
+        private static long GetImgXrefFromXref(string imageType, string system, CustomerInfoContext customerInfoDbContext) {
             // Implement logic to get IMGID from image type cross-reference
-            var imgXref = ffpmDbContext.ImgImageSettings.FirstOrDefault(x => x.ImageType == imageType && x.System == system);
-            return imgXref != null ? imgXref.ImageCatId : 0;
+            var imgXref = customerInfoDbContext.ImageXrefs.FirstOrDefault(x => x.ImageTypeOld == imageType);
+            if (imgXref == null) {
+                return -1;
+            }
+            if (system.ToUpper() == "FFPM") {
+                if (imgXref.FfpmImageSetting == null || imgXref.FfpmImageSetting < 0) {
+                    return -1;
+                }
+                return (long)imgXref.FfpmImageSetting;
+            }
+            else if (system.ToUpper() == "EYEMD") {
+                if (imgXref.EyeMdImageSetting == null || imgXref.EyeMdImageSetting < 0) {
+                    return -1;
+                }
+                return (long)imgXref.EyeMdImageSetting;
+            }
+            else {
+                return -1;
+            }
         }
 
-        private static string[] GetImgXrefFromEyeMD(long ImgType, FfpmContext ffpmDbContext) {
+        private static string[] GetImgXrefFromEyeMD(long ImgType, CustomerInfoContext customerInfoDbContext) {
             string[] EyeMDType = new string[4] { "", "", "", "" };
-            var xref = ffpmDbContext.ImageEyeMDXrefs.FirstOrDefault(x => x.ImageCatId == ImgType);
+            var xref = customerInfoDbContext.ImageEyeMdXrefs.FirstOrDefault(x => x.ImageCatId == ImgType);
             if (xref != null) {
-                EyeMDType[0] = xref.EyeMDImageCategory;
-                EyeMDType[1] = xref.EyeMDImageType.ToString();
-                EyeMDType[2] = xref.EyeMDDocumentClass.ToString();
-                EyeMDType[3] = xref.EyeMDControlID.ToString();
+                if (xref.EyeMdImageCategory != null && xref.EyeMdImageType != null && xref.EyeMdDocumentClass != null && xref.EyeMdControlId != null) {
+                    EyeMDType[0] = xref.EyeMdImageCategory;
+#pragma warning disable CS8601 // Possible null reference assignment.
+                    EyeMDType[1] = xref.EyeMdImageType.ToString();
+                    EyeMDType[2] = xref.EyeMdDocumentClass.ToString();
+                    EyeMDType[3] = xref.EyeMdControlId.ToString();
+#pragma warning restore CS8601 // Possible null reference assignment.
+                }
+                else {
+                    for (int i = 0; i < 4; i++) {
+                        EyeMDType[i] = "-1";
+                    }
+                }
             }
             return EyeMDType;
         }
