@@ -3649,9 +3649,6 @@ namespace Brady_s_Conversion_Program {
             int added = 0;
             int[] errorCount = new int[10]; // Error counts as per the logic in ImportImagesIntoEyeMD
 
-            // Define date formats if needed
-            string[] dateFormats = { "MM/dd/yyyy", "M/d/yyyy", "MM/dd/yy", "M/d/yy", "yyyy-MM-dd" };
-
             foreach (var patientDocument in convPatientDocuments) {
                 progress.Invoke((MethodInvoker)delegate
                 {
