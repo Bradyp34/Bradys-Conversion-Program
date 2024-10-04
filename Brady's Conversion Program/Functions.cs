@@ -171,7 +171,7 @@ namespace Brady_s_Conversion_Program {
 
 		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
 			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection, 
-                string imageFolderPath, string imageDestinationFolderPath) {
+                string imageFolderPath, string imageDestinationFolderPath, bool renumbering) {
 
 			FFPMString = FFPMConnection;
 			EyeMDString = EyeMDConnection;

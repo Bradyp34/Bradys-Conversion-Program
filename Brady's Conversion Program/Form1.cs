@@ -11,7 +11,8 @@ namespace Brady_s_Conversion_Program
             progressBar1.Hide();
             EyeMDNewDBCheckBox.Hide();
             FFPMNewDBCheckBox.Hide();
-        }
+			RenumAccsCheckBox.Hide();
+		}
 
         private void DBBeginButton_Click(object sender, EventArgs e) {
             if (!(ConvCheckBox.Checked || EHRCheckBox.Checked || InvCheckBox.Checked)) {
@@ -83,7 +84,8 @@ namespace Brady_s_Conversion_Program
                 return;
             }
             FFPMNewDBCheckBox.Hide();
-            EyeMDNewDBCheckBox.Hide();
+            RenumAccsCheckBox.Hide();
+			EyeMDNewDBCheckBox.Hide();
             ConvCheckBox.Hide();
             EHRCheckBox.Hide();
             InvCheckBox.Hide();
@@ -103,7 +105,7 @@ namespace Brady_s_Conversion_Program
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
-                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text); // this is the actual work
+                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
@@ -117,7 +119,10 @@ namespace Brady_s_Conversion_Program
                     FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
                         FFPMNewDBCheckBox.Show();
                     });
-                }
+                    RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
+						RenumAccsCheckBox.Show();
+					});
+				}
             });
             EHRCheckBox.Invoke((MethodInvoker)delegate {
                 EHRCheckBox.Show();
@@ -133,14 +138,22 @@ namespace Brady_s_Conversion_Program
                     FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
                         FFPMNewDBCheckBox.Show();
                     });
-                }
+                    RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
+                        RenumAccsCheckBox.Show();
+                    });
+				}
             });
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
                     FFPMNewDBCheckBox.Show();
                 });
             }
-            if (EyeMDNewDBCheckBox.Checked) {
+            if (RenumAccsCheckBox.Checked) {
+				RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
+					RenumAccsCheckBox.Show();
+				});
+			}
+			if (EyeMDNewDBCheckBox.Checked) {
                 EyeMDNewDBCheckBox.Invoke((MethodInvoker)delegate {
                     EyeMDNewDBCheckBox.Show();
                 });
@@ -154,12 +167,16 @@ namespace Brady_s_Conversion_Program
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Checked = false;
             }
-            if (ConvCheckBox.Checked) {
+			if (RenumAccsCheckBox.Checked) {
+				RenumAccsCheckBox.Checked = false;
+			}
+			if (ConvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Show();
-            }
+				RenumAccsCheckBox.Show();
+			}
             else if (!InvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Hide();
-            }
+			}
         }
 
         private void EhrCheckBox_CheckedChanged(object sender, EventArgs e) {
@@ -202,7 +219,8 @@ namespace Brady_s_Conversion_Program
             EHRCheckBox.Checked = false;
             InvCheckBox.Checked = false;
             FFPMNewDBCheckBox.Checked = false;
-            EyeMDNewDBCheckBox.Checked = false;
+			RenumAccsCheckBox.Checked = false;
+			EyeMDNewDBCheckBox.Checked = false;
         }
 
         private void ImageFolderSelectButton_Click(object sender, EventArgs e) {
