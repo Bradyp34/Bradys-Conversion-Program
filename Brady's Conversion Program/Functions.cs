@@ -183,6 +183,7 @@ namespace Brady_s_Conversion_Program {
 
                 if (conv == true) { // if it is an ffpm conversion
                     using (var customerInfoDbContext = new CustomerInfoContext(customerInfoConnection)) {
+
                         // Insurance Codes Query
                         var insuranceList = customerInfoDbContext.InsuranceXrefs
                             .Select(i => new { i.InsCode, i.NavCode })
@@ -405,7 +406,7 @@ namespace Brady_s_Conversion_Program {
 
 
                                     ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, imageFolderPath,
-                                        imageDestinationFolderPath, customerInfoDbContext);
+                                        imageDestinationFolderPath, customerInfoDbContext, renumbering);
 
                                     // Save changes to databases
                                     ffpmDbContext.SaveChanges();
@@ -531,7 +532,8 @@ namespace Brady_s_Conversion_Program {
 
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
-            RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext) {
+            RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext,
+                bool renumbering) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -593,7 +595,7 @@ namespace Brady_s_Conversion_Program {
 
 
             PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
-                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs);
+                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering);
 
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
@@ -735,22 +737,32 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-            List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
-                List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
-                    List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs) {
+    List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
+        List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
+            List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, bool renumbering) {
+
             long patientId = 1;
             if (ffpmDbContext.DmgPatients.Any()) {
                 patientId = ffpmDbContext.DmgPatients.Max(p => p.PatientId) + 1;
             }
+
             // Enable IDENTITY_INSERT
             ffpmDbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT DMG_PATIENT ON");
 
             int added = 0;
             int additionalAdded = 0;
+
+            // Initialize new account number for renumbering if needed
+            int newAccountNumber = 10000;
+            if (renumbering && ffpmDbContext.DmgPatients.Any()) {
+                newAccountNumber = ffpmDbContext.DmgPatients.Max(p => int.Parse(p.AccountNumber)) + 1; // Continue from the highest existing account number
+            }
+
             foreach (var patient in convPatients) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
                     if (patient.LastName == null) {
                         logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
@@ -816,13 +828,22 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
+                    // Check for an existing patient in DMG_PATIENT by Account Number
                     var existingPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == patient.OldPatientAccountNumber);
 
                     if (existingPatient == null) {
+                        // Use the renumbering flag to decide if a new account number should be assigned
+                        string accountNumberToUse = renumbering
+                            ? (patient.OldPatientAccountNumber ?? newAccountNumber.ToString()) // If renumbering, use either the old account or new number
+                            : (patient.OldPatientAccountNumber ?? ""); // If not renumbering, default to an empty string if OldPatientAccountNumber is null
+
+
+                        if (renumbering) newAccountNumber++; // Increment the new account number only if renumbering is enabled
+
                         DmgPatient newPatient = new DmgPatient {
                             PatientId = patientId,
                             DateCreated = minAcceptableDate,
-                            AccountNumber = TruncateString(patient.OldPatientAccountNumber, 10),
+                            AccountNumber = TruncateString(accountNumberToUse, 10),
                             AltAccountNumber = TruncateString(patient.OldPatientAltAccountNumber, 10),
                             LastName = TruncateString(patient.LastName, 50),
                             MiddleName = TruncateString(patient.MiddleName, 50),
@@ -885,6 +906,7 @@ namespace Brady_s_Conversion_Program {
 
             report.Log($"Additional Details: {additionalAdded} added");
             report.Log($"Patients: {added} added");
+
             // Save all changes at the end
             ffpmDbContext.SaveChanges();
 
