@@ -57,6 +57,7 @@
             ImageDestinationFolderSelectButton = new Button();
             SelectDestinationBox = new TextBox();
             RenumAccsCheckBox = new CheckBox();
+            MaintanenceOnlyCheckBox = new CheckBox();
             SuspendLayout();
             // 
             // ConvServerTextBox
@@ -330,12 +331,23 @@
             RenumAccsCheckBox.Text = "Renumber Accounts";
             RenumAccsCheckBox.UseVisualStyleBackColor = true;
             // 
+            // MaintanenceOnlyCheckBox
+            // 
+            MaintanenceOnlyCheckBox.AutoSize = true;
+            MaintanenceOnlyCheckBox.Location = new Point(12, 413);
+            MaintanenceOnlyCheckBox.Name = "MaintanenceOnlyCheckBox";
+            MaintanenceOnlyCheckBox.Size = new Size(123, 19);
+            MaintanenceOnlyCheckBox.TabIndex = 30;
+            MaintanenceOnlyCheckBox.Text = "Maintanence Only";
+            MaintanenceOnlyCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
-            ClientSize = new Size(432, 419);
+            ClientSize = new Size(432, 437);
+            Controls.Add(MaintanenceOnlyCheckBox);
             Controls.Add(RenumAccsCheckBox);
             Controls.Add(ImageDestinationFolderTextBox);
             Controls.Add(ImageDestinationFolderSelectButton);
@@ -404,5 +416,6 @@
         private Button ImageDestinationFolderSelectButton;
         private TextBox SelectDestinationBox;
 		private CheckBox RenumAccsCheckBox;
-	}
+        private CheckBox MaintanenceOnlyCheckBox;
+    }
 }

@@ -19,59 +19,59 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please select at least one database to convert.");
                 return;
             }
-            else if (ConvCheckBox.Checked && ConvServerTextBox.Text == "") {
+            if (ConvCheckBox.Checked && ConvServerTextBox.Text == "") {
                 MessageBox.Show("Please enter a server name for Conv Server on FFPM Conversion.");
                 return;
             }
-            else if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
+            if (ConvCheckBox.Checked && ConvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Conv Database on FFPM Conversion.");
                 return;
             }
-            else if (ConvCheckBox.Checked && CustomerInfoServerTextBox.Text == "") {
+            if (ConvCheckBox.Checked && CustomerInfoServerTextBox.Text == "") {
                 MessageBox.Show("Please enter the server name for Customer Info database on FFPM Conversion.");
                 return;
             }
-            else if (ConvCheckBox.Checked && CustomerInfoDatabaseTextBox.Text == "") {
+            if (ConvCheckBox.Checked && CustomerInfoDatabaseTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Customer Info database on FFPM Conversion.");
                 return;
             }
-            else if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
+            if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
                 MessageBox.Show("Please enter the server name for EyeMD database on FFPM Conversion.");
                 return;
             }
-            else if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
+            if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for EyeMD database on FFPM Conversion.");
                 return;
             }
-            else if (EHRCheckBox.Checked && EHRServerTextBox.Text == "") {
+            if (EHRCheckBox.Checked && EHRServerTextBox.Text == "") {
                 MessageBox.Show("Please enter the server name for EHR database on EyeMD Conversion.");
                 return;
             }
-            else if (EHRCheckBox.Checked && EHRTextBox.Text == "") {
+            if (EHRCheckBox.Checked && EHRTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for EHR Database on EyeMD Conversion.");
                 return;
             }
-            else if (InvCheckBox.Checked && InvServerTextBox.Text == "") {
+            if (InvCheckBox.Checked && InvServerTextBox.Text == "") {
                 MessageBox.Show("Please enter the server name for Inv database on Conversion.");
                 return;
             }
-            else if (InvCheckBox.Checked && InvTextBox.Text == "") {
+            if (InvCheckBox.Checked && InvTextBox.Text == "") {
                 MessageBox.Show("Please enter the database name for Inv Database on Conversion.");
                 return;
             }
-            else if ((FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") && ConvCheckBox.Checked) {
+            if ((FFPMServerTextBox.Text == "" || FFPMDataBaseTextBox.Text == "") && ConvCheckBox.Checked) {
                 MessageBox.Show("Please enter a server and database name for FFPM.");
                 return;
             }
-            else if ((EyeMDServerNameTextBox.Text == "" || EyeMDDBTextBox.Text == "") && EHRCheckBox.Checked) {
+            if ((EyeMDServerNameTextBox.Text == "" || EyeMDDBTextBox.Text == "") && EHRCheckBox.Checked) {
                 MessageBox.Show("Please enter a server and database name for EyeMD.");
                 return;
             }
-            else if (ConvCheckBox.Checked && ImageFolderTextBox.Text == "") {
+            if (ConvCheckBox.Checked && ImageFolderTextBox.Text == "" && !MaintanenceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please select a folder containing the images.");
                 return;
             }
-            else if (ConvCheckBox.Checked && ImageDestinationFolderTextBox.Text == "") {
+            if (ConvCheckBox.Checked && ImageDestinationFolderTextBox.Text == "" && !MaintanenceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please select a folder to save the converted images.");
                 return;
             }
@@ -97,7 +97,7 @@ namespace Brady_s_Conversion_Program
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
-                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked); // this is the actual work
+                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked, MaintanenceOnlyCheckBox.Checked); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });

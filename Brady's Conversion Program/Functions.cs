@@ -171,7 +171,7 @@ namespace Brady_s_Conversion_Program {
 
 		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
 			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection, 
-                string imageFolderPath, string imageDestinationFolderPath, bool renumbering) {
+                string imageFolderPath, string imageDestinationFolderPath, bool renumbering, bool maintanenceOnly) {
 
 			FFPMString = FFPMConnection;
 			EyeMDString = EyeMDConnection;
@@ -406,7 +406,7 @@ namespace Brady_s_Conversion_Program {
 
 
                                     ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, imageFolderPath,
-                                        imageDestinationFolderPath, customerInfoDbContext, renumbering);
+                                        imageDestinationFolderPath, customerInfoDbContext, renumbering, maintanenceOnly);
 
                                     // Save changes to databases
                                     ffpmDbContext.SaveChanges();
@@ -535,7 +535,7 @@ namespace Brady_s_Conversion_Program {
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
             RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext,
-                bool renumbering) {
+                bool renumbering, bool maintanenceOnly) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -595,15 +595,17 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Locations Converted\n";
             });
 
-/*
-            PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
-                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
 
-            ffpmPatients = ffpmDbContext.DmgPatients.ToList();
-            resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
-                resultsBox.Text += "Patients Converted\n";
-            });
-*/
+            if (!maintanenceOnly) {
+                PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
+                    raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
+
+                ffpmPatients = ffpmDbContext.DmgPatients.ToList();
+                resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
+                    resultsBox.Text += "Patients Converted\n";
+                });
+            }
+
             // moved the foreach loops into the functions
             ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -645,39 +647,40 @@ namespace Brady_s_Conversion_Program {
             });
 
 
-            /*ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
+            if (!maintanenceOnly) {
+                ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PatientAlerts Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "PatientAlerts Converted\n";
+                });
 
 
-            ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, insurances, patientInsurances,
-                convInsurances);
+                ConvertPatientInsurance(convPatientInsurances, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, insurances, patientInsurances,
+                    convInsurances);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PatientInsurances Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "PatientInsurances Converted\n";
+                });
 
 
-            ConvertPatientNote(convPatientNotes, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientNotes);
+                ConvertPatientNote(convPatientNotes, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientNotes);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PatientNotes Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "PatientNotes Converted\n";
+                });
 
 
-            ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, report, progress, convPatientInsurances, convPatients, ffpmPatients,
-                patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs);
+                ConvertPolicyHolder(policyHolders, convDbContext, ffpmDbContext, logger, report, progress, convPatientInsurances, convPatients, ffpmPatients,
+                    patientInsurances, titleXrefs, suffixXrefs, relationshipXrefs);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PolicyHolders Converted\n";
-            });
-*/
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "PolicyHolders Converted\n";
+                });
+            }
 
             ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
 
@@ -686,14 +689,15 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "RecallTypes Converted\n";
             });
 
-/*
-            ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
+
+            if (!maintanenceOnly) {
+                ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Recalls Converted\n";
-            });
-*/
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Recalls Converted\n";
+                });
+            }
 
             ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
@@ -702,40 +706,42 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Text += "Referrals Converted\n";
             });
 
-/*
-            ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
+
+            if (!maintanenceOnly) {
+                ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "SchedCodes Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "SchedCodes Converted\n";
+                });
 
 
-            ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, report, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients,
-                referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations, locations, convReferrals);
+                ConvertAddress(convAddresses, convDbContext, ffpmDbContext, logger, report, progress, addressTypes, stateXrefs, countryXrefs, convPatients, ffpmPatients,
+                    referringProviders, convProviders, ffpmProviders, convGuarantors, guarantors, suffixXrefs, patientAdditionalDetails, convLocations, locations, convReferrals);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Addresses Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Addresses Converted\n";
+                });
 
 
-            ConvertPhone(phones, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convGuarantors, guarantors, convProviders,
-                ffpmProviders, otherAddresses, convReferrals, convLocations, locations);
+                ConvertPhone(phones, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, ffpmPatientAddresses, convGuarantors, guarantors, convProviders,
+                    ffpmProviders, otherAddresses, convReferrals, convLocations, locations);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Phones Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Phones Converted\n";
+                });
 
 
-            ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments, 
-                eyeMDDbContext, imageFolderPath, imageDestinationFolderPath, false, customerInfoDbContext); // patrenum will always be false until implemented
+                ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments, 
+                    eyeMDDbContext, imageFolderPath, imageDestinationFolderPath, false, customerInfoDbContext); // patrenum will always be false until implemented
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "PatientDocuments Converted\n";
-            });*/
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "PatientDocuments Converted\n";
+                });
+            }
         }
 
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
