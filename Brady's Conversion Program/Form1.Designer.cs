@@ -58,6 +58,7 @@
             SelectDestinationBox = new TextBox();
             RenumAccsCheckBox = new CheckBox();
             MaintanenceOnlyCheckBox = new CheckBox();
+            NoMaintanenceCheckBox = new CheckBox();
             SuspendLayout();
             // 
             // ConvServerTextBox
@@ -341,12 +342,23 @@
             MaintanenceOnlyCheckBox.Text = "Maintanence Only";
             MaintanenceOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
+            // NoMaintanenceCheckBox
+            // 
+            NoMaintanenceCheckBox.AutoSize = true;
+            NoMaintanenceCheckBox.Location = new Point(150, 413);
+            NoMaintanenceCheckBox.Name = "NoMaintanenceCheckBox";
+            NoMaintanenceCheckBox.Size = new Size(114, 19);
+            NoMaintanenceCheckBox.TabIndex = 31;
+            NoMaintanenceCheckBox.Text = "No Maintanence";
+            NoMaintanenceCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 437);
+            Controls.Add(NoMaintanenceCheckBox);
             Controls.Add(MaintanenceOnlyCheckBox);
             Controls.Add(RenumAccsCheckBox);
             Controls.Add(ImageDestinationFolderTextBox);
@@ -417,5 +429,6 @@
         private TextBox SelectDestinationBox;
 		private CheckBox RenumAccsCheckBox;
         private CheckBox MaintanenceOnlyCheckBox;
+        private CheckBox NoMaintanenceCheckBox;
     }
 }

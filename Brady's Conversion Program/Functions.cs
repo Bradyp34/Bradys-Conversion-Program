@@ -171,7 +171,7 @@ namespace Brady_s_Conversion_Program {
 
 		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
 			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection, 
-                string imageFolderPath, string imageDestinationFolderPath, bool renumbering, bool maintanenceOnly) {
+                string imageFolderPath, string imageDestinationFolderPath, bool renumbering, bool maintanenceOnly, bool noMaintanence) {
 
 			FFPMString = FFPMConnection;
 			EyeMDString = EyeMDConnection;
@@ -377,24 +377,34 @@ namespace Brady_s_Conversion_Program {
                                     ffpmDbContext.Database.OpenConnection();
 
                                     // Calculate total number of entries for progress tracking
-                                    totalEntries = convDbContext.Patients.Count() +
-                                                    convDbContext.Locations.Count() +
-                                                    convDbContext.Appointments.Count() +
-                                                    convDbContext.AppointmentTypes.Count() +
-                                                    convDbContext.Insurances.Count() +
-                                                    convDbContext.Providers.Count() +
-                                                    convDbContext.Guarantors.Count() +
-                                                    convDbContext.PolicyHolders.Count() +
-                                                    convDbContext.PatientAlerts.Count() +
-                                                    convDbContext.PatientDocuments.Count() +
-                                                    convDbContext.PatientInsurances.Count() +
-                                                    convDbContext.PatientNotes.Count() +
-                                                    convDbContext.Recalls.Count() +
-                                                    convDbContext.RecallTypes.Count() +
-                                                    convDbContext.Referrals.Count() +
-                                                    convDbContext.SchedCodes.Count() +
-                                                    convDbContext.Addresses.Count() +
-                                                    convDbContext.Phones.Count();
+                                    totalEntries = 0;
+
+                                    // Maintenance-related conversions (executed if noMaintanence is false)
+                                    if (!noMaintanence) {
+                                        totalEntries += convDbContext.Locations.Count();
+                                        totalEntries += convDbContext.AppointmentTypes.Count();
+                                        totalEntries += convDbContext.RecallTypes.Count();
+                                        totalEntries += convDbContext.Referrals.Count();
+                                    }
+
+                                    // Non-maintenance-only conversions (executed if maintanenceOnly is false)
+                                    if (!maintanenceOnly) {
+                                        totalEntries += convDbContext.Patients.Count();
+                                        totalEntries += convDbContext.Appointments.Count();
+                                        totalEntries += convDbContext.Insurances.Count();
+                                        totalEntries += convDbContext.Providers.Count();
+                                        totalEntries += convDbContext.Guarantors.Count();
+                                        totalEntries += convDbContext.PolicyHolders.Count();
+                                        totalEntries += convDbContext.PatientAlerts.Count();
+                                        totalEntries += convDbContext.PatientDocuments.Count();
+                                        totalEntries += convDbContext.PatientInsurances.Count();
+                                        totalEntries += convDbContext.PatientNotes.Count();
+                                        totalEntries += convDbContext.Recalls.Count();
+                                        totalEntries += convDbContext.SchedCodes.Count();
+                                        totalEntries += convDbContext.Addresses.Count();
+                                        totalEntries += convDbContext.Phones.Count();
+                                    }
+
 
 
                                     // Set progress bar properties on UI thread
@@ -406,7 +416,7 @@ namespace Brady_s_Conversion_Program {
 
 
                                     ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, imageFolderPath,
-                                        imageDestinationFolderPath, customerInfoDbContext, renumbering, maintanenceOnly);
+                                        imageDestinationFolderPath, customerInfoDbContext, renumbering, maintanenceOnly, noMaintanence);
 
                                     // Save changes to databases
                                     ffpmDbContext.SaveChanges();
@@ -535,7 +545,7 @@ namespace Brady_s_Conversion_Program {
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
             RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext,
-                bool renumbering, bool maintanenceOnly) {
+                bool renumbering, bool maintanenceOnly, bool noMaintanence) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -588,12 +598,14 @@ namespace Brady_s_Conversion_Program {
 
             report.Log($"FFPM Conversion:\n");
 
-            ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
+            if (!noMaintanence) {
+                ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Locations Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Locations Converted\n";
+                });
+            }
 
 
             if (!maintanenceOnly) {
@@ -606,45 +618,47 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            // moved the foreach loops into the functions
-            ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
+            if (!noMaintanence) {
+                // moved the foreach loops into the functions
+                ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "AppointmentTypes Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "AppointmentTypes Converted\n";
+                });
 
 
-            ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
+                ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Appointments Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Appointments Converted\n";
+                });
 
 
-            ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, report, progress, insurances, stateXrefs);
+                ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, report, progress, insurances, stateXrefs);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Insurances Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Insurances Converted\n";
+                });
 
 
-            ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
+                ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Providers Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Providers Converted\n";
+                });
 
 
-            ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, report, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
+                ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, report, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Guarantors Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Guarantors Converted\n";
+                });
+            }
 
 
             if (!maintanenceOnly) {
@@ -682,12 +696,14 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
+            if (!noMaintanence) {
+                ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "RecallTypes Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "RecallTypes Converted\n";
+                });
+            }
 
 
             if (!maintanenceOnly) {
@@ -699,12 +715,14 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
+            if (!noMaintanence) {
+                ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
 
-            resultsBox.Invoke((MethodInvoker)delegate {
-                resultsBox.Text += "Referrals Converted\n";
-            });
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Referrals Converted\n";
+                });
+            }
 
 
             if (!maintanenceOnly) {

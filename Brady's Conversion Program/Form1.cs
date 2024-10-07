@@ -75,6 +75,14 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please select a folder to save the converted images.");
                 return;
             }
+            if (ConvCheckBox.Checked && !MaintanenceOnlyCheckBox.Checked && !Directory.Exists(ImageFolderTextBox.Text)) {
+                MessageBox.Show("The folder containing the images does not exist.");
+                return;
+            }
+            if (ConvCheckBox.Checked && !MaintanenceOnlyCheckBox.Checked && !Directory.Exists(ImageDestinationFolderTextBox.Text)) {
+                MessageBox.Show("The folder to save the converted images does not exist.");
+                return;
+            }
             FFPMNewDBCheckBox.Hide();
             RenumAccsCheckBox.Hide();
 			EyeMDNewDBCheckBox.Hide();
@@ -97,7 +105,8 @@ namespace Brady_s_Conversion_Program
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
-                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked, MaintanenceOnlyCheckBox.Checked); // this is the actual work
+                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked, MaintanenceOnlyCheckBox.Checked,
+                        NoMaintanenceCheckBox.Checked); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
