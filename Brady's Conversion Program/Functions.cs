@@ -595,7 +595,7 @@ namespace Brady_s_Conversion_Program {
 
 
             PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
-                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering);
+                raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
 
             ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             resultsBox.Invoke((MethodInvoker)delegate { // change the results box text to show this completed
@@ -737,9 +737,9 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-    List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals,
-        List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs,
-            List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, List<MntState> stateXrefs, bool renumbering) {
+            List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals, List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, 
+                List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, 
+                    List<MntState> stateXrefs, bool renumbering, CustomerInfoContext customerInfoDbContext) {
 
             long patientId = 1;
             if (ffpmDbContext.DmgPatients.Any()) {
@@ -838,7 +838,16 @@ namespace Brady_s_Conversion_Program {
                             : (patient.OldPatientAccountNumber ?? ""); // If not renumbering, default to an empty string if OldPatientAccountNumber is null
 
 
-                        if (renumbering) newAccountNumber++; // Increment the new account number only if renumbering is enabled
+                        if (renumbering) {
+                            newAccountNumber++; // Increment the new account number only if renumbering is enabled
+                        }
+
+                        customerInfoDbContext.AccountXrefs.Add(
+                            new ModelsE.AccountXref {
+                                OldAccount = patient.OldPatientAccountNumber ?? "",  // Handle potential nulls with fallback to empty string
+                                NewAccount = accountNumberToUse
+                            }
+                        );
 
                         DmgPatient newPatient = new DmgPatient {
                             PatientId = patientId,

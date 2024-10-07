@@ -20,6 +20,8 @@ public partial class CustomerInfoContext : DbContext
 
     public virtual DbSet<AccessLog> AccessLogs { get; set; }
 
+    public DbSet<AccountXref> AccountXrefs { get; set; }
+
     public virtual DbSet<AppointmentLocationXref> AppointmentLocationXrefs { get; set; }
 
     public virtual DbSet<AppointmentProviderXref> AppointmentProviderXrefs { get; set; }
