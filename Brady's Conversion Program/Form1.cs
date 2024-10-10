@@ -1,4 +1,6 @@
+using Microsoft.VisualBasic.ApplicationServices;
 using System.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Brady_s_Conversion_Program
 {
@@ -11,8 +13,8 @@ namespace Brady_s_Conversion_Program
             progressBar1.Hide();
             EyeMDNewDBCheckBox.Hide();
             FFPMNewDBCheckBox.Hide();
-			RenumAccsCheckBox.Hide();
-		}
+            RenumAccsCheckBox.Hide();
+        }
 
         private void DBBeginButton_Click(object sender, EventArgs e) {
             if (!(ConvCheckBox.Checked || EHRCheckBox.Checked || InvCheckBox.Checked)) {
@@ -35,11 +37,11 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please enter the database name for Customer Info database on FFPM Conversion.");
                 return;
             }
-            if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "") {
+            if (ConvCheckBox.Checked && EyeMDServerNameTextBox.Text == "" && !MaintenanceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please enter the server name for EyeMD database on FFPM Conversion.");
                 return;
             }
-            if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "") {
+            if (ConvCheckBox.Checked && EyeMDDBTextBox.Text == "" && !MaintenanceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please enter the database name for EyeMD database on FFPM Conversion.");
                 return;
             }
@@ -67,25 +69,25 @@ namespace Brady_s_Conversion_Program
                 MessageBox.Show("Please enter a server and database name for EyeMD.");
                 return;
             }
-            if (ConvCheckBox.Checked && ImageFolderTextBox.Text == "" && !MaintanenceOnlyCheckBox.Checked) {
+            if (ConvCheckBox.Checked && ImageFolderTextBox.Text == "" && !MaintenanceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please select a folder containing the images.");
                 return;
             }
-            if (ConvCheckBox.Checked && ImageDestinationFolderTextBox.Text == "" && !MaintanenceOnlyCheckBox.Checked) {
+            if (ConvCheckBox.Checked && ImageDestinationFolderTextBox.Text == "" && !MaintenanceOnlyCheckBox.Checked) {
                 MessageBox.Show("Please select a folder to save the converted images.");
                 return;
             }
-            if (ConvCheckBox.Checked && !MaintanenceOnlyCheckBox.Checked && !Directory.Exists(ImageFolderTextBox.Text)) {
+            if (ConvCheckBox.Checked && !MaintenanceOnlyCheckBox.Checked && !Directory.Exists(ImageFolderTextBox.Text)) {
                 MessageBox.Show("The folder containing the images does not exist.");
                 return;
             }
-            if (ConvCheckBox.Checked && !MaintanenceOnlyCheckBox.Checked && !Directory.Exists(ImageDestinationFolderTextBox.Text)) {
+            if (ConvCheckBox.Checked && !MaintenanceOnlyCheckBox.Checked && !Directory.Exists(ImageDestinationFolderTextBox.Text)) {
                 MessageBox.Show("The folder to save the converted images does not exist.");
                 return;
             }
             FFPMNewDBCheckBox.Hide();
             RenumAccsCheckBox.Hide();
-			EyeMDNewDBCheckBox.Hide();
+            EyeMDNewDBCheckBox.Hide();
             ConvCheckBox.Hide();
             EHRCheckBox.Hide();
             InvCheckBox.Hide();
@@ -96,17 +98,20 @@ namespace Brady_s_Conversion_Program
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
-            string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
-            string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
-            string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
-            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
-            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
-            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;";
+
+
+            string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,
                 ConvCheckBox.Checked, EHRCheckBox.Checked, InvCheckBox.Checked, FFPMNewDBCheckBox.Checked, EyeMDNewDBCheckBox.Checked, progressBar1, ResultsBox,
-                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked, MaintanenceOnlyCheckBox.Checked,
-                        NoMaintanenceCheckBox.Checked); // this is the actual work
+                    customerInfoConnectionString, ImageFolderTextBox.Text, ImageDestinationFolderTextBox.Text, RenumAccsCheckBox.Checked, MaintenanceOnlyCheckBox.Checked,
+                        NoMaintenanceCheckBox.Checked); // this is the actual work
             ResultsBox.Invoke((MethodInvoker)delegate {
                 ResultsBox.Text += "\n" + result + "\n" + DateTime.Now;
             });
@@ -121,9 +126,9 @@ namespace Brady_s_Conversion_Program
                         FFPMNewDBCheckBox.Show();
                     });
                     RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
-						RenumAccsCheckBox.Show();
-					});
-				}
+                        RenumAccsCheckBox.Show();
+                    });
+                }
             });
             EHRCheckBox.Invoke((MethodInvoker)delegate {
                 EHRCheckBox.Show();
@@ -142,7 +147,7 @@ namespace Brady_s_Conversion_Program
                     RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
                         RenumAccsCheckBox.Show();
                     });
-				}
+                }
             });
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Invoke((MethodInvoker)delegate {
@@ -150,11 +155,11 @@ namespace Brady_s_Conversion_Program
                 });
             }
             if (RenumAccsCheckBox.Checked) {
-				RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
-					RenumAccsCheckBox.Show();
-				});
-			}
-			if (EyeMDNewDBCheckBox.Checked) {
+                RenumAccsCheckBox.Invoke((MethodInvoker)delegate {
+                    RenumAccsCheckBox.Show();
+                });
+            }
+            if (EyeMDNewDBCheckBox.Checked) {
                 EyeMDNewDBCheckBox.Invoke((MethodInvoker)delegate {
                     EyeMDNewDBCheckBox.Show();
                 });
@@ -168,16 +173,16 @@ namespace Brady_s_Conversion_Program
             if (FFPMNewDBCheckBox.Checked) {
                 FFPMNewDBCheckBox.Checked = false;
             }
-			if (RenumAccsCheckBox.Checked) {
-				RenumAccsCheckBox.Checked = false;
-			}
-			if (ConvCheckBox.Checked) {
+            if (RenumAccsCheckBox.Checked) {
+                RenumAccsCheckBox.Checked = false;
+            }
+            if (ConvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Show();
-				RenumAccsCheckBox.Show();
-			}
+                RenumAccsCheckBox.Show();
+            }
             else if (!InvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Hide();
-			}
+            }
         }
 
         private void EhrCheckBox_CheckedChanged(object sender, EventArgs e) {
@@ -220,8 +225,8 @@ namespace Brady_s_Conversion_Program
             EHRCheckBox.Checked = false;
             InvCheckBox.Checked = false;
             FFPMNewDBCheckBox.Checked = false;
-			RenumAccsCheckBox.Checked = false;
-			EyeMDNewDBCheckBox.Checked = false;
+            RenumAccsCheckBox.Checked = false;
+            EyeMDNewDBCheckBox.Checked = false;
         }
 
         private void ImageFolderSelectButton_Click(object sender, EventArgs e) {
@@ -251,6 +256,18 @@ namespace Brady_s_Conversion_Program
                     // Update the ImageFolderTextBox with the selected folder path
                     ImageDestinationFolderTextBox.Text = folderBrowserDialog.SelectedPath;
                 }
+            }
+        }
+
+        private void NoMaintenanceCheckBox_CheckedChanged(object sender, EventArgs e) {
+            if (NoMaintenanceCheckBox.Checked) {
+                MaintenanceOnlyCheckBox.Checked = false;
+            }
+        }
+
+        private void MaintenanceOnlyCheckBox_CheckedChanged(object sender, EventArgs e) {
+            if (MaintenanceOnlyCheckBox.Checked) {
+                NoMaintenanceCheckBox.Checked = false;
             }
         }
     }

@@ -57,8 +57,8 @@
             ImageDestinationFolderSelectButton = new Button();
             SelectDestinationBox = new TextBox();
             RenumAccsCheckBox = new CheckBox();
-            MaintanenceOnlyCheckBox = new CheckBox();
-            NoMaintanenceCheckBox = new CheckBox();
+            MaintenanceOnlyCheckBox = new CheckBox();
+            NoMaintenanceCheckBox = new CheckBox();
             SuspendLayout();
             // 
             // ConvServerTextBox
@@ -332,25 +332,25 @@
             RenumAccsCheckBox.Text = "Renumber Accounts";
             RenumAccsCheckBox.UseVisualStyleBackColor = true;
             // 
-            // MaintanenceOnlyCheckBox
+            // MaintenanceOnlyCheckBox
             // 
-            MaintanenceOnlyCheckBox.AutoSize = true;
-            MaintanenceOnlyCheckBox.Location = new Point(12, 413);
-            MaintanenceOnlyCheckBox.Name = "MaintanenceOnlyCheckBox";
-            MaintanenceOnlyCheckBox.Size = new Size(123, 19);
-            MaintanenceOnlyCheckBox.TabIndex = 30;
-            MaintanenceOnlyCheckBox.Text = "Maintanence Only";
-            MaintanenceOnlyCheckBox.UseVisualStyleBackColor = true;
+            MaintenanceOnlyCheckBox.AutoSize = true;
+            MaintenanceOnlyCheckBox.Location = new Point(12, 413);
+            MaintenanceOnlyCheckBox.Name = "MaintenanceOnlyCheckBox";
+            MaintenanceOnlyCheckBox.Size = new Size(123, 19);
+            MaintenanceOnlyCheckBox.TabIndex = 30;
+            MaintenanceOnlyCheckBox.Text = "Maintenance Only";
+            MaintenanceOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
-            // NoMaintanenceCheckBox
+            // NoMaintenanceCheckBox
             // 
-            NoMaintanenceCheckBox.AutoSize = true;
-            NoMaintanenceCheckBox.Location = new Point(150, 413);
-            NoMaintanenceCheckBox.Name = "NoMaintanenceCheckBox";
-            NoMaintanenceCheckBox.Size = new Size(114, 19);
-            NoMaintanenceCheckBox.TabIndex = 31;
-            NoMaintanenceCheckBox.Text = "No Maintanence";
-            NoMaintanenceCheckBox.UseVisualStyleBackColor = true;
+            NoMaintenanceCheckBox.AutoSize = true;
+            NoMaintenanceCheckBox.Location = new Point(150, 413);
+            NoMaintenanceCheckBox.Name = "NoMaintenanceCheckBox";
+            NoMaintenanceCheckBox.Size = new Size(114, 19);
+            NoMaintenanceCheckBox.TabIndex = 31;
+            NoMaintenanceCheckBox.Text = "No Maintenance";
+            NoMaintenanceCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -358,8 +358,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Ivory;
             ClientSize = new Size(432, 437);
-            Controls.Add(NoMaintanenceCheckBox);
-            Controls.Add(MaintanenceOnlyCheckBox);
+            Controls.Add(NoMaintenanceCheckBox);
+            Controls.Add(MaintenanceOnlyCheckBox);
             Controls.Add(RenumAccsCheckBox);
             Controls.Add(ImageDestinationFolderTextBox);
             Controls.Add(ImageDestinationFolderSelectButton);
@@ -428,7 +428,7 @@
         private Button ImageDestinationFolderSelectButton;
         private TextBox SelectDestinationBox;
 		private CheckBox RenumAccsCheckBox;
-        private CheckBox MaintanenceOnlyCheckBox;
-        private CheckBox NoMaintanenceCheckBox;
+        private CheckBox MaintenanceOnlyCheckBox;
+        private CheckBox NoMaintenanceCheckBox;
     }
 }

@@ -171,7 +171,7 @@ namespace Brady_s_Conversion_Program {
 
 		public static string ConvertToDB (string convConnection, string ehrConnection, string invConnection, string FFPMConnection, string EyeMDConnection,
 			bool conv, bool ehr, bool inv, bool newFfpm, bool newEyemd, ProgressBar progress, RichTextBox resultsBox, string customerInfoConnection, 
-                string imageFolderPath, string imageDestinationFolderPath, bool renumbering, bool maintanenceOnly, bool noMaintanence) {
+                string imageFolderPath, string imageDestinationFolderPath, bool renumbering, bool maintenanceOnly, bool noMaintenance) {
 
 			FFPMString = FFPMConnection;
 			EyeMDString = EyeMDConnection;
@@ -379,16 +379,16 @@ namespace Brady_s_Conversion_Program {
                                     // Calculate total number of entries for progress tracking
                                     totalEntries = 0;
 
-                                    // Maintenance-related conversions (executed if noMaintanence is false)
-                                    if (!noMaintanence) {
+                                    // Maintenance-related conversions (executed if noMaintenance is false)
+                                    if (!noMaintenance) {
                                         totalEntries += convDbContext.Locations.Count();
                                         totalEntries += convDbContext.AppointmentTypes.Count();
                                         totalEntries += convDbContext.RecallTypes.Count();
                                         totalEntries += convDbContext.Referrals.Count();
                                     }
 
-                                    // Non-maintenance-only conversions (executed if maintanenceOnly is false)
-                                    if (!maintanenceOnly) {
+                                    // Non-maintenance-only conversions (executed if maintenanceOnly is false)
+                                    if (!maintenanceOnly) {
                                         totalEntries += convDbContext.Patients.Count();
                                         totalEntries += convDbContext.Appointments.Count();
                                         totalEntries += convDbContext.Insurances.Count();
@@ -416,7 +416,7 @@ namespace Brady_s_Conversion_Program {
 
 
                                     ConvertFFPM(convDbContext, ffpmDbContext, logger, report, progress, resultsBox, eyeMDDbContext, imageFolderPath,
-                                        imageDestinationFolderPath, customerInfoDbContext, renumbering, maintanenceOnly, noMaintanence);
+                                        imageDestinationFolderPath, customerInfoDbContext, renumbering, maintenanceOnly, noMaintenance);
 
                                     // Save changes to databases
                                     ffpmDbContext.SaveChanges();
@@ -545,7 +545,7 @@ namespace Brady_s_Conversion_Program {
         #region FFPMConversion
         public static void ConvertFFPM(FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress, 
             RichTextBox resultsBox, EyeMdContext eyeMDDbContext, string imageFolderPath, string imageDestinationFolderPath, CustomerInfoContext customerInfoDbContext,
-                bool renumbering, bool maintanenceOnly, bool noMaintanence) {
+                bool renumbering, bool maintenanceOnly, bool noMaintenance) {
             var ffpmPatients = ffpmDbContext.DmgPatients.ToList();
             var raceXrefs = ffpmDbContext.MntRaces.ToList();
             var ethnicityXrefs = ffpmDbContext.MntEthnicities.ToList();
@@ -597,8 +597,8 @@ namespace Brady_s_Conversion_Program {
             var phones = convDbContext.Phones.ToList();
 
             report.Log($"FFPM Conversion:\n");
-
-            if (!noMaintanence) {
+/*
+            if (!noMaintenance) {
                 ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
 
@@ -606,9 +606,9 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Locations Converted\n";
                 });
             }
+*/
 
-
-            if (!maintanenceOnly) {
+            if (!maintenanceOnly) {
                 PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
                     raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
 
@@ -618,7 +618,7 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            if (!noMaintanence) {
+            if (!noMaintenance) {
                 // moved the foreach loops into the functions
                 ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -626,7 +626,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "AppointmentTypes Converted\n";
                 });
-
+                /*
 
                 ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
 
@@ -643,25 +643,24 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Insurances Converted\n";
                 });
 
-
                 ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
 
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Providers Converted\n";
                 });
+*/
+            }
 
-
+            if (!maintenanceOnly) {
                 ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, report, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
 
 
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Guarantors Converted\n";
                 });
-            }
 
 
-            if (!maintanenceOnly) {
                 ConvertPatientAlert(convPatientAlerts, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, priorityXrefs, patientAlerts);
 
 
@@ -696,7 +695,7 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            if (!noMaintanence) {
+            if (!noMaintenance) {
                 ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
 
 
@@ -706,7 +705,7 @@ namespace Brady_s_Conversion_Program {
             }
 
 
-            if (!maintanenceOnly) {
+            if (!maintenanceOnly) {
                 ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
 
 
@@ -715,7 +714,7 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
-            if (!noMaintanence) {
+            if (!noMaintenance) {
                 ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
 
@@ -725,7 +724,7 @@ namespace Brady_s_Conversion_Program {
             }
 
 
-            if (!maintanenceOnly) {
+            if (!maintenanceOnly) {
                 ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
 
 
@@ -2566,19 +2565,22 @@ namespace Brady_s_Conversion_Program {
             ffpmPatientInsurances = ffpmDbContext.DmgPatientInsurances.ToList();
         }
 
-
         public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+    List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+
             int added = 0, addedScheduling = 0;
+
             foreach (var provider in convProviders) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+
                 try {
                     if (provider.OldProviderCode == null || provider.OldProviderCode == "") {
                         logger.Log($"Conv: Conv Provider code not found for provider with ID: {provider.Id}");
                         continue;
                     }
+
                     short? suffixInt = null;
                     var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix);
                     if (suffixXref != null) {
@@ -2600,8 +2602,7 @@ namespace Brady_s_Conversion_Program {
 
                     DateTime? dobDate = null;
                     if (provider.Dob != null && provider.Dob != "" && !int.TryParse(provider.Dob, out int dontCare)) {
-                        if (DateTime.TryParseExact(provider.Dob, dateFormats,
-                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
+                        if (DateTime.TryParseExact(provider.Dob, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
                             dobDate = isValidDate(dob);
                         }
                     }
@@ -2640,6 +2641,7 @@ namespace Brady_s_Conversion_Program {
                             specExpId = specExpIdInt;
                         }
                     }
+
                     int specExpTypeId = 0;
 
                     int? stateId = 0;
@@ -2785,11 +2787,17 @@ namespace Brady_s_Conversion_Program {
                     #endregion taxonomys
 
                     if (isBilling) {
+                        if (string.IsNullOrEmpty(provider.OldProviderCode)) {
+                            logger.Log($"Conv: Provider OldProviderCode is null or empty for provider with ID: {provider.Id}");
+                            continue;
+                        }
+
                         providerCode = billingProviderCodes.GetValueOrDefault(provider.OldProviderCode);
                         if (providerCode == null) {
                             logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
                             continue;
                         }
+
                         var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == providerCode);
 
                         if (ffpmOrig == null) {
@@ -2845,22 +2853,28 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     if (isScheduling) {
+                        if (string.IsNullOrEmpty(provider.OldProviderCode)) {
+                            logger.Log($"Conv: Provider OldProviderCode is null or empty for provider with ID: {provider.Id}");
+                            continue;
+                        }
+
                         providerCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
-                        if (providerCode == null) {
+                        if (string.IsNullOrEmpty(providerCode)) {
                             logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
                             continue;
                         }
+
                         var ffpmOrigScheduling = ffpmDbContext.SchedulingResources.FirstOrDefault(p => p.Code == providerCode);
 
                         if (ffpmOrigScheduling == null) {
-
                             var origSchedulingResource = new Brady_s_Conversion_Program.ModelsA.SchedulingResource {
                                 Name = TruncateString(provider.FirstName + provider.LastName, 50),
                                 Contact = TruncateString("", 15),
                                 SpecialtyId = specialtyId,
                                 Color = null,
                                 Active = isActive,
-                                LocationId = 0
+                                LocationId = 0,
+                                Code = providerCode // Ensure providerCode is not null
                             };
                             ffpmDbContext.SchedulingResources.Add(origSchedulingResource);
                             addedScheduling++;
@@ -2875,6 +2889,7 @@ namespace Brady_s_Conversion_Program {
                     logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
                 }
             }
+
             report.Log($"Providers: {added} added");
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.SaveChanges();
