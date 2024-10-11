@@ -1054,9 +1054,12 @@ namespace Brady_s_Conversion_Program {
                             var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                             if (xref != null) {
                                 accountNumber = xref.NewAccount?.ToString();
-                            }
+                            } else {
+                                logger.Log($"Conv: Conv Account Number not found for patient with ID: {appointment.PatientId}");
+                                continue;
+							}
 
-                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
+							var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
                             if (ffpmPatient != null) {
                                 patientId = (int)ffpmPatient.PatientId;
                             }
@@ -1187,11 +1190,14 @@ namespace Brady_s_Conversion_Program {
                         waitlistId = long.Parse(appointment.WaitingListId);
                     }
                     int type = 0;
-                    var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
+					var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
                     if (typeXref != null) {
                         type = (int)typeXref.AppointmentTypeId;
+                    } else {
+                        logger.Log($"Conv: Conv Appointment Type not found for appointment with ID: {appointment.Id}");
+						continue;
                     }
-                    DateTime? updated = null;
+						DateTime? updated = null;
                     if (appointment.DateTimeUpdated != null && (appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare))) {
                         DateTime tempDateTime;
                         if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
