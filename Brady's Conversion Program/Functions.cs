@@ -619,6 +619,7 @@ namespace Brady_s_Conversion_Program {
             }
 
             if (!noMaintenance) {
+/*
                 // moved the foreach loops into the functions
                 ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -626,7 +627,6 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "AppointmentTypes Converted\n";
                 });
-                /*
 
                 ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
 
@@ -642,6 +642,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Insurances Converted\n";
                 });
+*/
 
                 ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
@@ -649,7 +650,6 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Providers Converted\n";
                 });
-*/
             }
 
             if (!maintenanceOnly) {
@@ -828,9 +828,9 @@ namespace Brady_s_Conversion_Program {
                     short? medicareSecondaryId = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode)?.MedicareSecondaryId;
                     string medicareSecondaryNotes = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode)?.MedicareSecondaryDescription ?? "";
 
-                    bool? patientIsActive = patient.Active == null || !(patient.Active.ToUpper() == "NO" || patient.Active == "0");
-                    bool? deceased = patient.Deceased?.ToUpper() == "YES" || patient.Deceased?.ToUpper() == "TRUE";
-                    bool? consent = patient.Consent?.ToUpper() == "YES" || patient.Consent == "1" || patient.Consent?.ToUpper() == "TRUE";
+                    bool patientIsActive = patient.Active != null && (patient.Active.ToUpper() == "YES" || patient.Active == "1");
+                    bool deceased = patient.Deceased?.ToUpper() == "YES" || patient.Deceased?.ToUpper() == "TRUE";
+                    bool consent = patient.Consent?.ToUpper() == "YES" || patient.Consent == "1" || patient.Consent?.ToUpper() == "TRUE";
 
                     DateTime? consentDate = null;
                     if (!string.IsNullOrEmpty(patient.ConsentDate)) {
@@ -903,9 +903,9 @@ namespace Brady_s_Conversion_Program {
                             IsDeceased = deceased,
                             DeceasedDate = deceasedDate,
                             LastExamDate = lastExamDate,
-                            PatientBalance = -1,
-                            InsuranceBalance = -1,
-                            OtherBalance = -1,
+                            PatientBalance = 0,
+                            InsuranceBalance = 0,
+                            OtherBalance = 0,
                             GenderId = genderInt,
                             SuffixId = suffixInt,
                             BalanceLastUpdatedDateTime = minAcceptableDate,
@@ -916,7 +916,7 @@ namespace Brady_s_Conversion_Program {
                             TextStatements = true,
                             LocationId = 0,
                             LastModifiedDate = DateTime.Now,
-                            LastModifiedBy = -1
+                            LastModifiedBy = 0
                         };
                         added++;
 
@@ -1013,7 +1013,7 @@ namespace Brady_s_Conversion_Program {
                         var newAppointmentType = new SchedulingAppointmentType {
                             Code = TruncateString(code, 200), 
                             Description = TruncateString(description, 1000),
-                            LocationId = -1,
+                            LocationId = 0,
                             PatientRequired = required,
                             Notes = TruncateString(notes, 5000),
                             IsExamType = examType,
@@ -1046,7 +1046,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int patientId = -1;
+                    int patientId = 0;
                     if (appointment.PatientId > 0) {
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
                         if (convPatient != null) {
@@ -1062,7 +1062,7 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
-                    int locationId = -1;
+                    int locationId = 1;
                     if (appointment.OldBillingLocationId != null) { // there are no other incoming locations
                         string? tempLoc = appointmentLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId);
                         if (int.TryParse(tempLoc, out int locationIdInt)) {
@@ -1070,7 +1070,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    long resource = -1;
+                    long resource = 0;
                     if (appointment.OldResourceId != null) {
                         long.TryParse(appointment.OldResourceId, out resource);
                     }
@@ -1089,10 +1089,13 @@ namespace Brady_s_Conversion_Program {
                             end = isValidDate(temp);
                         }
                     }
-                    int duration = -1;
+                    int duration = 15;
                     if (appointment.Duration != null) {
                         if (int.TryParse(appointment.Duration, out int durationInt)) {
                             duration = durationInt;
+                            if (duration == 0) {
+                                duration = 15;
+                            }
                         }
                     }
                     DateTime created = minAcceptableDate;
@@ -1102,12 +1105,18 @@ namespace Brady_s_Conversion_Program {
                             created = isValidDate(created);
                         }
                     }
-                    int billingLocId = -1;
+                    int billingLocId = 0;
                     if (appointment.OldBillingLocationId != null) {
                         string? tempLoc = billingLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId);
                         if (int.TryParse(tempLoc, out int billingLocIdInt)) {
                             billingLocId = billingLocIdInt;
                         }
+                    }
+                    if (billingLocId == 0) {
+                        billingLocId = locationId;
+                    }
+                    if (billingLocId == 0) {
+                        billingLocId = 1;
                     }
                     bool confirmed = false;
                     if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1") {
@@ -1177,7 +1186,7 @@ namespace Brady_s_Conversion_Program {
                     if (appointment.WaitingListId != null) {
                         waitlistId = long.Parse(appointment.WaitingListId);
                     }
-                    int type = -1;
+                    int type = 0;
                     var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
                     if (typeXref != null) {
                         type = (int)typeXref.AppointmentTypeId;
@@ -1191,16 +1200,16 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
                     if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        updated = null;
+                        updated = minAcceptableDate;
                     }
                     if (checkIn == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        checkIn = null;
+                        checkIn = minAcceptableDate;
                     }
                     if (takeback == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        takeback = null;
+                        takeback = minAcceptableDate;
                     }
                     if (checkOut == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        checkOut = null;
+                        checkOut = minAcceptableDate;
                     }
                     if (start == DateTime.Parse("1/1/0001 12:00:00 AM")) {
                         start = minAcceptableDate;
@@ -1212,7 +1221,7 @@ namespace Brady_s_Conversion_Program {
                         created = minAcceptableDate;
                     }
                     if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        updated = null;
+                        updated = minAcceptableDate;
                     }
 
 
@@ -1263,7 +1272,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int stateId = -1;
+                    int stateId = 0;
                     var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState || s.State == insurance.InsCompanyState);
                     if (stateXref != null) {
                         stateId = stateXref.StateId;
@@ -1331,13 +1340,13 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
 
-                    int companyId = -1;
+                    int companyId = 0;
                     if (insurance.OldInsCompanyId != null) {
                         if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
                             companyId = companyIdInt;
                         }
                     }
-                    int claimTypeId = -1;
+                    int claimTypeId = 0;
                     if (insurance.InsCompanyClaimType != null) {
                         if (insurance.InsCompanyClaimType.ToLower() == "medical") {
                             claimTypeId = 1;
@@ -1355,7 +1364,7 @@ namespace Brady_s_Conversion_Program {
                             policyTypeId = 2;
                         }
                     }
-                    int? carrierTypeId = -1;
+                    int? carrierTypeId = 0;
                     if (insurance.InsCompanyCarrierType == "medical") {
                         carrierTypeId = 1;
                     }
@@ -1564,49 +1573,47 @@ namespace Brady_s_Conversion_Program {
                         ffpmDbContext.Locations.Add(newLocation);
                     }
 
-                    if (isBilling) {
-                        var ffpmOrig = locations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
+                    var ffpmOrig = locations.FirstOrDefault(x => x.Name != null && x.Name.ToLower() == name.ToLower());
 
-                        if (ffpmOrig == null) {
-                            var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
-                                PrimaryTaxonomyId = primaryTaxId,
-                                AlternateTaxonomy1Id = tax1Id,
-                                AlternateTaxonomy2Id = tax2Id,
-                                AlternateTaxonomy3Id = tax3Id,
-                                AlternateTaxonomy4Id = tax4Id,
-                                AlternateTaxonomy5Id = tax5Id,
-                                AlternateTaxonomy6Id = tax6Id,
-                                AlternateTaxonomy7Id = tax7Id,
-                                AlternateTaxonomy8Id = tax8Id,
-                                AlternateTaxonomy9Id = tax9Id,
-                                AlternateTaxonomy10Id = tax10Id,
-                                AlternateTaxonomy11Id = tax11Id,
-                                AlternateTaxonomy12Id = tax12Id,
-                                AlternateTaxonomy13Id = tax13Id,
-                                AlternateTaxonomy14Id = tax14Id,
-                                AlternateTaxonomy15Id = tax15Id,
-                                AlternateTaxonomy16Id = tax16Id,
-                                AlternateTaxonomy17Id = tax17Id,
-                                AlternateTaxonomy18Id = tax18Id,
-                                AlternateTaxonomy19Id = tax19Id,
-                                AlternateTaxonomy20Id = tax20Id,
+                    if (ffpmOrig == null) {
+                        var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
+                            PrimaryTaxonomyId = primaryTaxId,
+                            AlternateTaxonomy1Id = tax1Id,
+                            AlternateTaxonomy2Id = tax2Id,
+                            AlternateTaxonomy3Id = tax3Id,
+                            AlternateTaxonomy4Id = tax4Id,
+                            AlternateTaxonomy5Id = tax5Id,
+                            AlternateTaxonomy6Id = tax6Id,
+                            AlternateTaxonomy7Id = tax7Id,
+                            AlternateTaxonomy8Id = tax8Id,
+                            AlternateTaxonomy9Id = tax9Id,
+                            AlternateTaxonomy10Id = tax10Id,
+                            AlternateTaxonomy11Id = tax11Id,
+                            AlternateTaxonomy12Id = tax12Id,
+                            AlternateTaxonomy13Id = tax13Id,
+                            AlternateTaxonomy14Id = tax14Id,
+                            AlternateTaxonomy15Id = tax15Id,
+                            AlternateTaxonomy16Id = tax16Id,
+                            AlternateTaxonomy17Id = tax17Id,
+                            AlternateTaxonomy18Id = tax18Id,
+                            AlternateTaxonomy19Id = tax19Id,
+                            AlternateTaxonomy20Id = tax20Id,
 
-                                Name = TruncateString(name, 500),
-                                IsBillingLocation = isBilling,
-                                CliaIdNo = TruncateString(location.Clia, 15),
-                                Npi = TruncateString(location.Npi, 10),
-                                FederalIdNo = TruncateString(location.FederalEin, 15),
-                                IsSchedulingLocation = isSchedule,
-                                PlaceOfTreatmentId = treatmentPlaceId,
-                                LocationId = 0,
-                                IsActive = true,
-                                CaculateTaxOnEstimatedPatientBalance = false,
-                                IsDefaultLocation = false, // 
-                                CaculateTaxOnTotalFee = false
-                            };
-                            locations.Add(newLocation);
-                            added++;
-                        }
+                            Name = TruncateString(name, 500),
+                            IsBillingLocation = isBilling,
+                            CliaIdNo = TruncateString(location.Clia, 15),
+                            Npi = TruncateString(location.Npi, 10),
+                            FederalIdNo = TruncateString(location.FederalEin, 15),
+                            IsSchedulingLocation = isSchedule,
+                            PlaceOfTreatmentId = treatmentPlaceId,
+                            LocationId = 0,
+                            IsActive = true,
+                            CaculateTaxOnEstimatedPatientBalance = false,
+                            IsDefaultLocation = false, // 
+                            CaculateTaxOnTotalFee = false
+                        };
+                        locations.Add(newLocation);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
@@ -1672,11 +1679,11 @@ namespace Brady_s_Conversion_Program {
                     if (genderXref != null) {
                         genderID = genderXref.GenderId;
                     }
-                    bool? isActive = null;
+                    bool isActive = false;
                     if (guarantor.Active != null && guarantor.Active.ToLower() == "yes" || guarantor.Active == "1") {
                         isActive = true;
                     }
-                    bool? guarantorIsPatient = null;
+                    bool guarantorIsPatient = false;
                     if (guarantor.OldGuarantorAccount != "" && guarantor.OldGuarantorAccount != null) {
                         guarantorIsPatient = true;
                     }
@@ -1851,11 +1858,11 @@ namespace Brady_s_Conversion_Program {
                     // Process non-"pat" addresses
                     switch (primaryFile.ToLower()) {
                         case "guar":
-                            int primaryFileId = -1;
+                            int primaryFileId = 0;
                             if (int.TryParse(address.PrimaryFileId, out int primaryFileIdInt)) {
                                 primaryFileId = primaryFileIdInt;
                             }
-                            if (primaryFileId == -1) {
+                            if (primaryFileId == 0) {
                                 logger.Log($"Conv: Conv Guarantor ID not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
@@ -2167,13 +2174,13 @@ namespace Brady_s_Conversion_Program {
                             alertCreatedBy = createdBy;
                         }
                     }
-                    bool? isActive = true;
+                    bool isActive = true;
                     if (patientAlert.Active != null) {
                         if (patientAlert.Active.ToLower() == "no" || patientAlert.Active == "0") {
                             isActive = false;
                         }
                     }
-                    bool? alertFlash = null;
+                    bool alertFlash = false;
                     if (patientAlert.AlertFlash != null) {
                         if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
                             alertFlash = flash;
@@ -2294,7 +2301,7 @@ namespace Brady_s_Conversion_Program {
                         rank = 3;
                     }
                     else {
-                        rank = -1;
+                        rank = 0;
                     }
                     bool isAdditional = false;
                     if (rank == 2 || rank == 3) {
@@ -2318,13 +2325,13 @@ namespace Brady_s_Conversion_Program {
                             plan_id = planId;
                         }
                     }
-                    bool? active = true;
+                    bool active = true;
                     if (patientInsurance.Active != null) {
                         if (patientInsurance.Active.ToLower() == "no" || patientInsurance.Active == "0") {
                             active = false;
                         }
                     }
-                    bool? isSubscriberExistingPatient = null;
+                    bool isSubscriberExistingPatient = false;
 
 
                     var ffpmOrig = patientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
@@ -2414,7 +2421,7 @@ namespace Brady_s_Conversion_Program {
                             lastUpdated = tempDateTime;
                         }
                     }
-                    bool? active = true;
+                    bool active = true;
                     if (patientNote.Active != null) {
                         if (patientNote.Active.ToLower() == "no" || patientNote.Active == "0") {
                             active = false;
@@ -2566,7 +2573,7 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-    List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
 
             int added = 0, addedScheduling = 0;
 
@@ -2820,7 +2827,7 @@ namespace Brady_s_Conversion_Program {
                                 SpectacleExpiration = specExpId,
                                 SpectacleExpirationTypeId = specExpTypeId,
                                 ClExpiration = clExpId,
-                                ClExpirationTypeId = -1,
+                                ClExpirationTypeId = 0,
                                 LicenseIssuingStateId = stateId,
                                 LicenseIssuingCountryId = countryId,
                                 ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
@@ -2922,7 +2929,7 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
 
-                    int appointmentType = -1;
+                    int appointmentType = 0;
                     if (recall.OldRecallTypeId != null) {
                         if (int.TryParse(recall.OldRecallTypeId, out int apptType)) {
                             var ffpmApptType = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(a => a.Code == recallTypeCodes.GetValueOrDefault(recall.OldRecallTypeId));
@@ -2931,7 +2938,7 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
-                    int resource = -1;
+                    int resource = 0;
                     if (int.TryParse(recall.OldResourceId, out int temp)) {
                         var ffpmResource = ffpmDbContext.SchedulingResources.FirstOrDefault(r => r.Code == recallProviderCodes.GetValueOrDefault(recall.OldResourceId));
                         if (ffpmResource != null) {
@@ -2939,7 +2946,7 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    int billingLocation = -1;
+                    int billingLocation = 0;
                     var convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
                     if (convLocation != null) {
                         string convLocationCode = "";
@@ -2971,7 +2978,7 @@ namespace Brady_s_Conversion_Program {
                         isActive = false;
                     }
 
-                    int location = -1;
+                    int location = 0;
                     // only incoming location is billing location
                     if (recall.OldBillingLocationId != null) {
                         convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
@@ -2992,7 +2999,7 @@ namespace Brady_s_Conversion_Program {
                             }
                         }
                     }
-                    int number = -1;
+                    int number = 0;
                     // flag for not recorded
                     string note = "";
                     if (recall.Notes != null) {
@@ -3151,7 +3158,7 @@ namespace Brady_s_Conversion_Program {
                         npiString = referral.Npi;
                     }
 
-                    bool? isActive = null;
+                    bool isActive = false;
                     if (referral.Active != null && (referral.Active.ToLower() == "yes" || referral.Active == "1")) {
                         isActive = true;
                     }
@@ -3401,7 +3408,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int type = -1;
+                    int type = 0;
                     if (int.TryParse(schedCode.TypeId, out int typeInt)) {
                         type = typeInt;
                     }
@@ -4388,7 +4395,7 @@ namespace Brady_s_Conversion_Program {
                             dosDate = tempDateTime;
                         }
                     }
-                    short? inactive = -1;
+                    short? inactive = 0;
                     if (allergy.Inactive != null) {
                         if (short.TryParse(allergy.Inactive, out short locum)) {
                             inactive = locum;
@@ -4724,7 +4731,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int ptId = -1;
+                    int ptId = 0;
                     if (visit.PtId > 0) {
                         ptId = visit.PtId;
                     }
@@ -4740,39 +4747,39 @@ namespace Brady_s_Conversion_Program {
                     }
                     ptId = eyeMDPatient.PtId;
 
-                    short tabPOHPMH = -1;
+                    short tabPOHPMH = 0;
                     // no tabPOHPMH
-                    short tabROS = -1;
+                    short tabROS = 0;
                     // no tabROS
-                    short tabCCHPI = -1;
+                    short tabCCHPI = 0;
                     // no tabCCHPI
-                    short Workup = -1;
+                    short Workup = 0;
                     // no Workup
-                    short tabWorkup2 = -1;
+                    short tabWorkup2 = 0;
                     // no tabWorkup2
-                    short tabMBalance = -1;
+                    short tabMBalance = 0;
                     // no tabMBalance
-                    short tabGonio = -1;
+                    short tabGonio = 0;
                     // no tabGonio
-                    short tabSLE = -1;
+                    short tabSLE = 0;
                     // no tabSLE
-                    short tabDFE = -1;
+                    short tabDFE = 0;
                     // no tabDFE
-                    short tabLensRx = -1;
+                    short tabLensRx = 0;
                     // no tabLensRx
-                    short tabDiag = -1;
+                    short tabDiag = 0;
                     // no tabDiag
-                    short tabPlan = -1;
+                    short tabPlan = 0;
                     // no tabPlan
-                    short tabCoding = -1;
+                    short tabCoding = 0;
                     // no tabCoding
-                    short MDSignedOff = -1;
+                    short MDSignedOff = 0;
                     if (short.TryParse(visit.MdsignedOff, out short temp)) {
                         MDSignedOff = temp;
                     }
 
-                    int locum = -1;
-                    int clientSoftwareApptId = -1;
+                    int locum = 0;
+                    int clientSoftwareApptId = 0;
                     if (visit.OldVisitId != null) {
                         if (int.TryParse(visit.OldVisitId, out locum)) {
                             clientSoftwareApptId = locum;
@@ -5084,7 +5091,7 @@ namespace Brady_s_Conversion_Program {
                     if (visitOrder.OrderScheduledDate != null) {
                         orderScheduledDate = visitOrder.OrderScheduledDate;
                     }
-                    short doNotPrintRx = -1;
+                    short doNotPrintRx = 0;
                     if (short.TryParse(visitOrder.DoNotPrintRx, out short temp)) {
                         doNotPrintRx = temp;
                     }
@@ -5346,15 +5353,15 @@ namespace Brady_s_Conversion_Program {
                     if (visitDoctor.PlanRtoreason != null) {
                         PlanRTOReason = visitDoctor.PlanRtoreason;
                     }
-                    short planDictateReferingDoc = -1;
+                    short planDictateReferingDoc = 0;
                     if (short.TryParse(visitDoctor.PlanDictateReferingDoc, out short temp)) {
                         planDictateReferingDoc = temp;
                     }
-                    short planDictatePriCareDoc = -1;
+                    short planDictatePriCareDoc = 0;
                     if (short.TryParse(visitDoctor.PlanDictatePriCareDoc, out temp)) {
                         planDictatePriCareDoc = temp;
                     }
-                    short planDictatePatient = -1;
+                    short planDictatePatient = 0;
                     if (short.TryParse(visitDoctor.PlanDictatePatient, out temp)) {
                         planDictatePatient = temp;
                     }
@@ -6255,7 +6262,7 @@ namespace Brady_s_Conversion_Program {
                     if (diagCodePool.SourceField != null) {
                         sourceField = diagCodePool.SourceField;
                     }
-                    short isactive = -1;
+                    short isactive = 0;
                     if (short.TryParse(diagCodePool.Active, out short temp)) {
                         isactive = temp;
                     }
@@ -6313,7 +6320,7 @@ namespace Brady_s_Conversion_Program {
                     if (diagCodePool.OnsetYear2 != null) {
                         onsetYear2 = diagCodePool.OnsetYear2;
                     }
-                    short isResolved1 = -1;
+                    short isResolved1 = 0;
                     if (short.TryParse(diagCodePool.IsResolved1, out short foo)) {
                         isResolved1 = foo;
                     }
@@ -6341,7 +6348,7 @@ namespace Brady_s_Conversion_Program {
                     if (diagCodePool.ResolveType1 != null) {
                         resolveType1 = diagCodePool.ResolveType1;
                     }
-                    short isResolved2 = -1;
+                    short isResolved2 = 0;
                     if (short.TryParse(diagCodePool.IsResolved2, out short temp2)) {
                         isResolved2 = temp2;
                     }
@@ -6696,7 +6703,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == examCondition.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == ptId.ToString());
                     if (eyeMDPatient == null) {
@@ -7064,7 +7071,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == planNarrative.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == planNarrative.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -7121,7 +7128,7 @@ namespace Brady_s_Conversion_Program {
                     if (planNarrative.NarrativeType != null) {
                         narrativeType = planNarrative.NarrativeType;
                     }
-                    int displayOrder = -1;
+                    int displayOrder = 0;
                     if (planNarrative.DisplayOrder != null) {
                         if (int.TryParse(planNarrative.DisplayOrder, out int locum)) {
                             displayOrder = locum;
@@ -7296,7 +7303,7 @@ namespace Brady_s_Conversion_Program {
                     if (procPool.SourceField != null) {
                         sourceField = procPool.SourceField;
                     }
-                    short isBilled = -1;
+                    short isBilled = 0;
                     if (procPool.IsBilled != null) {
                         if (short.TryParse(procPool.IsBilled, out short locum)) {
                             isBilled = locum;
@@ -7308,7 +7315,7 @@ namespace Brady_s_Conversion_Program {
                             procLocationType = locum;
                         }
                     }
-                    short procDiagTestComponents = -1;
+                    short procDiagTestComponents = 0;
                     if (procPool.ProcDiagTestComponents != null) {
                         if (short.TryParse(procPool.ProcDiagTestComponents, out short locum)) {
                             procDiagTestComponents = locum;
@@ -7426,7 +7433,7 @@ namespace Brady_s_Conversion_Program {
                             denominatorException = locum;
                         }
                     }
-                    int billingOrder = -1;
+                    int billingOrder = 0;
                     if (procPool.BillingOrder != null) {
                         if (int.TryParse(procPool.BillingOrder, out int locum)) {
                             billingOrder = locum;
@@ -7496,7 +7503,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == refraction.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == refraction.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -7810,7 +7817,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == rx.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == rx.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -7851,19 +7858,19 @@ namespace Brady_s_Conversion_Program {
                             medType = locum;
                         }
                     }
-                    short brandMedOnly = -1;
+                    short brandMedOnly = 0;
                     if (rx.BrandMedOnly != null) {
                         if (short.TryParse(rx.BrandMedOnly, out short locum)) {
                             brandMedOnly = locum;
                         }
                     }
-                    short doNotPrintRx = -1;
+                    short doNotPrintRx = 0;
                     if (rx.DoNotPrintRx != null) {
                         if (short.TryParse(rx.DoNotPrintRx, out short locum)) {
                             doNotPrintRx = locum;
                         }
                     }
-                    short sampleGiven = -1;
+                    short sampleGiven = 0;
                     if (rx.SampleGiven != null) {
                         if (short.TryParse(rx.SampleGiven, out short locum)) {
                             sampleGiven = locum;
@@ -8153,7 +8160,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == surgHistory.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == surgHistory.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -8392,7 +8399,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == tech.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == tech.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -8759,7 +8766,7 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     int? visitId = null;
-                    int ptId = -1;
+                    int ptId = 0;
                     ptId = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount == tech2.PtId)?.NewAccount ?? -1;
                     var eyeMDPatient = eyeMDPatients.FirstOrDefault(p => p.ClientSoftwarePtId == tech2.PtId.ToString());
                     if (eyeMDPatient == null) {
@@ -9166,11 +9173,10 @@ namespace Brady_s_Conversion_Program {
                             locationId = locum;
                         }
                     }
-                    bool? isActive = null;
-                    if (clBrand.Active != null) {
-                        if (bool.TryParse(clBrand.Active, out bool locum)) {
-                            isActive = locum;
-                        }
+                    bool isActive = false;
+                    if (clBrand.Active != null && (clBrand.Active.ToLower() == "yes" || clBrand.Active.ToLower() == "true" || clBrand.Active.ToLower() == "1" ||
+                        clBrand.Active.ToLower() == "t")) {
+                        isActive = true;
                     }
 
                     var invList = clnsBrands.FirstOrDefault(x => x.BrandName == clBrand.BrandName);
@@ -9206,7 +9212,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    if (clInventory.ContactLensId <= -1) {
+                    if (clInventory.ContactLensId <= 0) {
                         logger.Log($"INV: INV Contact Lens ID not found for clInventory with ID: {clInventory.Id}");
                         continue;
                     }
@@ -9278,17 +9284,15 @@ namespace Brady_s_Conversion_Program {
                             updatedDate = tempDateTime;
                         }
                     }
-                    bool? isTrials = null;
-                    if (clInventory.IsTrials != null) {
-                        if (bool.TryParse(clInventory.IsTrials, out bool locum)) {
-                            isTrials = locum;
-                        }
+                    bool isTrials = false;
+                    if (clInventory.IsTrials != null && (clInventory.IsTrials.ToLower() == "yes" || clInventory.IsTrials.ToLower() == "true" ||
+                        clInventory.IsTrials.ToLower() == "t" || clInventory.IsTrials.ToLower() == "1")) {
+                        isTrials = true;
                     }
-                    bool? isActive = null;
-                    if (clInventory.IsActive != null) {
-                        if (bool.TryParse(clInventory.IsActive, out bool locum)) {
-                            isActive = locum;
-                        }
+                    bool isActive = false;
+                    if (clInventory.IsActive != null && (clInventory.IsActive.ToLower() == "yes" || clInventory.IsActive.ToLower() == "true" ||
+                        clInventory.IsActive.ToLower() == "t" || clInventory.IsActive.ToLower() == "1")) {
+                        isActive = true;
                     }
                     long? locationId = null;
                     if (clInventory.LocationId != null) {
@@ -9344,13 +9348,13 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int clnsBrandId = -1;
+                    int clnsBrandId = 0;
                     if (clLense.ClndbrandId != null) {
                         if (int.TryParse(clLense.ClndbrandId, out int locum)) {
                             clnsBrandId = locum;
                         }
                     }
-                    if (clnsBrandId == -1) {
+                    if (clnsBrandId == 0) {
                         logger.Log($"INV: INV Brand ID not found for CL Lense with ID: {clLense.Id}");
                         continue;
                     }
@@ -9400,17 +9404,15 @@ namespace Brady_s_Conversion_Program {
                             updatedBy = locum;
                         }
                     }
-                    bool? isSoftContact = null;
-                    if (clLense.IsSoftContact != null) {
-                        if (bool.TryParse(clLense.IsSoftContact, out bool locum)) {
-                            isSoftContact = locum;
-                        }
+                    bool isSoftContact = false;
+                    if (clLense.IsSoftContact != null && (clLense.IsSoftContact.ToLower() == "yes" || clLense.IsSoftContact.ToLower() == "true" ||
+                            clLense.IsSoftContact.ToLower() == "t" || clLense.IsSoftContact.ToLower() == "1")) {
+                        isSoftContact = true;
                     }
-                    bool? isActive = null;
-                    if (clLense.Active != null) {
-                        if (bool.TryParse(clLense.Active, out bool locum)) {
-                            isActive = locum;
-                        }
+                    bool isActive = false;
+                    if (clLense.Active != null && (clLense.Active.ToLower() == "yes" || clLense.Active.ToLower() == "true" ||
+                             clLense.Active.ToLower() == "t" || clLense.Active.ToLower() == "1")) {
+                        isActive = true;
                     }
                     long? locationId = null;
                     if (clLense.LocationId != null) {
@@ -9424,11 +9426,10 @@ namespace Brady_s_Conversion_Program {
                             lensPerBox = locum;
                         }
                     }
-                    bool? isLensFromClxCatalog = null;
-                    if (clLense.IsLensFromClxcatalog != null) {
-                        if (bool.TryParse(clLense.IsLensFromClxcatalog, out bool locum)) {
-                            isLensFromClxCatalog = locum;
-                        }
+                    bool isLensFromClxCatalog = false;
+                    if (clLense.IsLensFromClxcatalog != null && (clLense.IsLensFromClxcatalog.ToLower() == "yes" || clLense.IsLensFromClxcatalog.ToLower() == "true" ||
+                            clLense.IsLensFromClxcatalog.ToLower() == "t" || clLense.IsLensFromClxcatalog.ToLower() == "1")) {
+                        isLensFromClxCatalog = true;
                     }
 
                     var invList = clLenses.FirstOrDefault(x => x.ClnsBrandId == clnsBrandId);
@@ -9489,7 +9490,7 @@ namespace Brady_s_Conversion_Program {
                     if (cptDept.Description != null) {
                         description = cptDept.Description;
                     }
-                    int locationId = -1;
+                    int locationId = 1;
                     if (cptDept.LocationId != null) {
                         if (int.TryParse(cptDept.LocationId, out int locum)) {
                             locationId = locum;
@@ -9554,8 +9555,9 @@ namespace Brady_s_Conversion_Program {
                             locationId = locum;
                         }
                     }
-                    bool? Active = null;
-                    if (cptMapping.Active != null && cptMapping.Active.ToLower() == "yes" || cptMapping.Active == "1") {
+                    bool Active = false;
+                    if (cptMapping.Active != null && (cptMapping.Active.ToLower() == "yes" || cptMapping.Active == "1" || cptMapping.Active.ToLower() == "t" ||
+                        cptMapping.Active.ToLower() == "true")) {
                         Active = true;
                     }
                     else if (cptMapping.Active != null && cptMapping.Active.ToLower() == "no") {
@@ -9599,8 +9601,9 @@ namespace Brady_s_Conversion_Program {
                             sortOrder = locum;
                         }
                     }
-                    bool? active = null;
-                    if (cpt.Active != null && cpt.Active.ToLower() == "yes" || cpt.Active == "1") {
+                    bool active = false;
+                    if (cpt.Active != null && (cpt.Active.ToLower() == "yes" || cpt.Active.ToLower() == "1" || cpt.Active.ToLower() == "t" || 
+                        cpt.Active.ToLower() == "true")) {
                         active = true;
                     }
                     else if (cpt.Active != null && cpt.Active.ToLower() == "no") {
@@ -9622,19 +9625,19 @@ namespace Brady_s_Conversion_Program {
                     if (cpt.Taxable != null && cpt.Taxable.ToLower() == "yes" || cpt.Taxable == "1") {
                         taxable = true;
                     }
-                    int departmentId = -1;
+                    int departmentId = 0;
                     if (cpt.DepartmentId != null) {
                         if (int.TryParse(cpt.DepartmentId, out int locum)) {
                             departmentId = locum;
                         }
                     }
-                    int typeOfServiceId = -1;
+                    int typeOfServiceId = 0;
                     if (cpt.TypeOfServiceId != null) {
                         if (int.TryParse(cpt.TypeOfServiceId, out int locum)) {
                             typeOfServiceId = locum;
                         }
                     }
-                    int taxTypeId = -1;
+                    int taxTypeId = 0;
                     if (cpt.TaxTypeId != null) {
                         if (int.TryParse(cpt.TaxTypeId, out int locum)) {
                             taxTypeId = locum;
@@ -9644,7 +9647,7 @@ namespace Brady_s_Conversion_Program {
                     if (cpt.UseClianumber != null && cpt.UseClianumber.ToLower() == "yes" || cpt.UseClianumber == "1") {
                         useCliaNumber = true;
                     }
-                    int units = -1;
+                    int units = 0;
                     if (cpt.Units != null) {
                         if (int.TryParse(cpt.Units, out int locum)) {
                             units = locum;
@@ -9734,10 +9737,10 @@ namespace Brady_s_Conversion_Program {
 
                 try {
                     string categoryName = frameCategory.CategoryName ?? string.Empty;
-                    bool? active = frameCategory.Active?.ToLower() switch {
-                        "yes" or "1" => true,
-                        "no" => false,
-                        _ => null
+                    bool active = frameCategory.Active?.ToLower() switch {
+                        "yes" or "1" or "true" or "t" => true,
+                        "no" or "0" or "false" or "f" => false,
+                        _ => false
                     };
                     long sortOrder = long.TryParse(frameCategory.SortOrder, out var parsedSortOrder) ? parsedSortOrder : -1;
                     long? locationId = long.TryParse(frameCategory.LocationId, out var parsedLocationId) ? parsedLocationId : (long?)null;
@@ -10038,7 +10041,7 @@ namespace Brady_s_Conversion_Program {
                     if (convFrame.Upc != null) {
                         upc = convFrame.Upc;
                     }
-                    int styleId = -1;
+                    int styleId = 0;
                     if (convFrame.StyleId != null) {
                         if (int.TryParse(convFrame.StyleId, out int locum)) {
                             styleId = locum;
@@ -10122,15 +10125,16 @@ namespace Brady_s_Conversion_Program {
                             completePrice = locum;
                         }
                     }
-                    bool? styleNew = null;
+                    bool styleNew = false;
                     if (convFrame.StyleNew != null && convFrame.StyleNew.ToLower() == "yes" || convFrame.StyleNew == "1") {
                         styleNew = true;
                     }
                     else if (convFrame.StyleNew != null && convFrame.StyleNew.ToLower() == "no") {
                         styleNew = false;
                     }
-                    bool? changedPrice = null;
-                    if (convFrame.ChangedPrice != null && convFrame.ChangedPrice.ToLower() == "yes" || convFrame.ChangedPrice == "1") {
+                    bool changedPrice = false;
+                    if (convFrame.ChangedPrice != null && (convFrame.ChangedPrice.ToLower() == "yes" || convFrame.ChangedPrice == "1" || 
+                        convFrame.ChangedPrice.ToLower() == "t" || convFrame.ChangedPrice.ToLower() == "true")) {
                         changedPrice = true;
                     }
                     else if (convFrame.ChangedPrice != null && convFrame.ChangedPrice.ToLower() == "no") {
@@ -10226,11 +10230,9 @@ namespace Brady_s_Conversion_Program {
                             cptid = locum;
                         }
                     }
-                    bool? active = null;
-                    if (convFrame.Active != null && convFrame.Active.ToLower() == "yes" || convFrame.Active == "1") {
-                        active = true;
-                    }
-                    else if (convFrame.Active != null && convFrame.Active.ToLower() == "no") {
+                    bool active = true;
+                    if (convFrame.Active != null && (convFrame.Active.ToLower() == "no" || convFrame.Active == "0" || convFrame.Active.ToLower() == "f" ||
+                        convFrame.Active.ToLower() == "false")) {
                         active = false;
                     }
                     DateTime? dateAdded = null;
@@ -10304,7 +10306,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"INV: FFPM Frame not found for Frame Inventory (2) with ID: {frameInventory.Id}");
                         continue;
                     }
-                    long locationID = -1;
+                    long locationID = 0;
                     if (frameInventory.OldLocationId != null) {
                         if (long.TryParse(frameInventory.OldLocationId, out long locum)) {
                             locationID = locum;
@@ -10382,12 +10384,10 @@ namespace Brady_s_Conversion_Program {
                             donation = locum;
                         }
                     }
-                    bool? consignment = null;
-                    if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "yes" || frameInventory.Consignment == "1") {
+                    bool consignment = false;
+                    if (frameInventory.Consignment != null && (frameInventory.Consignment.ToLower() == "yes" || frameInventory.Consignment == "1" ||
+                        frameInventory.Consignment.ToLower() == "t" || frameInventory.Consignment.ToLower() == "true")) {
                         consignment = true;
-                    }
-                    else if (frameInventory.Consignment != null && frameInventory.Consignment.ToLower() == "no" || frameInventory.Consignment == "0") {
-                        consignment = false;
                     }
                     int? transferredIn = null;
                     if (frameInventory.TransferredIn != null) {
@@ -10408,12 +10408,10 @@ namespace Brady_s_Conversion_Program {
                             invoiceDate = locum;
                         }
                     }
-                    bool? validInventory = null;
-                    if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "yes" || frameInventory.ValidInventory == "1") {
+                    bool validInventory = false;
+                    if (frameInventory.ValidInventory != null && (frameInventory.ValidInventory.ToLower() == "yes" || frameInventory.ValidInventory == "1" ||
+                                               frameInventory.ValidInventory.ToLower() == "t" || frameInventory.ValidInventory.ToLower() == "true")) {
                         validInventory = true;
-                    }
-                    else if (frameInventory.ValidInventory != null && frameInventory.ValidInventory.ToLower() == "no" || frameInventory.ValidInventory == "0") {
-                        validInventory = false;
                     }
                     dateAdded = null;
                     if (frameInventory.DateAdded != null) {
@@ -10476,13 +10474,13 @@ namespace Brady_s_Conversion_Program {
                     if (frameLensColor.ColorDescription != null) {
                         colorDescription = frameLensColor.ColorDescription;
                     }
-                    int statusId = -1;
+                    int statusId = 0;
                     if (frameLensColor.StatusId != null) {
                         if (int.TryParse(frameLensColor.StatusId, out int locum)) {
                             statusId = locum;
                         }
                     }
-                    long locationId = -1;
+                    long locationId = 0;
                     if (frameLensColor.LocationId != null) {
                         if (long.TryParse(frameLensColor.LocationId, out long locum)) {
                             locationId = locum;
@@ -10528,13 +10526,13 @@ namespace Brady_s_Conversion_Program {
                     if (frameMaterial.Active != null && frameMaterial.Active.ToLower() == "yes" || frameMaterial.Active == "1") {
                         active = true;
                     }
-                    long sortOrder = -1;
+                    long sortOrder = 0;
                     if (frameMaterial.SortOrder != null) {
                         if (long.TryParse(frameMaterial.SortOrder, out long locum)) {
                             sortOrder = locum;
                         }
                     }
-                    long locationId = -1;
+                    long locationId = 0;
                     if (frameMaterial.LocationId != null) {
                         if (long.TryParse(frameMaterial.LocationId, out long locum)) {
                             locationId = locum;
@@ -10581,13 +10579,13 @@ namespace Brady_s_Conversion_Program {
                     if (frameMount.Active != null && frameMount.Active.ToLower() == "yes" || frameMount.Active == "1") {
                         active = true;
                     }
-                    long sortOrder = -1;
+                    long sortOrder = 0;
                     if (frameMount.SortOrder != null) {
                         if (long.TryParse(frameMount.SortOrder, out long locum)) {
                             sortOrder = locum;
                         }
                     }
-                    long locationId = -1;
+                    long locationId = 0;
                     if (frameMount.LocationId != null) {
                         if (long.TryParse(frameMount.LocationId, out long locum)) {
                             locationId = locum;
@@ -10630,31 +10628,31 @@ namespace Brady_s_Conversion_Program {
                     if (frameOrder.Name != null) {
                         name = frameOrder.Name;
                     }
-                    int materialId = -1;
+                    int materialId = 0;
                     if (frameOrder.MaterialId != null) {
                         if (int.TryParse(frameOrder.MaterialId, out int locum)) {
                             materialId = locum;
                         }
                     }
-                    int statusId = -1;
+                    int statusId = 0;
                     if (frameOrder.StatusId != null) {
                         if (int.TryParse(frameOrder.StatusId, out int locum)) {
                             statusId = locum;
                         }
                     }
-                    int cptId = -1;
+                    int cptId = 0;
                     if (frameOrder.CptId != null) {
                         if (int.TryParse(frameOrder.CptId, out int locum)) {
                             cptId = locum;
                         }
                     }
-                    int eTypId = -1;
+                    int eTypId = 0;
                     if (frameOrder.EtypId != null) {
                         if (int.TryParse(frameOrder.EtypId, out int locum)) {
                             eTypId = locum;
                         }
                     }
-                    int fTypId = -1;
+                    int fTypId = 0;
                     if (frameOrder.FtypId != null) {
                         if (int.TryParse(frameOrder.FtypId, out int locum)) {
                             fTypId = locum;
@@ -10664,73 +10662,73 @@ namespace Brady_s_Conversion_Program {
                     if (frameOrder.Color != null) {
                         color = frameOrder.Color;
                     }
-                    long manufacturerId = -1;
+                    long manufacturerId = 0;
                     if (frameOrder.ManufacturerId != null) {
                         if (long.TryParse(frameOrder.ManufacturerId, out long locum)) {
                             manufacturerId = locum;
                         }
                     }
-                    int eye = -1;
+                    int eye = 0;
                     if (frameOrder.Eye != null) {
                         if (int.TryParse(frameOrder.Eye, out int locum)) {
                             eye = locum;
                         }
                     }
-                    int bridge = -1;
+                    int bridge = 0;
                     if (frameOrder.Bridge != null) {
                         if (int.TryParse(frameOrder.Bridge, out int locum)) {
                             bridge = locum;
                         }
                     }
-                    decimal a = -1;
+                    decimal a = 0;
                     if (frameOrder.A != null) {
                         if (decimal.TryParse(frameOrder.A, out decimal locum)) {
                             a = locum;
                         }
                     }
-                    decimal b = -1;
+                    decimal b = 0;
                     if (frameOrder.B != null) {
                         if (decimal.TryParse(frameOrder.B, out decimal locum)) {
                             b = locum;
                         }
                     }
-                    decimal ed = -1;
+                    decimal ed = 0;
                     if (frameOrder.Ed != null) {
                         if (decimal.TryParse(frameOrder.Ed, out decimal locum)) {
                             ed = locum;
                         }
                     }
-                    decimal dbl = -1;
+                    decimal dbl = 0;
                     if (frameOrder.Dbl != null) {
                         if (decimal.TryParse(frameOrder.Dbl, out decimal locum)) {
                             dbl = locum;
                         }
                     }
-                    decimal cSize = -1;
+                    decimal cSize = 0;
                     if (frameOrder.Csize != null) {
                         if (decimal.TryParse(frameOrder.Csize, out decimal locum)) {
                             cSize = locum;
                         }
                     }
-                    int templeSize = -1;
+                    int templeSize = 0;
                     if (frameOrder.TempleSize != null) {
                         if (int.TryParse(frameOrder.TempleSize, out int locum)) {
                             templeSize = locum;
                         }
                     }
-                    int templeStyleId = -1;
+                    int templeStyleId = 0;
                     if (frameOrder.TempleStyleId != null) {
                         if (int.TryParse(frameOrder.TempleStyleId, out int locum)) {
                             templeStyleId = locum;
                         }
                     }
-                    decimal retail = -1;
+                    decimal retail = 0;
                     if (frameOrder.Retail != null) {
                         if (decimal.TryParse(frameOrder.Retail, out decimal locum)) {
                             retail = locum;
                         }
                     }
-                    long inventoryId = -1;
+                    long inventoryId = 0;
                     if (frameOrder.InventoryId != null) {
                         if (long.TryParse(frameOrder.InventoryId, out long locum)) {
                             inventoryId = locum;
@@ -10793,7 +10791,7 @@ namespace Brady_s_Conversion_Program {
                     if (frame.Upc != null) {
                         upc = frame.Upc;
                     }
-                    int styleId = -1;
+                    int styleId = 0;
                     if (frame.StyleId != null) {
                         if (int.TryParse(frame.StyleId, out int locum)) {
                             styleId = locum;
@@ -10877,19 +10875,15 @@ namespace Brady_s_Conversion_Program {
                             completePrice = locum;
                         }
                     }
-                    bool? styleNew = null;
-                    if (frame.StyleNew != null && frame.StyleNew.ToLower() == "yes" || frame.StyleNew == "1") {
+                    bool styleNew = false;
+                    if (frame.StyleNew != null && (frame.StyleNew.ToLower() == "yes" || frame.StyleNew == "1" || frame.StyleNew.ToLower() == "true" ||
+                        frame.StyleNew.ToLower() == "t")) {
                         styleNew = true;
                     }
-                    else if (frame.StyleNew != null && frame.StyleNew.ToLower() == "no") {
-                        styleNew = false;
-                    }
-                    bool? changedPrice = null;
-                    if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "yes" || frame.ChangedPrice == "1") {
+                    bool changedPrice = false;
+                    if (frame.ChangedPrice != null && (frame.ChangedPrice.ToLower() == "yes" || frame.ChangedPrice == "1" || frame.ChangedPrice.ToLower() == "true" ||
+                                               frame.ChangedPrice.ToLower() == "t")) {
                         changedPrice = true;
-                    }
-                    else if (frame.ChangedPrice != null && frame.ChangedPrice.ToLower() == "no") {
-                        changedPrice = false;
                     }
                     long? manufacturerId = null;
                     if (frame.ManufacturerId != null) {
@@ -10981,12 +10975,10 @@ namespace Brady_s_Conversion_Program {
                             cptid = locum;
                         }
                     }
-                    bool? active = null;
-                    if (frame.Active != null && frame.Active.ToLower() == "yes" || frame.Active == "1") {
+                    bool active = false;
+                    if (frame.Active != null && (frame.Active.ToLower() == "no" || frame.Active == "0" || frame.Active.ToLower() == "f" ||
+                                               frame.Active.ToLower() == "false")) {
                         active = true;
-                    }
-                    else if (frame.Active != null && frame.Active.ToLower() == "no") {
-                        active = false;
                     }
                     DateTime? dateAdded = null;
                     if (frame.DateAdded != null) {
@@ -11077,7 +11069,7 @@ namespace Brady_s_Conversion_Program {
                     // no discount
                     int? terms = null;
                     // no terms
-                    long locationId = -1;
+                    long locationId = 0;
                     var location = locations.FirstOrDefault(l => l.LocationId.ToString() == vendor.LocationId);
                     if (location != null) {
                         locationId = location.LocationId;
@@ -11130,7 +11122,7 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    long locationId = -1;
+                    long locationId = 0;
                     if (frameManufacturer.LocationId > 0) {
                         var location = frameManufacturers.FirstOrDefault(l => l.LocationId == frameManufacturer.LocationId);
                         if (location != null) {
@@ -11141,11 +11133,11 @@ namespace Brady_s_Conversion_Program {
                     long? addressId = null;
                     int? statusId = null;
                     // no statusId
-                    bool? contacts = frameManufacturer.Contacts;
-                    bool? frames = frameManufacturer.Frames;
-                    bool? lenses = frameManufacturer.Lenses;
-                    bool? misc = frameManufacturer.Misc;
-                    bool? active = frameManufacturer.Active;
+                    bool contacts = frameManufacturer.Contacts ?? false;
+                    bool frames = frameManufacturer.Frames ?? false;
+                    bool lenses = frameManufacturer.Lenses ?? false;
+                    bool misc = frameManufacturer.Misc ?? false;
+                    bool active = frameManufacturer.Active ?? false;
 
 
                     var newFrameManufacturer = new Brady_s_Conversion_Program.ModelsA.Manufacturer {
@@ -11189,9 +11181,9 @@ namespace Brady_s_Conversion_Program {
                 try {
                     if (frameBrand.Active != null && frameBrand.Active.ToLower() == "no" || frameBrand.Active == "0")
                         continue;
-                    int statusId = -1;
+                    int statusId = 0;
                     // statusId doesnt seem connected to anything
-                    long locationId = -1;
+                    long locationId = 0;
                     if (frameBrand.LocationId != null) {
                         var location = locations.FirstOrDefault(l => l.LocationId.ToString() == frameBrand.LocationId);
                         if (location != null) {
