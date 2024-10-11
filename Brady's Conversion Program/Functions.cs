@@ -1054,10 +1054,7 @@ namespace Brady_s_Conversion_Program {
                             var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                             if (xref != null) {
                                 accountNumber = xref.NewAccount?.ToString();
-                            } else {
-                                logger.Log($"Conv: Conv Account Number not found for patient with ID: {appointment.PatientId}");
-                                continue;
-							}
+                            }
 
 							var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
                             if (ffpmPatient != null) {
