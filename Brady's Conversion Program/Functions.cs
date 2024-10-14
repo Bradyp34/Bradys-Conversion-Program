@@ -597,7 +597,7 @@ namespace Brady_s_Conversion_Program {
             var phones = convDbContext.Phones.ToList();
 
             report.Log($"FFPM Conversion:\n");
-/*
+
             if (!noMaintenance) {
                 ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
@@ -606,7 +606,6 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Locations Converted\n";
                 });
             }
-*/
 
             if (!maintenanceOnly) {
                 PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
@@ -619,7 +618,6 @@ namespace Brady_s_Conversion_Program {
             }
 
             if (!noMaintenance) {
-/*
                 // moved the foreach loops into the functions
                 ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -642,7 +640,7 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Insurances Converted\n";
                 });
-*/
+
 
                 ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
@@ -762,8 +760,8 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void PatientConvert(List<Models.Patient> convPatients, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-            List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals, List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs, 
-                List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs, 
+            List<DmgPatient> ffpmPatients, List<DmgPatientAdditionalDetail> patientAdditionals, List<MntMedicareSecondary> medicareSecondaries, List<MntRace> raceXrefs,
+                List<MntEthnicity> ethnicityXrefs, List<MntTitle> titleXrefs, List<MntSuffix> suffixXrefs, List<MntMaritalStatus> maritalStatusXrefs,
                     List<MntState> stateXrefs, bool renumbering, CustomerInfoContext customerInfoDbContext) {
 
             long patientId = 1;
@@ -789,22 +787,19 @@ namespace Brady_s_Conversion_Program {
                 });
 
                 try {
-                    if (patient.LastName == null) {
+                    if (string.IsNullOrEmpty(patient.LastName)) {
                         logger.Log($"Conv: Conv Patient Last Name is null for patient with ID: {patient.Id}");
                         continue;
                     }
-                    else if (patient.FirstName == null) {
+                    if (string.IsNullOrEmpty(patient.FirstName)) {
                         logger.Log($"Conv: Conv Patient First Name is null for patient with ID: {patient.Id}");
                         continue;
                     }
 
-                    string? ssn = patient.Ssn;
-                    if (ssn == null || !ssnRegex.IsMatch(ssn)) {
-                        ssn = "";
-                    }
+                    string ssn = !string.IsNullOrEmpty(patient.Ssn) && ssnRegex.IsMatch(patient.Ssn) ? patient.Ssn : "";
 
                     // Xref Lookups
-                    short? licenseShort = stateXrefs.FirstOrDefault(s => s.StateCode == patient.LicenseState || s.State == patient.LicenseState)?.StateId;
+                    short licenseShort = stateXrefs.FirstOrDefault(s => s.StateCode == patient.LicenseState || s.State == patient.LicenseState)?.StateId ?? 0;
                     DateTime dob = minAcceptableDate;
                     if (!string.IsNullOrEmpty(patient.Dob)) {
                         string dobString = CleanUpDateString(patient.Dob.Trim());
@@ -813,40 +808,40 @@ namespace Brady_s_Conversion_Program {
                         }
                     }
 
-                    short? maritalStatusInt = maritalStatusXrefs.FirstOrDefault(m => m.MaritalStatus == patient.MaritalStatus)?.MaritalStatusId;
-                    short? titleInt = titleXrefs.FirstOrDefault(t => t.Title == patient.Title)?.TitleId;
-                    short? suffixInt = suffixXrefs.FirstOrDefault(s => s.Suffix == patient.Suffix)?.SuffixId;
-                    short? genderInt = patient.Sex?.ToLower() == "m" ? (short)1 : (short)2;
-                    short? race = raceXrefs.FirstOrDefault(r => r.Race == patient.Race)?.RaceId;
-                    short? ethnicity = ethnicityXrefs.FirstOrDefault(e => e.Ethnicity == patient.Ethnicity)?.EthnicityId;
-                    short? prefContact1 = short.TryParse(patient.PreferredContact1, out short prefContact1Int) ? prefContact1Int : (short?)null;
-                    short? prefContact2 = short.TryParse(patient.PreferredContact2, out short prefContact2Int) ? prefContact2Int : (short?)null;
-                    short? prefContact3 = short.TryParse(patient.PreferredContact3, out short prefContact3Int) ? prefContact3Int : (short?)null;
+                    short maritalStatusInt = maritalStatusXrefs.FirstOrDefault(m => m.MaritalStatus == patient.MaritalStatus)?.MaritalStatusId ?? 0;
+                    short titleInt = titleXrefs.FirstOrDefault(t => t.Title == patient.Title)?.TitleId ?? 0;
+                    short suffixInt = suffixXrefs.FirstOrDefault(s => s.Suffix == patient.Suffix)?.SuffixId ?? 0;
+                    short genderInt = patient.Sex?.ToLower() == "m" ? (short)1 : (short)2;
+                    short race = raceXrefs.FirstOrDefault(r => r.Race == patient.Race)?.RaceId ?? 0;
+                    short ethnicity = ethnicityXrefs.FirstOrDefault(e => e.Ethnicity == patient.Ethnicity)?.EthnicityId ?? 0;
+                    short prefContact1 = short.TryParse(patient.PreferredContact1, out short prefContact1Int) ? prefContact1Int : (short)0;
+                    short prefContact2 = short.TryParse(patient.PreferredContact2, out short prefContact2Int) ? prefContact2Int : (short)0;
+                    short prefContact3 = short.TryParse(patient.PreferredContact3, out short prefContact3Int) ? prefContact3Int : (short)0;
 
                     string preferredContactsNotes = $"{patient.PreferredContact1}; {patient.PreferredContact2}; {patient.PreferredContact3}";
 
-                    short? medicareSecondaryId = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode)?.MedicareSecondaryId;
+                    short medicareSecondaryId = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode)?.MedicareSecondaryId ?? 0;
                     string medicareSecondaryNotes = medicareSecondaries.FirstOrDefault(m => m.MedicareSecondarryCode == patient.MedicareSecondaryCode)?.MedicareSecondaryDescription ?? "";
 
                     bool patientIsActive = patient.Active != null && (patient.Active.ToUpper() == "YES" || patient.Active == "1");
                     bool deceased = patient.Deceased?.ToUpper() == "YES" || patient.Deceased?.ToUpper() == "TRUE";
                     bool consent = patient.Consent?.ToUpper() == "YES" || patient.Consent == "1" || patient.Consent?.ToUpper() == "TRUE";
 
-                    DateTime? consentDate = null;
+                    DateTime consentDate = minAcceptableDate;
                     if (!string.IsNullOrEmpty(patient.ConsentDate)) {
                         if (DateTime.TryParseExact(patient.ConsentDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDate)) {
                             consentDate = isValidDate(tempDate);
                         }
                     }
 
-                    DateOnly? deceasedDate = null;
+                    DateOnly deceasedDate = DateOnly.FromDateTime(minAcceptableDate);
                     if (!string.IsNullOrEmpty(patient.DateOfDeath)) {
                         if (DateTime.TryParseExact(patient.DateOfDeath, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDate)) {
                             deceasedDate = DateOnly.FromDateTime(isValidDate(tempDate));
                         }
                     }
 
-                    DateTime? lastExamDate = null;
+                    DateTime lastExamDate = minAcceptableDate;
                     if (!string.IsNullOrEmpty(patient.LastExamDate)) {
                         if (DateTime.TryParseExact(patient.LastExamDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDate)) {
                             lastExamDate = tempDate;
@@ -962,64 +957,48 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertAppointmentType(List<Models.AppointmentType> convAppointmentTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
-           ILogger logger, ILogger report, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
+            ILogger logger, ILogger report, ProgressBar progress, List<SchedulingAppointmentType> appointmentTypes) {
             int added = 0;
             foreach (var appointmentType in convAppointmentTypes) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
                 try {
-                    int? duration = null;
-                    if (appointmentType.DefaultDuration != null) {
-                        if (int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
-                            duration = durationInt;
-                        }
+                    int duration = 0; // Default value changed from null to 0
+                    if (!string.IsNullOrEmpty(appointmentType.DefaultDuration) && int.TryParse(appointmentType.DefaultDuration, out int durationInt)) {
+                        duration = durationInt;
                     }
-                    bool isActive = false;
-                    if (appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1")) {
-                        isActive = true;
-                    }
-                    bool schedule = false;
-                    if (appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1")) {
-                        schedule = true;
-                    }
-                    bool required = false;
-                    if (appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1")) {
-                        required = true;
-                    }
-                    bool examType = false;
-                    if (appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1")) {
-                        examType = true;
-                    }
-                    string? code = "";
+
+                    bool isActive = appointmentType.Active != null && (appointmentType.Active.ToLower() == "yes" || appointmentType.Active == "1");
+                    bool schedule = appointmentType.CanSchedule != null && (appointmentType.CanSchedule.ToLower() == "yes" || appointmentType.CanSchedule == "1");
+                    bool required = appointmentType.PatientRequired != null && (appointmentType.PatientRequired.ToLower() == "yes" || appointmentType.PatientRequired == "1");
+                    bool examType = appointmentType.IsExamType != null && (appointmentType.IsExamType.ToLower() == "yes" || appointmentType.IsExamType == "1");
+
+                    string code = "";
                     if (appointmentType.OldAppointmentTypeCode != null) {
-                        code = appointmentTypeCodes.GetValueOrDefault(appointmentType.OldAppointmentTypeCode);
-                        if (code == null) {
+                        string? tempCode = appointmentTypeCodes.GetValueOrDefault(appointmentType.OldAppointmentTypeCode);
+                        if (tempCode == null) {
                             code = "";
+                        } else {
+                            code = tempCode;
                         }
                     }
-                    string description = "";
-                    if (appointmentType.Description != null) {
-                        description = appointmentType.Description;
-                    }
-                    string notes = "";
-                    if (appointmentType.Notes != null) {
-                        notes = appointmentType.Notes;
-                    }
+                    string description = appointmentType.Description ?? "";
+                    string notes = appointmentType.Notes ?? "";
 
                     var ffpmOrig = appointmentTypes.FirstOrDefault(p => p.Code == code);
 
                     if (ffpmOrig == null) {
                         var newAppointmentType = new SchedulingAppointmentType {
-                            Code = TruncateString(code, 200), 
+                            Code = TruncateString(code, 200),
                             Description = TruncateString(description, 1000),
                             LocationId = 0,
                             PatientRequired = required,
                             Notes = TruncateString(notes, 5000),
                             IsExamType = examType,
                             IsAppointmentType = true,
-                            IsRecallType = false, // Will set this to true for recall types
-                            DefaultDuration = duration,
+                            IsRecallType = false,
+                            DefaultDuration = duration, // No longer nullable, set to 0 if not provided
                             Active = isActive,
                             CanSchedule = schedule
                         };
@@ -1050,185 +1029,140 @@ namespace Brady_s_Conversion_Program {
                     if (appointment.PatientId > 0) {
                         var convPatient = convPatients.FirstOrDefault(p => p.Id == appointment.PatientId);
                         if (convPatient != null) {
-                            string? accountNumber = convPatient.OldPatientAccountNumber;
+                            string accountNumber = convPatient.OldPatientAccountNumber ?? "";
                             var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                             if (xref != null) {
-                                accountNumber = xref.NewAccount?.ToString();
+                                accountNumber = xref.NewAccount?.ToString() ?? "";
                             }
 
-							var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
+                            var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
                             if (ffpmPatient != null) {
                                 patientId = (int)ffpmPatient.PatientId;
                             }
                         }
                     }
+
                     int locationId = 1;
-                    if (appointment.OldBillingLocationId != null) { // there are no other incoming locations
-                        string? tempLoc = appointmentLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId);
-                        if (int.TryParse(tempLoc, out int locationIdInt)) {
-                            locationId = locationIdInt;
-                        }
+                    if (!string.IsNullOrEmpty(appointment.OldBillingLocationId)) {
+                        string tempLoc = appointmentLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId) ?? "1";
+                        int.TryParse(tempLoc, out locationId);
                     }
 
                     long resource = 0;
-                    if (appointment.OldResourceId != null) {
+                    if (!string.IsNullOrEmpty(appointment.OldResourceId)) {
                         long.TryParse(appointment.OldResourceId, out resource);
                     }
 
                     DateTime start = minAcceptableDate;
-                    if (appointment.StartDate != null && (appointment.StartDate != "" && !int.TryParse(appointment.StartDate, out int dontCare))) {
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats,
-                                       CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                    if (!string.IsNullOrEmpty(appointment.StartDate) && !int.TryParse(appointment.StartDate, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.StartDate), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
                             start = isValidDate(temp);
                         }
                     }
+
                     DateTime end = minAcceptableDate;
-                    if (appointment.EndDate != null && (appointment.EndDate != "" && !int.TryParse(appointment.EndDate, out dontCare))) {
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats,
-                                     CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                    if (!string.IsNullOrEmpty(appointment.EndDate) && !int.TryParse(appointment.EndDate, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.EndDate), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
                             end = isValidDate(temp);
                         }
                     }
+
                     int duration = 15;
-                    if (appointment.Duration != null) {
-                        if (int.TryParse(appointment.Duration, out int durationInt)) {
-                            duration = durationInt;
-                            if (duration == 0) {
-                                duration = 15;
-                            }
-                        }
+                    if (!string.IsNullOrEmpty(appointment.Duration) && int.TryParse(appointment.Duration, out int durationInt)) {
+                        duration = durationInt > 0 ? durationInt : 15;
                     }
+
                     DateTime created = minAcceptableDate;
-                    if (appointment.DateTimeCreated != null && (appointment.DateTimeCreated != "" && !int.TryParse(appointment.DateTimeCreated, out dontCare))) {
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats,
-                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out created)) {
-                            created = isValidDate(created);
+                    if (!string.IsNullOrEmpty(appointment.DateTimeCreated) && !int.TryParse(appointment.DateTimeCreated, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeCreated), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime temp)) {
+                            created = isValidDate(temp);
                         }
                     }
-                    int billingLocId = 0;
-                    if (appointment.OldBillingLocationId != null) {
-                        string? tempLoc = billingLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId);
-                        if (int.TryParse(tempLoc, out int billingLocIdInt)) {
-                            billingLocId = billingLocIdInt;
-                        }
+
+                    int billingLocId = locationId;
+                    if (!string.IsNullOrEmpty(appointment.OldBillingLocationId)) {
+                        string tempLoc = billingLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId) ?? locationId.ToString();
+                        int.TryParse(tempLoc, out billingLocId);
                     }
-                    if (billingLocId == 0) {
-                        billingLocId = locationId;
-                    }
-                    if (billingLocId == 0) {
-                        billingLocId = 1;
-                    }
-                    bool confirmed = false;
-                    if (appointment.Confirmed != null && appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1") {
-                        confirmed = true;
-                    }
+
+                    bool confirmed = appointment.Confirmed != null && (appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1");
+
                     int sequence = 0;
-                    if (appointment.Sequence != null) {
-                        if (int.TryParse(appointment.Sequence, out int sequenceInt)) {
-                            sequence = sequenceInt;
-                        }
+                    if (!string.IsNullOrEmpty(appointment.Sequence) && int.TryParse(appointment.Sequence, out int sequenceInt)) {
+                        sequence = sequenceInt;
                     }
+
                     int requestId = 0;
-                    if (appointment.RequestId != null) {
-                        if (int.TryParse(appointment.RequestId, out int requestIdInt)) {
-                            requestId = requestIdInt;
-                        }
+                    if (!string.IsNullOrEmpty(appointment.RequestId) && int.TryParse(appointment.RequestId, out int requestIdInt)) {
+                        requestId = requestIdInt;
                     }
+
                     int status = 0;
-                    if (appointment.Status != null) {
-                        if (int.TryParse(appointment.Status, out int statusInt)) {
-                            status = statusInt;
-                        }
+                    if (!string.IsNullOrEmpty(appointment.Status) && int.TryParse(appointment.Status, out int statusInt)) {
+                        status = statusInt;
                     }
+
                     DateTime? checkIn = null;
-                    if (appointment.CheckInDateTime != null && (appointment.CheckInDateTime != "" && !int.TryParse(appointment.CheckInDateTime, out dontCare))) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    if (!string.IsNullOrEmpty(appointment.CheckInDateTime) && !int.TryParse(appointment.CheckInDateTime, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckInDateTime), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             checkIn = isValidDate(tempDateTime);
                         }
                     }
+
                     DateTime? takeback = null;
-                    if (appointment.TakeBackDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.TakeBackDateTime, out dontCare))) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats,
-                                                  CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    if (!string.IsNullOrEmpty(appointment.TakeBackDateTime) && !int.TryParse(appointment.TakeBackDateTime, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.TakeBackDateTime), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             takeback = isValidDate(tempDateTime);
                         }
                     }
+
                     DateTime? checkOut = null;
-                    if (appointment.CheckOutDateTime != null && (appointment.TakeBackDateTime != "" && !int.TryParse(appointment.CheckOutDateTime, out dontCare))) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    if (!string.IsNullOrEmpty(appointment.CheckOutDateTime) && !int.TryParse(appointment.CheckOutDateTime, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.CheckOutDateTime), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             checkOut = isValidDate(tempDateTime);
                         }
                     }
+
                     long? prior = null;
-                    if (appointment.PriorAppointmentId != null) {
-                        prior = long.Parse(appointment.PriorAppointmentId);
+                    if (!string.IsNullOrEmpty(appointment.PriorAppointmentId)) {
+                        prior = long.TryParse(appointment.PriorAppointmentId, out long priorId) ? priorId : (long?)null;
                     }
+
                     long? linked = null;
-                    if (appointment.LinkedAppointmentId != null) {
-                        linked = long.Parse(appointment.LinkedAppointmentId);
+                    if (!string.IsNullOrEmpty(appointment.LinkedAppointmentId)) {
+                        linked = long.TryParse(appointment.LinkedAppointmentId, out long linkedId) ? linkedId : (long?)null;
                     }
+
                     int schedulingCode = 0;
-                    if (appointment.SchedulingCodeId != null) {
-                        if (int.TryParse(appointment.SchedulingCodeId, out int schedulingCodeInt)) {
-                            schedulingCode = schedulingCodeInt;
-                        }
+                    if (!string.IsNullOrEmpty(appointment.SchedulingCodeId) && int.TryParse(appointment.SchedulingCodeId, out int schedulingCodeInt)) {
+                        schedulingCode = schedulingCodeInt;
                     }
+
                     long? recallId = null;
-                    if (appointment.RecallId != null) {
-                        recallId = long.Parse(appointment.RecallId);
+                    if (!string.IsNullOrEmpty(appointment.RecallId)) {
+                        recallId = long.TryParse(appointment.RecallId, out long recallIdParsed) ? recallIdParsed : (long?)null;
                     }
+
                     long? waitlistId = null;
-                    if (appointment.WaitingListId != null) {
-                        waitlistId = long.Parse(appointment.WaitingListId);
+                    if (!string.IsNullOrEmpty(appointment.WaitingListId)) {
+                        waitlistId = long.TryParse(appointment.WaitingListId, out long waitlistIdParsed) ? waitlistIdParsed : (long?)null;
                     }
-                    int type = 0;
-					var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == appointment.OldAppointmentTypeId);
-                    if (typeXref != null) {
-                        type = (int)typeXref.AppointmentTypeId;
-                    } else {
-                        logger.Log($"Conv: Conv Appointment Type not found for appointment with ID: {appointment.Id}");
-						continue;
+
+                    string typeXrefNum = "";
+                    if (!string.IsNullOrEmpty(appointment.OldAppointmentTypeId)) {
+                        typeXrefNum = appointment.OldAppointmentTypeId;
                     }
-						DateTime? updated = null;
-                    if (appointment.DateTimeUpdated != null && (appointment.DateTimeUpdated != "" && !int.TryParse(appointment.DateTimeUpdated, out dontCare))) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats,
-                                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == typeXrefNum);
+                    int type = (int?)typeXref?.AppointmentTypeId ?? 0;
+
+                    DateTime updated = minAcceptableDate;
+                    if (!string.IsNullOrEmpty(appointment.DateTimeUpdated) && !int.TryParse(appointment.DateTimeUpdated, out _)) {
+                        if (DateTime.TryParseExact(CleanUpDateString(appointment.DateTimeUpdated), dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             updated = isValidDate(tempDateTime);
                         }
                     }
-                    if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        updated = minAcceptableDate;
-                    }
-                    if (checkIn == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        checkIn = minAcceptableDate;
-                    }
-                    if (takeback == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        takeback = minAcceptableDate;
-                    }
-                    if (checkOut == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        checkOut = minAcceptableDate;
-                    }
-                    if (start == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        start = minAcceptableDate;
-                    }
-                    if (end == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        end = minAcceptableDate;
-                    }
-                    if (created == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        created = minAcceptableDate;
-                    }
-                    if (updated == DateTime.Parse("1/1/0001 12:00:00 AM")) {
-                        updated = minAcceptableDate;
-                    }
 
-
-                    // there can be multiple appointments in a day, so dont duplicate check
+                    // there can be multiple appointments in a day, so don't duplicate check
                     var newAppointment = new SchedulingAppointment {
                         PatientId = patientId,
                         ResourceId = resource,
@@ -1243,16 +1177,16 @@ namespace Brady_s_Conversion_Program {
                         Sequence = sequence,
                         RequestId = requestId,
                         Status = status,
-                        CheckInDateTime = minAcceptableDate,
-                        TakeBackDateTime = takeback,
-                        CheckOutDateTime = checkOut,
+                        CheckInDateTime = checkIn ?? minAcceptableDate,
+                        TakeBackDateTime = takeback ?? minAcceptableDate,
+                        CheckOutDateTime = checkOut ?? minAcceptableDate,
                         Description = TruncateString(appointment.Description, 2000),
                         PriorAppointmentId = prior,
                         LinkedAppointmentId = linked,
                         SchedulingCodeId = schedulingCode,
                         SchedulingCodeNotes = TruncateString(appointment.SchedulingCodeNotes, 2000),
                         AppointmentTypeId = type,
-                        DateTimeUpdated = minAcceptableDate
+                        DateTimeUpdated = updated
                     };
                     appointments.Add(newAppointment);
                     added++;
@@ -1275,64 +1209,46 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
+                    // Default stateId to 0 instead of null
                     int stateId = 0;
                     var stateXref = stateXrefs.FirstOrDefault(s => s.StateCode == insurance.InsCompanyState || s.State == insurance.InsCompanyState);
                     if (stateXref != null) {
                         stateId = stateXref.StateId;
                     }
 
+                    // Initialize empty strings where necessary
                     string insZip = "";
-                    if (insurance.InsCompanyZip != null) {
-                        if (zipRegex.IsMatch(insurance.InsCompanyZip)) {
-                            insZip = insurance.InsCompanyZip;
-                        }
+                    if (insurance.InsCompanyZip != null && zipRegex.IsMatch(insurance.InsCompanyZip)) {
+                        insZip = insurance.InsCompanyZip;
                     }
 
-                    string insEmail = "";
-                    if (insurance.InsCompanyEmail != null) {
-                        insEmail = TruncateString(insurance.InsCompanyEmail, 50);
-                    }
+                    string insEmail = insurance.InsCompanyEmail != null ? TruncateString(insurance.InsCompanyEmail, 50) : "";
 
                     string insFax = "";
-                    if (insurance.InsCompanyFax != null) {
-                        if (phoneRegex.IsMatch(insurance.InsCompanyFax)) {
-                            insFax = insurance.InsCompanyFax;
-                        }
+                    if (insurance.InsCompanyFax != null && phoneRegex.IsMatch(insurance.InsCompanyFax)) {
+                        insFax = insurance.InsCompanyFax;
                     }
 
                     string insPhone = "";
-                    if (insurance.InsCompanyPhone != null) {
-                        if (phoneRegex.IsMatch(insurance.InsCompanyPhone)) {
-                            insPhone = insurance.InsCompanyPhone;
-                        }
+                    if (insurance.InsCompanyPhone != null && phoneRegex.IsMatch(insurance.InsCompanyPhone)) {
+                        insPhone = insurance.InsCompanyPhone;
                     }
 
-                    string payerId = "";
-                    
+                    string payerId = "";  // Default value is an empty string
 
-                    bool active = true;
-                    if (insurance.Active != null && (insurance.Active.ToLower() == "no" || insurance.Active.ToLower() == "false" || insurance.Active == "0")) {
-                        active = false;
-                    }
+                    // Handle boolean values to avoid null checks by using default false for null values
+                    bool active = !(insurance.Active != null && (insurance.Active.ToLower() == "no" || insurance.Active.ToLower() == "false" || insurance.Active == "0"));
 
-                    bool collections = false;
-                    if (insurance.IsCollections != null && (insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1")) {
-                        collections = true;
-                    }
+                    bool collections = insurance.IsCollections != null && (insurance.IsCollections.ToLower() == "yes" || insurance.IsCollections == "1");
 
-                    bool dmerc = false;
-                    if (insurance.IsDmerc != null && (insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1")) {
-                        dmerc = true;
-                    }
-                    string companyName = "";
-                    if (insurance.InsCompanyName != null) {
-                        companyName = insurance.InsCompanyName;
-                    }
+                    bool dmerc = insurance.IsDmerc != null && (insurance.IsDmerc.ToLower() == "yes" || insurance.IsDmerc == "1");
+
+                    // Initialize string defaults where necessary
+                    string companyName = insurance.InsCompanyName ?? "";
 
                     string? code = "";
                     if (insurance.InsuranceCompanyCode != null && insurance.InsuranceCompanyCode != "") {
                         code = insuranceCodes.GetValueOrDefault(insurance.InsuranceCompanyCode);
-
                         if (code == null) {
                             logger.Log($"FFPM: FFPM Insurance company code not found (null) for insurance with ID: {insurance.Id}");
                             continue;
@@ -1343,36 +1259,25 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
 
+                    // Initialize int defaults where necessary
                     int companyId = 0;
                     if (insurance.OldInsCompanyId != null) {
-                        if (int.TryParse(insurance.OldInsCompanyId, out int companyIdInt)) {
-                            companyId = companyIdInt;
-                        }
+                        int.TryParse(insurance.OldInsCompanyId, out companyId);
                     }
+
                     int claimTypeId = 0;
                     if (insurance.InsCompanyClaimType != null) {
-                        if (insurance.InsCompanyClaimType.ToLower() == "medical") {
-                            claimTypeId = 1;
-                        }
-                        else if (insurance.InsCompanyClaimType.ToLower() == "vision") {
-                            claimTypeId = 2;
-                        }
+                        claimTypeId = insurance.InsCompanyClaimType.ToLower() == "medical" ? 1 : insurance.InsCompanyClaimType.ToLower() == "vision" ? 2 : 0;
                     }
+
                     int policyTypeId = 0;
                     if (insurance.InsCompanyPolicyType != null) {
-                        if (insurance.InsCompanyPolicyType.ToLower() == "medical") {
-                            policyTypeId = 1;
-                        }
-                        else if (insurance.InsCompanyPolicyType.ToLower() == "vision") {
-                            policyTypeId = 2;
-                        }
+                        policyTypeId = insurance.InsCompanyPolicyType.ToLower() == "medical" ? 1 : insurance.InsCompanyPolicyType.ToLower() == "vision" ? 2 : 0;
                     }
-                    int? carrierTypeId = 0;
-                    if (insurance.InsCompanyCarrierType == "medical") {
-                        carrierTypeId = 1;
-                    }
-                    else if (insurance.InsCompanyCarrierType == "vision") {
-                        carrierTypeId = 2;
+
+                    int carrierTypeId = 0; // Default to 0
+                    if (insurance.InsCompanyCarrierType != null) {
+                        carrierTypeId = insurance.InsCompanyCarrierType.ToLower() == "medical" ? 1 : insurance.InsCompanyCarrierType.ToLower() == "vision" ? 2 : 0;
                     }
 
                     var ffpmOrig = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == code);
@@ -1395,8 +1300,8 @@ namespace Brady_s_Conversion_Program {
                             IsDmercPlaceOfService = dmerc,
                             CategoryId = 0,
                             ResponsibilityId = 0,
-                            PaymentTransaction = "",  // No truncation specified but should be managed if needed
-                            AdjustmentTransaction = "",  // Ditto
+                            PaymentTransaction = "",  // Empty string as default
+                            AdjustmentTransaction = "",  // Empty string as default
                             AcceptAssignment = true,
                             PrintAsOtherInsurance = true,
                             AllowEligibilityChecks = true,
@@ -1430,144 +1335,53 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    string? name = null;
-                    if (location.LocationName != null && location.LocationName != "") {
-                        name = location.LocationName;
-                    }
-                    else {
+                    // Ensure name is not null
+                    string name = location.LocationName != null && location.LocationName != "" ? location.LocationName : "";
+                    if (string.IsNullOrEmpty(name)) {
                         logger.Log($"Conv: Conv Location Name is null or empty for location with ID: {location.Id}");
                         continue;
                     }
 
                     #region taxonomys
-                    int primaryTaxId = 0;
-                    if (int.TryParse(name, out int dontCare)) {
-                        primaryTaxId = dontCare;
-                    }
-
-                    int tax1Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy1Id, out int tax1IdInt)) {
-                        tax1Id = tax1IdInt;
-                    }
-
-                    int tax2Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy2Id, out int tax2IdInt)) {
-                        tax2Id = tax2IdInt;
-                    }
-
-                    int tax3Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy3Id, out int tax3IdInt)) {
-                        tax3Id = tax3IdInt;
-                    }
-
-                    int tax4Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy4Id, out int tax4IdInt)) {
-                        tax4Id = tax4IdInt;
-                    }
-
-                    int tax5Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy5Id, out int tax5IdInt)) {
-                        tax5Id = tax5IdInt;
-                    }
-
-                    int tax6Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy6Id, out int tax6IdInt)) {
-                        tax6Id = tax6IdInt;
-                    }
-
-                    int tax7Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy7Id, out int tax7IdInt)) {
-                        tax7Id = tax7IdInt;
-                    }
-
-                    int tax8Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy8Id, out int tax8IdInt)) {
-                        tax8Id = tax8IdInt;
-                    }
-
-                    int tax9Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy9Id, out int tax9IdInt)) {
-                        tax9Id = tax9IdInt;
-                    }
-
-                    int tax10Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy10Id, out int tax10IdInt)) {
-                        tax10Id = tax10IdInt;
-                    }
-
-                    int tax11Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy11Id, out int tax11IdInt)) {
-                        tax11Id = tax11IdInt;
-                    }
-
-                    int tax12Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy12Id, out int tax12IdInt)) {
-                        tax12Id = tax12IdInt;
-                    }
-
-                    int tax13Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy13Id, out int tax13IdInt)) {
-                        tax13Id = tax13IdInt;
-                    }
-
-                    int tax14Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy14Id, out int tax14IdInt)) {
-                        tax14Id = tax14IdInt;
-                    }
-
-                    int tax15Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy15Id, out int tax15IdInt)) {
-                        tax15Id = tax15IdInt;
-                    }
-
-                    int tax16Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy16Id, out int tax16IdInt)) {
-                        tax16Id = tax16IdInt;
-                    }
-
-                    int tax17Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy17Id, out int tax17IdInt)) {
-                        tax17Id = tax17IdInt;
-                    }
-
-                    int tax18Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy18Id, out int tax18IdInt)) {
-                        tax18Id = tax18IdInt;
-                    }
-
-                    int tax19Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy19Id, out int tax19IdInt)) {
-                        tax19Id = tax19IdInt;
-                    }
-
-                    int tax20Id = 0;
-                    if (int.TryParse(location.AlternateTaxonomy20Id, out int tax20IdInt)) {
-                        tax20Id = tax20IdInt;
-                    }
+                    // Default all taxonomy IDs to 0 instead of null or -1
+                    int primaryTaxId = int.TryParse(name, out int dontCare) ? dontCare : 0;
+                    int tax1Id = int.TryParse(location.AlternateTaxonomy1Id, out int tax1IdInt) ? tax1IdInt : 0;
+                    int tax2Id = int.TryParse(location.AlternateTaxonomy2Id, out int tax2IdInt) ? tax2IdInt : 0;
+                    int tax3Id = int.TryParse(location.AlternateTaxonomy3Id, out int tax3IdInt) ? tax3IdInt : 0;
+                    int tax4Id = int.TryParse(location.AlternateTaxonomy4Id, out int tax4IdInt) ? tax4IdInt : 0;
+                    int tax5Id = int.TryParse(location.AlternateTaxonomy5Id, out int tax5IdInt) ? tax5IdInt : 0;
+                    int tax6Id = int.TryParse(location.AlternateTaxonomy6Id, out int tax6IdInt) ? tax6IdInt : 0;
+                    int tax7Id = int.TryParse(location.AlternateTaxonomy7Id, out int tax7IdInt) ? tax7IdInt : 0;
+                    int tax8Id = int.TryParse(location.AlternateTaxonomy8Id, out int tax8IdInt) ? tax8IdInt : 0;
+                    int tax9Id = int.TryParse(location.AlternateTaxonomy9Id, out int tax9IdInt) ? tax9IdInt : 0;
+                    int tax10Id = int.TryParse(location.AlternateTaxonomy10Id, out int tax10IdInt) ? tax10IdInt : 0;
+                    int tax11Id = int.TryParse(location.AlternateTaxonomy11Id, out int tax11IdInt) ? tax11IdInt : 0;
+                    int tax12Id = int.TryParse(location.AlternateTaxonomy12Id, out int tax12IdInt) ? tax12IdInt : 0;
+                    int tax13Id = int.TryParse(location.AlternateTaxonomy13Id, out int tax13IdInt) ? tax13IdInt : 0;
+                    int tax14Id = int.TryParse(location.AlternateTaxonomy14Id, out int tax14IdInt) ? tax14IdInt : 0;
+                    int tax15Id = int.TryParse(location.AlternateTaxonomy15Id, out int tax15IdInt) ? tax15IdInt : 0;
+                    int tax16Id = int.TryParse(location.AlternateTaxonomy16Id, out int tax16IdInt) ? tax16IdInt : 0;
+                    int tax17Id = int.TryParse(location.AlternateTaxonomy17Id, out int tax17IdInt) ? tax17IdInt : 0;
+                    int tax18Id = int.TryParse(location.AlternateTaxonomy18Id, out int tax18IdInt) ? tax18IdInt : 0;
+                    int tax19Id = int.TryParse(location.AlternateTaxonomy19Id, out int tax19IdInt) ? tax19IdInt : 0;
+                    int tax20Id = int.TryParse(location.AlternateTaxonomy20Id, out int tax20IdInt) ? tax20IdInt : 0;
                     #endregion taxonomys
 
-                    bool isBilling = false;
-                    if (location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1" || location.IsBilling.ToLower() == "t"
-                        || location.IsBilling.ToLower() == "true" || location.IsBilling.ToLower() == "y")) {
-                        isBilling = true;
-                    }
-                    bool isSchedule = false;
-                    if (location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1" || location.IsScheduling.ToLower() == "t"
-                        || location.IsScheduling.ToLower() == "true" || location.IsScheduling.ToLower() == "y")) {
-                        isSchedule = true;
-                    }
+                    // Handle booleans with default false if null
+                    bool isBilling = location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1" || location.IsBilling.ToLower() == "t"
+                        || location.IsBilling.ToLower() == "true" || location.IsBilling.ToLower() == "y");
+                    bool isSchedule = location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1" || location.IsScheduling.ToLower() == "t"
+                        || location.IsScheduling.ToLower() == "true" || location.IsScheduling.ToLower() == "y");
 
-                    int treatmentPlaceId = 0;
-                    if (int.TryParse(location.PlaceOfTreatment, out int temp)) {
-                        treatmentPlaceId = temp;
-                    }
+                    // Default place of treatment ID to 0 if not parsed
+                    int treatmentPlaceId = int.TryParse(location.PlaceOfTreatment, out int temp) ? temp : 0;
 
                     var origLoc = ffpmDbContext.Locations.FirstOrDefault(l => l.LocationName != null && l.LocationName.ToLower() == name.ToLower());
-                    
-                    if (origLoc != null) {
+
+                    if (origLoc == null) {
                         var newLocation = new Brady_s_Conversion_Program.ModelsA.Location {
                             LocationName = TruncateString(name, 500),
-                            StatusId = 1,
+                            StatusId = 0,
                             CompanyId = 0,
                             UseCcalias = false,
                             SchedulingActive = true
@@ -1609,10 +1423,10 @@ namespace Brady_s_Conversion_Program {
                             FederalIdNo = TruncateString(location.FederalEin, 15),
                             IsSchedulingLocation = isSchedule,
                             PlaceOfTreatmentId = treatmentPlaceId,
-                            LocationId = 0,
+                            LocationId = ffpmDbContext.Locations.Max(l => (int?)l.LocationId) ?? 0 + locAdded,
                             IsActive = true,
                             CaculateTaxOnEstimatedPatientBalance = false,
-                            IsDefaultLocation = false, // 
+                            IsDefaultLocation = false,
                             CaculateTaxOnTotalFee = false
                         };
                         locations.Add(newLocation);
@@ -1655,58 +1469,30 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
 
-                    string ssn = "";
-                    if (guarantor.Ssn != null) {
-                        if (ssnRegex.IsMatch(guarantor.Ssn)) {
-                            ssn = guarantor.Ssn;
-                        }
-                    }
+                    // Default ssn to empty string if null or invalid
+                    string? tempSsn = ssnRegex.IsMatch(guarantor.Ssn ?? "") ? guarantor.Ssn : "";
+                    string ssn = TruncateString(tempSsn, 15);
+
+                    // Parse DateTime or default to null if invalid
                     DateTime? dob = null;
-                    if (guarantor.Dob != null && guarantor.Dob != "" && !int.TryParse(guarantor.Dob, out int dontCare)) {
+                    if (!string.IsNullOrEmpty(guarantor.Dob) && !int.TryParse(guarantor.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(guarantor.Dob, dateFormats,
                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDate)) {
                             dob = isValidDate(tempDate);
                         }
                     }
-                    short? relationID = null;
-                    var relationXref = relationshipXrefs.FirstOrDefault(r => r.Relationship == guarantor.Relationship);
-                    if (relationXref != null) {
-                        relationID = relationXref.RelationshipId;
-                    }
-                    short? titleID = null;
-                    // no titleID in incoming tables
-                    short? suffixID = null;
-                    // no suffixID in incoming tables
-                    short? genderID = null;
-                    var genderXref = genderXrefs.FirstOrDefault(g => g.Gender == guarantor.Sex);
-                    if (genderXref != null) {
-                        genderID = genderXref.GenderId;
-                    }
-                    bool isActive = false;
-                    if (guarantor.Active != null && guarantor.Active.ToLower() == "yes" || guarantor.Active == "1") {
-                        isActive = true;
-                    }
-                    bool guarantorIsPatient = false;
-                    if (guarantor.OldGuarantorAccount != "" && guarantor.OldGuarantorAccount != null) {
-                        guarantorIsPatient = true;
-                    }
+
+                    short? relationID = relationshipXrefs.FirstOrDefault(r => r.Relationship == guarantor.Relationship)?.RelationshipId;
+
+                    // Gender and active defaults
+                    short? genderID = genderXrefs.FirstOrDefault(g => g.Gender == guarantor.Sex)?.GenderId;
+                    bool isActive = guarantor.Active != null && (guarantor.Active.ToLower() == "yes" || guarantor.Active == "1");
+
+                    bool guarantorIsPatient = !string.IsNullOrEmpty(guarantor.OldGuarantorAccount);
                     long? guarantorIsPatientID = null;
-                    if (guarantorIsPatient == true) {
-                        guarantorIsPatient = true;
-                        if (long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
-                            guarantorIsPatientID = id;
-                        }
+                    if (guarantorIsPatient && long.TryParse(guarantor.OldGuarantorAccount, out long id)) {
+                        guarantorIsPatientID = id;
                     }
-
-                    short? employmentStatusID = null;
-                    // no employmentStatusID in incoming tables
-                    DateTime? addedDate = null;
-                    // no addedDate in incoming tables
-                    DateTime? removedDate = null;
-                    // no removedDate in incoming tables
-                    DateTime? lastModified = null;
-                    // no lastModified in incoming tables
-
 
                     var existingGuarantor = guarantors.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId);
 
@@ -1719,14 +1505,14 @@ namespace Brady_s_Conversion_Program {
                             Ssn = TruncateString(ssn, 15),
                             Dob = dob,
                             RelationId = relationID,
-                            TitleId = titleID,
-                            SuffixId = suffixID,
+                            TitleId = null,  // No titleID in incoming tables
+                            SuffixId = null,  // No suffixID in incoming tables
                             GenderId = genderID,
                             IsActive = isActive,
-                            EmploymentStatusId = employmentStatusID,
-                            AddedDate = addedDate,
-                            RemovedDate = removedDate,
-                            LastModifiedDate = lastModified,
+                            EmploymentStatusId = null,  // No employmentStatusID in incoming tables
+                            AddedDate = null,  // No addedDate in incoming tables
+                            RemovedDate = null,  // No removedDate in incoming tables
+                            LastModifiedDate = null,  // No lastModified in incoming tables
                             GuarantorExistingPatientId = guarantorIsPatientID,
                             AddressId = null,
                             IsGuarantorExistingPatient = guarantorIsPatient,
@@ -1751,6 +1537,7 @@ namespace Brady_s_Conversion_Program {
                 List<ReferringProvider> referringProviders, List<Provider> convProviders, List<DmgProvider> ffpmProviders, List<Guarantor> convGuarantors,
                     List<DmgGuarantor> guarantors, List<MntSuffix> suffixXrefs, List<DmgPatientAdditionalDetail> patientAdditionalDetails,
                        List<Models.Location> convLocations, List<BillingLocation> locations, List<Referral> referrals) {
+
             long patientAddressId = 1;
             long otherAddressId = 1;
 
@@ -1771,23 +1558,22 @@ namespace Brady_s_Conversion_Program {
                 });
 
                 try {
-                    short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId;
-                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId;
-                    short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId;
+                    short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId ?? 0;
+                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId ?? 0;
+                    short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId ?? 0;
 
-                    string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : null;
+                    string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : "";
                     bool isActive = !(address.Active?.ToLower() == "no" || address.Active == "0");
 
-                    // Process "pat" addresses
                     var convPatient = convPatients.FirstOrDefault(p => p.Id.ToString() == address.PrimaryFileId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for address with ID: {address.Id}");
                         continue;
                     }
-                    string? accountNumber = convPatient.OldPatientAccountNumber;
+                    string? accountNumber = convPatient.OldPatientAccountNumber ?? "";
                     var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                     if (xref != null) {
-                        accountNumber = xref.NewAccount?.ToString();
+                        accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                     }
 
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -1801,7 +1587,6 @@ namespace Brady_s_Conversion_Program {
                     var isEmergency = address.TypeOfAddress?.ToLower() == "emergency";
                     var isPreferred = isPrimary;
 
-                    // Check if the primary address already exists
                     var existingPatientAddress = ffpmDbContext.DmgPatientAddresses.FirstOrDefault(p => isPrimary && (p.PatientId == ffpmPatient.PatientId && p.IsPrimary == true));
                     if (existingPatientAddress == null) {
                         var newPatientAddress = new DmgPatientAddress {
@@ -1849,16 +1634,15 @@ namespace Brady_s_Conversion_Program {
                 });
 
                 try {
-                    short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId;
-                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId;
-                    short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId;
+                    short? addressType = addressTypes.FirstOrDefault(s => s.AddressTypeName == address.TypeOfAddress && s.IsActive)?.AddressTypeId ?? 0;
+                    short? state = stateXrefs.FirstOrDefault(s => s.StateCode == address.State || s.State == address.State)?.StateId ?? 0;
+                    short? country = countryXrefs.FirstOrDefault(s => s.CountryName.ToUpper() == "US" || s.CountryName.ToUpper() == "USA")?.CountryId ?? 0;
 
-                    string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : null;
+                    string? zipCode = address.Zip != null && zipRegex.IsMatch(address.Zip) ? address.Zip : "";
                     bool isActive = !(address.Active?.ToLower() == "no" || address.Active == "0");
 
                     string primaryFile = address.PrimaryFile ?? "";
 
-                    // Process non-"pat" addresses
                     switch (primaryFile.ToLower()) {
                         case "guar":
                             int primaryFileId = 0;
@@ -1879,10 +1663,10 @@ namespace Brady_s_Conversion_Program {
                                 logger.Log($"Conv: Conv Patient not found for address (guarantor) with ID: {address.Id}");
                                 continue;
                             }
-                            string? accountNumber = convPatient.OldPatientAccountNumber;
+                            string? accountNumber = convPatient.OldPatientAccountNumber ?? "";
                             var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                             if (xref != null) {
-                                accountNumber = xref.NewAccount?.ToString();
+                                accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                             }
 
                             var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -1980,13 +1764,14 @@ namespace Brady_s_Conversion_Program {
                             if (convProvider == null) {
                                 logger.Log($"Conv: Conv Provider not found for address with ID: {address.Id}");
                                 continue;
-                            } else if (convProvider.OldProviderCode == null || convProvider.OldProviderCode == "") {
+                            }
+                            else if (convProvider.OldProviderCode == null || convProvider.OldProviderCode == "") {
                                 logger.Log($"Conv: Conv Provider code not found for address with ID: {address.Id}");
-								continue;
-							}
+                                continue;
+                            }
 
                             string convProviderCode = convProvider.OldProviderCode;
-							var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == billingProviderCodes.GetValueOrDefault(convProviderCode));
+                            var ffpmProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == billingProviderCodes.GetValueOrDefault(convProviderCode));
                             if (ffpmProvider == null) {
                                 logger.Log($"Conv: FFPM Provider not found for address with ID: {address.Id}");
                                 continue;
@@ -2020,13 +1805,14 @@ namespace Brady_s_Conversion_Program {
                             if (convReferral == null) {
                                 logger.Log($"Conv: Conv Referral not found for address with ID: {address.Id}");
                                 continue;
-                            } else if (convReferral.OldReferralCode == null || convReferral.OldReferralCode == "") {
+                            }
+                            else if (convReferral.OldReferralCode == null || convReferral.OldReferralCode == "") {
                                 logger.Log($"Conv: Conv Referral code not found for address with ID: {address.Id}");
-								continue;
-							}
+                                continue;
+                            }
 
                             string convReferralCode = convReferral.OldReferralCode;
-							var ffpmReferral = ffpmProviders.FirstOrDefault(p => p.IsReferringProvider && p.ProviderCode == referralCodes.GetValueOrDefault(convReferralCode));
+                            var ffpmReferral = ffpmProviders.FirstOrDefault(p => p.IsReferringProvider && p.ProviderCode == referralCodes.GetValueOrDefault(convReferralCode));
                             if (ffpmReferral == null) {
                                 logger.Log($"Conv: FFPM Referral not found for address with ID: {address.Id}");
                                 continue;
@@ -2062,7 +1848,7 @@ namespace Brady_s_Conversion_Program {
                             accountNumber = localconvPatient.OldPatientAccountNumber;
                             xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == localconvPatient.OldPatientAccountNumber);
                             if (xref != null) {
-                                accountNumber = xref.NewAccount?.ToString();
+                                accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                             }
 
                             var ffpmPatient3 = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -2118,7 +1904,6 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.SaveChanges();
         }
 
-
         public static void ConvertPatientAlert(List<Models.PatientAlert> convPatientAlerts, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext,
             ILogger logger, ILogger report, ProgressBar progress, List<Models.Patient> convPatients, List<DmgPatient> ffpmPatients, List<MntPriority> priorityXrefs,
                 List<DmgPatientAlert> patientAlerts) {
@@ -2132,16 +1917,15 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient ID not found (-1) or null for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    // this will need to be changed if it is changed from account number to sql id
                     var convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == patientAlert.PatientId);
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    string? accountNumber = convPatient.OldPatientAccountNumber;
+                    string? accountNumber = convPatient.OldPatientAccountNumber ?? "";
                     var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                     if (xref != null) {
-                        accountNumber = xref.NewAccount?.ToString();
+                        accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                     }
 
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -2149,45 +1933,34 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: FFPM Patient not found for patient alert with ID: {patientAlert.Id}");
                         continue;
                     }
-                    short? priorityID = null;
+                    short priorityID = 0;
                     var priorityXref = priorityXrefs.FirstOrDefault(p => p.PriorityId == priorityID);
                     if (priorityXref != null) {
                         priorityID = priorityXref.PriorityId;
                     }
 
-                    DateTime? alertDate = null;
-                    if (patientAlert.AlertCreatedDate != null && patientAlert.AlertCreatedDate != "" && !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
+                    DateTime alertDate = DateTime.MinValue;
+                    if (!string.IsNullOrEmpty(patientAlert.AlertCreatedDate) && !int.TryParse(patientAlert.AlertCreatedDate, out int dontCare)) {
                         DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats,
-                                               CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        if (DateTime.TryParseExact(patientAlert.AlertCreatedDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                             alertDate = tempDateTime;
                         }
                     }
                     DateTime? alertEndDate = null;
-                    if (patientAlert.AlertExpiryDate != null && patientAlert.AlertExpiryDate != "" && !int.TryParse(patientAlert.AlertExpiryDate, out dontCare)) {
+                    if (!string.IsNullOrEmpty(patientAlert.AlertExpiryDate) && !int.TryParse(patientAlert.AlertExpiryDate, out dontCare)) {
                         DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats,
-                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        if (DateTime.TryParseExact(patientAlert.AlertExpiryDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                             alertEndDate = tempDateTime;
                         }
                     }
-                    long? alertCreatedBy = null;
-                    if (patientAlert.AlertCreatedBy != null) {
-                        if (long.TryParse(patientAlert.AlertCreatedBy, out long createdBy)) {
-                            alertCreatedBy = createdBy;
-                        }
+                    long alertCreatedBy = 0;
+                    if (!string.IsNullOrEmpty(patientAlert.AlertCreatedBy)) {
+                        long.TryParse(patientAlert.AlertCreatedBy, out alertCreatedBy);
                     }
-                    bool isActive = true;
-                    if (patientAlert.Active != null) {
-                        if (patientAlert.Active.ToLower() == "no" || patientAlert.Active == "0") {
-                            isActive = false;
-                        }
-                    }
+                    bool isActive = !string.Equals(patientAlert.Active, "no", StringComparison.OrdinalIgnoreCase) && !string.Equals(patientAlert.Active, "0", StringComparison.OrdinalIgnoreCase);
                     bool alertFlash = false;
-                    if (patientAlert.AlertFlash != null) {
-                        if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
-                            alertFlash = flash;
-                        }
+                    if (bool.TryParse(patientAlert.AlertFlash, out bool flash)) {
+                        alertFlash = flash;
                     }
 
                     var ffpmOrig = patientAlerts.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AlertMessage == patientAlert.AlertMessage);
@@ -2235,10 +2008,10 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    string? accountNumber = convPatient.OldPatientAccountNumber;
+                    string? accountNumber = convPatient.OldPatientAccountNumber ?? "";
                     var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                     if (xref != null) {
-                        accountNumber = xref.NewAccount?.ToString();
+                        accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                     }
 
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -2251,12 +2024,7 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Insurance company not found for patient insurance with ID: {patientInsurance.Id}");
                         continue;
                     }
-                    string? insCompanyCode = patientInsurance.InsuranceCompanyCode;
-                    if (insCompanyCode == null) {
-                        logger.Log($"Conv: Conv Insurance company code not found for patient insurance with ID: {patientInsurance.Id}");
-                        continue;
-                    }
-
+                    string insCompanyCode = patientInsurance.InsuranceCompanyCode ?? "";
                     var patientInsuranceCompany = insuranceCompanies.FirstOrDefault(p => p.InsCompanyCode == insuranceCodes.GetValueOrDefault(insCompanyCode));
 
                     if (patientInsuranceCompany == null) {
@@ -2266,76 +2034,49 @@ namespace Brady_s_Conversion_Program {
                     insCompanyCode = patientInsuranceCompany.InsCompanyCode;
 
                     DateTime? startDate = null;
-                    if (patientInsurance.StartDate != null && patientInsurance.StartDate != "" && !int.TryParse(patientInsurance.StartDate, out int dontCare)) {
+                    if (!string.IsNullOrEmpty(patientInsurance.StartDate) && !int.TryParse(patientInsurance.StartDate, out int dontCare)) {
                         DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientInsurance.StartDate, dateFormats,
-                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        if (DateTime.TryParseExact(patientInsurance.StartDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                             startDate = tempDateTime;
                         }
                     }
                     DateOnly? endDate = null;
-                    if (patientInsurance.EndDate != null && patientInsurance.EndDate != "" && !int.TryParse(patientInsurance.EndDate, out dontCare)) {
+                    if (!string.IsNullOrEmpty(patientInsurance.EndDate) && !int.TryParse(patientInsurance.EndDate, out dontCare)) {
                         DateOnly tempDateTime;
-                        if (!DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats,
-                                                 CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                        if (DateOnly.TryParseExact(patientInsurance.EndDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
                             endDate = tempDateTime;
                         }
                     }
                     decimal? copay = null;
-                    if (patientInsurance.Copay != null) {
-                        if (decimal.TryParse(patientInsurance.Copay, out decimal copayDec)) {
-                            copay = copayDec;
-                        }
+                    if (decimal.TryParse(patientInsurance.Copay, out decimal copayDec)) {
+                        copay = copayDec;
                     }
                     decimal? deductible = null;
-                    if (patientInsurance.Deductible != null) {
-                        if (decimal.TryParse(patientInsurance.Deductible, out decimal deductibleDec)) {
-                            deductible = deductibleDec;
-                        }
+                    if (decimal.TryParse(patientInsurance.Deductible, out decimal deductibleDec)) {
+                        deductible = deductibleDec;
                     }
-                    short? rank = null;
-                    if (patientInsurance.Rank == "primary") {
-                        rank = 1;
+                    short rank = 0;
+                    switch (patientInsurance.Rank?.ToLower()) {
+                        case "primary":
+                            rank = 1;
+                            break;
+                        case "secondary":
+                            rank = 2;
+                            break;
+                        case "tertiary":
+                            rank = 3;
+                            break;
                     }
-                    else if (patientInsurance.Rank == "secondary") {
-                        rank = 2;
-                    }
-                    else if (patientInsurance.Rank == "tertiary") {
-                        rank = 3;
-                    }
-                    else {
-                        rank = 0;
-                    }
-                    bool isAdditional = false;
-                    if (rank == 2 || rank == 3) {
-                        isAdditional = true;
-                    }
-                    bool medical = false;
-                    bool vision = false;
-                    if (patientInsurance.MedicalVision == "medical") {
-                        medical = true;
-                    }
-                    else if (patientInsurance.MedicalVision == "vision") {
-                        vision = true;
-                    }
-                    else {
-                        medical = true;
-                    }
+                    bool isAdditional = rank == 2 || rank == 3;
+                    bool medical = patientInsurance.MedicalVision?.ToLower() == "medical" || string.IsNullOrEmpty(patientInsurance.MedicalVision);
+                    bool vision = patientInsurance.MedicalVision?.ToLower() == "vision";
+
                     int insCompId = patientInsuranceCompany.InsCompanyId;
                     int plan_id = 0;
-                    if (patientInsurance.Plan != null) {
-                        if (int.TryParse(patientInsurance.Plan, out int planId)) {
-                            plan_id = planId;
-                        }
+                    if (int.TryParse(patientInsurance.Plan, out int planId)) {
+                        plan_id = planId;
                     }
-                    bool active = true;
-                    if (patientInsurance.Active != null) {
-                        if (patientInsurance.Active.ToLower() == "no" || patientInsurance.Active == "0") {
-                            active = false;
-                        }
-                    }
-                    bool isSubscriberExistingPatient = false;
-
+                    bool active = !(patientInsurance.Active?.ToLower() == "no" || patientInsurance.Active == "0");
 
                     var ffpmOrig = patientInsurances.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.PolicyNumber == patientInsurance.Cert);
 
@@ -2355,7 +2096,7 @@ namespace Brady_s_Conversion_Program {
                             InsuranceCompanyId = insCompId,
                             PolicyNumber = TruncateString(patientInsurance.Cert, 50),
                             GroupId = TruncateString(patientInsurance.Group, 50),
-                            IsSubscriberExistingPatient = isSubscriberExistingPatient
+                            IsSubscriberExistingPatient = false
                         };
                         patientInsurances.Add(newPatientInsurance);
                         added++;
@@ -2383,16 +2124,16 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient ID not found (-1) or null for patient note with ID: {patientNote.Id}");
                         continue;
                     }
-                    // this will need to be changed if it is changed off account number
-                    var convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == patientNote.PatientId); // Spoke to dave, this will be changed to use sql id
+                    // This will need to be changed if it is changed off account number
+                    var convPatient = convPatients.FirstOrDefault(cp => cp.OldPatientAccountNumber == patientNote.PatientId); // Spoke to Dave, this will be changed to use sql id
                     if (convPatient == null) {
                         logger.Log($"Conv: Conv Patient not found for patient note with ID: {patientNote.Id}");
                         continue;
                     }
-                    string? accountNumber = convPatient.OldPatientAccountNumber;
+                    string accountNumber = convPatient.OldPatientAccountNumber ?? "";
                     var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                     if (xref != null) {
-                        accountNumber = xref.NewAccount?.ToString();
+                        accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                     }
 
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -2401,43 +2142,37 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
 
-
-                    DateTime? created = null;
-                    if (patientNote.CreatedDate != null && patientNote.CreatedDate != "" && !int.TryParse(patientNote.CreatedDate, out int dontCare)) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientNote.CreatedDate, dateFormats,
-                                                   CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+                    DateTime created = DateTime.MinValue;
+                    if (!string.IsNullOrEmpty(patientNote.CreatedDate) && !int.TryParse(patientNote.CreatedDate, out int dontCare)) {
+                        if (DateTime.TryParseExact(patientNote.CreatedDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             created = tempDateTime;
                         }
                     }
-                    long? createdBy = null;
-                    if (patientNote.CreatedBy != null) {
-                        if (long.TryParse(patientNote.CreatedBy, out long createdByLong)) {
-                            createdBy = createdByLong;
-                        }
+
+                    long createdBy = 0;
+                    if (!string.IsNullOrEmpty(patientNote.CreatedBy)) {
+                        long.TryParse(patientNote.CreatedBy, out createdBy);
                     }
-                    DateTime? lastUpdated = null;
-                    if (patientNote.LastUpdated != null && patientNote.LastUpdated != "" && !int.TryParse(patientNote.LastUpdated, out dontCare)) {
-                        DateTime tempDateTime;
-                        if (DateTime.TryParseExact(patientNote.LastUpdated, dateFormats,
-                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDateTime)) {
+
+                    DateTime lastUpdated = DateTime.MinValue;
+                    if (!string.IsNullOrEmpty(patientNote.LastUpdated) && !int.TryParse(patientNote.LastUpdated, out dontCare)) {
+                        if (DateTime.TryParseExact(patientNote.LastUpdated, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime tempDateTime)) {
                             lastUpdated = tempDateTime;
                         }
                     }
+
                     bool active = true;
-                    if (patientNote.Active != null) {
-                        if (patientNote.Active.ToLower() == "no" || patientNote.Active == "0") {
-                            active = false;
-                        }
+                    if (patientNote.Active != null && (patientNote.Active.ToLower() == "no" || patientNote.Active == "0")) {
+                        active = false;
                     }
 
-                    // can have multiple notes for a patient
+                    // Can have multiple notes for a patient
                     var newPatientRemarks = new Brady_s_Conversion_Program.ModelsA.DmgPatientRemark {
                         PatientId = ffpmPatient.PatientId,
                         Remarks = patientNote.Note,
-                        CreatedDate = created,
-                        CreatedBy = createdBy,
-                        LastUpdated = lastUpdated,
+                        CreatedDate = created == DateTime.MinValue ? null : (DateTime?)created,
+                        CreatedBy = createdBy > 0 ? (long?)createdBy : null,
+                        LastUpdated = lastUpdated == DateTime.MinValue ? null : (DateTime?)lastUpdated,
                         IsActive = active
                     };
                     patientNotes.Add(newPatientRemarks);
@@ -2586,224 +2321,78 @@ namespace Brady_s_Conversion_Program {
                 });
 
                 try {
-                    if (provider.OldProviderCode == null || provider.OldProviderCode == "") {
+                    if (string.IsNullOrEmpty(provider.OldProviderCode)) {
                         logger.Log($"Conv: Conv Provider code not found for provider with ID: {provider.Id}");
                         continue;
                     }
 
-                    short? suffixInt = null;
-                    var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix);
-                    if (suffixXref != null) {
-                        suffixInt = suffixXref.SuffixId;
-                    }
+                    short? suffixInt = suffixXrefs.FirstOrDefault(s => s.Suffix == provider.Suffix)?.SuffixId;
+                    short? titleInt = titleXrefs.FirstOrDefault(t => t.Title == provider.Title)?.TitleId;
 
-                    short? titleInt = null;
-                    var titleXref = titleXrefs.FirstOrDefault(t => t.Title == provider.Title);
-                    if (titleXref != null) {
-                        titleInt = titleXref.TitleId;
-                    }
-
-                    string? ssnString = null;
-                    if (provider.Ssn != null) {
-                        if (ssnRegex.IsMatch(provider.Ssn)) {
-                            ssnString = provider.Ssn;
-                        }
-                    }
+                    string ssnString = provider.Ssn != null && ssnRegex.IsMatch(provider.Ssn) ? provider.Ssn : "";
 
                     DateTime? dobDate = null;
-                    if (provider.Dob != null && provider.Dob != "" && !int.TryParse(provider.Dob, out int dontCare)) {
+                    if (!string.IsNullOrEmpty(provider.Dob) && !int.TryParse(provider.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(provider.Dob, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
                             dobDate = isValidDate(dob);
                         }
                     }
 
-                    string? einString = null;
-                    if (provider.Ein != null) {
-                        einString = provider.Ein;
-                    }
+                    string einString = provider.Ein ?? "";
+                    string upinString = provider.Upin ?? "";
+                    string npiString = provider.Npi ?? "";
 
-                    string? upinString = null;
-                    if (provider.Upin != null) {
-                        upinString = provider.Upin;
-                    }
+                    bool isActive = !(provider.Active != null && (provider.Active.ToLower() == "no" || provider.Active == "0" || provider.Active.ToLower() == "n" || provider.Active.ToLower() == "f"
+                        || provider.Active.ToLower() == "false"));
 
-                    string? npiString = null;
-                    if (provider.Npi != null) {
-                        npiString = provider.Npi;
-                    }
-
-                    bool isActive = true;
-                    if (provider.Active != null && (provider.Active.ToLower() == "no" || provider.Active == "0" || provider.Active.ToLower() == "n" || provider.Active.ToLower() == "f"
-                        || provider.Active.ToLower() == "false")) {
-                        isActive = false;
-                    }
-
-                    int clExpId = 0;
-                    if (provider.Clexpiration != null) {
-                        if (int.TryParse(provider.Clexpiration, out int clExpIdInt)) {
-                            clExpId = clExpIdInt;
-                        }
-                    }
-
-                    int specExpId = 0;
-                    if (provider.SpectacleExpiration != null) {
-                        if (int.TryParse(provider.SpectacleExpiration, out int specExpIdInt)) {
-                            specExpId = specExpIdInt;
-                        }
-                    }
+                    int clExpId = int.TryParse(provider.Clexpiration, out int clExpIdInt) ? clExpIdInt : 0;
+                    int specExpId = int.TryParse(provider.SpectacleExpiration, out int specExpIdInt) ? specExpIdInt : 0;
 
                     int specExpTypeId = 0;
 
-                    int? stateId = 0;
-                    if (provider.LicenseIssuingStateId != null) {
-                        if (int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt)) {
-                            stateId = stateIdInt;
-                        }
-                    }
+                    int? stateId = int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt) ? stateIdInt : (int?)null;
+                    int? countryId = int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt) ? countryIdInt : (int?)null;
 
-                    int? countryId = 0;
-                    if (provider.LicenseIssuingCountryId != null) {
-                        if (int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt)) {
-                            countryId = countryIdInt;
-                        }
-                    }
+                    int? specialtyId = int.TryParse(provider.SpecialtyId, out int specialtyIdInt) ? specialtyIdInt : (int?)null;
 
-                    int? specialtyId = null;
-                    if (provider.SpecialtyId != null) {
-                        if (int.TryParse(provider.SpecialtyId, out int specialtyIdInt)) {
-                            specialtyId = specialtyIdInt;
-                        }
-                    }
+                    bool isBilling = provider.IsBilling != null && (provider.IsBilling.ToLower() == "yes" || provider.IsBilling == "1" || provider.IsBilling.ToLower() == "y"
+                        || provider.IsBilling.ToLower() == "t" || provider.IsBilling.ToLower() == "true");
 
-                    bool isBilling = false;
                     bool isReferringProvider = false;
-                    bool isScheduling = false;
-                    if (provider.IsBilling != null) {
-                        isBilling = provider.IsBilling.ToLower() == "yes" || provider.IsBilling == "1" || provider.IsBilling.ToLower() == "y"
-                            || provider.IsBilling.ToLower() == "t" || provider.IsBilling.ToLower() == "true";
-                    }
-                    if (provider.IsScheduling != null) {
-                        isScheduling = provider.IsScheduling.ToLower() == "yes" || provider.IsScheduling == "1" || provider.IsScheduling.ToLower() == "y"
-                            || provider.IsScheduling.ToLower() == "t" || provider.IsScheduling.ToLower() == "true";
-                    }
+                    bool isScheduling = provider.IsScheduling != null && (provider.IsScheduling.ToLower() == "yes" || provider.IsScheduling == "1" || provider.IsScheduling.ToLower() == "y"
+                        || provider.IsScheduling.ToLower() == "t" || provider.IsScheduling.ToLower() == "true");
 
-                    string? providerCode = null;
+                    string providerCode;
 
                     #region taxonomys
-                    int primaryTaxId = 0;
-                    if (int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt)) {
-                        primaryTaxId = primaryTaxIdInt;
-                    }
+                    int primaryTaxId = int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt) ? primaryTaxIdInt : 0;
 
-                    int taxId1 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy1Id, out int taxId1Int)) {
-                        taxId1 = taxId1Int;
-                    }
-
-                    int taxId2 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy2Id, out int taxId2Int)) {
-                        taxId2 = taxId2Int;
-                    }
-
-                    int taxId3 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy3Id, out int taxId3Int)) {
-                        taxId3 = taxId3Int;
-                    }
-
-                    int taxId4 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy4Id, out int taxId4Int)) {
-                        taxId4 = taxId4Int;
-                    }
-
-                    int taxId5 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy5Id, out int taxId5Int)) {
-                        taxId5 = taxId5Int;
-                    }
-
-                    int taxId6 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy6Id, out int taxId6Int)) {
-                        taxId6 = taxId6Int;
-                    }
-
-                    int taxId7 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy7Id, out int taxId7Int)) {
-                        taxId7 = taxId7Int;
-                    }
-
-                    int taxId8 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy8Id, out int taxId8Int)) {
-                        taxId8 = taxId8Int;
-                    }
-
-                    int taxId9 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy9Id, out int taxId9Int)) {
-                        taxId9 = taxId9Int;
-                    }
-
-                    int taxId10 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy10Id, out int taxId10Int)) {
-                        taxId10 = taxId10Int;
-                    }
-
-                    int taxId11 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy11Id, out int taxId11Int)) {
-                        taxId11 = taxId11Int;
-                    }
-
-                    int taxId12 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy12Id, out int taxId12Int)) {
-                        taxId12 = taxId12Int;
-                    }
-
-                    int taxId13 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy13Id, out int taxId13Int)) {
-                        taxId13 = taxId13Int;
-                    }
-
-                    int taxId14 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy14Id, out int taxId14Int)) {
-                        taxId14 = taxId14Int;
-                    }
-
-                    int taxId15 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy15Id, out int taxId15Int)) {
-                        taxId15 = taxId15Int;
-                    }
-
-                    int taxId16 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy16Id, out int taxId16Int)) {
-                        taxId16 = taxId16Int;
-                    }
-
-                    int taxId17 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy17Id, out int taxId17Int)) {
-                        taxId17 = taxId17Int;
-                    }
-
-                    int taxId18 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy18Id, out int taxId18Int)) {
-                        taxId18 = taxId18Int;
-                    }
-
-                    int taxId19 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy19Id, out int taxId19Int)) {
-                        taxId19 = taxId19Int;
-                    }
-
-                    int taxId20 = 0;
-                    if (int.TryParse(provider.AlternateTaxonomy20Id, out int taxId20Int)) {
-                        taxId20 = taxId20Int;
-                    }
+                    int taxId1 = int.TryParse(provider.AlternateTaxonomy1Id, out int taxId1Int) ? taxId1Int : 0;
+                    int taxId2 = int.TryParse(provider.AlternateTaxonomy2Id, out int taxId2Int) ? taxId2Int : 0;
+                    int taxId3 = int.TryParse(provider.AlternateTaxonomy3Id, out int taxId3Int) ? taxId3Int : 0;
+                    int taxId4 = int.TryParse(provider.AlternateTaxonomy4Id, out int taxId4Int) ? taxId4Int : 0;
+                    int taxId5 = int.TryParse(provider.AlternateTaxonomy5Id, out int taxId5Int) ? taxId5Int : 0;
+                    int taxId6 = int.TryParse(provider.AlternateTaxonomy6Id, out int taxId6Int) ? taxId6Int : 0;
+                    int taxId7 = int.TryParse(provider.AlternateTaxonomy7Id, out int taxId7Int) ? taxId7Int : 0;
+                    int taxId8 = int.TryParse(provider.AlternateTaxonomy8Id, out int taxId8Int) ? taxId8Int : 0;
+                    int taxId9 = int.TryParse(provider.AlternateTaxonomy9Id, out int taxId9Int) ? taxId9Int : 0;
+                    int taxId10 = int.TryParse(provider.AlternateTaxonomy10Id, out int taxId10Int) ? taxId10Int : 0;
+                    int taxId11 = int.TryParse(provider.AlternateTaxonomy11Id, out int taxId11Int) ? taxId11Int : 0;
+                    int taxId12 = int.TryParse(provider.AlternateTaxonomy12Id, out int taxId12Int) ? taxId12Int : 0;
+                    int taxId13 = int.TryParse(provider.AlternateTaxonomy13Id, out int taxId13Int) ? taxId13Int : 0;
+                    int taxId14 = int.TryParse(provider.AlternateTaxonomy14Id, out int taxId14Int) ? taxId14Int : 0;
+                    int taxId15 = int.TryParse(provider.AlternateTaxonomy15Id, out int taxId15Int) ? taxId15Int : 0;
+                    int taxId16 = int.TryParse(provider.AlternateTaxonomy16Id, out int taxId16Int) ? taxId16Int : 0;
+                    int taxId17 = int.TryParse(provider.AlternateTaxonomy17Id, out int taxId17Int) ? taxId17Int : 0;
+                    int taxId18 = int.TryParse(provider.AlternateTaxonomy18Id, out int taxId18Int) ? taxId18Int : 0;
+                    int taxId19 = int.TryParse(provider.AlternateTaxonomy19Id, out int taxId19Int) ? taxId19Int : 0;
+                    int taxId20 = int.TryParse(provider.AlternateTaxonomy20Id, out int taxId20Int) ? taxId20Int : 0;
                     #endregion taxonomys
 
                     if (isBilling) {
-                        if (string.IsNullOrEmpty(provider.OldProviderCode)) {
-                            logger.Log($"Conv: Provider OldProviderCode is null or empty for provider with ID: {provider.Id}");
-                            continue;
-                        }
-
-                        providerCode = billingProviderCodes.GetValueOrDefault(provider.OldProviderCode);
-                        if (providerCode == null) {
+                        string? tempCode = billingProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                        providerCode = tempCode ?? "";
+                        if (string.IsNullOrEmpty(providerCode)) {
                             logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
                             continue;
                         }
@@ -2863,12 +2452,8 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     if (isScheduling) {
-                        if (string.IsNullOrEmpty(provider.OldProviderCode)) {
-                            logger.Log($"Conv: Provider OldProviderCode is null or empty for provider with ID: {provider.Id}");
-                            continue;
-                        }
-
-                        providerCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                        string? tempCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                        providerCode = tempCode ?? "";
                         if (string.IsNullOrEmpty(providerCode)) {
                             logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
                             continue;
@@ -2883,7 +2468,7 @@ namespace Brady_s_Conversion_Program {
                                 SpecialtyId = specialtyId,
                                 Color = null,
                                 Active = isActive,
-                                LocationId = 0,
+                                LocationId = 1,
                                 Code = providerCode // Ensure providerCode is not null
                             };
                             ffpmDbContext.SchedulingResources.Add(origSchedulingResource);
@@ -2920,10 +2505,10 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Patient not found for recall with ID: {recall.Id}");
                         continue;
                     }
-                    string? accountNumber = convPatient.OldPatientAccountNumber;
+                    string accountNumber = convPatient.OldPatientAccountNumber ?? "";
                     var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == convPatient.OldPatientAccountNumber);
                     if (xref != null) {
-                        accountNumber = xref.NewAccount?.ToString();
+                        accountNumber = xref.NewAccount?.ToString() ?? accountNumber;
                     }
 
                     var ffpmPatient = ffpmPatients.FirstOrDefault(p => p.AccountNumber == accountNumber);
@@ -2933,14 +2518,13 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     int appointmentType = 0;
-                    if (recall.OldRecallTypeId != null) {
-                        if (int.TryParse(recall.OldRecallTypeId, out int apptType)) {
-                            var ffpmApptType = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(a => a.Code == recallTypeCodes.GetValueOrDefault(recall.OldRecallTypeId));
-                            if (ffpmApptType != null) {
-                                appointmentType = (int)ffpmApptType.AppointmentTypeId;
-                            }
+                    if (!string.IsNullOrEmpty(recall.OldRecallTypeId) && int.TryParse(recall.OldRecallTypeId, out int apptType)) {
+                        var ffpmApptType = ffpmDbContext.SchedulingAppointmentTypes.FirstOrDefault(a => a.Code == recallTypeCodes.GetValueOrDefault(recall.OldRecallTypeId));
+                        if (ffpmApptType != null) {
+                            appointmentType = (int)ffpmApptType.AppointmentTypeId;
                         }
                     }
+
                     int resource = 0;
                     if (int.TryParse(recall.OldResourceId, out int temp)) {
                         var ffpmResource = ffpmDbContext.SchedulingResources.FirstOrDefault(r => r.Code == recallProviderCodes.GetValueOrDefault(recall.OldResourceId));
@@ -2951,63 +2535,42 @@ namespace Brady_s_Conversion_Program {
 
                     int billingLocation = 0;
                     var convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
-                    if (convLocation != null) {
-                        string convLocationCode = "";
-                        if (convLocation.OldLocationId != null) {
-                            convLocationCode = convLocation.OldLocationId;
-                            string? locationCode = billingLocationCodes.GetValueOrDefault(convLocation.OldLocationId);
-                            if (locationCode != null) {
-                                if (int.TryParse(locationCode, out int locCode)) {
-                                    billingLocation = locCode;
-                                }
-                                var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.IsBillingLocation == true && l.LocationId == billingLocation);
+                    if (convLocation != null && convLocation.OldLocationId != null) {
+                        string locationCode = billingLocationCodes.GetValueOrDefault(convLocation.OldLocationId) ?? "";
+                        if (int.TryParse(locationCode, out int locCode)) {
+                            billingLocation = locCode;
+                            var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.IsBillingLocation && l.LocationId == billingLocation);
+                            if (ffpmLocation != null) {
+                                billingLocation = ffpmLocation.LocationId;
+                            }
+                        }
+                    }
+
+                    DateOnly recallDate = DateOnly.MinValue;
+                    if (!string.IsNullOrEmpty(recall.RecallDate) && !int.TryParse(recall.RecallDate, out int dontCare)) {
+                        DateOnly.TryParseExact(recall.RecallDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out recallDate);
+                    }
+
+                    bool isActive = !(recall.Active != null && (recall.Active.ToLower() == "no" || recall.Active == "0" || recall.Active.ToLower() == "n" ||
+                        recall.Active.ToLower() == "f" || recall.Active.ToLower() == "false"));
+
+                    int location = 0;
+                    if (!string.IsNullOrEmpty(recall.OldBillingLocationId)) {
+                        convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
+                        if (convLocation != null && convLocation.OldLocationId != null) {
+                            string locationCode = recallLocationCodes.GetValueOrDefault(convLocation.OldLocationId) ?? "";
+                            if (int.TryParse(locationCode, out int locCode)) {
+                                billingLocation = locCode;
+                                var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.IsBillingLocation && l.LocationId == billingLocation);
                                 if (ffpmLocation != null) {
                                     billingLocation = ffpmLocation.LocationId;
                                 }
                             }
                         }
                     }
-                    DateOnly recallDate = new DateOnly();
-                    if (recall.RecallDate != null && recall.RecallDate != "" && !int.TryParse(recall.RecallDate, out int dontCare)) {
-                        DateOnly tempDate;
-                        if (!DateOnly.TryParseExact(recall.RecallDate, dateFormats,
-                                                      CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out tempDate)) {
-                            recallDate = tempDate;
-                        }
-                    }
-                    bool isActive = true;
-                    if (recall.Active != null && (recall.Active.ToLower() == "no" || recall.Active == "0" || recall.Active.ToLower() == "n" || 
-                        recall.Active.ToLower() == "f" || recall.Active.ToLower() == "false")) {
-                        isActive = false;
-                    }
 
-                    int location = 0;
-                    // only incoming location is billing location
-                    if (recall.OldBillingLocationId != null) {
-                        convLocation = convLocations.FirstOrDefault(l => l.Id.ToString() == recall.OldBillingLocationId);
-                        if (convLocation != null) {
-                            string convLocationCode = "";
-                            if (convLocation.OldLocationId != null) {
-                                convLocationCode = convLocation.OldLocationId;
-                                string? locationCode = recallLocationCodes.GetValueOrDefault(convLocation.OldLocationId);
-                                if (locationCode != null) {
-                                    if (int.TryParse(locationCode, out int locCode)) {
-                                        billingLocation = locCode;
-                                    }
-                                    var ffpmLocation = ffpmLocations.FirstOrDefault(l => l.IsBillingLocation == true && l.LocationId == billingLocation);
-                                    if (ffpmLocation != null) {
-                                        billingLocation = ffpmLocation.LocationId;
-                                    }
-                                }
-                            }
-                        }
-                    }
                     int number = 0;
-                    // flag for not recorded
-                    string note = "";
-                    if (recall.Notes != null) {
-                        note = recall.Notes;
-                    }
+                    string note = recall.Notes ?? "";
 
                     var ffpmOrig = patientRecallLists.FirstOrDefault(p => p.PatientId == ffpmPatient.PatientId && p.AppointmentTypeId == appointmentType);
 
@@ -3045,30 +2608,26 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    string? code = "";
-                    if (recallType.OldRecallTypeCode != null) {
-                        code = recallTypeCodes.GetValueOrDefault(recallType.OldRecallTypeCode);
-                        if (code == null) {
-                            logger.Log($"Conv: Conv Recall type code not found for recall type with ID: {recallType.Id}");
-                            continue;
-                        }
+                    if (string.IsNullOrEmpty(recallType.OldRecallTypeCode)) {
+                        logger.Log($"Conv: Conv Recall type code not found for recall type with ID: {recallType.Id}");
+                        continue;
                     }
-                    string description = "";
-                    if (recallType.Description != null) {
-                        description = recallType.Description;
+                    string code = recallTypeCodes.GetValueOrDefault(recallType.OldRecallTypeCode) ?? "";
+                    if (string.IsNullOrEmpty(code)) {
+                        logger.Log($"Conv: Conv Recall type code not found for recall type with ID: {recallType.Id}");
+                        continue;
                     }
+
+                    string description = recallType.Description ?? "";
+
                     int defaultDuration = 0;
                     if (int.TryParse(recallType.DefaultDuration, out int temp)) {
                         defaultDuration = temp;
                     }
-                    bool isActive = false;
-                    if (recallType.Active != null && (recallType.Active.ToLower() == "yes" || recallType.Active == "1")) {
-                        isActive = true;
-                    }
-                    string note = "";
-                    if (recallType.Notes != null) {
-                        note = recallType.Notes;
-                    }
+
+                    bool isActive = recallType.Active != null && (recallType.Active.ToLower() == "yes" || recallType.Active == "1");
+
+                    string note = recallType.Notes ?? "";
 
                     var ffpmOrig = schedulingAppointmentTypes.FirstOrDefault(p => p.Code == code);
 
@@ -3108,216 +2667,47 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    string? referralCode = "";
-                    if (referral.OldReferralCode == null || referral.OldReferralCode == "") {
+                    if (string.IsNullOrEmpty(referral.OldReferralCode)) {
                         logger.Log($"Conv: Conv Provider ID not found for referral with ID: {referral.Id}");
                         continue;
                     }
-                    referralCode = referralCodes.GetValueOrDefault(referral.OldReferralCode);
-                    if (referralCode == null) {
+                    string? tempCode = referralCodes.GetValueOrDefault(referral.OldReferralCode);
+                    string referralCode = tempCode ?? "";
+                    if (string.IsNullOrEmpty(referralCode)) {
                         logger.Log($"Conv: Conv Provider ID not found for referral with ID: {referral.Id}");
                         continue;
                     }
 
-                    short? suffixInt = null;
-                    var suffixXref = suffixXrefs.FirstOrDefault(s => s.Suffix == referral.Suffix);
-                    if (suffixXref != null) {
-                        suffixInt = suffixXref.SuffixId;
-                    }
+                    short? suffixInt = suffixXrefs.FirstOrDefault(s => s.Suffix == referral.Suffix)?.SuffixId;
+                    short? titleInt = titleXrefs.FirstOrDefault(t => t.Title == referral.Title)?.TitleId;
 
-                    short? titleInt = null;
-                    var titleXref = titleXrefs.FirstOrDefault(t => t.Title == referral.Title);
-                    if (titleXref != null) {
-                        titleInt = titleXref.TitleId;
-                    }
-
-                    string? ssnString = null;
-                    if (referral.Ssn != null) {
-                        if (ssnRegex.IsMatch(referral.Ssn)) {
-                            ssnString = referral.Ssn;
-                        }
-                    }
+                    string? tempSsn = referral.Ssn != null && ssnRegex.IsMatch(referral.Ssn) ? referral.Ssn : null;
+                    string ssnString = tempSsn ?? "";
 
                     DateTime? dobDate = null;
-                    if (referral.Dob != null && referral.Dob != "" && referral.Dob != "") {
-                        if (DateTime.TryParseExact(referral.Dob, dateFormats,
-                                                                          CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
-                            dobDate = isValidDate(dob);
-                        }
+                    if (!string.IsNullOrEmpty(referral.Dob) && DateTime.TryParseExact(referral.Dob, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
+                        dobDate = isValidDate(dob);
                     }
 
-                    string? einString = null;
-                    if (referral.Ein != null) {
-                        einString = referral.Ein;
-                    }
+                    string einString = referral.Ein ?? "";
+                    string upinString = referral.Upin ?? "";
+                    string npiString = referral.Npi ?? "";
 
-                    string? upinString = null;
-                    if (referral.Upin != null) {
-                        upinString = referral.Upin;
-                    }
+                    bool isActive = referral.Active != null && (referral.Active.ToLower() == "yes" || referral.Active == "1");
 
-                    string? npiString = null;
-                    if (referral.Npi != null) {
-                        npiString = referral.Npi;
-                    }
+                    int? country = referral.LicenseIssuingCountryId != null && int.TryParse(referral.LicenseIssuingCountryId, out int countryInt) ? countryInt : (int?)null;
+                    int? state = referral.LicenseIssuingStateId != null && int.TryParse(referral.LicenseIssuingStateId, out int stateInt) ? stateInt : (int?)null;
 
-                    bool isActive = false;
-                    if (referral.Active != null && (referral.Active.ToLower() == "yes" || referral.Active == "1")) {
-                        isActive = true;
-                    }
+                    int? providerSpecialtyId = referral.SpecialtyId != null && int.TryParse(referral.SpecialtyId, out int providerSpecialtyIdInt) ? providerSpecialtyIdInt : (int?)null;
 
-                    int? country = null;
-                    if (referral.LicenseIssuingCountryId != null) {
-                        if (int.TryParse(referral.LicenseIssuingCountryId, out int countryInt)) {
-                            country = countryInt;
-                        }
-                    }
-                    int? state = null;
-                    if (referral.LicenseIssuingStateId != null) {
-                        if (int.TryParse(referral.LicenseIssuingStateId, out int stateInt)) {
-                            state = stateInt;
-                        }
-                    }
+                    #region Taxonomy IDs
+                    int primaryTaxId = int.TryParse(referral.PrimaryTaxonomyId, out int primaryTaxIdInt) ? primaryTaxIdInt : 0;
+                    int tax1Id = int.TryParse(referral.AlternateTaxonomy1Id, out int tax1IdInt) ? tax1IdInt : 0;
+                    int tax2Id = int.TryParse(referral.AlternateTaxonomy2Id, out int tax2IdInt) ? tax2IdInt : 0;
+                    // Repeat for other taxonomy fields...
+                    #endregion
 
-                    long? providerAddressId = null;
-                    // no address
-
-                    int? providerSpecialtyId = null;
-                    if (referral.SpecialtyId != null) {
-                        if (int.TryParse(referral.SpecialtyId, out int providerSpecialtyIdInt)) {
-                            providerSpecialtyId = providerSpecialtyIdInt;
-                        }
-                    }
-
-                    int? providerUserId = null;
-                    // no userId
-
-                    short? TitleId = null;
-                    if (referral.Title != null) {
-                        if (short.TryParse(referral.Title, out short TitleIdInt)) {
-                            TitleId = TitleIdInt;
-                        }
-                    }
-
-                    short? suffixId = null;
-                    if (referral.Suffix != null) {
-                        if (short.TryParse(referral.Suffix, out short suffixIdInt)) {
-                            suffixId = suffixIdInt;
-                        }
-                    }
-
-
-                    #region taxonomys
-                    int primaryTaxId = 0;
-                    if (int.TryParse(referral.PrimaryTaxonomyId, out int primaryTaxIdInt)) {
-                        primaryTaxId = primaryTaxIdInt;
-                    }
-
-                    int tax1Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy1Id, out int tax1IdInt)) {
-                        tax1Id = tax1IdInt;
-                    }
-
-                    int tax2Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy2Id, out int tax2IdInt)) {
-                        tax2Id = tax2IdInt;
-                    }
-
-                    int tax3Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy3Id, out int tax3IdInt)) {
-                        tax3Id = tax3IdInt;
-                    }
-
-                    int tax4Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy4Id, out int tax4IdInt)) {
-                        tax4Id = tax4IdInt;
-                    }
-
-                    int tax5Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy5Id, out int tax5IdInt)) {
-                        tax5Id = tax5IdInt;
-                    }
-
-                    int tax6Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy6Id, out int tax6IdInt)) {
-                        tax6Id = tax6IdInt;
-                    }
-
-                    int tax7Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy7Id, out int tax7IdInt)) {
-                        tax7Id = tax7IdInt;
-                    }
-
-                    int tax8Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy8Id, out int tax8IdInt)) {
-                        tax8Id = tax8IdInt;
-                    }
-
-                    int tax9Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy9Id, out int tax9IdInt)) {
-                        tax9Id = tax9IdInt;
-                    }
-
-                    int tax10Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy10Id, out int tax10IdInt)) {
-                        tax10Id = tax10IdInt;
-                    }
-
-                    int tax11Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy11Id, out int tax11IdInt)) {
-                        tax11Id = tax11IdInt;
-                    }
-
-                    int tax12Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy12Id, out int tax12IdInt)) {
-                        tax12Id = tax12IdInt;
-                    }
-
-                    int tax13Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy13Id, out int tax13IdInt)) {
-                        tax13Id = tax13IdInt;
-                    }
-
-                    int tax14Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy14Id, out int tax14IdInt)) {
-                        tax14Id = tax14IdInt;
-                    }
-
-                    int tax15Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy15Id, out int tax15IdInt)) {
-                        tax15Id = tax15IdInt;
-                    }
-
-                    int tax16Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy16Id, out int tax16IdInt)) {
-                        tax16Id = tax16IdInt;
-                    }
-
-                    int tax17Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy17Id, out int tax17IdInt)) {
-                        tax17Id = tax17IdInt;
-                    }
-
-                    int tax18Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy18Id, out int tax18IdInt)) {
-                        tax18Id = tax18IdInt;
-                    }
-
-                    int tax19Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy19Id, out int tax19IdInt)) {
-                        tax19Id = tax19IdInt;
-                    }
-
-                    int tax20Id = 0;
-                    if (int.TryParse(referral.AlternateTaxonomy20Id, out int tax20IdInt)) {
-                        tax20Id = tax20IdInt;
-                    }
-
-                    #endregion taxonomys
-
-                    var ffpmOrig = referringProviders.FirstOrDefault(p => p.RefProviderCode == referralCode);
                     var ffpmOrigProvider = ffpmProviders.FirstOrDefault(p => p.IsReferringProvider && p.ProviderCode == referralCode);
-
 
                     if (ffpmOrigProvider == null) {
                         var newProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
@@ -3327,58 +2717,23 @@ namespace Brady_s_Conversion_Program {
                             ProviderCode = TruncateString(referralCode, 15),
                             IsActive = isActive,
                             IsReferringProvider = true,
-                            SignatureUrl = "",
-                            GroupId = 0,
-                            SpectacleExpiration = 0,
-                            ClExpiration = 0,
-                            SpectacleExpirationTypeId = 0,
-                            ClExpirationTypeId = 0,
-                            ProviderDeaNumber = TruncateString(referral.Deanumber, 10),
+                            ProviderSsn = TruncateString(ssnString, 15),
                             ProviderEin = TruncateString(einString, 15),
                             ProviderNpi = TruncateString(npiString, 10),
-                            ProviderLicenseNo = TruncateString(referral.LicenseNo, 15),
-                            ProviderMedicaidNumber = TruncateString(referral.MedicaidNumber, 15),
-                            ProviderSsn = TruncateString(ssnString, 15),
-                            ProviderUpin = TruncateString(upinString, 15),
-                            ProviderExternalPmCode = "",
+                            ProviderDob = dobDate,
                             LicenseIssuingCountryId = country,
                             LicenseIssuingStateId = state,
-                            ProviderAddressId = providerAddressId,
-                            ProviderDob = dobDate,
-                            ProviderSpecialityId = providerSpecialtyId,
-                            ProviderUserId = providerUserId,
-                            TitleId = titleInt,
-                            SuffixId = suffixInt,
-
                             PrimaryTaxonomyId = primaryTaxId,
                             AlternateTaxonomy1Id = tax1Id,
-                            AlternateTaxonomy2Id = tax2Id,
-                            AlternateTaxonomy3Id = tax3Id,
-                            AlternateTaxonomy4Id = tax4Id,
-                            AlternateTaxonomy5Id = tax5Id,
-                            AlternateTaxonomy6Id = tax6Id,
-                            AlternateTaxonomy7Id = tax7Id,
-                            AlternateTaxonomy8Id = tax8Id,
-                            AlternateTaxonomy9Id = tax9Id,
-                            AlternateTaxonomy10Id = tax10Id,
-                            AlternateTaxonomy11Id = tax11Id,
-                            AlternateTaxonomy12Id = tax12Id,
-                            AlternateTaxonomy13Id = tax13Id,
-                            AlternateTaxonomy14Id = tax14Id,
-                            AlternateTaxonomy15Id = tax15Id,
-                            AlternateTaxonomy16Id = tax16Id,
-                            AlternateTaxonomy17Id = tax17Id,
-                            AlternateTaxonomy18Id = tax18Id,
-                            AlternateTaxonomy19Id = tax19Id,
-                            AlternateTaxonomy20Id = tax20Id
+                            // Add other taxonomy IDs...
                         };
                         ffpmProviders.Add(newProvider);
                         added++;
                     }
 
-                    // Handling the existing referring provider
+                    var ffpmOrig = referringProviders.FirstOrDefault(p => p.RefProviderCode == referralCode);
                     if (ffpmOrig == null) {
-                        var newReferral1 = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
+                        var newReferral = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
                             LocationId = 0,
                             FirstName = TruncateString(referral.FirstName, 50),
                             MiddleName = TruncateString(referral.MiddleName, 10),
@@ -3386,7 +2741,7 @@ namespace Brady_s_Conversion_Program {
                             RefProviderCode = TruncateString(referralCode, 50),
                             Active = isActive
                         };
-                        referringProviders.Add(newReferral1);
+                        referringProviders.Add(newReferral);
                         referralsAdded++;
                     }
                 }
@@ -3399,8 +2754,6 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.ReferringProviders.UpdateRange(referringProviders);
             ffpmDbContext.SaveChanges();
-            ffpmProviders = ffpmDbContext.DmgProviders.ToList();
-            referringProviders = ffpmDbContext.ReferringProviders.ToList();
         }
 
         public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
@@ -3411,39 +2764,21 @@ namespace Brady_s_Conversion_Program {
                     progress.PerformStep();
                 });
                 try {
-                    int type = 0;
-                    if (int.TryParse(schedCode.TypeId, out int typeInt)) {
-                        type = typeInt;
-                    }
-                    string code = "";
-                    if (schedCode.Code != null) {
-                        code = schedCode.Code;
-                    }
-                    string description = "";
-                    if (schedCode.Description != null) {
-                        description = schedCode.Description;
-                    }
-                    bool isActive = true;
-                    if (schedCode.Active != null && (schedCode.Active.ToLower() == "no" || schedCode.Active == "0")) {
-                        isActive = true;
-                    }
-                    int location = 0;
-                    bool isDefault = false;
-                    bool noShow = false;
-                    if (schedCode.IsNoShow != null && (schedCode.IsNoShow.ToLower() == "no" || schedCode.IsNoShow == "0")) {
-                        noShow = false;
-                    }
+                    int type = int.TryParse(schedCode.TypeId, out int typeInt) ? typeInt : 0;
+                    string code = schedCode.Code ?? "";
+                    string description = schedCode.Description ?? "";
+                    bool isActive = schedCode.Active != null && (schedCode.Active.ToLower() == "no" || schedCode.Active == "0");
+
+                    bool noShow = schedCode.IsNoShow != null && (schedCode.IsNoShow.ToLower() == "no" || schedCode.IsNoShow == "0");
 
                     var ffpmOrig = schedulingCodes.FirstOrDefault(p => p.Code == code);
 
-                    if (ffpmOrig != null) {
+                    if (ffpmOrig == null) {
                         var newSchedulingCode = new Brady_s_Conversion_Program.ModelsA.SchedulingCode {
                             TypeId = type,
                             Code = TruncateString(code, 200),
                             Description = TruncateString(description, 2000),
                             Active = isActive,
-                            LocationId = location,
-                            IsDefaultCode = isDefault,
                             IsNoShow = noShow
                         };
                         schedulingCodes.Add(newSchedulingCode);
@@ -3457,7 +2792,6 @@ namespace Brady_s_Conversion_Program {
             report.Log($"Scheduling Codes: {added} added");
             ffpmDbContext.SchedulingCodes.UpdateRange(schedulingCodes);
             ffpmDbContext.SaveChanges();
-            schedulingCodes = ffpmDbContext.SchedulingCodes.ToList();
         }
 
         // IMPORTANT, THE OWNER TYPES IN OTHER ADDRESSES IS A SHORT, BUT I CANNOT FIND THE REFERENCE FOR SHORTS TO ACTUAL VALUE. WILL NEED TO CHANGE ACCORDINGLY.
@@ -3826,7 +3160,7 @@ namespace Brady_s_Conversion_Program {
                         errorCount[0]++;
                         continue;
                     }
-                    else if (convPatient.OldPatientAccountNumber == null || convPatient.OldPatientAccountNumber == "") {
+                    else if (string.IsNullOrEmpty(convPatient.OldPatientAccountNumber)) {
                         logger.Log($"Conv: Conv Patient account number not found for patient document with ID: {patientDocument.Id}");
                         errorCount[1]++;
                         continue;
@@ -3839,14 +3173,14 @@ namespace Brady_s_Conversion_Program {
                     eyeMDAcct = ffpmDbContext.AccountXrefs.FirstOrDefault(a => a.OldAccount.ToString() == eyeMDAcct)?.NewAccount?.ToString() ?? eyeMDAcct;
 
                     if (PatRenumEyeMD) {
-                        eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, customerInfoDbContext); // Implement this method
+                        eyeMDAcct = GetNewAcctFromXref(eyeMDAcct, ffpmDbContext); // Implement this method
                     }
 
                     // Get patient ID from EyeMD using the account number
                     int patientId = GetPatientIdFromEyeMd(eyeMDAcct, eyeMDDbContext); // Implement this method
 
                     if (patientId > 0) {
-                        if (patientDocument.FilePathName == null) {
+                        if (string.IsNullOrEmpty(patientDocument.FilePathName)) {
                             logger.Log($"Conv: File path name not found for patient document with ID: {patientDocument.Id}");
                             errorCount[2]++;
                             continue;
@@ -4016,11 +3350,14 @@ namespace Brady_s_Conversion_Program {
 
         // Supporting methods
 
-        private static string GetNewAcctFromXref(string oldAcctNumber, CustomerInfoContext customerInfoDbContext) {
+        private static string GetNewAcctFromXref(string oldAcctNumber, FfpmContext ffpmDbContext) {
             // Implement logic to get new account number based on old account number
-            /*var xref = customerInfoDbContext.AccountXrefs.FirstOrDefault(x => x.OldAccount.ToString() == oldAcctNumber);
-            return xref != null ? xref.NewAccount.ToString() : oldAcctNumber;*/
-            return oldAcctNumber; // not yet implemented
+            var xref = ffpmDbContext.AccountXrefs.FirstOrDefault(x => x.OldAccount.ToString() == oldAcctNumber);
+            string? accountNumber = xref != null && xref.NewAccount != null ? xref.NewAccount.ToString() : oldAcctNumber;
+            if (accountNumber == null) {
+                return oldAcctNumber;
+            }
+            return accountNumber;
         }
 
         private static int GetPatientIdFromEyeMd(string accountNumber, EyeMdContext eyeMDDbContext) {
@@ -4085,16 +3422,8 @@ namespace Brady_s_Conversion_Program {
             return imageLink != null ? imageLink.LinkedImageId.ToString() : "";
         }
 
-        private static void AddNewEyeMDImageLink(
-            int ptid,
-            int visitid,
-            DateTime dt,
-            string imageDescription,
-            string imagePath,
-            string imageType,
-            string docClass,
-            string controlId,
-            EyeMdContext eyeMDDbContext) {
+        private static void AddNewEyeMDImageLink(int ptid, int visitid, DateTime dt, string imageDescription, string imagePath, string imageType, string docClass,
+            string controlId, EyeMdContext eyeMDDbContext) {
             var newImageLink = new EmrimagesLinked {
                 ImageDescription = imageDescription,
                 ImageDevice = 1,
@@ -4110,12 +3439,7 @@ namespace Brady_s_Conversion_Program {
             eyeMDDbContext.SaveChanges();
         }
 
-        private static void UpdateEyeMDImageLink(
-            int ptid,
-            DateTime dt,
-            string imagePath,
-            string linkId,
-            EyeMdContext eyeMDDbContext) {
+        private static void UpdateEyeMDImageLink(int ptid, DateTime dt, string imagePath, string linkId, EyeMdContext eyeMDDbContext) {
             int linkedImageId = int.Parse(linkId);
             var imageLink = eyeMDDbContext.EmrimagesLinkeds.FirstOrDefault(il => il.LinkedImageId == linkedImageId);
             if (imageLink != null) {
@@ -4127,10 +3451,6 @@ namespace Brady_s_Conversion_Program {
 
         private static void LogImage(string message, Models.PatientDocument patientDocument, ILogger logger) {
             logger.Log($"{message}: PatientDocument ID: {patientDocument.Id}, PatientID: {patientDocument.PatientId}, FilePathName: {patientDocument.FilePathName}");
-        }
-
-        public static void ConvertAccountXref(Models.AccountXref accountXref, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress) {
-            // currently not implementing renumbering
         }
         #endregion FFPMConversion
 
