@@ -99,13 +99,21 @@ namespace Brady_s_Conversion_Program
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
 
-
+            /*
             string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
+            */
+
+            string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
+            string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
+            string invConnectionString = "Server=" + InvServerTextBox.Text + ";Database=" + InvTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
+            string FFPMConnectionString = "Server=" + FFPMServerTextBox.Text + ";Database=" + FFPMDataBaseTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
+            string EyeMDConnectionString = "Server=" + EyeMDServerNameTextBox.Text + ";Database=" + EyeMDDBTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
+            string customerInfoConnectionString = "Server=" + CustomerInfoServerTextBox.Text + ";Database=" + CustomerInfoDatabaseTextBox.Text + ";TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false;Integrated Security=True";
 
 
             string result = Functions.ConvertToDB(convConnectionString, ehrConnectionString, invConnectionString, FFPMConnectionString, EyeMDConnectionString,

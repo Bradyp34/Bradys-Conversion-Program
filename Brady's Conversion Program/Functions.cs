@@ -1081,7 +1081,9 @@ namespace Brady_s_Conversion_Program {
                     int locationId = 1;
                     if (!string.IsNullOrEmpty(appointment.OldBillingLocationId)) {
                         string tempLoc = appointmentLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId) ?? "1";
-                        int.TryParse(tempLoc, out locationId);
+                        if (int.TryParse(tempLoc, out int locId)) {
+                            locationId = locId;
+                        }
                     }
 
                     long resource = 0;
@@ -1118,7 +1120,9 @@ namespace Brady_s_Conversion_Program {
                     int billingLocId = locationId;
                     if (!string.IsNullOrEmpty(appointment.OldBillingLocationId)) {
                         string tempLoc = appointmentLocationCodes.GetValueOrDefault(appointment.OldBillingLocationId) ?? locationId.ToString();
-                        int.TryParse(tempLoc, out billingLocId);
+                        if (int.TryParse(tempLoc, out int locId)) {
+                            billingLocId = locId;
+                        }
                     }
 
                     bool confirmed = appointment.Confirmed != null && (appointment.Confirmed.ToLower() == "yes" || appointment.Confirmed == "1");
@@ -1186,7 +1190,7 @@ namespace Brady_s_Conversion_Program {
 
                     string typeXrefNum = "";
                     if (!string.IsNullOrEmpty(appointment.OldAppointmentTypeId)) {
-                        typeXrefNum = appointment.OldAppointmentTypeId;
+                        typeXrefNum = appointmentTypeCodes.GetValueOrDefault(appointment.OldAppointmentTypeId) ?? "";
                     }
                     var typeXref = appointmentTypes.FirstOrDefault(s => s.Code == typeXrefNum);
                     int type = (int?)typeXref?.AppointmentTypeId ?? 0;
