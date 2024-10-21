@@ -1061,12 +1061,12 @@ namespace Brady_s_Conversion_Program {
                             DefaultDuration = duration, // No longer nullable, set to 0 if not provided
                             Active = isActive,
                             CanSchedule = schedule,
-                            BackgroundColor = "#FFFFFF",
+                            BackgroundColor = "",
                             CanPrint = false,
-                            ConflictColor = "#FF0000",
+                            ConflictColor = "",
                             DefaultAppointmentType = false,
-                            WebAppointmentColor = "#FFFFFF",
-                            ForegroundColor = "#000000"
+                            WebAppointmentColor = "",
+                            ForegroundColor = ""
                         };
                         appointmentTypes.Add(newAppointmentType);
                         added++;
@@ -2575,7 +2575,7 @@ namespace Brady_s_Conversion_Program {
                     int? stateId = int.TryParse(provider.LicenseIssuingStateId, out int stateIdInt) ? stateIdInt : (int?)null;
                     int? countryId = int.TryParse(provider.LicenseIssuingCountryId, out int countryIdInt) ? countryIdInt : (int?)null;
 
-                    int? specialtyId = int.TryParse(provider.SpecialtyId, out int specialtyIdInt) ? specialtyIdInt : (int?)null;
+                    int specialtyId = int.TryParse(provider.SpecialtyId, out int specialtyIdInt) ? specialtyIdInt : (int)0;
 
                     bool isBilling = provider.IsBilling != null && (provider.IsBilling.ToLower() == "yes" || provider.IsBilling == "1" || provider.IsBilling.ToLower() == "y"
                         || provider.IsBilling.ToLower() == "t" || provider.IsBilling.ToLower() == "true");
@@ -2696,11 +2696,11 @@ namespace Brady_s_Conversion_Program {
                                 Name = TruncateString(provider.FirstName + provider.LastName, 50),
                                 Contact = TruncateString("", 15),
                                 SpecialtyId = specialtyId,
-                                Color = null,
+                                Color = 0,
                                 Active = isActive,
                                 LocationId = 1,
                                 Code = providerCode, // Ensure providerCode is not null
-                                EmailId = null
+                                EmailId = ""
                             };
                             ffpmDbContext.SchedulingResources.Add(origSchedulingResource);
                             addedScheduling++;
