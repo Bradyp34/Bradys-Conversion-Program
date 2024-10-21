@@ -596,7 +596,6 @@ namespace Brady_s_Conversion_Program {
             var phones = convDbContext.Phones.ToList();
 
             report.Log($"FFPM Conversion:\n");
-/*
             if (!noMaintenance) {
                 ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
@@ -605,7 +604,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Locations Converted\n";
                 });
             }
-*/
+
             if (!maintenanceOnly) {
                 PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
                     raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
