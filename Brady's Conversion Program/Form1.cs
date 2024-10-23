@@ -98,7 +98,6 @@ namespace Brady_s_Conversion_Program
         }
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e) { // this is the actual work starting
-
             /*
             string convConnectionString = "Server=" + ConvServerTextBox.Text + ";Database=" + ConvTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
             string ehrConnectionString = "Server=" + EHRServerTextBox.Text + ";Database=" + EHRTextBox.Text + ";User Id=OpticalUser;Password=Password1;TrustServerCertificate=True;MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=10;Encrypt=false";
@@ -190,6 +189,9 @@ namespace Brady_s_Conversion_Program
             }
             else if (!InvCheckBox.Checked) {
                 FFPMNewDBCheckBox.Hide();
+            }
+            if (!ConvCheckBox.Checked) {
+                RenumAccsCheckBox.Hide();
             }
         }
 

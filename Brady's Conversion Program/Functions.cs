@@ -387,11 +387,11 @@ namespace Brady_s_Conversion_Program {
                                         totalEntries += convDbContext.Referrals.Count();
                                         totalEntries += convDbContext.SchedCodes.Count();
                                         totalEntries += convDbContext.Providers.Count();  // Providers are part of maintenance
-                                        totalEntries += convDbContext.Appointments.Count(); // Appointments are part of maintenance
                                     }
 
                                     // Non-maintenance-only conversions (executed if maintenanceOnly is false)
                                     if (!maintenanceOnly) {
+                                        totalEntries += convDbContext.Appointments.Count(); // Appointments are part of maintenance
                                         totalEntries += convDbContext.Patients.Count();
                                         totalEntries += convDbContext.Insurances.Count();
                                         totalEntries += convDbContext.Guarantors.Count();  // Guarantors are non-maintenance
@@ -596,6 +596,7 @@ namespace Brady_s_Conversion_Program {
             var phones = convDbContext.Phones.ToList();
 
             report.Log($"FFPM Conversion:\n");
+/*
             if (!noMaintenance) {
                 ConvertLocation(convLocations, convDbContext, ffpmDbContext, logger, report, progress, locations);
 
@@ -604,7 +605,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Locations Converted\n";
                 });
             }
-
+*/
             if (!maintenanceOnly) {
                 PatientConvert(convPatients, convDbContext, ffpmDbContext, logger, report, progress, ffpmPatients, patientAdditionalDetails, medicareSecondarys,
                     raceXrefs, ethnicityXrefs, titleXrefs, suffixXrefs, maritalStatusXrefs, stateXrefs, renumbering, customerInfoDbContext);
@@ -616,6 +617,7 @@ namespace Brady_s_Conversion_Program {
             }
 
             if (!noMaintenance) {
+                /*
                 // moved the foreach loops into the functions
                 ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -624,20 +626,13 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "AppointmentTypes Converted\n";
                 });
 
-                ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
-
-
-                resultsBox.Invoke((MethodInvoker)delegate {
-                    resultsBox.Text += "Appointments Converted\n";
-                });
-
-
                 ConvertInsurance(convInsurances, convDbContext, ffpmDbContext, logger, report, progress, insurances, stateXrefs);
 
 
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Insurances Converted\n";
                 });
+                */
 
 
                 ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
@@ -649,6 +644,14 @@ namespace Brady_s_Conversion_Program {
             }
 
             if (!maintenanceOnly) {
+                ConvertAppointment(convAppointments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, appointmentTypes, appointments);
+
+
+                resultsBox.Invoke((MethodInvoker)delegate {
+                    resultsBox.Text += "Appointments Converted\n";
+                });
+
+
                 ConvertGuarantor(convGuarantors, convDbContext, ffpmDbContext, logger, report, progress, relationshipXrefs, genderXrefs, guarantors, ffpmPatients, convPatients);
 
 
@@ -691,6 +694,7 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
+            /*
             if (!noMaintenance) {
                 ConvertRecallType(convRecallTypes, convDbContext, ffpmDbContext, logger, report, progress, schedulingAppointmentTypes);
 
@@ -699,7 +703,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "RecallTypes Converted\n";
                 });
             }
-
+            */
 
             if (!maintenanceOnly) {
                 ConvertRecall(convRecalls, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, convLocations, locations, patientRecallLists);
@@ -710,6 +714,7 @@ namespace Brady_s_Conversion_Program {
                 });
             }
 
+            /*
             if (!noMaintenance) {
                 ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
@@ -718,7 +723,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Referrals Converted\n";
                 });
             }
-
+            */
 
             if (!maintenanceOnly) {
                 ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
@@ -747,7 +752,7 @@ namespace Brady_s_Conversion_Program {
                 });
 
 
-                ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments, 
+                ConvertPatientDocument(convPatientDocuments, convDbContext, ffpmDbContext, logger, report, progress, convPatients, ffpmPatients, patientDocuments,
                     eyeMDDbContext, imageFolderPath, imageDestinationFolderPath, false, customerInfoDbContext); // patrenum will always be false until implemented
 
 
@@ -1051,7 +1056,7 @@ namespace Brady_s_Conversion_Program {
                         var newAppointmentType = new SchedulingAppointmentType {
                             Code = TruncateString(code, 200),
                             Description = TruncateString(description, 1000),
-                            LocationId = 0,
+                            LocationId = 2,
                             PatientRequired = required,
                             Notes = TruncateString(notes, 5000),
                             IsExamType = examType,
@@ -1436,6 +1441,9 @@ namespace Brady_s_Conversion_Program {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
                 });
+                if (location.OldLocationId != "3") {
+                    continue;
+                }
 
                 try {
                     string name = location.LocationName != null && location.LocationName != "" ? location.LocationName : "";
@@ -1469,11 +1477,11 @@ namespace Brady_s_Conversion_Program {
                     int tax20Id = int.TryParse(location.AlternateTaxonomy20Id, out int tax20IdInt) ? tax20IdInt : 0;
                     #endregion taxonomies
 
-                    bool isBilling = location.IsBilling != null && (location.IsBilling.ToLower() == "yes" || location.IsBilling == "1" || location.IsBilling.ToLower() == "t"
-                        || location.IsBilling.ToLower() == "true" || location.IsBilling.ToLower() == "y");
+                    bool isBilling = location.IsBilling == null || !(location.IsBilling.ToLower() == "no" || location.IsBilling == "0" || location.IsBilling.ToLower() == "f"
+                        || location.IsBilling.ToLower() == "false" || location.IsBilling.ToLower() == "n");
 
-                    bool isSchedule = location.IsScheduling != null && (location.IsScheduling.ToLower() == "yes" || location.IsScheduling == "1" || location.IsScheduling.ToLower() == "t"
-                        || location.IsScheduling.ToLower() == "true" || location.IsScheduling.ToLower() == "y");
+                    bool isSchedule = location.IsScheduling == null || !(location.IsScheduling.ToLower() == "no" || location.IsScheduling == "0" || location.IsScheduling.ToLower() == "f"
+                        || location.IsScheduling.ToLower() == "false" || location.IsScheduling.ToLower() == "n");
 
                     int treatmentPlaceId = int.TryParse(location.PlaceOfTreatment, out int temp) ? temp : 0;
 
@@ -1482,7 +1490,7 @@ namespace Brady_s_Conversion_Program {
                         long.TryParse(location.OldLocationId, out companyId);
                     }
 
-                    var origLoc = ffpmDbContext.Locations.FirstOrDefault(l => l.LocationName != null && l.LocationName.ToLower() == name.ToLower());
+                    /*var origLoc = ffpmDbContext.Locations.FirstOrDefault(l => l.LocationName != null && l.LocationName.ToLower() == name.ToLower());
 
                     if (origLoc == null) {
                         var newLocation = new Brady_s_Conversion_Program.ModelsA.Location {
@@ -1608,8 +1616,66 @@ namespace Brady_s_Conversion_Program {
                                 };
                                 locations.Add(newLocation);
                                 added++;
-                            }
-                        }
+                            }*/
+
+                    if (location.OldLocationId == null) {
+                        logger.Log($"Conv: Conv Location ID is null for location with ID: {location.Id}");
+                        failed++; // Increment failed count
+                        continue;
+                    }
+                    string? locationid = appointmentLocationCodes.GetValueOrDefault(location.OldLocationId);
+                    if (locationid == null) {
+                        locationid = "1";
+                    }
+
+                    var ffpmOrig = locations.FirstOrDefault(x => x.Code == locationid);
+
+                    if (ffpmOrig == null) {
+                        // there are no explicite scheduling locations tables
+                        var newLocation = new Brady_s_Conversion_Program.ModelsA.BillingLocation {
+                            PrimaryTaxonomyId = primaryTaxId,
+                            AlternateTaxonomy1Id = tax1Id,
+                            AlternateTaxonomy2Id = tax2Id,
+                            AlternateTaxonomy3Id = tax3Id,
+                            AlternateTaxonomy4Id = tax4Id,
+                            AlternateTaxonomy5Id = tax5Id,
+                            AlternateTaxonomy6Id = tax6Id,
+                            AlternateTaxonomy7Id = tax7Id,
+                            AlternateTaxonomy8Id = tax8Id,
+                            AlternateTaxonomy9Id = tax9Id,
+                            AlternateTaxonomy10Id = tax10Id,
+                            AlternateTaxonomy11Id = tax11Id,
+                            AlternateTaxonomy12Id = tax12Id,
+                            AlternateTaxonomy13Id = tax13Id,
+                            AlternateTaxonomy14Id = tax14Id,
+                            AlternateTaxonomy15Id = tax15Id,
+                            AlternateTaxonomy16Id = tax16Id,
+                            AlternateTaxonomy17Id = tax17Id,
+                            AlternateTaxonomy18Id = tax18Id,
+                            AlternateTaxonomy19Id = tax19Id,
+                            AlternateTaxonomy20Id = tax20Id,
+
+                            Name = TruncateString(name, 500),
+                            IsBillingLocation = isBilling,
+                            CliaIdNo = TruncateString(location.Clia, 15),
+                            Npi = TruncateString(location.Npi, 10),
+                            FederalIdNo = TruncateString(location.FederalEin, 15),
+                            IsSchedulingLocation = isSchedule,
+                            PlaceOfTreatmentId = treatmentPlaceId,
+                            LocationId = ffpmDbContext.Locations.Max(l => (int?)l.LocationId) ?? 0 + locAdded,
+                            IsActive = true,
+                            CaculateTaxOnEstimatedPatientBalance = false,
+                            IsDefaultLocation = false,
+                            CaculateTaxOnTotalFee = false,
+                            Code = locationid,
+                            Abbreviation = "",
+                            AddressId = 0,
+                            TaxActive = false,
+                            GroupId = 0,
+                            SalesTaxCptId = 0
+                        };
+                        locations.Add(newLocation);
+                        added++;
                     }
                 }
                 catch (Exception ex) {
@@ -2552,7 +2618,7 @@ namespace Brady_s_Conversion_Program {
 
                     string ssnString = provider.Ssn != null && ssnRegex.IsMatch(provider.Ssn) ? provider.Ssn : "";
 
-                    DateTime? dobDate = null;
+                    DateTime dobDate = minAcceptableDate;
                     if (!string.IsNullOrEmpty(provider.Dob) && !int.TryParse(provider.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(provider.Dob, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
                             dobDate = isValidDate(dob);
@@ -2579,11 +2645,9 @@ namespace Brady_s_Conversion_Program {
                     bool isBilling = provider.IsBilling != null && (provider.IsBilling.ToLower() == "yes" || provider.IsBilling == "1" || provider.IsBilling.ToLower() == "y"
                         || provider.IsBilling.ToLower() == "t" || provider.IsBilling.ToLower() == "true");
 
-                    bool isReferringProvider = false;
                     bool isScheduling = provider.IsScheduling != null && (provider.IsScheduling.ToLower() == "yes" || provider.IsScheduling == "1" || provider.IsScheduling.ToLower() == "y"
                         || provider.IsScheduling.ToLower() == "t" || provider.IsScheduling.ToLower() == "true");
 
-                    string providerCode;
 
                     #region taxonomys
                     int primaryTaxId = int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt) ? primaryTaxIdInt : 0;
@@ -2610,81 +2674,85 @@ namespace Brady_s_Conversion_Program {
                     int taxId20 = int.TryParse(provider.AlternateTaxonomy20Id, out int taxId20Int) ? taxId20Int : 0;
                     #endregion taxonomys
 
-                    if (isBilling) {
-                        string? tempCode = billingProviderCodes.GetValueOrDefault(provider.OldProviderCode);
-                        providerCode = tempCode ?? "";
-                        if (string.IsNullOrEmpty(providerCode) || providerCode == "N/A") {
-                            logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
-                            failed++;
-                            continue;
-                        }
+                    string? tempCode = billingProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                    string providerCode = tempCode ?? "";
+                    if (string.IsNullOrEmpty(providerCode)) {
+                        logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
+                        failed++;
+                        continue;
+                    } else if (providerCode == "N/A") {
+                        logger.Log($"Conv: Provider code is N/A for provider with ID: {provider.Id}");
+                        continue;
+                    }
 
-                        var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == providerCode);
+                    var ffpmOrig = ffpmProviders.FirstOrDefault(p => p.ProviderCode == providerCode);
 
-                        if (ffpmOrig == null) {
-                            var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
-                                FirstName = TruncateString(provider.FirstName, 50),
-                                MiddleName = TruncateString(provider.MiddleName, 10),
-                                LastName = TruncateString(provider.LastName, 50),
-                                ProviderCode = TruncateString(providerCode, 15),
-                                SuffixId = suffixInt,
-                                TitleId = titleInt,
-                                ProviderSsn = TruncateString(ssnString, 15),
-                                ProviderEin = TruncateString(einString, 15),
-                                ProviderUpin = TruncateString(upinString, 15),
-                                ProviderDob = dobDate,
-                                ProviderNpi = TruncateString(npiString, 10),
-                                IsActive = isActive,
-                                IsReferringProvider = isReferringProvider,
-                                SignatureUrl = "",  // No value given, assumed not to require truncation
-                                GroupId = 0,
-                                SpectacleExpiration = specExpId,
-                                SpectacleExpirationTypeId = specExpTypeId,
-                                ClExpiration = clExpId,
-                                ClExpirationTypeId = 0,
-                                LicenseIssuingStateId = stateId,
-                                LicenseIssuingCountryId = countryId,
-                                ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
-                                PrimaryTaxonomyId = primaryTaxId,
-                                ProviderAddressId = 0,
-                                ProviderExternalPmCode = "",
-                                ProviderLicenseNo = "",
-                                ProviderMedicaidNumber = "",
-                                ProviderSpecialityId = 0,
-                                ProviderUserId = 0,
+                    if (ffpmOrig == null) {
+                        var newPatientProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
+                            FirstName = TruncateString(provider.FirstName, 50),
+                            MiddleName = TruncateString(provider.MiddleName, 10),
+                            LastName = TruncateString(provider.LastName, 50),
+                            ProviderCode = TruncateString(providerCode, 15),
+                            SuffixId = suffixInt,
+                            TitleId = titleInt,
+                            ProviderSsn = TruncateString(ssnString, 15),
+                            ProviderEin = TruncateString(einString, 15),
+                            ProviderUpin = TruncateString(upinString, 15),
+                            ProviderDob = dobDate,
+                            ProviderNpi = TruncateString(npiString, 10),
+                            IsActive = isActive,
+                            IsReferringProvider = false,
+                            SignatureUrl = "",  // No value given, assumed not to require truncation
+                            GroupId = 0,
+                            SpectacleExpiration = specExpId,
+                            SpectacleExpirationTypeId = specExpTypeId,
+                            ClExpiration = clExpId,
+                            ClExpirationTypeId = 0,
+                            LicenseIssuingStateId = stateId,
+                            LicenseIssuingCountryId = countryId,
+                            ProviderDeaNumber = TruncateString(provider.Deanumber, 10),
+                            PrimaryTaxonomyId = primaryTaxId,
+                            ProviderAddressId = 0,
+                            ProviderExternalPmCode = "",
+                            ProviderLicenseNo = "",
+                            ProviderMedicaidNumber = "",
+                            ProviderSpecialityId = 0,
+                            ProviderUserId = 0,
 
-                                AlternateTaxonomy1Id = taxId1,
-                                AlternateTaxonomy2Id = taxId2,
-                                AlternateTaxonomy3Id = taxId3,
-                                AlternateTaxonomy4Id = taxId4,
-                                AlternateTaxonomy5Id = taxId5,
-                                AlternateTaxonomy6Id = taxId6,
-                                AlternateTaxonomy7Id = taxId7,
-                                AlternateTaxonomy8Id = taxId8,
-                                AlternateTaxonomy9Id = taxId9,
-                                AlternateTaxonomy10Id = taxId10,
-                                AlternateTaxonomy11Id = taxId11,
-                                AlternateTaxonomy12Id = taxId12,
-                                AlternateTaxonomy13Id = taxId13,
-                                AlternateTaxonomy14Id = taxId14,
-                                AlternateTaxonomy15Id = taxId15,
-                                AlternateTaxonomy16Id = taxId16,
-                                AlternateTaxonomy17Id = taxId17,
-                                AlternateTaxonomy18Id = taxId18,
-                                AlternateTaxonomy19Id = taxId19,
-                                AlternateTaxonomy20Id = taxId20
-                            };
-                            ffpmProviders.Add(newPatientProvider);
-                            added++;
-                        }
+                            AlternateTaxonomy1Id = taxId1,
+                            AlternateTaxonomy2Id = taxId2,
+                            AlternateTaxonomy3Id = taxId3,
+                            AlternateTaxonomy4Id = taxId4,
+                            AlternateTaxonomy5Id = taxId5,
+                            AlternateTaxonomy6Id = taxId6,
+                            AlternateTaxonomy7Id = taxId7,
+                            AlternateTaxonomy8Id = taxId8,
+                            AlternateTaxonomy9Id = taxId9,
+                            AlternateTaxonomy10Id = taxId10,
+                            AlternateTaxonomy11Id = taxId11,
+                            AlternateTaxonomy12Id = taxId12,
+                            AlternateTaxonomy13Id = taxId13,
+                            AlternateTaxonomy14Id = taxId14,
+                            AlternateTaxonomy15Id = taxId15,
+                            AlternateTaxonomy16Id = taxId16,
+                            AlternateTaxonomy17Id = taxId17,
+                            AlternateTaxonomy18Id = taxId18,
+                            AlternateTaxonomy19Id = taxId19,
+                            AlternateTaxonomy20Id = taxId20
+                        };
+                        ffpmProviders.Add(newPatientProvider);
+                        added++;
                     }
 
                     if (isScheduling) {
-                        string? tempCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                        tempCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
                         providerCode = tempCode ?? "";
-                        if (string.IsNullOrEmpty(providerCode) || providerCode == "N/A") {
-                            logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
+                        if (string.IsNullOrEmpty(providerCode)) {
+                            logger.Log($"Conv: Xref Provider code not found for provider with ID: {provider.Id}");
                             failed++;
+                            continue;
+                        } else if (providerCode == "N/A") {
+                            logger.Log($"Conv: Provider code is N/A for provider with ID: {provider.Id}");
                             continue;
                         }
 
@@ -2726,6 +2794,32 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.SaveChanges();
             ffpmProviders = ffpmDbContext.DmgProviders.ToList();
+
+            var addressesToAdd = new List<Brady_s_Conversion_Program.ModelsA.DmgOtherAddress>();
+
+            foreach (var provider in ffpmDbContext.DmgProviders) {
+                if (provider.ProviderAddressId <= 0) {
+                    var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                        OwnerId = provider.ProviderId,
+                        OwnerType = 3
+                    };
+                    addressesToAdd.Add(newAddress);
+                }
+            }
+
+            ffpmDbContext.DmgOtherAddresses.AddRange(addressesToAdd);
+            ffpmDbContext.SaveChanges();
+
+            var updatedAddresses = ffpmDbContext.DmgOtherAddresses.Where(address => address.OwnerType == 3).ToList();
+
+            foreach (var address in updatedAddresses) {
+                var provider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderId == address.OwnerId);
+                if (provider != null) {
+                    provider.ProviderAddressId = address.AddressId;
+                }
+            }
+
+            ffpmDbContext.SaveChanges();
         }
 
         public static void ConvertRecallType(List<Models.RecallType> convRecallTypes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
@@ -2743,9 +2837,12 @@ namespace Brady_s_Conversion_Program {
                         continue;
                     }
                     string code = recallTypeCodes.GetValueOrDefault(recallType.OldRecallTypeCode) ?? "";
-                    if (string.IsNullOrEmpty(code) || code == "N/A") {
-                        logger.Log($"Conv: Conv Recall type code not found for recall type with ID: {recallType.Id}");
+                    if (string.IsNullOrEmpty(code)) {
+                        logger.Log($"Conv: Xref Recall type code not found for recall type with ID: {recallType.Id}");
                         failed++;
+                        continue;
+                    } else if (code == "N/A") {
+                        logger.Log($"Conv: Recall type code is N/A for recall type with ID: {recallType.Id}");
                         continue;
                     }
 
@@ -2808,15 +2905,18 @@ namespace Brady_s_Conversion_Program {
                 });
                 try {
                     if (string.IsNullOrEmpty(referral.OldReferralCode)) {
-                        logger.Log($"Conv: Conv Provider ID not found for referral with ID: {referral.Id}");
+                        logger.Log($"Conv: Conv Provider ID is null or empty for referral with ID: {referral.Id}");
                         failed++;
                         continue;
                     }
                     string? tempCode = referralCodes.GetValueOrDefault(referral.OldReferralCode);
                     string referralCode = tempCode ?? "";
-                    if (string.IsNullOrEmpty(referralCode) || referralCode == "N/A") {
-                        logger.Log($"Conv: Conv Provider ID not found for referral with ID: {referral.Id}");
+                    if (string.IsNullOrEmpty(referralCode)) {
+                        logger.Log($"Conv: xref Provider ID not found for referral with ID: {referral.Id}");
                         failed++;
+                        continue;
+                    } else if (referralCode == "N/A") {
+                        logger.Log($"Conv: xref Provider ID is N/A for referral with ID: {referral.Id}");
                         continue;
                     }
 
@@ -2925,6 +3025,9 @@ namespace Brady_s_Conversion_Program {
                         ffpmProviders.Add(newProvider);
                         added++;
                     }
+                    else {
+                        ffpmOrigProvider.IsReferringProvider = true;
+                    }
 
                     var ffpmOrig = referringProviders.FirstOrDefault(p => p.RefProviderCode == referralCode);
                     if (ffpmOrig == null) {
@@ -2949,6 +3052,24 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.ReferringProviders.UpdateRange(referringProviders);
             ffpmDbContext.SaveChanges();
+
+            foreach (var referral in ffpmDbContext.ReferringProviders) {
+                if (referral.RefProviderId > 0) {
+                    var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                        OwnerId = referral.RefProviderId,
+                        OwnerType = 4
+                    };
+                    ffpmDbContext.DmgOtherAddresses.Add(newAddress);
+                }
+            }
+            ffpmDbContext.SaveChanges();
+
+            foreach (var address in ffpmDbContext.DmgOtherAddresses) {
+                var referral = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderId == address.OwnerId);
+                if (referral != null) {
+                    referral.ProviderAddressId = address.AddressId;
+                }
+            }
         }
 
         public static void ConvertSchedCode(List<Models.SchedCode> convSchedCodes, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
