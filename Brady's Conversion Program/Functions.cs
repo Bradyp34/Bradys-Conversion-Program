@@ -617,7 +617,6 @@ namespace Brady_s_Conversion_Program {
             }
 
             if (!noMaintenance) {
-                /*
                 // moved the foreach loops into the functions
                 ConvertAppointmentType(convAppointmentTypes, convDbContext, ffpmDbContext, logger, report, progress, appointmentTypes);
 
@@ -632,15 +631,15 @@ namespace Brady_s_Conversion_Program {
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Insurances Converted\n";
                 });
-                */
 
-
+/*
                 ConvertProvider(convProviders, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, ffpmProviders);
 
 
                 resultsBox.Invoke((MethodInvoker)delegate {
                     resultsBox.Text += "Providers Converted\n";
                 });
+*/
             }
 
             if (!maintenanceOnly) {
@@ -713,8 +712,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Recalls Converted\n";
                 });
             }
-
-            /*
+/*
             if (!noMaintenance) {
                 ConvertReferral(convReferrals, convDbContext, ffpmDbContext, logger, report, progress, suffixXrefs, titleXrefs, referringProviders, ffpmProviders);
 
@@ -723,8 +721,7 @@ namespace Brady_s_Conversion_Program {
                     resultsBox.Text += "Referrals Converted\n";
                 });
             }
-            */
-
+*/
             if (!maintenanceOnly) {
                 ConvertSchedCode(convSchedCodes, convDbContext, ffpmDbContext, logger, report, progress, schedulingCodes);
 
@@ -2597,9 +2594,10 @@ namespace Brady_s_Conversion_Program {
         }
 
         public static void ConvertProvider(List<Models.Provider> convProviders, FoxfireConvContext convDbContext, FfpmContext ffpmDbContext, ILogger logger, ILogger report, ProgressBar progress,
-            List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
+    List<MntSuffix> suffixXrefs, List<MntTitle> titleXrefs, List<DmgProvider> ffpmProviders) {
 
-            int added = 0, addedScheduling = 0, failed = 0; // Counter for failed conversions
+            int added = 0, addedScheduling = 0, failed = 0;
+            var addedSchedulingCodes = new HashSet<string>();
 
             foreach (var provider in convProviders) {
                 progress.Invoke((MethodInvoker)delegate {
@@ -2618,7 +2616,7 @@ namespace Brady_s_Conversion_Program {
 
                     string ssnString = provider.Ssn != null && ssnRegex.IsMatch(provider.Ssn) ? provider.Ssn : "";
 
-                    DateTime dobDate = minAcceptableDate;
+                    DateTime? dobDate = null;
                     if (!string.IsNullOrEmpty(provider.Dob) && !int.TryParse(provider.Dob, out int dontCare)) {
                         if (DateTime.TryParseExact(provider.Dob, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal, out DateTime dob)) {
                             dobDate = isValidDate(dob);
@@ -2647,7 +2645,6 @@ namespace Brady_s_Conversion_Program {
 
                     bool isScheduling = provider.IsScheduling != null && (provider.IsScheduling.ToLower() == "yes" || provider.IsScheduling == "1" || provider.IsScheduling.ToLower() == "y"
                         || provider.IsScheduling.ToLower() == "t" || provider.IsScheduling.ToLower() == "true");
-
 
                     #region taxonomys
                     int primaryTaxId = int.TryParse(provider.PrimaryTaxonomyId, out int primaryTaxIdInt) ? primaryTaxIdInt : 0;
@@ -2680,8 +2677,8 @@ namespace Brady_s_Conversion_Program {
                         logger.Log($"Conv: Conv Provider code xref not found for provider with ID: {provider.Id}");
                         failed++;
                         continue;
-                    } else if (providerCode == "N/A") {
-                        logger.Log($"Conv: Provider code is N/A for provider with ID: {provider.Id}");
+                    }
+                    else if (providerCode == "N/A") {
                         continue;
                     }
 
@@ -2702,7 +2699,7 @@ namespace Brady_s_Conversion_Program {
                             ProviderNpi = TruncateString(npiString, 10),
                             IsActive = isActive,
                             IsReferringProvider = false,
-                            SignatureUrl = "",  // No value given, assumed not to require truncation
+                            SignatureUrl = "",
                             GroupId = 0,
                             SpectacleExpiration = specExpId,
                             SpectacleExpirationTypeId = specExpTypeId,
@@ -2745,14 +2742,18 @@ namespace Brady_s_Conversion_Program {
                     }
 
                     if (isScheduling) {
-                        tempCode = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
-                        providerCode = tempCode ?? "";
+                        string? tempCode2 = appointmentProviderCodes.GetValueOrDefault(provider.OldProviderCode);
+                        providerCode = tempCode2 ?? "";
                         if (string.IsNullOrEmpty(providerCode)) {
                             logger.Log($"Conv: Xref Provider code not found for provider with ID: {provider.Id}");
                             failed++;
                             continue;
-                        } else if (providerCode == "N/A") {
-                            logger.Log($"Conv: Provider code is N/A for provider with ID: {provider.Id}");
+                        }
+                        else if (providerCode == "N/A") {
+                            continue;
+                        }
+
+                        if (addedSchedulingCodes.Contains(providerCode)) {
                             continue;
                         }
 
@@ -2765,11 +2766,12 @@ namespace Brady_s_Conversion_Program {
                                 SpecialtyId = specialtyId,
                                 Color = 0,
                                 Active = isActive,
-                                LocationId = 1,
-                                Code = providerCode, // Ensure providerCode is not null
+                                LocationId = 2,
+                                Code = providerCode,
                                 EmailId = ""
                             };
                             ffpmDbContext.SchedulingResources.Add(origSchedulingResource);
+                            addedSchedulingCodes.Add(providerCode);
                             addedScheduling++;
                         }
                     }
@@ -2781,16 +2783,14 @@ namespace Brady_s_Conversion_Program {
                 }
                 catch (Exception ex) {
                     logger.Log($"Conv: Conv An error occurred while converting the provider with ID: {provider.Id}. Error: {ex.Message}");
-                    failed++; // Increment failed counter when an exception occurs
+                    failed++;
                 }
             }
 
-            // Log the added and failed counts
             report.Log($"Providers: {added} added");
             report.Log($"Scheduling Providers: {addedScheduling} added");
             report.Log($"Failed Provider Conversions: {failed} failed\n");
 
-            // Save all changes
             ffpmDbContext.DmgProviders.UpdateRange(ffpmProviders);
             ffpmDbContext.SaveChanges();
             ffpmProviders = ffpmDbContext.DmgProviders.ToList();
@@ -2813,7 +2813,7 @@ namespace Brady_s_Conversion_Program {
 
             var updatedAddresses = ffpmDbContext.DmgOtherAddresses.Where(address => address.OwnerType == 3).ToList();
 
-            foreach (var address in updatedAddresses) {
+            foreach (var address in updatedAddresses.Where(address => address.OwnerType == 3)) {
                 var provider = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderId == address.OwnerId);
                 if (provider != null) {
                     provider.ProviderAddressId = address.AddressId;
@@ -2843,7 +2843,6 @@ namespace Brady_s_Conversion_Program {
                         failed++;
                         continue;
                     } else if (code == "N/A") {
-                        logger.Log($"Conv: Recall type code is N/A for recall type with ID: {recallType.Id}");
                         continue;
                     }
 
@@ -2900,6 +2899,7 @@ namespace Brady_s_Conversion_Program {
             int added = 0;
             int referralsAdded = 0;
             int failed = 0; // Counter for failed conversions
+            ffpmProviders = ffpmDbContext.DmgProviders.ToList();
             foreach (var referral in convReferrals) {
                 progress.Invoke((MethodInvoker)delegate {
                     progress.PerformStep();
@@ -2917,7 +2917,6 @@ namespace Brady_s_Conversion_Program {
                         failed++;
                         continue;
                     } else if (referralCode == "N/A") {
-                        logger.Log($"Conv: xref Provider ID is N/A for referral with ID: {referral.Id}");
                         continue;
                     }
 
@@ -2968,7 +2967,7 @@ namespace Brady_s_Conversion_Program {
                     int tax20Id = int.TryParse(referral.AlternateTaxonomy20Id, out int tax20IdInt) ? tax20IdInt : 0;
                     #endregion
 
-                    var ffpmOrigProvider = ffpmProviders.FirstOrDefault(p => p.IsReferringProvider && p.ProviderCode == referralCode);
+                    var ffpmOrigProvider = ffpmProviders.FirstOrDefault(p => p.ProviderCode == referralCode);
 
                     if (ffpmOrigProvider == null) {
                         var newProvider = new Brady_s_Conversion_Program.ModelsA.DmgProvider {
@@ -3033,7 +3032,7 @@ namespace Brady_s_Conversion_Program {
                     var ffpmOrig = referringProviders.FirstOrDefault(p => p.RefProviderCode == referralCode);
                     if (ffpmOrig == null) {
                         var newReferral = new Brady_s_Conversion_Program.ModelsA.ReferringProvider {
-                            LocationId = 0,
+                            LocationId = 2,
                             FirstName = TruncateString(referral.FirstName, 50),
                             MiddleName = TruncateString(referral.MiddleName, 10),
                             LastName = TruncateString(referral.LastName, 50),
@@ -3054,19 +3053,24 @@ namespace Brady_s_Conversion_Program {
             ffpmDbContext.ReferringProviders.UpdateRange(referringProviders);
             ffpmDbContext.SaveChanges();
 
-            foreach (var referral in ffpmDbContext.ReferringProviders) {
-                if (referral.RefProviderId > 0) {
-                    var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
-                        OwnerId = referral.RefProviderId,
-                        OwnerType = 4
-                    };
-                    ffpmDbContext.DmgOtherAddresses.Add(newAddress);
+            foreach (var referral in ffpmDbContext.DmgProviders.Where(referral => referral.IsReferringProvider == true)) {
+                if (referral.ProviderId > 0) {
+                    var origAddress = ffpmDbContext.DmgOtherAddresses.FirstOrDefault(a => a.OwnerId == referral.ProviderId && a.OwnerType == 3);
+
+                    if (origAddress == null) {
+                        var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
+                            OwnerId = referral.ProviderId,
+                            OwnerType = 3,
+                            IsActive = true
+                        };
+                        ffpmDbContext.DmgOtherAddresses.Add(newAddress);
+                    }
                 }
             }
             ffpmDbContext.SaveChanges();
 
-            foreach (var address in ffpmDbContext.DmgOtherAddresses) {
-                var referral = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.ProviderId == address.OwnerId);
+            foreach (var address in ffpmDbContext.DmgOtherAddresses.Where(address => address.OwnerType == 4)) {
+                var referral = ffpmDbContext.DmgProviders.FirstOrDefault(p => p.IsReferringProvider == true && p.ProviderId == address.OwnerId);
                 if (referral != null) {
                     referral.ProviderAddressId = address.AddressId;
                 }
