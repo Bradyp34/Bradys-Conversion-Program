@@ -2801,7 +2801,8 @@ namespace Brady_s_Conversion_Program {
                 if (provider.ProviderAddressId <= 0) {
                     var newAddress = new Brady_s_Conversion_Program.ModelsA.DmgOtherAddress {
                         OwnerId = provider.ProviderId,
-                        OwnerType = 3
+                        OwnerType = 3,
+                        IsActive = true
                     };
                     addressesToAdd.Add(newAddress);
                 }
